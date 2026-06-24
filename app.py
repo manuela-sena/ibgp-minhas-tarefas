@@ -11,6 +11,17 @@ SCOPES        = "Tasks.ReadWrite Group.Read.All User.Read offline_access"
 NOME_PLANO    = "PLANNER IBGP"
 EQUIPE        = ["Lorena", "Laryssa", "Natália", "Manuela"]
 
+# Mapeamento: nome no Microsoft 365 -> nome interno usado nas atribuições
+NOME_MAP = {
+    "execução": "Laryssa",
+    "laryssa": "Laryssa",
+    "lorena": "Lorena",
+    "natália": "Natália",
+    "natalia": "Natália",
+    "manuela": "Manuela",
+    "manu": "Manuela",
+}
+
 ATRIBUICOES = {
     'CLASSIFICAÇÃO FINAL': 'Manuela',
     'CLASSIFICAÇÃO FINAL (APENAS PARA OS CARGOS DA PROVA PRÁTICA)': 'Manuela',
@@ -368,13 +379,14 @@ with col_u:
         st.rerun()
 
 # ─── PERFIL ───────────────────────────────────────────────────────────────────
-is_gestora = user_name.lower() in ["manuela", "manu"]
+nome_interno = NOME_MAP.get(user_name.lower(), user_name.title())
+is_gestora = nome_interno == "Manuela"
 
 if is_gestora:
     st.markdown("### 👥 Visão da Gestora")
     filtro_pessoa = st.selectbox("Visualizar tarefas de:", ["Toda a equipe"] + EQUIPE)
 else:
-    filtro_pessoa = user_name.title()
+    filtro_pessoa = nome_interno
     st.caption(f"Exibindo suas tarefas — {filtro_pessoa}")
 
 # ─── DADOS ────────────────────────────────────────────────────────────────────
@@ -409,7 +421,7 @@ def chip(t):
     if t["dias"] is None: return '<span class="chip chip-ok">Sem data</span>'
     if t["dias"] < 0: return f'<span class="chip chip-venc">Venceu há {abs(t["dias"])}d</span>'
     if t["dias"] == 0: return '<span class="chip chip-hoje">⚡ Hoje</span>'
-    if t["dias"] <= 7: return f'<span class="chip chip-semana">{t["dias"]}d restantes</span>'
+    if t["dias"] <= 7: return f'<span class="chip chip-semana">{t["data"]} · {t["dias"]}d restantes</span>'
     return f'<span class="chip chip-ok">{t["data"]} · {t["dias"]}d</span>'
 
 def render_grupo(titulo, classe, lista, show_pessoa=False):
