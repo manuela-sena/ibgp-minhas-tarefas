@@ -6,7 +6,7 @@ from urllib.parse import urlencode
 # ─── CONFIG ───────────────────────────────────────────────────────────────────
 CLIENT_ID     = "cf858739-80c5-4bf0-bc5c-6f5b0cefb70d"
 TENANT_ID     = "e1362ab7-0546-4f12-9f44-0867415479b9"
-REDIRECT_URI  = "COLE_AQUI_A_URL_DO_NOVO_APP"   # ex: https://ibgp-tarefas.streamlit.app/
+REDIRECT_URI  = "https://ibgp-minhas-tarefas-jkdmypmipxemkvhh6c5vjv.streamlit.app/"
 SCOPES        = "Tasks.ReadWrite Group.Read.All User.Read offline_access"
 NOME_PLANO    = "PLANNER IBGP"
 
