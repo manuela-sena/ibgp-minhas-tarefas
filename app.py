@@ -465,23 +465,89 @@ if not is_cronograma:
         if t["dias"] <= 7: return f'<span class="chip chip-semana">{t["data"]} · {t["dias"]}d restantes</span>'
         return f'<span class="chip chip-ok">{t["data"]} · {t["dias"]}d</span>'
 
+    # ─── NOTAS (salvas no Planner como descrição da tarefa) ─────────────────
+    @st.cache_data(ttl=300, show_spinner=False)
+    def carregar_nota(task_id, _token):
+        """Busca a descrição da tarefa no Planner (campo notes)."""
+        try:
+            headers = {"Authorization": f"Bearer {_token}"}
+            resp = requests.get(
+                f"https://graph.microsoft.com/v1.0/planner/tasks/{task_id}/details",
+                headers=headers
+            )
+            if resp.status_code == 200:
+                return resp.json().get("description", "") or ""
+        except:
+            pass
+        return ""
+
+    def salvar_nota(task_id, texto, _token):
+        """Salva a nota como descrição da tarefa no Planner."""
+        try:
+            headers = {"Authorization": f"Bearer {_token}"}
+            # Precisa do ETag para fazer PATCH
+            resp = requests.get(
+                f"https://graph.microsoft.com/v1.0/planner/tasks/{task_id}/details",
+                headers=headers
+            )
+            if resp.status_code != 200:
+                return False
+            etag = resp.headers.get("ETag", "")
+            patch_resp = requests.patch(
+                f"https://graph.microsoft.com/v1.0/planner/tasks/{task_id}/details",
+                headers={**headers, "Content-Type": "application/json", "If-Match": etag},
+                json={"description": texto}
+            )
+            carregar_nota.clear()
+            return patch_resp.status_code in [200, 204]
+        except:
+            return False
+
     def render_grupo(titulo, classe, lista, show_pessoa=False):
         if not lista: return
         st.markdown(f'<div class="{classe}">{titulo} · {len(lista)} tarefa(s)</div>', unsafe_allow_html=True)
         for t in lista:
             pessoa_tag = f'<span class="pessoa-tag">{t["responsavel"]}</span>' if show_pessoa else ""
-            col_card, col_btn = st.columns([10, 1])
+            nota_salva = carregar_nota(t["id"], token)
+            nota_icon = " 📝" if nota_salva else ""
+
+            col_card, col_nota, col_btn = st.columns([8, 1, 1])
             with col_card:
                 st.markdown(f'''<div class="t-card">
                     <span class="municipio">🏛 {t["municipio"]}</span>
-                    <span class="t-nome">{pessoa_tag} {t["tarefa"]}</span>
+                    <span class="t-nome">{pessoa_tag} {t["tarefa"]}{nota_icon}</span>
                     {chip(t)}
                 </div>''', unsafe_allow_html=True)
+                if nota_salva:
+                    st.caption(f"📝 {nota_salva}")
+            with col_nota:
+                if st.button("📝", key=f"nota_{t['id']}", help="Adicionar/editar nota"):
+                    st.session_state[f"editando_nota_{t['id']}"] = True
             with col_btn:
                 if st.button("✅", key=f"ok_{t['id']}", help="Marcar como concluída"):
                     graph_patch(token, f"https://graph.microsoft.com/v1.0/planner/tasks/{t['id']}", {"percentComplete": 100})
                     st.cache_data.clear()
                     st.rerun()
+
+            # Edição de nota inline
+            if st.session_state.get(f"editando_nota_{t['id']}"):
+                with st.container():
+                    nova_nota = st.text_input(
+                        "Nota:", value=nota_salva,
+                        key=f"input_nota_{t['id']}",
+                        placeholder="Ex: Data alterada para 15/07 — aguardando confirmação"
+                    )
+                    col_s, col_c = st.columns([1, 1])
+                    with col_s:
+                        if st.button("💾 Salvar", key=f"salvar_nota_{t['id']}"):
+                            if salvar_nota(t["id"], nova_nota, token):
+                                st.success("Nota salva!")
+                            st.session_state[f"editando_nota_{t['id']}"] = False
+                            st.rerun()
+                    with col_c:
+                        if st.button("✖ Cancelar", key=f"cancelar_nota_{t['id']}"):
+                            st.session_state[f"editando_nota_{t['id']}"] = False
+                            st.rerun()
 
     show_pessoa = (filtro_pessoa == "Toda a equipe")
     render_grupo("⚠️ VENCIDAS", "vencida-h", vencidas, show_pessoa)
