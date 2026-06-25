@@ -701,6 +701,7 @@ if is_gestora:
 
     col1, col2, col3 = st.columns(3)
     with col1:
+        f_objetiva    = st.checkbox("Prova Objetiva", value=True)
         f_isencao     = st.checkbox("Isenção", value=True)
         f_inscricao   = st.checkbox("Inscrições", value=True)
         f_discursiva  = st.checkbox("Prova Discursiva")
@@ -719,6 +720,7 @@ if is_gestora:
     if st.button("🗓 Calcular cronograma", type="primary", key="btn_calcular"):
         cronograma = calcular_cronograma(
             data_publicacao=data_pub,
+            tem_objetiva=f_objetiva,
             tem_inscricao=f_inscricao,
             tem_isencao=f_isencao,
             tem_discursiva=f_discursiva,

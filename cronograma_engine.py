@@ -129,6 +129,7 @@ def fim_periodo_uteis(inicio: date, n_uteis: int) -> date:
 
 def calcular_cronograma(
     data_publicacao: date,
+    tem_objetiva: bool = True,
     tem_inscricao: bool = True,
     tem_isencao: bool = True,
     tem_discursiva: bool = False,
@@ -219,75 +220,77 @@ def calcular_cronograma(
         res_pos_insc = proximo_util_apos(analise_insc)
         add("RESULTADO PÓS-RECURSO INSCRIÇÕES/PCD/NEGROS/SOLIC CONDIÇÃO ESPECIAL", res_pos_insc)
 
-        # 14. CDI — segunda semana após resultado pós-recurso, sempre terça
-        cdi = proxima_terca(res_pos_insc, semanas_depois=1)
-        add("COMPROVANTE DEFINITIVO DE INSCRIÇÃO (CDI) - PUBLICAÇÃO DO LOCAL DE PROVA", cdi)
+        if tem_objetiva:
+            # 14. CDI — segunda semana após resultado pós-recurso, sempre terça
+            cdi = proxima_terca(res_pos_insc, semanas_depois=1)
+            add("COMPROVANTE DEFINITIVO DE INSCRIÇÃO (CDI) - PUBLICAÇÃO DO LOCAL DE PROVA", cdi)
 
-        # 15. Prova Objetiva — primeiro domingo após CDI
-        prova_obj = proximo_domingo(cdi)
-        nome_prova = "PROVA OBJETIVA E PROVA DISCURSIVA" if tem_discursiva else "PROVA OBJETIVA"
-        add(nome_prova, prova_obj)
+            # 15. Prova Objetiva — primeiro domingo após CDI
+            prova_obj = proximo_domingo(cdi)
+            nome_prova = "PROVA OBJETIVA E PROVA DISCURSIVA" if tem_discursiva else "PROVA OBJETIVA"
+            add(nome_prova, prova_obj)
 
-        # 16. Gabarito preliminar — mesmo dia da prova
-        add("GABARITO PRELIMINAR", prova_obj)
+            # 16. Gabarito preliminar — mesmo dia da prova
+            add("GABARITO PRELIMINAR", prova_obj)
 
-        # 17. Recurso contra questões — 3 dias úteis
-        inicio_rec_q = proximo_util_apos(prova_obj)
-        fim_rec_q = adicionar_dias_uteis(inicio_rec_q, 2)
-        add("ABERTURA DE RECURSO CONTRA QUESTÕES PROVA OBJETIVA", inicio_rec_q, fim_rec_q)
+            # 17. Recurso contra questões — 3 dias úteis
+            inicio_rec_q = proximo_util_apos(prova_obj)
+            fim_rec_q = adicionar_dias_uteis(inicio_rec_q, 2)
+            add("ABERTURA DE RECURSO CONTRA QUESTÕES PROVA OBJETIVA", inicio_rec_q, fim_rec_q)
 
-        # 19. Análise banca — 15 dias corridos após fim do recurso
-        analise_q = fim_rec_q + timedelta(days=15)
-        add("ANÁLISE DA BANCA DOS RECURSOS CONTRA QUESTÕES PROVA OBJETIVA", analise_q)
+            # 19. Análise banca — 15 dias corridos após fim do recurso
+            analise_q = fim_rec_q + timedelta(days=15)
+            add("ANÁLISE DA BANCA DOS RECURSOS CONTRA QUESTÕES PROVA OBJETIVA", analise_q)
 
-        # 20. Gabarito pós-recurso
-        gabarito_pos = proximo_util_apos(analise_q)
-        add("GABARITO PÓS-RECURSO", gabarito_pos)
+            # 20. Gabarito pós-recurso
+            gabarito_pos = proximo_util_apos(analise_q)
+            add("GABARITO PÓS-RECURSO", gabarito_pos)
 
-        # 21. Recurso gabarito pós-recurso — 3 dias úteis
-        inicio_rec_gab = proximo_util_apos(gabarito_pos)
-        fim_rec_gab = adicionar_dias_uteis(inicio_rec_gab, 2)
-        add("ABERTURA DE RECURSO CONTRA GABARITO PÓS-RECURSO (SE HOUVER ALTERAÇÃO/ANULAÇÃO DE QUESTÕES)",
-            inicio_rec_gab, fim_rec_gab)
+            # 21. Recurso gabarito pós-recurso — 3 dias úteis
+            inicio_rec_gab = proximo_util_apos(gabarito_pos)
+            fim_rec_gab = adicionar_dias_uteis(inicio_rec_gab, 2)
+            add("ABERTURA DE RECURSO CONTRA GABARITO PÓS-RECURSO (SE HOUVER ALTERAÇÃO/ANULAÇÃO DE QUESTÕES)",
+                inicio_rec_gab, fim_rec_gab)
 
-        # 22. Análise gabarito pós-recurso — 4 dias úteis
-        analise_gab = adicionar_dias_uteis(fim_rec_gab, 4)
-        add("ANÁLISE DA BANCA DOS RECURSOS CONTRA GABARITO PÓS-RECURSO", analise_gab)
+            # 22. Análise gabarito pós-recurso — 4 dias úteis
+            analise_gab = adicionar_dias_uteis(fim_rec_gab, 4)
+            add("ANÁLISE DA BANCA DOS RECURSOS CONTRA GABARITO PÓS-RECURSO", analise_gab)
 
-        # 24. Gabarito retificado + resultado preliminar totalização
-        res_prel_total = proximo_util_apos(analise_gab)
-        add("GABARITO PÓS-RECURSO - RETIFICADO (SE HOUVER ALTERAÇÃO/ANULAÇÃO DE QUESTÕES) E RESULTADO PRELIMINAR DA TOTALIZAÇÃO DA PROVA OBJETIVA",
-            res_prel_total)
+            # 24. Gabarito retificado + resultado preliminar totalização
+            res_prel_total = proximo_util_apos(analise_gab)
+            add("GABARITO PÓS-RECURSO - RETIFICADO (SE HOUVER ALTERAÇÃO/ANULAÇÃO DE QUESTÕES) E RESULTADO PRELIMINAR DA TOTALIZAÇÃO DA PROVA OBJETIVA",
+                res_prel_total)
 
-        if tem_discursiva:
-            add("ENVIAR PROVAS DISCURSIVAS PARA CORREÇÃO", res_prel_total)
+            if tem_discursiva:
+                add("ENVIAR PROVAS DISCURSIVAS PARA CORREÇÃO", res_prel_total)
 
-        # 27. Recurso totalização — 3 dias úteis
-        inicio_rec_total = proximo_util_apos(res_prel_total)
-        fim_rec_total = adicionar_dias_uteis(inicio_rec_total, 2)
-        add("ABERTURA DE RECURSO CONTRA TOTALIZAÇÃO DA PROVA OBJETIVA", inicio_rec_total, fim_rec_total)
+            # 27. Recurso totalização — 3 dias úteis
+            inicio_rec_total = proximo_util_apos(res_prel_total)
+            fim_rec_total = adicionar_dias_uteis(inicio_rec_total, 2)
+            add("ABERTURA DE RECURSO CONTRA TOTALIZAÇÃO DA PROVA OBJETIVA", inicio_rec_total, fim_rec_total)
 
-        # 28. Análise — 3 dias úteis
-        analise_total = adicionar_dias_uteis(fim_rec_total, 3)
-        add("ANÁLISE BANCA DOS RECURSOS CONTRA TOTALIZAÇÃO DA PROVA OBJETIVA", analise_total)
+            # 28. Análise — 3 dias úteis
+            analise_total = adicionar_dias_uteis(fim_rec_total, 3)
+            add("ANÁLISE BANCA DOS RECURSOS CONTRA TOTALIZAÇÃO DA PROVA OBJETIVA", analise_total)
 
-        # 29. Resultado pós-recurso totalização + resultado preliminar discursiva
-        res_pos_total = proximo_util_apos(analise_total)
-        if tem_discursiva:
-            add("RESULTADO PÓS-RECURSO DA TOTALIZAÇÃO DA PROVA OBJETIVA E RESULTADO PRELIMINAR DA PROVA DISCURSIVA",
-                res_pos_total)
-            # Recurso discursiva — 3 dias úteis
-            inicio_rec_disc = proximo_util_apos(res_pos_total)
-            fim_rec_disc = adicionar_dias_uteis(inicio_rec_disc, 2)
-            add("ABERTURA DE RECURSO CONTRA O RESULTADO DA PROVA DISCURSIVA", inicio_rec_disc, fim_rec_disc)
-            analise_disc = adicionar_dias_uteis(fim_rec_disc, 3)
-            add("PERÍODO DE ANÁLISE DOS RECURSOS DA PROVA DISCURSIVA", analise_disc)
-            res_pos_disc = proximo_util_apos(analise_disc)
-            add("RESULTADO PÓS-RECURSO DA PROVA DISCURSIVA", res_pos_disc)
-            ref_fase_anterior = res_pos_disc
+            # 29. Resultado pós-recurso totalização + resultado preliminar discursiva
+            res_pos_total = proximo_util_apos(analise_total)
+            if tem_discursiva:
+                add("RESULTADO PÓS-RECURSO DA TOTALIZAÇÃO DA PROVA OBJETIVA E RESULTADO PRELIMINAR DA PROVA DISCURSIVA",
+                    res_pos_total)
+                inicio_rec_disc = proximo_util_apos(res_pos_total)
+                fim_rec_disc = adicionar_dias_uteis(inicio_rec_disc, 2)
+                add("ABERTURA DE RECURSO CONTRA O RESULTADO DA PROVA DISCURSIVA", inicio_rec_disc, fim_rec_disc)
+                analise_disc = adicionar_dias_uteis(fim_rec_disc, 3)
+                add("PERÍODO DE ANÁLISE DOS RECURSOS DA PROVA DISCURSIVA", analise_disc)
+                res_pos_disc = proximo_util_apos(analise_disc)
+                add("RESULTADO PÓS-RECURSO DA PROVA DISCURSIVA", res_pos_disc)
+                ref_fase_anterior = res_pos_disc
+            else:
+                add("RESULTADO PÓS-RECURSO DA TOTALIZAÇÃO DA PROVA OBJETIVA", res_pos_total)
+                ref_fase_anterior = res_pos_total
         else:
-            add("RESULTADO PÓS-RECURSO DA TOTALIZAÇÃO DA PROVA OBJETIVA", res_pos_total)
-            ref_fase_anterior = res_pos_total
+            ref_fase_anterior = res_pos_insc
 
         # Prova Prática / TAF
         if tem_pratica or tem_taf:
