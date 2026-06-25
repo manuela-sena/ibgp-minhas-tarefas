@@ -385,7 +385,7 @@ with col_r:
     with nav_cols[2]:
         st.markdown('<a href="#gerador-de-cronograma-completo" style="text-decoration:none"><button style="width:100%;padding:6px;border-radius:6px;border:1px solid #CBD5E0;background:#EBF4FF;color:#2B6CB0;cursor:pointer;font-size:0.8rem">🗓 Gerar</button></a>', unsafe_allow_html=True)
     with nav_cols[3]:
-        pass
+        st.markdown('<a href="#reajustar-cronograma-no-planner" style="text-decoration:none"><button style="width:100%;padding:6px;border-radius:6px;border:1px solid #CBD5E0;background:#EBF4FF;color:#2B6CB0;cursor:pointer;font-size:0.8rem">🔧 Reajustar</button></a>', unsafe_allow_html=True)
 with col_u:
     if st.button("↻ Atualizar", use_container_width=True):
         st.cache_data.clear()
@@ -1062,3 +1062,126 @@ if is_gestora or is_cronograma:
                         st.warning(f"⚠️ {erro} tarefa(s) não cadastradas.")
         else:
             st.info("Preencha o nome do concurso acima para habilitar o cadastro no Planner.")
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # SEÇÃO 3 — REAJUSTAR CRONOGRAMA
+    # ═══════════════════════════════════════════════════════════════════════════
+    st.divider()
+    st.markdown("### 🔧 Reajustar Cronograma no Planner")
+    st.caption("Selecione um concurso e ajuste as datas das tarefas já cadastradas no Planner.")
+
+    # Busca todos os buckets disponíveis
+    with st.spinner("Carregando concursos..."):
+        try:
+            plano_id_re, _ = buscar_plano_id(token)
+            if plano_id_re:
+                buckets_re = buscar_buckets_planner(token, plano_id_re)
+                concurso_selecionado = st.selectbox(
+                    "Selecione o concurso:",
+                    options=[""] + sorted(buckets_re.keys()),
+                    key="reajuste_concurso"
+                )
+            else:
+                st.error("Não foi possível carregar os concursos.")
+                concurso_selecionado = ""
+        except:
+            st.error("Erro ao carregar concursos.")
+            concurso_selecionado = ""
+
+    if concurso_selecionado:
+        bucket_id_re = buckets_re[concurso_selecionado]
+
+        # Busca tarefas do bucket selecionado
+        @st.cache_data(ttl=60, show_spinner=False)
+        def buscar_tarefas_bucket(token, plano_id, bucket_id):
+            todas = graph_get_all(token, f"https://graph.microsoft.com/v1.0/planner/plans/{plano_id}/tasks")
+            resultado = []
+            for t in todas:
+                if t.get("bucketId") != bucket_id:
+                    continue
+                if t.get("percentComplete", 0) == 100:
+                    continue
+                due = t.get("dueDateTime")
+                data_fmt = ""
+                if due:
+                    dt = datetime.fromisoformat(due.replace("Z", "+00:00")).replace(tzinfo=None)
+                    data_fmt = dt.strftime("%d/%m/%Y")
+                resultado.append({
+                    "id": t["id"],
+                    "titulo": t.get("title", ""),
+                    "data": data_fmt,
+                    "due_iso": due or "",
+                })
+            return sorted(resultado, key=lambda x: x["due_iso"])
+
+        tarefas_bucket = buscar_tarefas_bucket(token, plano_id_re, bucket_id_re)
+
+        if not tarefas_bucket:
+            st.info("Nenhuma tarefa em aberto neste concurso.")
+        else:
+            # Seleciona a tarefa a ajustar
+            opcoes = {f"{t['titulo']} ({t['data']})": t for t in tarefas_bucket}
+            tarefa_escolhida_label = st.selectbox("Selecione a tarefa a ajustar:", options=list(opcoes.keys()), key="reajuste_tarefa")
+            tarefa_escolhida = opcoes[tarefa_escolhida_label]
+
+            # Nova data
+            data_atual = datetime.strptime(tarefa_escolhida["data"], "%d/%m/%Y").date() if tarefa_escolhida["data"] else date.today()
+            nova_data_re = st.date_input("Nova data:", value=data_atual, key="reajuste_data")
+
+            # Modo de ajuste
+            modo = st.radio(
+                "Como deseja aplicar o ajuste?",
+                ["Alterar só esta tarefa", "Recalcular todas as seguintes em cascata"],
+                key="reajuste_modo",
+                horizontal=True
+            )
+
+            if st.button("🔧 Aplicar ajuste", type="primary", key="btn_reajuste"):
+                idx_tarefa = next((i for i, t in enumerate(tarefas_bucket) if t["id"] == tarefa_escolhida["id"]), 0)
+                deslocamento = nova_data_re - data_atual
+
+                if modo == "Alterar só esta tarefa":
+                    # Atualiza apenas a data dessa tarefa
+                    nova_due = f"{nova_data_re.strftime('%Y-%m-%d')}T03:00:00Z"
+                    result = graph_patch(token,
+                        f"https://graph.microsoft.com/v1.0/planner/tasks/{tarefa_escolhida['id']}",
+                        {"dueDateTime": nova_due}
+                    )
+                    if result in [200, 204]:
+                        st.success(f"✅ Data de **{tarefa_escolhida['titulo']}** atualizada para {nova_data_re.strftime('%d/%m/%Y')}!")
+                        buscar_tarefas_bucket.clear()
+                        st.rerun()
+                    else:
+                        st.error(f"Erro ao atualizar tarefa ({result}).")
+
+                else:
+                    # Recalcula em cascata: desloca todas as tarefas a partir desta
+                    tarefas_afetadas = tarefas_bucket[idx_tarefa:]
+                    progress = st.progress(0)
+                    sucesso, erro = 0, 0
+                    for i, t in enumerate(tarefas_afetadas):
+                        if not t["due_iso"]:
+                            continue
+                        dt_orig = datetime.fromisoformat(t["due_iso"].replace("Z", "+00:00")).replace(tzinfo=None).date()
+                        nova_dt = dt_orig + deslocamento
+                        # Ajusta para dia útil se necessário (mantém regra básica)
+                        from cronograma_engine import is_util, proximo_util
+                        if not is_util(nova_dt):
+                            nova_dt = proximo_util(nova_dt)
+                        nova_due = f"{nova_dt.strftime('%Y-%m-%d')}T03:00:00Z"
+                        result = graph_patch(token,
+                            f"https://graph.microsoft.com/v1.0/planner/tasks/{t['id']}",
+                            {"dueDateTime": nova_due}
+                        )
+                        if result in [200, 204]:
+                            sucesso += 1
+                        else:
+                            erro += 1
+                        progress.progress((i + 1) / len(tarefas_afetadas))
+
+                    buscar_tarefas_bucket.clear()
+                    st.cache_data.clear()
+                    if sucesso:
+                        st.success(f"✅ {sucesso} tarefa(s) atualizada(s) com deslocamento de {deslocamento.days} dias!")
+                    if erro:
+                        st.warning(f"⚠️ {erro} tarefa(s) não atualizadas.")
