@@ -478,8 +478,8 @@ if not is_cronograma:
     render_grupo("⚡ HOJE", "hoje-h", hoje_list, show_pessoa)
     if hoje_list: st.write("")
     render_grupo("📆 PRÓXIMOS 7 DIAS", "semana-h", semana, show_pessoa)
-if semana: st.write("")
-render_grupo("🗓 FUTURAS", "futuro-h", futuras, show_pessoa)
+    if semana: st.write("")
+    render_grupo("🗓 FUTURAS", "futuro-h", futuras, show_pessoa)
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # PÁGINA 2 — VALIDAR CRONOGRAMA (só para gestora)
