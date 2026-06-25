@@ -260,45 +260,22 @@ function chipD(dias,data) {
 }
 
 let _allTasks=[], _notas={};
-async function loadTarefas(forceRefresh=false) {
-  // Cache de 3 minutos no sessionStorage
-  const CACHE_KEY='ibgp_tasks_cache', CACHE_TTL=180000;
-  if(!forceRefresh) {
-    try {
-      const cached=JSON.parse(sessionStorage.getItem(CACHE_KEY)||'null');
-      if(cached && (Date.now()-cached.ts)<CACHE_TTL) {
-        _allTasks=cached.tasks; _buckets=cached.buckets; _planoId=cached.planoId;
-        const conc=[...new Set(_allTasks.map(t=>t.municipio))].sort();
-        const tar=[...new Set(_allTasks.map(t=>t.tarefa))].sort();
-        const sc=document.getElementById('sel-concurso'),st=document.getElementById('sel-tarefa');
-        sc.innerHTML='<option value="">Todos os concursos</option>'+conc.map(c=>`<option>${c}</option>`).join('');
-        st.innerHTML='<option value="">Todas as tarefas</option>'+tar.map(t=>`<option>${t}</option>`).join('');
-        applyFilters(); return;
-      }
-    } catch(e) {}
-  }
-  document.getElementById('task-list').innerHTML='<div class="loading"><div class="spinner"></div>Carregando tarefas...</div>';
+function loadTarefas(forceRefresh=false) {
+  // Dados já carregados pelo Python — sem chamadas de API!
+  const raw = DADOS_INICIAIS.tarefas || [];
+  _buckets = DADOS_INICIAIS.buckets || {};
+  _planoId = DADOS_INICIAIS.planoId;
+  _allTasks = raw.map(t => {
+    const due = parseISO(t.due);
+    return {...t, due, data: fmtDate(due), dias: diffDays(due)};
+  }).sort((a,b) => {
+    if(a.dias===null&&b.dias===null) return 0;
+    if(a.dias===null) return 1; if(b.dias===null) return -1;
+    if(a.dias<0&&b.dias<0) return a.dias-b.dias;
+    if(a.dias<0) return -1; if(b.dias<0) return 1;
+    return a.dias-b.dias;
+  });
   try {
-    const pid = await getPlanoId(); if(!pid) { document.getElementById('task-list').innerHTML='<div class="loading">Plano não encontrado.</div>'; return; }
-    await getBuckets();
-    const tasks = await apiAll(`https://graph.microsoft.com/v1.0/planner/plans/${pid}/tasks`);
-    _allTasks=[];
-    for(const t of tasks) {
-      if(t.percentComplete===100) continue;
-      const nome=(t.title||'').trim();
-      const resp=ATRIBUICOES[nome]; if(!resp) continue;
-      const due=parseISO(t.dueDateTime);
-      _allTasks.push({id:t.id,municipio:_buckets[t.bucketId]||'—',tarefa:nome,responsavel:resp,due,data:fmtDate(due),dias:diffDays(due)});
-    }
-    _allTasks.sort((a,b)=>{
-      if(a.dias===null&&b.dias===null) return 0;
-      if(a.dias===null) return 1; if(b.dias===null) return -1;
-      if(a.dias<0&&b.dias<0) return a.dias-b.dias;
-      if(a.dias<0) return -1; if(b.dias<0) return 1;
-      return a.dias-b.dias;
-    });
-    // Salva cache
-    try { sessionStorage.setItem('ibgp_tasks_cache', JSON.stringify({tasks:_allTasks,buckets:_buckets,planoId:_planoId,ts:Date.now()})); } catch(e) {}
     // Popula filtros
     const concursos=[...new Set(_allTasks.map(t=>t.municipio))].sort();
     const tarefas=[...new Set(_allTasks.map(t=>t.tarefa))].sort();
@@ -306,7 +283,7 @@ async function loadTarefas(forceRefresh=false) {
     sc.innerHTML='<option value="">Todos os concursos</option>'+concursos.map(c=>`<option>${c}</option>`).join('');
     st.innerHTML='<option value="">Todas as tarefas</option>'+tarefas.map(t=>`<option>${t}</option>`).join('');
     applyFilters();
-  } catch(e) { document.getElementById('task-list').innerHTML=`<div class="loading">Erro: ${e.message}</div>`; }
+  } catch(e) {}
 }
 
 function applyFilters() {
