@@ -828,30 +828,56 @@ if is_gestora or is_cronograma:
         df_exib = pd.DataFrame(rows_exib)
         st.dataframe(df_exib, use_container_width=True, hide_index=True)
 
-        # Sugere ajustes para conflitos
+        # Sugere ajustes para conflitos com recálculo em cascata
         if conflitos_cron:
-            st.markdown("#### 💡 Ajustes sugeridos para conflitos")
-            st.caption("Próximo dia útil disponível para cada tarefa com conflito.")
-            cronograma_ajustado = list(cronograma)
-            for row in cronograma_ajustado:
-                if row["seq"] not in conflitos_cron:
-                    continue
-                data_original = row["data_fim"]
-                datas_ocupadas = set(df_planner_cron[df_planner_cron["tarefa"] == row["atividade"]]["data"].tolist())
-                # Busca próximo dia útil livre
-                nova = data_original + timedelta(days=1)
-                tentativas = 0
-                while (nova in datas_ocupadas or not _is_util(nova)) and tentativas < 14:
-                    nova += timedelta(days=1)
-                    tentativas += 1
-                duracao = (row["data_fim"] - row["data_inicio"]).days
-                row["data_inicio"] = nova - timedelta(days=duracao)
-                row["data_fim"] = nova
-                st.markdown(f"- **{row['atividade']}**: ~~{data_original.strftime('%d/%m/%Y')}~~ → **{nova.strftime('%d/%m/%Y')}**")
+            st.markdown("#### 💡 Ajuste sugerido — recálculo em cascata")
+            st.caption("O sistema identifica o primeiro conflito e recalcula todo o cronograma a partir dele, respeitando todas as regras IBGP.")
+
+            from cronograma_engine import encontrar_primeira_data_livre
+
+            # Pega o primeiro conflito na sequência
+            primeiro_seq = min(conflitos_cron.keys())
+            primeiro_row = next(t for t in cronograma if t["seq"] == primeiro_seq)
+            datas_ocupadas = set(df_planner_cron[df_planner_cron["tarefa"] == primeiro_row["atividade"]]["data"].tolist())
+            nova_data = encontrar_primeira_data_livre(
+                primeiro_row["data_fim"], datas_ocupadas,
+                tipo_certame=tipo_certame,
+                nome_atividade=primeiro_row["atividade"]
+            )
+
+            st.markdown(f"**Primeiro conflito:** `{primeiro_row['atividade']}`")
+            st.markdown(f"~~{primeiro_row['data_fim'].strftime('%d/%m/%Y')}~~ → **{nova_data.strftime('%d/%m/%Y')}**")
+            st.caption("Todas as datas seguintes serão recalculadas em cascata a partir desta.")
+
+            # Recalcula cronograma completo com nova data
+            from cronograma_engine import calcular_cronograma as _calc
+            deslocamento = nova_data - primeiro_row["data_fim"]
+            data_pub_original = cronograma[0]["data_fim"]
+            nova_data_pub = data_pub_original + deslocamento
+
+            cronograma_ajustado = _calc(
+                tipo_certame=tipo_certame,
+                data_publicacao=nova_data_pub,
+                tem_objetiva=f_objetiva,
+                tem_inscricao=f_inscricao,
+                tem_isencao=f_isencao,
+                tem_discursiva=f_discursiva,
+                tem_pratica=f_pratica,
+                tem_taf=f_taf,
+                tem_titulos=f_titulos,
+                tem_psicologica=f_psicologica,
+                tem_medica=f_medica,
+                tem_clinica=f_clinica,
+                tem_hetero=f_hetero,
+                tem_entrevista=f_entrevista,
+                tem_competencias=f_competencias,
+                tem_sindicancia=f_sindicancia,
+                concomitancia_titulos_pratica=concom,
+            )
 
             st.session_state["cronograma_ajustado"] = cronograma_ajustado
 
-            if st.button("✅ Usar datas ajustadas", key="btn_usar_ajustadas"):
+            if st.button("✅ Usar cronograma recalculado", key="btn_usar_ajustadas"):
                 st.session_state["cronograma_gerado"] = cronograma_ajustado
                 st.rerun()
 

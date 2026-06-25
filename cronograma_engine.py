@@ -708,3 +708,95 @@ def calcular_cronograma(tipo_certame: str = "CONCURSO/PSP", **kwargs) -> list:
     else:
         kwargs.pop("tem_sindicancia", None)
         return calcular_concurso_psp(**kwargs)
+
+
+# ─── RECÁLCULO EM CASCATA ────────────────────────────────────────────────────
+
+def recalcular_a_partir(
+    cronograma_original: list,
+    seq_conflito: int,
+    nova_data_fim: date,
+    tipo_certame: str = "CONCURSO/PSP",
+    **kwargs_motor
+) -> list:
+    """
+    Recalcula o cronograma a partir da tarefa com conflito,
+    mantendo as tarefas anteriores intactas e recalculando
+    toda a cadeia seguinte respeitando as regras.
+    """
+    # Separa tarefas antes e a partir do conflito
+    antes = [t for t in cronograma_original if t["seq"] < seq_conflito]
+    conflito_row = next(t for t in cronograma_original if t["seq"] == seq_conflito)
+
+    # Calcula o deslocamento em dias
+    deslocamento = nova_data_fim - conflito_row["data_fim"]
+
+    # Recalcula cronograma completo com nova data de publicação ajustada
+    # Estratégia: desloca a data de publicação pelo mesmo offset
+    data_pub_original = cronograma_original[0]["data_fim"]
+    nova_data_pub = data_pub_original + deslocamento
+
+    # Gera novo cronograma completo
+    novo_cron = calcular_cronograma(tipo_certame=tipo_certame, data_publicacao=nova_data_pub, **kwargs_motor)
+
+    # Mantém as datas anteriores ao conflito do cronograma original
+    # e usa as novas datas a partir do conflito
+    resultado = []
+    for t_orig in antes:
+        resultado.append(t_orig)
+
+    # Para as tarefas a partir do conflito, usa o novo cronograma
+    # alinhando pela posição na sequência
+    offset_seq = seq_conflito - 1
+    for t_novo in novo_cron:
+        seq_correspondente = t_novo["seq"] + offset_seq
+        if seq_correspondente >= seq_conflito:
+            resultado.append({
+                "seq": seq_correspondente,
+                "atividade": t_novo["atividade"],
+                "data_inicio": t_novo["data_inicio"],
+                "data_fim": t_novo["data_fim"],
+            })
+
+    return resultado
+
+
+def encontrar_primeira_data_livre(
+    data_base: date,
+    datas_ocupadas: set,
+    tipo_certame: str = "CONCURSO/PSP",
+    nome_atividade: str = "",
+) -> date:
+    """
+    Encontra a próxima data válida para uma atividade,
+    respeitando regras de dia útil, recesso e conflitos.
+    Algumas atividades têm restrições de dia da semana.
+    """
+    candidata = data_base + timedelta(days=1)
+    tentativas = 0
+
+    # Verifica se a atividade tem restrição de dia da semana
+    nome_upper = nome_atividade.upper()
+    requer_domingo = any(k in nome_upper for k in ["PROVA OBJETIVA", "PROVA DISCURSIVA", "REALIZAÇÃO DA AVALIAÇÃO", "REALIZAÇÃO PROVA"])
+    requer_terca = any(k in nome_upper for k in ["CONVOCAÇÃO PARA", "CDI", "COMPROVANTE DEFINITIVO"])
+
+    while tentativas < 30:
+        if requer_domingo:
+            # Avança até o próximo domingo
+            while candidata.weekday() != 6:
+                candidata += timedelta(days=1)
+        elif requer_terca:
+            # Avança até a próxima terça útil
+            while not (candidata.weekday() == 1 and is_util(candidata)):
+                candidata += timedelta(days=1)
+        else:
+            if not is_util(candidata):
+                candidata = proximo_util(candidata)
+
+        if candidata not in datas_ocupadas:
+            return candidata
+
+        candidata += timedelta(days=1)
+        tentativas += 1
+
+    return candidata
