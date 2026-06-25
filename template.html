@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Public Sans',system-ui,sans-serif;color:#1f2a3d;background:#eef1f6;height:100vh;overflow:hidden}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-thumb{background:#c7cfdc;border-radius:8px}
+.app{display:flex;height:100vh;overflow:hidden}
+aside{flex:none;width:252px;background:#16243d;display:flex;flex-direction:column;padding:20px 14px;color:#aebbcf}
+.logo{display:flex;align-items:center;gap:10px;padding:4px 8px 20px}
+.logo-icon{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,#2f6cc4,#1f4e8c);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:14px;flex:none}
+.logo-text{display:flex;flex-direction:column;line-height:1.2}
+.logo-name{color:#fff;font-weight:700;font-size:14px}
+.logo-sub{font-size:10.5px;color:#7e8ca6;font-weight:600;letter-spacing:.04em}
+.nav-section{font-size:10px;font-weight:700;letter-spacing:.12em;color:#5f6e8a;padding:4px 10px 8px}
+nav{display:flex;flex-direction:column;gap:2px}
+.nav-btn{display:flex;align-items:center;gap:11px;width:100%;padding:10px 12px;border:none;border-left:3px solid transparent;background:transparent;color:#9caac2;font:600 13.5px 'Public Sans',system-ui,sans-serif;border-radius:8px;cursor:pointer;text-align:left;transition:all .15s}
+.nav-btn:hover{background:rgba(255,255,255,0.07);color:#dde4ef}
+.nav-btn.active{background:rgba(255,255,255,0.10);color:#fff;border-left-color:#2f6cc4}
+.user-footer{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px 10px;border-top:1px solid rgba(255,255,255,0.08)}
+.user-avatar{flex:none;width:32px;height:32px;border-radius:50%;background:#6b4fa3;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.user-info{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.user-name{color:#eef2f8;font-weight:600;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-role{font-size:10.5px;color:#7e8ca6}
+.main{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+.topbar{flex:none;display:flex;align-items:center;padding:14px 28px;background:#fff;border-bottom:1px solid #e2e7ef;gap:14px}
+.topbar-title{font-size:17px;font-weight:700;color:#1f2a3d}
+.topbar-sub{font-size:12px;color:#7a869c;font-weight:500;margin-top:1px}
+.refresh-btn{margin-left:auto;display:flex;align-items:center;gap:7px;padding:8px 14px;background:#f4f6fa;border:1px solid #e2e7ef;border-radius:9px;font:600 13px 'Public Sans',system-ui,sans-serif;color:#41506b;cursor:pointer}
+.refresh-btn:hover{background:#eaecf2}
+.content{flex:1;overflow-y:auto;padding:24px 28px 60px}
+.page{display:none;max-width:1140px;margin:0 auto}
+.page.active{display:flex;flex-direction:column;gap:18px}
+.page-title{display:flex;align-items:center;gap:10px}
+.page-title h1{font-size:20px;font-weight:800;color:#1f2a3d;letter-spacing:-.01em}
+.page-sub{font-size:13.5px;color:#7a869c;font-weight:500}
+.card{background:#fff;border:1px solid #e2e7ef;border-radius:14px;box-shadow:0 1px 3px rgba(16,30,54,0.05);overflow:hidden}
+.card-pad{padding:20px 22px}
+.filter-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px}
+.form-label{font-size:12px;font-weight:700;color:#41506b;margin-bottom:6px;display:block}
+.filter-select{width:100%;height:40px;padding:0 12px;border:1px solid #d7dde7;border-radius:9px;background:#fff;font:14px 'Public Sans',system-ui,sans-serif;color:#1f2a3d;appearance:none;cursor:pointer}
+.filter-select-wrap{position:relative}
+.filter-select-wrap::after{content:'▾';position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#9aa6b8;pointer-events:none}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.kpi{background:#fff;border:1px solid #e2e7ef;border-radius:14px;box-shadow:0 1px 3px rgba(16,30,54,0.05);padding:16px 18px}
+.kpi-top{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.kpi-dot{width:7px;height:7px;border-radius:50%}
+.kpi-lbl{font-size:11px;font-weight:700;letter-spacing:.06em;color:#7a869c;text-transform:uppercase}
+.kpi-val{font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:600;line-height:1}
+.group{background:#fff;border:1px solid #e2e7ef;border-radius:14px;box-shadow:0 1px 3px rgba(16,30,54,0.05);overflow:hidden}
+.group-hdr{display:flex;align-items:center;gap:9px;padding:12px 18px}
+.group-lbl{font-size:11.5px;font-weight:800;letter-spacing:.07em}
+.group-badge{margin-left:auto;font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:20px}
+.t-row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-top:1px solid #eef1f6}
+.t-row:hover{background:#fafbfc}
+.t-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.t-mun{font-size:11px;font-weight:700;color:#7a869c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.01em}
+.t-desc-row{display:flex;align-items:center;gap:8px}
+.t-desc{font-size:13.5px;color:#28344a;font-weight:500}
+.t-nota{font-size:11px;color:#9aa6b8;font-style:italic}
+.chip-p{display:inline-block;padding:2px 9px;border-radius:6px;font-size:11px;font-weight:700;white-space:nowrap;flex:none}
+.chip-Lorena{background:#e8f0fb;color:#2860b0}
+.chip-Laryssa{background:#e4f3ea;color:#2e7d52}
+.chip-Nat-lia,.chip-Natália{background:#e4f3ea;color:#2e7d52}
+.chip-Manuela{background:#efeafb;color:#6b4fa3}
+.chip-default{background:#eef0f4;color:#5b6577}
+.chip-d{flex:none;font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:20px;white-space:nowrap}
+.chip-venc{background:#fdeceb;color:#c0322f;border:1px solid #f3cfcd}
+.chip-hoje{background:#fbf1de;color:#a06c12;border:1px solid #ecd6a8}
+.chip-7d{background:#e9f1fb;color:#2860b0;border:1px solid #b8d0ef}
+.chip-ok{background:#eef1f6;color:#4a566d;border:1px solid #d8dee8}
+.act-btn{flex:none;width:30px;height:30px;border-radius:8px;border:1px solid #e2e7ef;background:#fff;color:#9aa6b8;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px}
+.act-btn:hover{background:#f4f6fa}
+.nota-form{display:none;padding:6px 18px 10px;background:#fafbfc;border-top:1px dashed #e2e7ef;gap:8px;align-items:center}
+.nota-form.open{display:flex}
+.nota-input{flex:1;height:34px;padding:0 10px;border:1px solid #d7dde7;border-radius:8px;font:13px 'Public Sans',system-ui,sans-serif}
+.nota-save{height:34px;padding:0 14px;background:#1f4e8c;color:#fff;border:none;border-radius:8px;font:600 13px 'Public Sans',system-ui,sans-serif;cursor:pointer}
+.nota-cancel{height:34px;padding:0 10px;background:#f4f6fa;color:#41506b;border:1px solid #e2e7ef;border-radius:8px;font:600 13px 'Public Sans',system-ui,sans-serif;cursor:pointer}
+.loading{display:flex;align-items:center;justify-content:center;padding:60px;color:#7a869c;font-size:14px;gap:10px}
+.spinner{width:20px;height:20px;border:2px solid #e2e7ef;border-top-color:#2f6cc4;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.upload-area{border:2px dashed #cdd6e2;border-radius:12px;background:#f7f9fc;padding:40px 24px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;cursor:pointer;margin-top:12px}
+.upload-area:hover{border-color:#2f6cc4;background:#f0f6ff}
+.form-input{width:100%;height:42px;padding:0 12px;border:1px solid #d7dde7;border-radius:9px;font:14px 'Public Sans',system-ui,sans-serif;color:#1f2a3d}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.phase-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 20px;margin-top:8px}
+.phase-item{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13.5px;color:#28344a;font-weight:500}
+.phase-cb{width:18px;height:18px;border-radius:5px;border:1.5px solid #c4ccd8;display:flex;align-items:center;justify-content:center;flex:none;background:#fff}
+.phase-cb.on{background:#1f4e8c;border-color:#1f4e8c}
+.primary-btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;background:#1f4e8c;color:#fff;border:none;border-radius:9px;font:600 14px 'Public Sans',system-ui,sans-serif;cursor:pointer}
+.primary-btn:hover{background:#1a4378}
+.tipo-seg{display:flex;gap:24px;margin-top:6px}
+.tipo-opt{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13.5px;font-weight:500}
+.radio-circle{width:18px;height:18px;border-radius:50%;border:1.5px solid #c4ccd8;display:flex;align-items:center;justify-content:center;flex:none;transition:all .15s}
+.radio-dot{width:9px;height:9px;border-radius:50%;background:#1f4e8c}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:11px;font-weight:700;color:#7a869c;text-transform:uppercase;letter-spacing:.06em;padding:10px 14px;background:#f7f9fc;border-bottom:1px solid #e2e7ef;text-align:left}
+td{padding:11px 14px;border-bottom:1px solid #eef1f6;color:#28344a;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafbfc}
+input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font:13px 'Public Sans',system-ui,sans-serif}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="logo">
+      <div class="logo-icon">IB</div>
+      <div class="logo-text">
+        <span class="logo-name">IBGP</span>
+        <span class="logo-sub">Minhas Tarefas</span>
+      </div>
+    </div>
+    <div class="nav-section">FLUXO DE CRONOGRAMA</div>
+    <nav>
+      <button class="nav-btn active" data-page="tarefas" onclick="goPage('tarefas')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/></svg>
+        Tarefas
+      </button>
+      <button class="nav-btn" data-page="validar" onclick="goPage('validar')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="20" x2="4" y2="11"/><line x1="10" y1="20" x2="10" y2="4"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="22" y1="20" x2="2" y2="20"/></svg>
+        Validar
+      </button>
+      <button class="nav-btn" data-page="gerar" onclick="goPage('gerar')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="12" y1="13" x2="12" y2="17"/><line x1="10" y1="15" x2="14" y2="15"/></svg>
+        Gerar
+      </button>
+      <button class="nav-btn" data-page="reajustar" onclick="goPage('reajustar')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><circle cx="4" cy="12" r="2"/><circle cx="12" cy="10" r="2"/><circle cx="20" cy="14" r="2"/></svg>
+        Reajustar
+      </button>
+    </nav>
+    <div class="user-footer">
+      <div class="user-avatar" id="user-avatar">?</div>
+      <div class="user-info">
+        <span class="user-name" id="user-name-display">Carregando...</span>
+        <span class="user-role" id="user-role-display"></span>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div>
+        <div class="topbar-title" id="topbar-title">Olá! 👋</div>
+        <div class="topbar-sub" id="today-sub">carregando...</div>
+      </div>
+      <button class="refresh-btn" onclick="refreshAll()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        Atualizar
+      </button>
+    </header>
+
+    <div class="content">
+
+      <!-- TAREFAS -->
+      <div id="page-tarefas" class="page active">
+        <div class="page-title">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1f4e8c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <h1 id="page-tarefas-title">Minhas Tarefas</h1>
+        </div>
+        <div class="card card-pad">
+          <div id="sel-pessoa-wrap" style="display:none;margin-bottom:14px">
+            <label class="form-label">Visualizar tarefas de</label>
+            <div class="filter-select-wrap"><select class="filter-select" id="sel-pessoa" onchange="applyFilters()"><option value="">Toda a equipe</option><option>Lorena</option><option>Laryssa</option><option>Natália</option><option>Manuela</option></select></div>
+          </div>
+          <div class="filter-row">
+            <div>
+              <div class="form-label">🔍 Filtrar por concurso</div>
+              <div class="filter-select-wrap"><select class="filter-select" id="sel-concurso" onchange="applyFilters()"><option value="">Todos os concursos</option></select></div>
+            </div>
+            <div>
+              <div class="form-label">📄 Filtrar por tarefa</div>
+              <div class="filter-select-wrap"><select class="filter-select" id="sel-tarefa" onchange="applyFilters()"><option value="">Todas as tarefas</option></select></div>
+            </div>
+          </div>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi"><div class="kpi-top"><span class="kpi-dot" style="background:#94a1b6"></span><span class="kpi-lbl">Total</span></div><div class="kpi-val" id="kpi-total">—</div></div>
+          <div class="kpi"><div class="kpi-top"><span class="kpi-dot" style="background:#d93b3b"></span><span class="kpi-lbl">Vencidas</span></div><div class="kpi-val" style="color:#d93b3b" id="kpi-venc">—</div></div>
+          <div class="kpi"><div class="kpi-top"><span class="kpi-dot" style="background:#d98a1f"></span><span class="kpi-lbl">Hoje</span></div><div class="kpi-val" style="color:#c9821a" id="kpi-hoje">—</div></div>
+          <div class="kpi"><div class="kpi-top"><span class="kpi-dot" style="background:#2f6cc4"></span><span class="kpi-lbl">Próximos 7 dias</span></div><div class="kpi-val" style="color:#2f6cc4" id="kpi-7d">—</div></div>
+        </div>
+        <div id="task-list"><div class="loading"><div class="spinner"></div>Carregando tarefas...</div></div>
+      </div>
+
+      <!-- VALIDAR -->
+      <div id="page-validar" class="page">
+        <div class="page-title">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1f4e8c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="20" x2="4" y2="11"/><line x1="10" y1="20" x2="10" y2="4"/><line x1="16" y1="20" x2="16" y2="14"/><line x1="22" y1="20" x2="2" y2="20"/></svg>
+          <h1>Validar Novo Cronograma</h1>
+        </div>
+        <p class="page-sub">Suba a planilha do novo concurso para verificar conflitos e sobrecarga antes de cadastrar no Planner.</p>
+        <div class="card card-pad">
+          <label class="form-label">Selecione a planilha (.xlsx)</label>
+          <div class="upload-area" onclick="document.getElementById('file-input').click()">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2f6cc4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <div style="font-size:14px;color:#41506b;font-weight:600">Arraste o arquivo aqui ou clique para enviar</div>
+            <button class="primary-btn" style="margin-top:4px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Upload
+            </button>
+            <div style="font-size:12px;color:#9aa6b8">Máx. 200MB · formato XLSX</div>
+            <input id="file-input" type="file" accept=".xlsx" style="display:none">
+          </div>
+        </div>
+        <div id="validar-result"></div>
+      </div>
+
+      <!-- GERAR -->
+      <div id="page-gerar" class="page">
+        <div class="page-title">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1f4e8c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="12" y1="13" x2="12" y2="17"/><line x1="10" y1="15" x2="14" y2="15"/></svg>
+          <h1>Gerador de Cronograma Completo</h1>
+        </div>
+        <p class="page-sub">Informe a data de publicação e as fases do concurso para calcular todas as datas automaticamente, respeitando dias úteis, feriados e recesso IBGP.</p>
+        <div class="card card-pad" style="display:flex;flex-direction:column;gap:20px">
+          <div>
+            <label class="form-label">Nome do concurso <span style="color:#9aa6b8;font-weight:500">(será o nome do bucket no Planner)</span></label>
+            <input id="g-nome" class="form-input" placeholder="Ex: MUNICÍPIO X - EDITAL Nº 01/2026 - CONCURSO PÚBLICO">
+          </div>
+          <div>
+            <label class="form-label">Tipo de certame</label>
+            <div class="tipo-seg">
+              <div class="tipo-opt" onclick="setTipo('CONCURSO')"><div class="radio-circle" id="r-CONCURSO" style="border-color:#1f4e8c;background:#e9f1fb"><div class="radio-dot"></div></div>CONCURSO</div>
+              <div class="tipo-opt" onclick="setTipo('PSS')"><div class="radio-circle" id="r-PSS"></div>PSS</div>
+              <div class="tipo-opt" onclick="setTipo('GUARDA')"><div class="radio-circle" id="r-GUARDA"></div>GUARDA</div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label class="form-label">Data de publicação do edital</label>
+              <input id="g-data-pub" class="form-input" type="date">
+            </div>
+            <div>
+              <label class="form-label">Duração das inscrições (dias corridos)</label>
+              <input id="g-dias-insc" class="form-input" type="number" value="30" min="1" max="60">
+            </div>
+          </div>
+          <div>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13.5px;font-weight:500">
+              <input type="checkbox" id="g-data-manual-cb" onchange="toggleDataManual()"> Definir data de início das inscrições manualmente
+            </label>
+            <div id="g-data-manual-wrap" style="display:none;margin-top:8px">
+              <input id="g-data-ini-insc" class="form-input" type="date" style="max-width:260px">
+            </div>
+          </div>
+          <div id="g-ch-wrap" style="display:none">
+            <label class="form-label">Carga horária total do Curso de Formação (0 = sem curso)</label>
+            <input id="g-ch" class="form-input" type="number" value="0" min="0" max="2000" step="10" style="max-width:260px" oninput="updateChInfo()">
+            <div id="g-ch-info" style="font-size:12px;color:#7a869c;margin-top:4px"></div>
+          </div>
+          <div>
+            <label class="form-label">Fases do concurso</label>
+            <div class="phase-grid" id="phase-grid"></div>
+          </div>
+          <div style="display:flex;justify-content:flex-end">
+            <button class="primary-btn" onclick="calcularCronograma()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="12" y1="13" x2="12" y2="17"/><line x1="10" y1="15" x2="14" y2="15"/></svg>
+              Calcular cronograma
+            </button>
+          </div>
+        </div>
+        <div id="gerar-result"></div>
+      </div>
+
+      <!-- REAJUSTAR -->
+      <div id="page-reajustar" class="page">
+        <div class="page-title">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1f4e8c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><circle cx="4" cy="12" r="2"/><circle cx="12" cy="10" r="2"/><circle cx="20" cy="14" r="2"/></svg>
+          <h1>Reajustar Cronograma no Planner</h1>
+        </div>
+        <p class="page-sub">Selecione um concurso e ajuste as datas das tarefas já cadastradas no Planner.</p>
+        <div class="card card-pad">
+          <label class="form-label">Selecione o concurso</label>
+          <div class="filter-select-wrap"><select class="filter-select" id="sel-reaj-concurso" onchange="loadReajusteTarefas()"><option value="">Carregando...</option></select></div>
+        </div>
+        <div id="reajuste-tarefas"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// PLACEHOLDER_TOKEN
+// PLACEHOLDER_CONFIG
+// PLACEHOLDER_ATRIB
+
+// ─── NAV ──────────────────────────────────────────────────────────────────────
+function goPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelector(`[data-page="${id}"]`).classList.add('active');
+}
+
+// ─── DATE ─────────────────────────────────────────────────────────────────────
+const TODAY = new Date(); TODAY.setHours(0,0,0,0);
+const DAYS = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+document.getElementById('today-sub').textContent = 'Tarefas da equipe · ' + TODAY.toLocaleDateString('pt-BR') + ' — ' + DAYS[TODAY.getDay()];
+function parseISO(s) { if(!s) return null; const d=new Date(s); d.setHours(0,0,0,0); return d; }
+function fmtDate(d) { return d ? d.toLocaleDateString('pt-BR') : ''; }
+function diffDays(d) { return d ? Math.round((d-TODAY)/86400000) : null; }
+
+// ─── API ──────────────────────────────────────────────────────────────────────
+async function api(url, opts={}) {
+  const r = await fetch(url, {...opts, headers:{'Authorization':'Bearer '+TOKEN,'Content-Type':'application/json',...(opts.headers||{})}});
+  if(!r.ok) throw new Error(r.status);
+  return r.json();
+}
+async function apiAll(url) {
+  let res=[], next=url;
+  while(next) { const d=await api(next); res=res.concat(d.value||[]); next=d['@odata.nextLink']||null; }
+  return res;
+}
+async function apiPatch(url, body) {
+  const r1 = await fetch(url,{headers:{'Authorization':'Bearer '+TOKEN}});
+  const etag = r1.headers.get('ETag')||'*';
+  return fetch(url,{method:'PATCH',headers:{'Authorization':'Bearer '+TOKEN,'Content-Type':'application/json','If-Match':etag},body:JSON.stringify(body)});
+}
+
+// ─── PLANO / BUCKETS ─────────────────────────────────────────────────────────
+let _planoId=null, _buckets={};
+async function getPlanoId() {
+  if(_planoId) return _planoId;
+  const groups = await apiAll('https://graph.microsoft.com/v1.0/me/memberOf');
+  for(const g of groups) {
+    try {
+      const plans = await api(`https://graph.microsoft.com/v1.0/groups/${g.id}/planner/plans`);
+      for(const p of (plans.value||[])) { if(p.title.toUpperCase().includes('PLANNER IBGP')) { _planoId=p.id; return p.id; } }
+    } catch(e) {}
+  }
+  return null;
+}
+async function getBuckets() {
+  const pid = await getPlanoId(); if(!pid) return {};
+  const bd = await api(`https://graph.microsoft.com/v1.0/planner/plans/${pid}/buckets`);
+  (bd.value||[]).forEach(b=>_buckets[b.id]=b.name);
+  return _buckets;
+}
+
+// ─── CHIPS ───────────────────────────────────────────────────────────────────
+function chipP(nome) {
+  const cls={Lorena:'chip-Lorena',Laryssa:'chip-Laryssa','Natália':'chip-Nat-lia',Manuela:'chip-Manuela'};
+  return `<span class="chip-p ${cls[nome]||'chip-default'}">${nome}</span>`;
+}
+function chipD(dias,data) {
+  if(dias===null) return `<span class="chip-d chip-ok">Sem data</span>`;
+  if(dias<0) return `<span class="chip-d chip-venc">Venceu há ${Math.abs(dias)}d</span>`;
+  if(dias===0) return `<span class="chip-d chip-hoje">⚡ Hoje</span>`;
+  if(dias<=7) return `<span class="chip-d chip-7d">${data} · ${dias}d</span>`;
+  return `<span class="chip-d chip-ok">${data} · ${dias}d</span>`;
+}
+
+// ─── TAREFAS ─────────────────────────────────────────────────────────────────
+let _allTasks=[], _notas={};
+async function loadTarefas() {
+  document.getElementById('task-list').innerHTML='<div class="loading"><div class="spinner"></div>Carregando tarefas...</div>';
+  try {
+    const pid = await getPlanoId(); if(!pid) { document.getElementById('task-list').innerHTML='<div class="loading">Plano não encontrado.</div>'; return; }
+    await getBuckets();
+    const tasks = await apiAll(`https://graph.microsoft.com/v1.0/planner/plans/${pid}/tasks`);
+    _allTasks=[];
+    for(const t of tasks) {
+      if(t.percentComplete===100) continue;
+      const nome=(t.title||'').trim();
+      const resp=ATRIBUICOES[nome]; if(!resp) continue;
+      const due=parseISO(t.dueDateTime);
+      _allTasks.push({id:t.id,municipio:_buckets[t.bucketId]||'—',tarefa:nome,responsavel:resp,due,data:fmtDate(due),dias:diffDays(due)});
+    }
+    _allTasks.sort((a,b)=>{
+      if(a.dias===null&&b.dias===null) return 0;
+      if(a.dias===null) return 1; if(b.dias===null) return -1;
+      if(a.dias<0&&b.dias<0) return a.dias-b.dias;
+      if(a.dias<0) return -1; if(b.dias<0) return 1;
+      return a.dias-b.dias;
+    });
+    // Popula filtros
+    const concursos=[...new Set(_allTasks.map(t=>t.municipio))].sort();
+    const tarefas=[...new Set(_allTasks.map(t=>t.tarefa))].sort();
+    const sc=document.getElementById('sel-concurso'), st=document.getElementById('sel-tarefa');
+    sc.innerHTML='<option value="">Todos os concursos</option>'+concursos.map(c=>`<option>${c}</option>`).join('');
+    st.innerHTML='<option value="">Todas as tarefas</option>'+tarefas.map(t=>`<option>${t}</option>`).join('');
+    applyFilters();
+  } catch(e) { document.getElementById('task-list').innerHTML=`<div class="loading">Erro: ${e.message}</div>`; }
+}
+
+function applyFilters() {
+  let tasks=[..._allTasks];
+  if(IS_GESTORA) { const p=document.getElementById('sel-pessoa').value; if(p) tasks=tasks.filter(t=>t.responsavel===p); }
+  else tasks=tasks.filter(t=>t.responsavel===NOME_USUARIO);
+  const c=document.getElementById('sel-concurso').value;
+  const tf=document.getElementById('sel-tarefa').value;
+  if(c) tasks=tasks.filter(t=>t.municipio===c);
+  if(tf) tasks=tasks.filter(t=>t.tarefa===tf);
+  renderTarefas(tasks);
+}
+
+const GS = {
+  vencida:{bg:'#fdeceb',lbl:'#b3322f',bb:'#f7d6d4',bc:'#b3322f',icon:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c0322f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',label:'VENCIDAS'},
+  hoje:{bg:'#fbf1de',lbl:'#a06c12',bb:'#f3e2bf',bc:'#a06c12',icon:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#b8780f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',label:'HOJE'},
+  '7d':{bg:'#e9f1fb',lbl:'#2860b0',bb:'#cfe0f5',bc:'#2860b0',icon:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2860b0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',label:'PRÓXIMOS 7 DIAS'},
+  futuro:{bg:'#eef1f6',lbl:'#4a566d',bb:'#dfe4ec',bc:'#4a566d',icon:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#56627a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>',label:'FUTURAS'}
+};
+
+function renderGroup(tasks,tipo,showP) {
+  const s=GS[tipo];
+  const rows=tasks.map(t=>{
+    const nota=_notas[t.id]||'';
+    return `<div class="t-row">
+      <div class="t-info">
+        <div class="t-mun">${t.municipio}</div>
+        <div class="t-desc-row">${showP?chipP(t.responsavel):''}<span class="t-desc">${t.tarefa}</span></div>
+        ${nota?`<div class="t-nota">📝 ${nota}</div>`:''}
+      </div>
+      ${chipD(t.dias,t.data)}
+      <button class="act-btn" onclick="toggleNota('${t.id}')" title="Nota">✏️</button>
+      <button class="act-btn" onclick="concluir('${t.id}')" title="Concluída">✅</button>
+    </div>
+    <div class="nota-form" id="nf-${t.id}">
+      <input class="nota-input" id="ni-${t.id}" value="${(nota||'').replace(/"/g,'&quot;')}" placeholder="Ex: Data alterada para 15/07">
+      <button class="nota-save" onclick="saveNota('${t.id}')">Salvar</button>
+      <button class="nota-cancel" onclick="toggleNota('${t.id}')">✕</button>
+    </div>`;
+  }).join('');
+  return `<div class="group"><div class="group-hdr" style="background:${s.bg}">${s.icon}<span class="group-lbl" style="color:${s.lbl}">${s.label}</span><span class="group-badge" style="background:${s.bb};color:${s.bc}">${tasks.length} tarefas</span></div>${rows}</div>`;
+}
+
+function renderTarefas(tasks) {
+  const venc=tasks.filter(t=>t.dias!==null&&t.dias<0);
+  const hoje=tasks.filter(t=>t.dias===0);
+  const sem=tasks.filter(t=>t.dias!==null&&t.dias>=1&&t.dias<=7);
+  const fut=tasks.filter(t=>t.dias===null||t.dias>7);
+  document.getElementById('kpi-total').textContent=tasks.length;
+  document.getElementById('kpi-venc').textContent=venc.length;
+  document.getElementById('kpi-hoje').textContent=hoje.length;
+  document.getElementById('kpi-7d').textContent=sem.length;
+  const showP=IS_GESTORA&&!document.getElementById('sel-pessoa').value;
+  let html='';
+  if(venc.length) html+=renderGroup(venc,'vencida',showP);
+  if(hoje.length) html+=renderGroup(hoje,'hoje',showP);
+  if(sem.length) html+=renderGroup(sem,'7d',showP);
+  if(fut.length) html+=renderGroup(fut,'futuro',showP);
+  if(!tasks.length) html='<div class="loading">Nenhuma tarefa encontrada.</div>';
+  document.getElementById('task-list').innerHTML=html;
+}
+
+function toggleNota(id) { document.getElementById('nf-'+id).classList.toggle('open'); }
+async function saveNota(id) {
+  const texto=document.getElementById('ni-'+id).value;
+  try {
+    const r1=await fetch(`https://graph.microsoft.com/v1.0/planner/tasks/${id}/details`,{headers:{'Authorization':'Bearer '+TOKEN}});
+    const etag=r1.headers.get('ETag')||'*';
+    await fetch(`https://graph.microsoft.com/v1.0/planner/tasks/${id}/details`,{method:'PATCH',headers:{'Authorization':'Bearer '+TOKEN,'Content-Type':'application/json','If-Match':etag},body:JSON.stringify({description:texto})});
+    _notas[id]=texto; document.getElementById('nf-'+id).classList.remove('open'); applyFilters();
+  } catch(e) { alert('Erro ao salvar nota.'); }
+}
+async function concluir(id) {
+  if(!confirm('Marcar como concluída no Planner?')) return;
+  await apiPatch(`https://graph.microsoft.com/v1.0/planner/tasks/${id}`,{percentComplete:100});
+  _allTasks=_allTasks.filter(t=>t.id!==id); applyFilters();
+}
+
+// ─── REAJUSTAR ────────────────────────────────────────────────────────────────
+async function loadReajusteConcursos() {
+  await getBuckets();
+  const sel=document.getElementById('sel-reaj-concurso');
+  const opts=Object.entries(_buckets).sort((a,b)=>a[1].localeCompare(b[1])).map(([id,nome])=>`<option value="${id}">${nome}</option>`).join('');
+  sel.innerHTML='<option value="">Selecione um concurso...</option>'+opts;
+}
+async function loadReajusteTarefas() {
+  const bucketId=document.getElementById('sel-reaj-concurso').value; if(!bucketId) return;
+  document.getElementById('reajuste-tarefas').innerHTML='<div class="loading"><div class="spinner"></div>Carregando...</div>';
+  try {
+    const tasks=await apiAll(`https://graph.microsoft.com/v1.0/planner/buckets/${bucketId}/tasks`);
+    const abertas=tasks.filter(t=>t.percentComplete!==100).sort((a,b)=>(a.dueDateTime||'').localeCompare(b.dueDateTime||''));
+    if(!abertas.length) { document.getElementById('reajuste-tarefas').innerHTML='<div class="loading">Nenhuma tarefa em aberto.</div>'; return; }
+    const rows=abertas.map((t,i)=>{
+      const dueD=t.dueDateTime?new Date(t.dueDateTime).toLocaleDateString('pt-BR'):'—';
+      const startD=t.startDateTime?new Date(t.startDateTime).toLocaleDateString('pt-BR'):'—';
+      const dueV=t.dueDateTime?t.dueDateTime.substring(0,10):'';
+      const startV=t.startDateTime?t.startDateTime.substring(0,10):'';
+      return `<tr><td style="max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${t.title}">${t.title}</td><td>${startD}</td><td>${dueD}</td><td><input type="date" value="${startV}" data-i="${i}" data-f="start"></td><td><input type="date" value="${dueV}" data-i="${i}" data-f="due"></td></tr>`;
+    }).join('');
+    const orig=JSON.stringify(abertas.map(t=>({id:t.id,due:t.dueDateTime||null,start:t.startDateTime||null})));
+    document.getElementById('reajuste-tarefas').innerHTML=`
+    <div class="card" style="margin-top:0">
+      <div style="padding:14px 18px;font-size:13px;color:#7a869c;border-bottom:1px solid #eef1f6">${abertas.length} tarefas — edite <strong style="color:#1f4e8c">Nova Início</strong> e <strong style="color:#1f4e8c">Nova Fim</strong> e clique Salvar.</div>
+      <div style="overflow-x:auto"><table><thead><tr><th>TAREFA</th><th>INÍCIO ATUAL</th><th>FIM ATUAL</th><th style="color:#1f4e8c">NOVA INÍCIO ✏️</th><th style="color:#1f4e8c">NOVA FIM ✏️</th></tr></thead><tbody id="reaj-tbody">${rows}</tbody></table></div>
+      <div style="padding:16px 18px;display:flex;align-items:center;gap:16px;border-top:1px solid #eef1f6;flex-wrap:wrap">
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#41506b;cursor:pointer"><input type="checkbox" id="cascata-cb"> Recalcular em cascata</label>
+        <button class="primary-btn" style="margin-left:auto" onclick='salvarReajuste(${orig})'>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Salvar alterações
+        </button>
+      </div>
+    </div>`;
+  } catch(e) { document.getElementById('reajuste-tarefas').innerHTML='<div class="loading">Erro ao carregar.</div>'; }
+}
+async function salvarReajuste(original) {
+  const rows=document.querySelectorAll('#reaj-tbody tr');
+  const cascata=document.getElementById('cascata-cb').checked;
+  const alt=[];
+  rows.forEach((row,i)=>{
+    const t=original[i];
+    const ns=row.querySelector('[data-f="start"]').value;
+    const nd=row.querySelector('[data-f="due"]').value;
+    const os=t.start?t.start.substring(0,10):''; const od=t.due?t.due.substring(0,10):'';
+    if(ns!==os||nd!==od) alt.push({idx:i,id:t.id,od,nd,os,ns});
+  });
+  if(!alt.length) { alert('Nenhuma data foi alterada.'); return; }
+  let toSave=[...alt];
+  if(cascata&&alt.length) {
+    const first=alt.reduce((a,b)=>a.idx<b.idx?a:b);
+    const delta=first.nd&&first.od?Math.round((new Date(first.nd)-new Date(first.od))/86400000):0;
+    const addD=(s,d)=>{ if(!s) return ''; const dt=new Date(s); dt.setDate(dt.getDate()+d); return dt.toISOString().substring(0,10); };
+    for(let i=first.idx+1;i<original.length;i++) {
+      const t=original[i]; if(alt.find(a=>a.id===t.id)) continue;
+      toSave.push({id:t.id,nd:addD(t.due?.substring(0,10),delta),ns:addD(t.start?.substring(0,10),delta)});
+    }
+  }
+  let ok=0,err=0;
+  for(const t of toSave) {
+    try {
+      const payload={};
+      if(t.nd) payload.dueDateTime=t.nd+'T03:00:00Z';
+      if(t.ns) payload.startDateTime=t.ns+'T03:00:00Z';
+      if(Object.keys(payload).length) { const r=await apiPatch(`https://graph.microsoft.com/v1.0/planner/tasks/${t.id}`,payload); if(r.ok||r.status===204) ok++; else err++; }
+    } catch(e) { err++; }
+  }
+  alert(`✅ ${ok} tarefa(s) atualizada(s).${err?' ⚠️ '+err+' erro(s).':''}`);
+  loadReajusteTarefas();
+}
+
+// ─── GERAR ────────────────────────────────────────────────────────────────────
+const PHASES=[
+  {id:'objetiva',label:'Prova Objetiva',on:true},{id:'isencao',label:'Isenção',on:true},
+  {id:'inscricao',label:'Inscrições',on:true},{id:'discursiva',label:'Prova Discursiva',on:false},
+  {id:'pratica',label:'Prova Prática',on:false},{id:'taf',label:'TAF / Capacidade Física',on:false},
+  {id:'titulos',label:'Prova de Títulos',on:false},{id:'psicologica',label:'Avaliação Psicológica',on:false},
+  {id:'medica',label:'Avaliação Médica',on:false},{id:'clinica',label:'Avaliação Clínica',on:false},
+  {id:'hetero',label:'Heteroidentificação',on:false},{id:'entrevista',label:'Entrevista Devolutiva',on:false},
+  {id:'competencias',label:'Entrevista por Competências',on:false},
+];
+let tipoAtual='CONCURSO';
+function setTipo(t) {
+  tipoAtual=t;
+  ['CONCURSO','PSS','GUARDA'].forEach(id=>{
+    const el=document.getElementById('r-'+id);
+    if(id===t) { el.style.borderColor='#1f4e8c'; el.style.background='#e9f1fb'; el.innerHTML='<div class="radio-dot"></div>'; }
+    else { el.style.borderColor='#c4ccd8'; el.style.background='#fff'; el.innerHTML=''; }
+  });
+  document.getElementById('g-dias-insc').value=t==='PSS'?10:30;
+  document.getElementById('g-ch-wrap').style.display=t==='GUARDA'?'block':'none';
+}
+function toggleDataManual() { document.getElementById('g-data-manual-wrap').style.display=document.getElementById('g-data-manual-cb').checked?'block':'none'; }
+function updateChInfo() { const ch=parseInt(document.getElementById('g-ch').value)||0; document.getElementById('g-ch-info').textContent=ch>0?`📚 ${ch}h ÷ 10h/dia = ${Math.ceil(ch/10)} dias úteis de curso`:''; }
+function renderPhases() {
+  document.getElementById('phase-grid').innerHTML=PHASES.map(p=>`
+    <div class="phase-item" onclick="togglePhase('${p.id}')">
+      <div class="phase-cb ${p.on?'on':''}" id="ph-${p.id}">${p.on?'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div>
+      <span>${p.label}</span>
+    </div>`).join('');
+}
+function togglePhase(id) {
+  const p=PHASES.find(p=>p.id===id); p.on=!p.on;
+  const el=document.getElementById('ph-'+id);
+  el.className='phase-cb '+(p.on?'on':'');
+  el.innerHTML=p.on?'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':'';
+}
+function calcularCronograma() {
+  document.getElementById('gerar-result').innerHTML=`
+  <div class="card card-pad" style="background:#e9f1fb;border-color:#b8d0ef">
+    <div style="font-size:14px;color:#1f4e8c;font-weight:600">ℹ️ Motor de cálculo em integração</div>
+    <div style="font-size:13px;color:#41506b;margin-top:6px">O motor de regras IBGP (dias úteis, feriados, recesso, cascata) será integrado nesta interface em breve. Por enquanto use o Streamlit abaixo desta janela.</div>
+  </div>`;
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+async function refreshAll() { _allTasks=[]; _planoId=null; _buckets={}; await loadTarefas(); await loadReajusteConcursos(); }
+renderPhases();
+const td=new Date(); document.getElementById('g-data-pub').value=td.toISOString().substring(0,10);
+if(IS_CRONOGRAMA) { document.querySelector('[data-page="tarefas"]').style.display='none'; goPage('validar'); }
+loadTarefas();
+loadReajusteConcursos();
+</script>
+</body></html>
