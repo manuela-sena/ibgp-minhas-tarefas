@@ -414,6 +414,7 @@ def calcular_guarda(
     tem_clinica: bool = False,
     tem_hetero: bool = False,
     tem_entrevista: bool = False,
+    tem_competencias: bool = False,
     tem_sindicancia: bool = False,
     concomitancia_titulos_pratica: bool = False,
 ) -> list:
@@ -622,6 +623,24 @@ def calcular_guarda(
             res_pos_psico = proximo_util_apos(analise_psico)
             add("RESULTADO PÓS-RECURSO DA AVALIAÇÃO PSICOLÓGICA", res_pos_psico)
             ref_fase_anterior = res_pos_psico
+
+        # Entrevista por Competências
+        if tem_competencias:
+            conv_comp = proxima_terca(ref_fase_anterior)
+            add("CONVOCAÇÃO PARA ENTREVISTA POR COMPETÊNCIAS", conv_comp)
+            sabado_comp = proximo_dia_semana(conv_comp, 5)
+            domingo_comp = sabado_comp + timedelta(days=1)
+            add("REALIZAÇÃO ENTREVISTA POR COMPETÊNCIAS", sabado_comp, domingo_comp)
+            res_prel_comp = adicionar_dias_uteis(domingo_comp, 2)
+            add("RESULTADO PRELIMINAR DA ENTREVISTA POR COMPETÊNCIAS", res_prel_comp)
+            inicio_rec_comp = proximo_util_apos(res_prel_comp)
+            fim_rec_comp = adicionar_dias_uteis(inicio_rec_comp, 2)
+            add("ABERTURA DE RECURSO CONTRA A ENTREVISTA POR COMPETÊNCIAS", inicio_rec_comp, fim_rec_comp)
+            analise_comp = adicionar_dias_uteis(proximo_util_apos(fim_rec_comp), 2)
+            add("ANÁLISE BANCA DOS RECURSOS DA ENTREVISTA POR COMPETÊNCIAS", analise_comp)
+            res_pos_comp = proximo_util_apos(analise_comp)
+            add("RESULTADO PÓS-RECURSO DA ENTREVISTA POR COMPETÊNCIAS", res_pos_comp)
+            ref_fase_anterior = res_pos_comp
 
         # Avaliação Médica — Guarda: convocação 5 dias úteis antes
         if tem_medica:
