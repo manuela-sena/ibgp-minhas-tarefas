@@ -509,44 +509,42 @@ if not is_cronograma:
         for t in lista:
             pessoa_tag = f'<span class="pessoa-tag">{t["responsavel"]}</span>' if show_pessoa else ""
             nota_salva = carregar_nota(t["id"], token)
-            nota_icon = " 📝" if nota_salva else ""
 
-            # Tudo em uma linha: card + botões juntos no final
-            col_card, col_btns = st.columns([11, 1])
+            col_card, col_btns = st.columns([12, 1])
             with col_card:
                 st.markdown(f'''<div class="t-card">
                     <span class="municipio">🏛 {t["municipio"]}</span>
                     <span class="t-nome">{pessoa_tag} {t["tarefa"]}</span>
                     {chip(t)}
+                    <span style="margin-left:8px;font-size:0.75rem;color:#718096">{("📝 " + nota_salva) if nota_salva else ""}</span>
                 </div>''', unsafe_allow_html=True)
-                if nota_salva:
-                    st.markdown(f'<div style="padding:4px 1.2rem 6px;font-size:0.8rem;color:#718096;border:1px solid #E2E8F0;border-top:none;border-radius:0 0 8px 8px;background:#FAFAFA">📝 {nota_salva}</div>', unsafe_allow_html=True)
             with col_btns:
-                st.markdown('<div style="display:flex;flex-direction:column;gap:4px;padding-top:4px">', unsafe_allow_html=True)
-                if st.button("📝", key=f"nota_{t['id']}", help="Adicionar/editar nota", use_container_width=True):
-                    st.session_state[f"editando_nota_{t['id']}"] = not st.session_state.get(f"editando_nota_{t['id']}", False)
-                if st.button("✅", key=f"ok_{t['id']}", help="Marcar como concluída", use_container_width=True):
-                    graph_patch(token, f"https://graph.microsoft.com/v1.0/planner/tasks/{t['id']}", {"percentComplete": 100})
-                    st.cache_data.clear()
-                    st.rerun()
-                st.markdown('</div>', unsafe_allow_html=True)
+                c1, c2 = st.columns(2)
+                with c1:
+                    if st.button("📝", key=f"nota_{t['id']}", help="Nota", use_container_width=True):
+                        st.session_state[f"editando_nota_{t['id']}"] = not st.session_state.get(f"editando_nota_{t['id']}", False)
+                with c2:
+                    if st.button("✅", key=f"ok_{t['id']}", help="Concluída", use_container_width=True):
+                        graph_patch(token, f"https://graph.microsoft.com/v1.0/planner/tasks/{t['id']}", {"percentComplete": 100})
+                        st.cache_data.clear()
+                        st.rerun()
 
-            # Edição de nota inline (expande abaixo do card)
+            # Edição de nota inline
             if st.session_state.get(f"editando_nota_{t['id']}"):
                 nova_nota = st.text_input(
-                    "✏️ Nota:", value=nota_salva,
+                    "✏️", value=nota_salva,
                     key=f"input_nota_{t['id']}",
-                    placeholder="Ex: Data alterada para 15/07 — aguardando confirmação",
+                    placeholder="Ex: Data alterada para 15/07",
                     label_visibility="collapsed"
                 )
-                col_s, col_c, _ = st.columns([1, 1, 6])
+                col_s, col_c, _ = st.columns([1, 1, 8])
                 with col_s:
                     if st.button("💾 Salvar", key=f"salvar_nota_{t['id']}", type="primary"):
                         if salvar_nota(t["id"], nova_nota, token):
                             st.session_state[f"editando_nota_{t['id']}"] = False
                             st.rerun()
                 with col_c:
-                    if st.button("✖ Cancelar", key=f"cancelar_nota_{t['id']}"):
+                    if st.button("✖", key=f"cancelar_nota_{t['id']}"):
                         st.session_state[f"editando_nota_{t['id']}"] = False
                         st.rerun()
 
