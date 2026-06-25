@@ -450,3 +450,239 @@ if hoje_list: st.write("")
 render_grupo("📆 PRÓXIMOS 7 DIAS", "semana-h", semana, show_pessoa)
 if semana: st.write("")
 render_grupo("🗓 FUTURAS", "futuro-h", futuras, show_pessoa)
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PÁGINA 2 — VALIDAR CRONOGRAMA (só para gestora)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+if is_gestora:
+    st.divider()
+    st.markdown("---")
+    st.markdown("## 📊 Validar Novo Cronograma")
+    st.caption("Suba a planilha do novo concurso para verificar conflitos e sobrecarga antes de cadastrar no Planner.")
+
+    arquivo = st.file_uploader("Selecione a planilha (.xlsx)", type=["xlsx"])
+
+    if arquivo:
+        import pandas as pd
+        from datetime import timedelta
+
+        df_novo = pd.read_excel(arquivo, sheet_name="TAREFAS")
+        df_novo.columns = [c.strip() for c in df_novo.columns]
+        df_novo = df_novo.dropna(subset=["Nome da tarefa", "Data de conclusão"])
+        df_novo["Data de conclusão"] = pd.to_datetime(df_novo["Data de conclusão"], errors="coerce")
+        df_novo["Data de início"] = pd.to_datetime(df_novo["Data de início"], errors="coerce")
+        df_novo = df_novo.dropna(subset=["Data de conclusão"])
+
+        # Mapeia responsável pelo nome da tarefa
+        df_novo["Responsável"] = df_novo["Nome da tarefa"].str.strip().map(ATRIBUICOES).fillna("—")
+
+        nome_concurso = df_novo["Nome do Bucket"].iloc[0] if "Nome do Bucket" in df_novo.columns else "Novo Concurso"
+        st.success(f"✅ **{len(df_novo)} tarefas** carregadas — {nome_concurso}")
+
+        # Busca tarefas já existentes no Planner
+        with st.spinner("Comparando com o Planner..."):
+            tarefas_planner = buscar_tarefas(token)
+
+        # Monta DataFrame do Planner para comparação
+        planner_rows = []
+        for t in tarefas_planner:
+            if t["data"] != "Sem data":
+                try:
+                    dt = datetime.strptime(t["data"], "%d/%m/%Y").date()
+                    planner_rows.append({
+                        "tarefa": t["tarefa"],
+                        "data": dt,
+                        "municipio": t["municipio"],
+                        "responsavel": t["responsavel"],
+                    })
+                except: pass
+        df_planner = pd.DataFrame(planner_rows) if planner_rows else pd.DataFrame(columns=["tarefa","data","municipio","responsavel"])
+
+        # ── ANÁLISE DE CONFLITOS ──────────────────────────────────────────────
+        conflitos = []
+        for _, row in df_novo.iterrows():
+            nome = row["Nome da tarefa"].strip()
+            data_nova = row["Data de conclusão"].date()
+            resp = row["Responsável"]
+
+            # Conflito: mesma tarefa no mesmo dia em outro concurso
+            iguais = df_planner[(df_planner["tarefa"] == nome) & (df_planner["data"] == data_nova)]
+            for _, p in iguais.iterrows():
+                conflitos.append({
+                    "tarefa": nome,
+                    "data": data_nova.strftime("%d/%m/%Y"),
+                    "conflito_com": p["municipio"],
+                    "responsavel": resp,
+                    "tipo": "⚠️ Conflito de atividade",
+                })
+
+        # ── ANÁLISE DE SOBRECARGA ─────────────────────────────────────────────
+        sobrecargas = []
+        LIMITE_DIA = 3  # mais de 3 tarefas no mesmo dia = sobrecarga
+
+        for resp in EQUIPE:
+            # Tarefas novas dessa pessoa
+            novas_pessoa = df_novo[df_novo["Responsável"] == resp][["Nome da tarefa","Data de conclusão"]].copy()
+            novas_pessoa["data"] = novas_pessoa["Data de conclusão"].dt.date
+            novas_pessoa["origem"] = "novo"
+
+            # Tarefas existentes dessa pessoa no Planner
+            planner_pessoa = df_planner[df_planner["responsavel"] == resp][["tarefa","data"]].copy()
+            planner_pessoa.rename(columns={"tarefa":"Nome da tarefa"}, inplace=True)
+            planner_pessoa["origem"] = "planner"
+
+            combinado = pd.concat([
+                novas_pessoa[["Nome da tarefa","data","origem"]],
+                planner_pessoa[["Nome da tarefa","data","origem"]]
+            ], ignore_index=True)
+
+            por_dia = combinado.groupby("data")
+            for dia, grupo in por_dia:
+                total = len(grupo)
+                novas_no_dia = len(grupo[grupo["origem"] == "novo"])
+                if total > LIMITE_DIA and novas_no_dia > 0:
+                    sobrecargas.append({
+                        "responsavel": resp,
+                        "data": dia.strftime("%d/%m/%Y"),
+                        "total_tarefas": total,
+                        "tarefas_novas": novas_no_dia,
+                        "tarefas_planner": total - novas_no_dia,
+                    })
+
+        # ── EXIBIÇÃO ──────────────────────────────────────────────────────────
+        col_conf, col_sobre = st.columns(2)
+        col_conf.metric("⚠️ Conflitos de atividade", len(conflitos))
+        col_sobre.metric("🔴 Dias sobrecarregados", len(sobrecargas))
+
+        st.divider()
+
+        if conflitos:
+            st.markdown("### ⚠️ Conflitos de Atividade")
+            st.caption("Mesma atividade já existe no Planner na mesma data, em outro concurso.")
+            for c in conflitos:
+                st.markdown(f"""
+                <div class="t-card" style="margin-bottom:4px; border-top:1px solid #E2E8F0; border-radius:8px;">
+                    <span class="municipio">📅 {c['data']}</span>
+                    <span class="t-nome">{c['tarefa']}</span>
+                    <span class="chip chip-venc">Conflito com: {c['conflito_com']}</span>
+                </div>
+                """, unsafe_allow_html=True)
+
+            # Sugestão de datas alternativas
+            st.markdown("#### 💡 Sugestões de datas alternativas")
+            for c in conflitos:
+                tarefa_nome = c["tarefa"]
+                data_original = datetime.strptime(c["data"], "%d/%m/%Y").date()
+                datas_ocupadas = set(df_planner[df_planner["tarefa"] == tarefa_nome]["data"].tolist())
+
+                sugestoes = []
+                for delta in [-2, -1, 1, 2, 3]:
+                    candidata = data_original + timedelta(days=delta)
+                    if candidata not in datas_ocupadas and candidata >= date.today():
+                        sugestoes.append(candidata.strftime("%d/%m/%Y"))
+                    if len(sugestoes) == 2:
+                        break
+
+                sug_str = " ou ".join(sugestoes) if sugestoes else "Sem sugestão disponível"
+                st.markdown(f"- **{tarefa_nome}** `{c['data']}` → sugestão: **{sug_str}**")
+
+        if sobrecargas:
+            st.markdown("### 🔴 Dias Sobrecarregados por Pessoa")
+            st.caption(f"Dias com mais de {LIMITE_DIA} tarefas para a mesma pessoa (considerando Planner + novo concurso).")
+            for s in sobrecargas:
+                st.markdown(f"""
+                <div class="t-card" style="margin-bottom:4px; border-top:1px solid #E2E8F0; border-radius:8px;">
+                    <span class="municipio">👤 {s['responsavel']}</span>
+                    <span class="t-nome">📅 {s['data']} — {s['total_tarefas']} tarefas no total</span>
+                    <span class="chip chip-venc">+{s['tarefas_novas']} novas · {s['tarefas_planner']} já no Planner</span>
+                </div>
+                """, unsafe_allow_html=True)
+
+        if not conflitos and not sobrecargas:
+            st.success("🎉 Nenhum conflito ou sobrecarga encontrado! Cronograma pode ser cadastrado.")
+
+        st.divider()
+
+        # ── CADASTRAR NO PLANNER ──────────────────────────────────────────────
+        st.markdown("### 🚀 Cadastrar no Planner")
+        st.caption("Após revisar os conflitos acima, cadastre as tarefas diretamente no Planner.")
+
+        # Busca ID do plano PLANNER IBGP
+        @st.cache_data(ttl=600, show_spinner=False)
+        def buscar_plano_id(token):
+            groups = graph_get(token, "https://graph.microsoft.com/v1.0/me/memberOf")
+            for g in groups.get("value", []):
+                gid = g.get("id")
+                if not gid: continue
+                try:
+                    result = graph_get(token, f"https://graph.microsoft.com/v1.0/groups/{gid}/planner/plans")
+                    for p in result.get("value", []):
+                        if NOME_PLANO.upper() in p.get("title", "").upper():
+                            return p["id"], gid
+                except: continue
+            return None, None
+
+        @st.cache_data(ttl=300, show_spinner=False)
+        def buscar_buckets_planner(token, plano_id):
+            data = graph_get(token, f"https://graph.microsoft.com/v1.0/planner/plans/{plano_id}/buckets")
+            return {b["name"]: b["id"] for b in data.get("value", [])}
+
+        if st.button("🚀 Cadastrar todas as tarefas no Planner", type="primary"):
+            plano_id, group_id = buscar_plano_id(token)
+            if not plano_id:
+                st.error("Não foi possível encontrar o plano PLANNER IBGP.")
+            else:
+                buckets = buscar_buckets_planner(token, plano_id)
+                bucket_nome = df_novo["Nome do Bucket"].iloc[0].strip()
+
+                # Cria bucket se não existir
+                if bucket_nome not in buckets:
+                    resp_bucket = requests.post(
+                        "https://graph.microsoft.com/v1.0/planner/buckets",
+                        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+                        json={"name": bucket_nome, "planId": plano_id, "orderHint": " !"}
+                    )
+                    if resp_bucket.status_code == 201:
+                        bucket_id = resp_bucket.json()["id"]
+                        st.info(f"✅ Bucket '{bucket_nome}' criado.")
+                    else:
+                        st.error(f"Erro ao criar bucket: {resp_bucket.text}")
+                        st.stop()
+                else:
+                    bucket_id = buckets[bucket_nome]
+
+                # Cadastra tarefas
+                sucesso, erro = 0, 0
+                progress = st.progress(0)
+                total = len(df_novo)
+
+                for i, (_, row) in enumerate(df_novo.iterrows()):
+                    due = row["Data de conclusão"]
+                    inicio = row["Data de início"] if pd.notna(row.get("Data de início")) else due
+                    due_str = due.strftime("%Y-%m-%dT03:00:00Z")
+                    inicio_str = inicio.strftime("%Y-%m-%dT03:00:00Z")
+
+                    payload = {
+                        "planId": plano_id,
+                        "bucketId": bucket_id,
+                        "title": row["Nome da tarefa"].strip(),
+                        "dueDateTime": due_str,
+                        "startDateTime": inicio_str,
+                    }
+                    resp_t = requests.post(
+                        "https://graph.microsoft.com/v1.0/planner/tasks",
+                        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+                        json=payload
+                    )
+                    if resp_t.status_code == 201:
+                        sucesso += 1
+                    else:
+                        erro += 1
+                    progress.progress((i + 1) / total)
+
+                st.cache_data.clear()
+                if sucesso:
+                    st.success(f"✅ {sucesso} tarefa(s) cadastrada(s) no Planner com sucesso!")
+                if erro:
+                    st.warning(f"⚠️ {erro} tarefa(s) não foram cadastradas.")
