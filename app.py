@@ -114,4 +114,4 @@ document.getElementById('page-tarefas-title').textContent = '{'Visão da Gestora
 html = html.replace("loadTarefas();", f"{init_js}\nloadTarefas();")
 
 # Render
-components.html(html, height=800, scrolling=False)
+components.html(html, height=870, scrolling=False)
