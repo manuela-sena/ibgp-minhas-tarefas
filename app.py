@@ -430,7 +430,7 @@ if not is_cronograma:
 
 # ─── DADOS ────────────────────────────────────────────────────────────────────
 if not is_cronograma:
-    with st.spinner("Buscando tarefas..."):
+    with st.spinner("🔄 Buscando tarefas no Planner..."):
         todas = buscar_tarefas(token)
 
     if filtro_pessoa != "Toda a equipe":
@@ -1085,26 +1085,33 @@ if is_gestora or is_cronograma:
         # Busca tarefas do bucket selecionado
         @st.cache_data(ttl=60, show_spinner=False)
         def buscar_tarefas_bucket(token, bucket_id):
-            # Busca tarefas diretamente do bucket (mais eficiente)
             tarefas_raw = graph_get_all(token, f"https://graph.microsoft.com/v1.0/planner/buckets/{bucket_id}/tasks")
             resultado = []
             for t in tarefas_raw:
                 if t.get("percentComplete", 0) == 100:
                     continue
                 due = t.get("dueDateTime")
-                data_fmt = ""
+                start = t.get("startDateTime")
+                data_fim_fmt = ""
+                data_ini_fmt = ""
                 if due:
                     dt = datetime.fromisoformat(due.replace("Z", "+00:00")).replace(tzinfo=None)
-                    data_fmt = dt.strftime("%d/%m/%Y")
+                    data_fim_fmt = dt.strftime("%d/%m/%Y")
+                if start:
+                    dt = datetime.fromisoformat(start.replace("Z", "+00:00")).replace(tzinfo=None)
+                    data_ini_fmt = dt.strftime("%d/%m/%Y")
                 resultado.append({
                     "id": t["id"],
                     "titulo": t.get("title", ""),
-                    "data": data_fmt,
+                    "data_ini": data_ini_fmt,
+                    "data_fim": data_fim_fmt,
+                    "start_iso": start or "",
                     "due_iso": due or "",
                 })
             return sorted(resultado, key=lambda x: x["due_iso"])
 
-        tarefas_bucket = buscar_tarefas_bucket(token, bucket_id_re)
+        with st.spinner("Carregando tarefas..."):
+            tarefas_bucket = buscar_tarefas_bucket(token, bucket_id_re)
 
         if not tarefas_bucket:
             st.info("Nenhuma tarefa em aberto neste concurso.")
@@ -1117,17 +1124,22 @@ if is_gestora or is_cronograma:
             df_re = pd.DataFrame([{
                 "id": t["id"],
                 "Tarefa": t["titulo"],
-                "Data Atual": t["data"],
-                "Nova Data": datetime.strptime(t["data"], "%d/%m/%Y").date() if t["data"] else date.today(),
+                "Data Início Atual": t["data_ini"],
+                "Data Fim Atual": t["data_fim"],
+                "Nova Data Início": datetime.strptime(t["data_ini"], "%d/%m/%Y").date() if t["data_ini"] else None,
+                "Nova Data Fim": datetime.strptime(t["data_fim"], "%d/%m/%Y").date() if t["data_fim"] else date.today(),
+                "start_iso": t["start_iso"],
                 "due_iso": t["due_iso"],
             } for t in tarefas_bucket])
 
             df_editado = st.data_editor(
-                df_re[["Tarefa", "Data Atual", "Nova Data"]],
+                df_re[["Tarefa", "Data Início Atual", "Data Fim Atual", "Nova Data Início", "Nova Data Fim"]],
                 column_config={
                     "Tarefa": st.column_config.TextColumn("Tarefa", disabled=True, width="large"),
-                    "Data Atual": st.column_config.TextColumn("Data Atual", disabled=True, width="small"),
-                    "Nova Data": st.column_config.DateColumn("Nova Data ✏️", width="small", format="DD/MM/YYYY"),
+                    "Data Início Atual": st.column_config.TextColumn("Início Atual", disabled=True, width="small"),
+                    "Data Fim Atual": st.column_config.TextColumn("Fim Atual", disabled=True, width="small"),
+                    "Nova Data Início": st.column_config.DateColumn("Nova Início ✏️", width="small", format="DD/MM/YYYY"),
+                    "Nova Data Fim": st.column_config.DateColumn("Nova Fim ✏️", width="small", format="DD/MM/YYYY"),
                 },
                 hide_index=True,
                 use_container_width=True,
@@ -1136,14 +1148,18 @@ if is_gestora or is_cronograma:
 
             alteradas = []
             for i, row in df_editado.iterrows():
-                data_orig = df_re.iloc[i]["Nova Data"]
-                data_nova = row["Nova Data"]
-                if data_nova != data_orig:
+                fim_orig = df_re.iloc[i]["Nova Data Fim"]
+                fim_nova = row["Nova Data Fim"]
+                ini_orig = df_re.iloc[i]["Nova Data Início"]
+                ini_nova = row["Nova Data Início"]
+                if fim_nova != fim_orig or ini_nova != ini_orig:
                     alteradas.append({
                         "idx": i, "id": df_re.iloc[i]["id"],
                         "titulo": row["Tarefa"],
-                        "data_orig": data_orig, "data_nova": data_nova,
+                        "data_orig": fim_orig, "data_nova": fim_nova,
+                        "ini_orig": ini_orig, "ini_nova": ini_nova,
                         "due_iso": df_re.iloc[i]["due_iso"],
+                        "start_iso": df_re.iloc[i]["start_iso"],
                     })
 
             if alteradas:
@@ -1166,13 +1182,19 @@ if is_gestora or is_cronograma:
                             dt_nova = dt_orig + deslocamento
                             if not is_util(dt_nova):
                                 dt_nova = proximo_util(dt_nova)
-                            tarefas_para_salvar.append({"id": t["id"], "titulo": t["titulo"], "data_nova": dt_nova, "due_iso": t["due_iso"]})
+                            dt_ini_orig = datetime.fromisoformat(t["start_iso"].replace("Z", "+00:00")).replace(tzinfo=None).date() if t.get("start_iso") else None
+                            dt_ini_nova = (dt_ini_orig + deslocamento) if dt_ini_orig else None
+                            if dt_ini_nova and not is_util(dt_ini_nova):
+                                dt_ini_nova = proximo_util(dt_ini_nova)
+                            tarefas_para_salvar.append({"id": t["id"], "titulo": t["titulo"], "data_nova": dt_nova, "ini_nova": dt_ini_nova, "due_iso": t["due_iso"], "start_iso": t.get("start_iso","")})
 
                     progress = st.progress(0)
                     sucesso, erro = 0, 0
                     for i, t in enumerate(tarefas_para_salvar):
-                        nova_due = f"{t['data_nova'].strftime('%Y-%m-%d')}T03:00:00Z"
-                        result = graph_patch(token, f"https://graph.microsoft.com/v1.0/planner/tasks/{t['id']}", {"dueDateTime": nova_due})
+                        payload = {"dueDateTime": f"{t['data_nova'].strftime('%Y-%m-%d')}T03:00:00Z"}
+                        if t.get("ini_nova"):
+                            payload["startDateTime"] = f"{t['ini_nova'].strftime('%Y-%m-%d')}T03:00:00Z"
+                        result = graph_patch(token, f"https://graph.microsoft.com/v1.0/planner/tasks/{t['id']}", payload)
                         if result in [200, 204]: sucesso += 1
                         else: erro += 1
                         progress.progress((i + 1) / len(tarefas_para_salvar))
