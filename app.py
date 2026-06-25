@@ -20,6 +20,8 @@ NOME_MAP = {
     "natalia": "Natália",
     "manuela": "Manuela",
     "manu": "Manuela",
+    "fabiano": "Fabiano",
+    "fabiano costa barreiros": "Fabiano",
 }
 
 ATRIBUICOES = {
@@ -381,73 +383,101 @@ with col_u:
 # ─── PERFIL ───────────────────────────────────────────────────────────────────
 nome_interno = NOME_MAP.get(user_name.lower(), user_name.title())
 is_gestora = nome_interno == "Manuela"
+is_cronograma = nome_interno == "Fabiano"
 
-if is_gestora:
-    st.markdown("### 👥 Visão da Gestora")
-    filtro_pessoa = st.selectbox("Visualizar tarefas de:", ["Toda a equipe"] + EQUIPE)
-else:
-    filtro_pessoa = nome_interno
-    st.caption(f"Exibindo suas tarefas — {filtro_pessoa}")
+# Fabiano vê só a seção de cronograma
+if is_cronograma:
+    st.info("👋 Olá, Fabiano! Acesse abaixo o validador e gerador de cronograma.")
+    # Pula direto para a seção de cronograma (st.stop() ao fim do bloco de tarefas)
+
+if not is_cronograma:
+    if is_gestora:
+        st.markdown("### 👥 Visão da Gestora")
+        filtro_pessoa = st.selectbox("Visualizar tarefas de:", ["Toda a equipe"] + EQUIPE)
+    else:
+        filtro_pessoa = nome_interno
+        st.caption(f"Exibindo suas tarefas — {filtro_pessoa}")
 
 # ─── DADOS ────────────────────────────────────────────────────────────────────
-with st.spinner("Buscando tarefas..."):
-    todas = buscar_tarefas(token)
+if not is_cronograma:
+    with st.spinner("Buscando tarefas..."):
+        todas = buscar_tarefas(token)
 
-if filtro_pessoa != "Toda a equipe":
-    tarefas = [t for t in todas if t["responsavel"].lower() == filtro_pessoa.lower()]
-else:
-    tarefas = todas
+    if filtro_pessoa != "Toda a equipe":
+        tarefas_base = [t for t in todas if t["responsavel"].lower() == filtro_pessoa.lower()]
+    else:
+        tarefas_base = todas
 
-if not tarefas:
-    st.success("🎉 Nenhuma tarefa pendente encontrada!")
-    st.stop()
+    if not tarefas_base:
+        st.success("🎉 Nenhuma tarefa pendente encontrada!")
+        st.stop()
 
-# ─── MÉTRICAS ─────────────────────────────────────────────────────────────────
-vencidas  = [t for t in tarefas if t["dias"] is not None and t["dias"] < 0]
-hoje_list = [t for t in tarefas if t["dias"] == 0]
-semana    = [t for t in tarefas if t["dias"] is not None and 1 <= t["dias"] <= 7]
-futuras   = [t for t in tarefas if t["dias"] is None or t["dias"] > 7]
+    # ─── FILTROS ──────────────────────────────────────────────────────────────
+    col_f1, col_f2 = st.columns(2)
+    with col_f1:
+        concursos_disponiveis = sorted(set(t["municipio"] for t in tarefas_base))
+        filtro_concurso = st.multiselect("🔍 Filtrar por concurso", options=concursos_disponiveis)
+    with col_f2:
+        tarefas_disponiveis = sorted(set(t["tarefa"] for t in tarefas_base))
+        filtro_tarefa = st.multiselect("📋 Filtrar por tarefa", options=tarefas_disponiveis)
 
-c1, c2, c3, c4 = st.columns(4)
-c1.metric("Total", len(tarefas))
-c2.metric("⚠️ Vencidas", len(vencidas))
-c3.metric("📅 Hoje", len(hoje_list))
-c4.metric("📆 Próximos 7 dias", len(semana))
+    # Aplica filtros
+    tarefas = tarefas_base
+    if filtro_concurso:
+        tarefas = [t for t in tarefas if t["municipio"] in filtro_concurso]
+    if filtro_tarefa:
+        tarefas = [t for t in tarefas if t["tarefa"] in filtro_tarefa]
 
-st.divider()
+    if not tarefas:
+        st.info("Nenhuma tarefa encontrada com os filtros selecionados.")
+        st.stop()
 
-# ─── RENDER ───────────────────────────────────────────────────────────────────
-def chip(t):
-    if t["dias"] is None: return '<span class="chip chip-ok">Sem data</span>'
-    if t["dias"] < 0: return f'<span class="chip chip-venc">Venceu há {abs(t["dias"])}d</span>'
-    if t["dias"] == 0: return '<span class="chip chip-hoje">⚡ Hoje</span>'
-    if t["dias"] <= 7: return f'<span class="chip chip-semana">{t["data"]} · {t["dias"]}d restantes</span>'
-    return f'<span class="chip chip-ok">{t["data"]} · {t["dias"]}d</span>'
+    # ─── MÉTRICAS ─────────────────────────────────────────────────────────────────
+    vencidas  = [t for t in tarefas if t["dias"] is not None and t["dias"] < 0]
+    hoje_list = [t for t in tarefas if t["dias"] == 0]
+    semana    = [t for t in tarefas if t["dias"] is not None and 1 <= t["dias"] <= 7]
+    futuras   = [t for t in tarefas if t["dias"] is None or t["dias"] > 7]
 
-def render_grupo(titulo, classe, lista, show_pessoa=False):
-    if not lista: return
-    st.markdown(f'<div class="{classe}">{titulo} · {len(lista)} tarefa(s)</div>', unsafe_allow_html=True)
-    for t in lista:
-        pessoa_tag = f'<span class="pessoa-tag">{t["responsavel"]}</span>' if show_pessoa else ""
-        col_card, col_btn = st.columns([10, 1])
-        with col_card:
-            st.markdown(f'''<div class="t-card">
-                <span class="municipio">🏛 {t["municipio"]}</span>
-                <span class="t-nome">{pessoa_tag} {t["tarefa"]}</span>
-                {chip(t)}
-            </div>''', unsafe_allow_html=True)
-        with col_btn:
-            if st.button("✅", key=f"ok_{t['id']}", help="Marcar como concluída"):
-                graph_patch(token, f"https://graph.microsoft.com/v1.0/planner/tasks/{t['id']}", {"percentComplete": 100})
-                st.cache_data.clear()
-                st.rerun()
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Total", len(tarefas))
+    c2.metric("⚠️ Vencidas", len(vencidas))
+    c3.metric("📅 Hoje", len(hoje_list))
+    c4.metric("📆 Próximos 7 dias", len(semana))
 
-show_pessoa = (filtro_pessoa == "Toda a equipe")
-render_grupo("⚠️ VENCIDAS", "vencida-h", vencidas, show_pessoa)
-if vencidas: st.write("")
-render_grupo("⚡ HOJE", "hoje-h", hoje_list, show_pessoa)
-if hoje_list: st.write("")
-render_grupo("📆 PRÓXIMOS 7 DIAS", "semana-h", semana, show_pessoa)
+    st.divider()
+
+    # ─── RENDER ───────────────────────────────────────────────────────────────────
+    def chip(t):
+        if t["dias"] is None: return '<span class="chip chip-ok">Sem data</span>'
+        if t["dias"] < 0: return f'<span class="chip chip-venc">Venceu há {abs(t["dias"])}d</span>'
+        if t["dias"] == 0: return '<span class="chip chip-hoje">⚡ Hoje</span>'
+        if t["dias"] <= 7: return f'<span class="chip chip-semana">{t["data"]} · {t["dias"]}d restantes</span>'
+        return f'<span class="chip chip-ok">{t["data"]} · {t["dias"]}d</span>'
+
+    def render_grupo(titulo, classe, lista, show_pessoa=False):
+        if not lista: return
+        st.markdown(f'<div class="{classe}">{titulo} · {len(lista)} tarefa(s)</div>', unsafe_allow_html=True)
+        for t in lista:
+            pessoa_tag = f'<span class="pessoa-tag">{t["responsavel"]}</span>' if show_pessoa else ""
+            col_card, col_btn = st.columns([10, 1])
+            with col_card:
+                st.markdown(f'''<div class="t-card">
+                    <span class="municipio">🏛 {t["municipio"]}</span>
+                    <span class="t-nome">{pessoa_tag} {t["tarefa"]}</span>
+                    {chip(t)}
+                </div>''', unsafe_allow_html=True)
+            with col_btn:
+                if st.button("✅", key=f"ok_{t['id']}", help="Marcar como concluída"):
+                    graph_patch(token, f"https://graph.microsoft.com/v1.0/planner/tasks/{t['id']}", {"percentComplete": 100})
+                    st.cache_data.clear()
+                    st.rerun()
+
+    show_pessoa = (filtro_pessoa == "Toda a equipe")
+    render_grupo("⚠️ VENCIDAS", "vencida-h", vencidas, show_pessoa)
+    if vencidas: st.write("")
+    render_grupo("⚡ HOJE", "hoje-h", hoje_list, show_pessoa)
+    if hoje_list: st.write("")
+    render_grupo("📆 PRÓXIMOS 7 DIAS", "semana-h", semana, show_pessoa)
 if semana: st.write("")
 render_grupo("🗓 FUTURAS", "futuro-h", futuras, show_pessoa)
 
@@ -455,7 +485,7 @@ render_grupo("🗓 FUTURAS", "futuro-h", futuras, show_pessoa)
 # PÁGINA 2 — VALIDAR CRONOGRAMA (só para gestora)
 # ═══════════════════════════════════════════════════════════════════════════════
 
-if is_gestora:
+if is_gestora or is_cronograma:
     st.divider()
     st.markdown("---")
     st.markdown("## 📊 Validar Novo Cronograma")
@@ -697,6 +727,9 @@ if is_gestora:
     from datetime import timedelta
 
     nome_novo_concurso = st.text_input("Nome do concurso (será o nome do bucket no Planner)", placeholder="Ex: MUNICÍPIO X - EDITAL Nº 01/2026 - CONCURSO PÚBLICO")
+    
+    tipo_certame = st.radio("Tipo de certame", ["CONCURSO/PSP", "GUARDA"], horizontal=True)
+    
     data_pub = st.date_input("Data de publicação do edital", value=date.today(), key="data_pub_gerador")
 
     col1, col2, col3 = st.columns(3)
@@ -715,10 +748,13 @@ if is_gestora:
         f_clinica     = st.checkbox("Avaliação Clínica")
         f_hetero      = st.checkbox("Heteroidentificação")
         f_entrevista  = st.checkbox("Entrevista Devolutiva")
+        f_competencias = st.checkbox("Entrevista por Competências")
+        f_sindicancia = st.checkbox("Sindicância Social") if tipo_certame == "GUARDA" else False
         concom        = st.checkbox("Concomitância Títulos + Prática/TAF") if f_titulos and (f_pratica or f_taf) else False
 
     if st.button("🗓 Calcular cronograma", type="primary", key="btn_calcular"):
         cronograma = calcular_cronograma(
+            tipo_certame=tipo_certame,
             data_publicacao=data_pub,
             tem_objetiva=f_objetiva,
             tem_inscricao=f_inscricao,
@@ -732,6 +768,8 @@ if is_gestora:
             tem_clinica=f_clinica,
             tem_hetero=f_hetero,
             tem_entrevista=f_entrevista,
+            tem_competencias=f_competencias,
+            tem_sindicancia=f_sindicancia,
             concomitancia_titulos_pratica=concom,
         )
         st.session_state["cronograma_gerado"] = cronograma
