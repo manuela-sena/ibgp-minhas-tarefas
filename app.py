@@ -215,32 +215,57 @@ st.set_page_config(page_title="IBGP · Minhas Tarefas", page_icon="✅", layout=
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
-.header {
-    background: linear-gradient(135deg, #1B3A6B 0%, #2D5FA8 100%);
-    padding: 1.5rem 2rem; border-radius: 12px; margin-bottom: 1.5rem; color: white;
-}
-.header h1 { font-size: 1.5rem; font-weight: 700; margin: 0; }
-.header p  { color: #B8D0F0; font-size: 0.875rem; margin: 0.25rem 0 0; }
-.login-box {
-    background: #F0F4FA; border: 1px solid #D0DAEA; border-radius: 12px;
-    padding: 3rem 2rem; text-align: center; max-width: 420px; margin: 4rem auto;
-}
-.hoje-h    { background:#1B3A6B; color:white; padding:.5rem 1rem; border-radius:8px 8px 0 0; font-size:.8rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
-.semana-h  { background:#2D5FA8; color:white; padding:.5rem 1rem; border-radius:8px 8px 0 0; font-size:.8rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
-.futuro-h  { background:#4A5568; color:white; padding:.5rem 1rem; border-radius:8px 8px 0 0; font-size:.8rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
-.vencida-h { background:#C53030; color:white; padding:.5rem 1rem; border-radius:8px 8px 0 0; font-size:.8rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
-.t-card { background:white; border:1px solid #E2E8F0; border-top:none; padding:.9rem 1.2rem; display:flex; align-items:center; gap:1rem; font-size:.875rem; }
-.t-card:last-child { border-radius:0 0 8px 8px; }
-.municipio { color:#2B6CB0; font-weight:600; min-width:220px; font-size:.8rem; text-transform:uppercase; }
-.t-nome { color:#2D3748; flex:1; }
-.chip { padding:.25rem .75rem; border-radius:20px; font-size:.8rem; font-weight:600; white-space:nowrap; }
-.chip-hoje   { background:#FFF9DB; color:#744210; border:1px solid #F6E05E; }
-.chip-semana { background:#FFFBEB; color:#B7791F; border:1px solid #F6AD55; }
-.chip-ok     { background:#EBF8FF; color:#2B6CB0; border:1px solid #90CDF4; }
-.chip-venc   { background:#FFF5F5; color:#C53030; border:1px solid #FC8181; }
-.pessoa-tag  { font-size:.75rem; font-weight:600; padding:.15rem .5rem; border-radius:4px; background:#EDF2F7; color:#4A5568; }
+@import url('https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+*{box-sizing:border-box}
+html,body,[class*="css"]{font-family:'Public Sans',system-ui,sans-serif;color:#1f2a3d;-webkit-font-smoothing:antialiased}
+/* Oculta sidebar padrão do Streamlit e padding */
+section[data-testid="stSidebar"]{display:none}
+.stApp{background:#eef1f6}
+.block-container{padding:0!important;max-width:100%!important}
+header[data-testid="stHeader"]{display:none}
+/* Login box */
+.login-box{background:#fff;border:1px solid #e2e7ef;border-radius:14px;padding:3rem 2rem;text-align:center;max-width:420px;margin:4rem auto;box-shadow:0 2px 8px rgba(16,30,54,0.06)}
+.login-box h2{color:#1f2a3d;font-size:1.2rem;margin-bottom:.5rem;font-weight:700}
+.login-box p{color:#7a869c;font-size:.9rem;margin-bottom:1.5rem}
+/* Cards de grupo */
+.group-card{background:#fff;border:1px solid #e2e7ef;border-radius:14px;box-shadow:0 1px 2px rgba(16,30,54,0.04);overflow:hidden;margin-bottom:16px}
+.group-header{display:flex;align-items:center;gap:10px;padding:13px 20px}
+.group-header-venc{background:#fdeceb}
+.group-header-hoje{background:#fbf1de}
+.group-header-semana{background:#e9f1fb}
+.group-header-futuro{background:#eef1f6}
+.group-label-venc{font-weight:800;color:#b3322f;font-size:12px;letter-spacing:.07em}
+.group-label-hoje{font-weight:800;color:#a06c12;font-size:12px;letter-spacing:.07em}
+.group-label-semana{font-weight:800;color:#2860b0;font-size:12px;letter-spacing:.07em}
+.group-label-futuro{font-weight:800;color:#4a566d;font-size:12px;letter-spacing:.07em}
+.group-badge-venc{background:#f7d6d4;color:#b3322f;font-weight:700;font-size:11px;padding:2px 9px;border-radius:20px;margin-left:auto}
+.group-badge-hoje{background:#f3e2bf;color:#a06c12;font-weight:700;font-size:11px;padding:2px 9px;border-radius:20px;margin-left:auto}
+.group-badge-semana{background:#cfe0f5;color:#2860b0;font-weight:700;font-size:11px;padding:2px 9px;border-radius:20px;margin-left:auto}
+.group-badge-futuro{background:#dfe4ec;color:#4a566d;font-weight:700;font-size:11px;padding:2px 9px;border-radius:20px;margin-left:auto}
+/* Linha de tarefa */
+.t-row{display:flex;align-items:center;gap:14px;padding:14px 20px;border-top:1px solid #eef1f6}
+.t-concurso{font-size:11.5px;font-weight:700;color:#7a869c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.01em}
+.t-nome{font-size:14px;color:#28344a;font-weight:500}
+/* Chips de pessoa */
+.chip-lorena{display:inline-block;padding:2px 10px;border-radius:6px;font-size:11.5px;font-weight:700;white-space:nowrap;background:#e8f0fb;color:#2860b0}
+.chip-laryssa{display:inline-block;padding:2px 10px;border-radius:6px;font-size:11.5px;font-weight:700;white-space:nowrap;background:#e4f3ea;color:#2e7d52}
+.chip-natalia{display:inline-block;padding:2px 10px;border-radius:6px;font-size:11.5px;font-weight:700;white-space:nowrap;background:#e4f3ea;color:#2e7d52}
+.chip-manuela{display:inline-block;padding:2px 10px;border-radius:6px;font-size:11.5px;font-weight:700;white-space:nowrap;background:#efeafb;color:#6b4fa3}
+.chip-pessoa{display:inline-block;padding:2px 10px;border-radius:6px;font-size:11.5px;font-weight:700;white-space:nowrap;background:#eef0f4;color:#5b6577}
+/* Chips de data */
+.chip-venc{flex:none;background:#fdeceb;color:#c0322f;border:1px solid #f3cfcd;font-weight:700;font-size:11.5px;padding:5px 11px;border-radius:20px;white-space:nowrap}
+.chip-hoje{flex:none;background:#fbf1de;color:#a06c12;border:1px solid #ecd6a8;font-weight:700;font-size:11.5px;padding:5px 11px;border-radius:20px;white-space:nowrap}
+.chip-semana{flex:none;background:#e9f1fb;color:#2860b0;border:1px solid #b8d0ef;font-weight:700;font-size:11.5px;padding:5px 11px;border-radius:20px;white-space:nowrap}
+.chip-ok{flex:none;background:#eef1f6;color:#4a566d;border:1px solid #d8dee8;font-weight:700;font-size:11.5px;padding:5px 11px;border-radius:20px;white-space:nowrap}
+/* KPI cards */
+.kpi-card{background:#fff;border:1px solid #e2e7ef;border-radius:14px;box-shadow:0 1px 2px rgba(16,30,54,0.04);padding:18px 20px}
+.kpi-label{font-size:11.5px;font-weight:700;letter-spacing:.05em;color:#7a869c;text-transform:uppercase}
+.kpi-val{font-family:'JetBrains Mono',monospace;font-size:34px;font-weight:600;color:#1f2a3d;line-height:1.1}
+.kpi-val-venc{color:#d93b3b}
+.kpi-val-hoje{color:#c9821a}
+.kpi-val-semana{color:#2f6cc4}
+/* Nota inline */
+.nota-inline{padding:4px 20px 8px;font-size:12px;color:#7a869c;background:#fafbfc;border-top:1px dashed #e2e7ef}
 </style>
 """, unsafe_allow_html=True)
 
@@ -391,21 +416,31 @@ hoje_str = date.today().strftime("%d/%m/%Y — %A").replace(
     "Monday","Segunda").replace("Tuesday","Terça").replace("Wednesday","Quarta").replace(
     "Thursday","Quinta").replace("Friday","Sexta").replace("Saturday","Sábado").replace("Sunday","Domingo")
 
-st.markdown(f'<div class="header"><h1>✅ Olá, {user_name}!</h1><p>Tarefas da equipe · {hoje_str}</p></div>', unsafe_allow_html=True)
+# ─── TOPBAR ───────────────────────────────────────────────────────────────────
+perfil_label = "Gestora · Equipe IBGP" if is_gestora else ("Cronograma · IBGP" if is_cronograma else "Equipe IBGP")
+st.markdown(f"""
+<div style="display:flex;align-items:center;gap:16px;padding:16px 32px;background:#fff;border-bottom:1px solid #e2e7ef;margin-bottom:0">
+  <div style="display:flex;flex-direction:column;line-height:1.25">
+    <span style="font-size:18px;font-weight:700;color:#1f2a3d">Olá, {user_name}! 👋</span>
+    <span style="font-size:12.5px;color:#7a869c;font-weight:500">Tarefas da equipe · {hoje_str}</span>
+  </div>
+  <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+    <div style="display:flex;align-items:center;gap:9px;padding:8px 14px;background:#f4f6fa;border:1px solid #e2e7ef;border-radius:9px;font-size:13px;font-weight:600;color:#41506b">
+      <div style="width:28px;height:28px;border-radius:50%;background:#6b4fa3;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px">{user_name[0].upper()}</div>
+      <span>{user_name}</span>
+      <span style="font-size:11px;color:#9aa6b8">{perfil_label}</span>
+    </div>
+  </div>
+</div>
+""", unsafe_allow_html=True)
 
-col_r, col_u = st.columns([8,1])
-with col_r:
-    # Navegação rápida
-    nav_cols = st.columns(4)
-    with nav_cols[0]:
-        st.markdown('<a href="#tarefas" style="text-decoration:none"><button style="width:100%;padding:6px;border-radius:6px;border:1px solid #CBD5E0;background:#EBF4FF;color:#2B6CB0;cursor:pointer;font-size:0.8rem">📋 Tarefas</button></a>', unsafe_allow_html=True)
-    with nav_cols[1]:
-        st.markdown('<a href="#validar-cronograma" style="text-decoration:none"><button style="width:100%;padding:6px;border-radius:6px;border:1px solid #CBD5E0;background:#EBF4FF;color:#2B6CB0;cursor:pointer;font-size:0.8rem">📊 Validar</button></a>', unsafe_allow_html=True)
-    with nav_cols[2]:
-        st.markdown('<a href="#gerador-de-cronograma-completo" style="text-decoration:none"><button style="width:100%;padding:6px;border-radius:6px;border:1px solid #CBD5E0;background:#EBF4FF;color:#2B6CB0;cursor:pointer;font-size:0.8rem">🗓 Gerar</button></a>', unsafe_allow_html=True)
-    with nav_cols[3]:
-        st.markdown('<a href="#reajustar-cronograma-no-planner" style="text-decoration:none"><button style="width:100%;padding:6px;border-radius:6px;border:1px solid #CBD5E0;background:#EBF4FF;color:#2B6CB0;cursor:pointer;font-size:0.8rem">🔧 Reajustar</button></a>', unsafe_allow_html=True)
-with col_u:
+# Navegação + Atualizar
+nav_col, btn_col = st.columns([9, 1])
+with nav_col:
+    if is_gestora or is_cronograma:
+        tabs = st.tabs(["📋 Tarefas", "📊 Validar", "🗓 Gerar", "🔧 Reajustar"] if is_gestora else ["📊 Validar", "🗓 Gerar", "🔧 Reajustar"])
+        tab_idx = st.session_state.get("tab_idx", 0)
+with btn_col:
     if st.button("↻ Atualizar", use_container_width=True):
         st.cache_data.clear()
         st.rerun()
@@ -468,24 +503,30 @@ if not is_cronograma:
     semana    = [t for t in tarefas if t["dias"] is not None and 1 <= t["dias"] <= 7]
     futuras   = [t for t in tarefas if t["dias"] is None or t["dias"] > 7]
 
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Total", len(tarefas))
-    c2.metric("⚠️ Vencidas", len(vencidas))
-    c3.metric("📅 Hoje", len(hoje_list))
-    c4.metric("📆 Próximos 7 dias", len(semana))
-
-    st.divider()
+    st.markdown(f"""
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:20px 0">
+      <div class="kpi-card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="width:8px;height:8px;border-radius:50%;background:#94a1b6"></span><span class="kpi-label">Total</span></div><div class="kpi-val">{len(tarefas)}</div></div>
+      <div class="kpi-card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="width:8px;height:8px;border-radius:50%;background:#d93b3b"></span><span class="kpi-label">Vencidas</span></div><div class="kpi-val kpi-val-venc">{len(vencidas)}</div></div>
+      <div class="kpi-card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="width:8px;height:8px;border-radius:50%;background:#d98a1f"></span><span class="kpi-label">Hoje</span></div><div class="kpi-val kpi-val-hoje">{len(hoje_list)}</div></div>
+      <div class="kpi-card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="width:8px;height:8px;border-radius:50%;background:#2f6cc4"></span><span class="kpi-label">Próximos 7 dias</span></div><div class="kpi-val kpi-val-semana">{len(semana)}</div></div>
+    </div>
+    """, unsafe_allow_html=True)
 
     # ─── RENDER ───────────────────────────────────────────────────────────────────
     def chip(t):
-        if t["dias"] is None: return '<span class="chip chip-ok">Sem data</span>'
-        if t["dias"] < 0: return f'<span class="chip chip-venc">Venceu há {abs(t["dias"])}d</span>'
-        if t["dias"] == 0: return '<span class="chip chip-hoje">⚡ Hoje</span>'
-        if t["dias"] <= 7: return f'<span class="chip chip-semana">{t["data"]} · {t["dias"]}d restantes</span>'
-        return f'<span class="chip chip-ok">{t["data"]} · {t["dias"]}d</span>'
+        if t["dias"] is None: return '<span class="chip-ok">Sem data</span>'
+        if t["dias"] < 0: return f'<span class="chip-venc">Venceu há {abs(t["dias"])}d</span>'
+        if t["dias"] == 0: return '<span class="chip-hoje">⚡ Hoje</span>'
+        if t["dias"] <= 7: return f'<span class="chip-semana">{t["data"]} · {t["dias"]}d</span>'
+        return f'<span class="chip-ok">{t["data"]} · {t["dias"]}d</span>'
+
+    def pessoa_chip(nome):
+        key = nome.lower().replace("á","a").replace("â","a").replace("ã","a")
+        classes = {"lorena":"chip-lorena","laryssa":"chip-laryssa","natalia":"chip-natalia","manuela":"chip-manuela"}
+        cls = classes.get(key, "chip-pessoa")
+        return f'<span class="{cls}">{nome}</span>'
 
     # ─── NOTAS ───────────────────────────────────────────────────────────────
-    # Notas ficam em session_state para não fazer chamadas API por tarefa
     if "notas_cache" not in st.session_state:
         st.session_state["notas_cache"] = {}
 
@@ -514,20 +555,41 @@ if not is_cronograma:
             pass
         return False
 
-    def render_grupo(titulo, classe, lista, show_pessoa=False):
-        if not lista: return
-        st.markdown(f'<div class="{classe}">{titulo} · {len(lista)} tarefa(s)</div>', unsafe_allow_html=True)
-        for t in lista:
-            pessoa_tag = f'<span class="pessoa-tag">{t["responsavel"]}</span>' if show_pessoa else ""
-            nota_salva = carregar_nota(t["id"], token)
+    GRUPO_STYLES = {
+        "vencida": ("group-header-venc", "group-label-venc", "group-badge-venc",
+                    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c0322f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>', "VENCIDAS"),
+        "hoje": ("group-header-hoje", "group-label-hoje", "group-badge-hoje",
+                 '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b8780f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>', "HOJE"),
+        "semana": ("group-header-semana", "group-label-semana", "group-badge-semana",
+                   '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2860b0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>', "PRÓXIMOS 7 DIAS"),
+        "futuro": ("group-header-futuro", "group-label-futuro", "group-badge-futuro",
+                   '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#56627a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>', "FUTURAS"),
+    }
 
+    def render_grupo(tipo, lista, show_pessoa=False):
+        if not lista: return
+        hdr_cls, lbl_cls, badge_cls, icon, label = GRUPO_STYLES[tipo]
+        st.markdown(f'''
+        <div class="group-card">
+          <div class="group-header {hdr_cls}">
+            {icon}
+            <span class="{lbl_cls}">{label}</span>
+            <span class="{badge_cls}">{len(lista)} tarefas</span>
+          </div>''', unsafe_allow_html=True)
+
+        for t in lista:
+            nota_salva = carregar_nota(t["id"], token)
+            p_chip = pessoa_chip(t["responsavel"]) if show_pessoa else ""
             col_card, col_btns = st.columns([12, 1])
             with col_card:
-                st.markdown(f'''<div class="t-card">
-                    <span class="municipio">🏛 {t["municipio"]}</span>
-                    <span class="t-nome">{pessoa_tag} {t["tarefa"]}</span>
-                    {chip(t)}
-                    <span style="margin-left:8px;font-size:0.75rem;color:#718096">{("📝 " + nota_salva) if nota_salva else ""}</span>
+                st.markdown(f'''
+                <div class="t-row">
+                  <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:5px">
+                    <div class="t-concurso">{t["municipio"]}</div>
+                    <div style="display:flex;align-items:center;gap:9px">{p_chip}<span class="t-nome">{t["tarefa"]}</span></div>
+                    {"" if not nota_salva else f'<div style="font-size:11.5px;color:#9aa6b8;font-style:italic">📝 {nota_salva}</div>'}
+                  </div>
+                  {chip(t)}
                 </div>''', unsafe_allow_html=True)
             with col_btns:
                 c1, c2 = st.columns(2)
@@ -539,15 +601,9 @@ if not is_cronograma:
                         graph_patch(token, f"https://graph.microsoft.com/v1.0/planner/tasks/{t['id']}", {"percentComplete": 100})
                         st.cache_data.clear()
                         st.rerun()
-
-            # Edição de nota inline
             if st.session_state.get(f"editando_nota_{t['id']}"):
-                nova_nota = st.text_input(
-                    "✏️", value=nota_salva,
-                    key=f"input_nota_{t['id']}",
-                    placeholder="Ex: Data alterada para 15/07",
-                    label_visibility="collapsed"
-                )
+                nova_nota = st.text_input("✏️", value=nota_salva, key=f"input_nota_{t['id']}",
+                    placeholder="Ex: Data alterada para 15/07", label_visibility="collapsed")
                 col_s, col_c, _ = st.columns([1, 1, 8])
                 with col_s:
                     if st.button("💾 Salvar", key=f"salvar_nota_{t['id']}", type="primary"):
@@ -559,14 +615,14 @@ if not is_cronograma:
                         st.session_state[f"editando_nota_{t['id']}"] = False
                         st.rerun()
 
+        st.markdown('</div>', unsafe_allow_html=True)
+
     show_pessoa = (filtro_pessoa == "Toda a equipe")
-    render_grupo("⚠️ VENCIDAS", "vencida-h", vencidas, show_pessoa)
-    if vencidas: st.write("")
-    render_grupo("⚡ HOJE", "hoje-h", hoje_list, show_pessoa)
-    if hoje_list: st.write("")
-    render_grupo("📆 PRÓXIMOS 7 DIAS", "semana-h", semana, show_pessoa)
+    render_grupo("vencida", vencidas, show_pessoa)
+    render_grupo("hoje", hoje_list, show_pessoa)
+    render_grupo("semana", semana, show_pessoa)
     if semana: st.write("")
-    render_grupo("🗓 FUTURAS", "futuro-h", futuras, show_pessoa)
+    render_grupo("futuro", futuras, show_pessoa)
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # PÁGINA 2 — VALIDAR CRONOGRAMA (só para gestora)
