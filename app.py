@@ -411,6 +411,11 @@ except requests.HTTPError as e:
         st.rerun()
     st.stop()
 
+# ─── PERFIL ───────────────────────────────────────────────────────────────────
+nome_interno = NOME_MAP.get(user_name.lower(), user_name.title())
+is_gestora = nome_interno == "Manuela"
+is_cronograma = nome_interno == "Fabiano"
+
 # ─── HEADER ───────────────────────────────────────────────────────────────────
 hoje_str = date.today().strftime("%d/%m/%Y — %A").replace(
     "Monday","Segunda").replace("Tuesday","Terça").replace("Wednesday","Quarta").replace(
@@ -445,10 +450,6 @@ with btn_col:
         st.cache_data.clear()
         st.rerun()
 
-# ─── PERFIL ───────────────────────────────────────────────────────────────────
-nome_interno = NOME_MAP.get(user_name.lower(), user_name.title())
-is_gestora = nome_interno == "Manuela"
-is_cronograma = nome_interno == "Fabiano"
 
 # Fabiano vê só a seção de cronograma
 if is_cronograma:
