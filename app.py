@@ -1109,69 +1109,77 @@ if is_gestora or is_cronograma:
         if not tarefas_bucket:
             st.info("Nenhuma tarefa em aberto neste concurso.")
         else:
-            # Seleciona a tarefa a ajustar
-            opcoes = {f"{t['titulo']} ({t['data']})": t for t in tarefas_bucket}
-            tarefa_escolhida_label = st.selectbox("Selecione a tarefa a ajustar:", options=list(opcoes.keys()), key="reajuste_tarefa")
-            tarefa_escolhida = opcoes[tarefa_escolhida_label]
+            import pandas as pd
+            from cronograma_engine import is_util, proximo_util
 
-            # Nova data
-            data_atual = datetime.strptime(tarefa_escolhida["data"], "%d/%m/%Y").date() if tarefa_escolhida["data"] else date.today()
-            nova_data_re = st.date_input("Nova data:", value=data_atual, key="reajuste_data")
+            st.caption(f"**{len(tarefas_bucket)} tarefas em aberto** — edite as datas na coluna 'Nova Data ✏️' e clique em Salvar.")
 
-            # Modo de ajuste
-            modo = st.radio(
-                "Como deseja aplicar o ajuste?",
-                ["Alterar só esta tarefa", "Recalcular todas as seguintes em cascata"],
-                key="reajuste_modo",
-                horizontal=True
+            df_re = pd.DataFrame([{
+                "id": t["id"],
+                "Tarefa": t["titulo"],
+                "Data Atual": t["data"],
+                "Nova Data": datetime.strptime(t["data"], "%d/%m/%Y").date() if t["data"] else date.today(),
+                "due_iso": t["due_iso"],
+            } for t in tarefas_bucket])
+
+            df_editado = st.data_editor(
+                df_re[["Tarefa", "Data Atual", "Nova Data"]],
+                column_config={
+                    "Tarefa": st.column_config.TextColumn("Tarefa", disabled=True, width="large"),
+                    "Data Atual": st.column_config.TextColumn("Data Atual", disabled=True, width="small"),
+                    "Nova Data": st.column_config.DateColumn("Nova Data ✏️", width="small", format="DD/MM/YYYY"),
+                },
+                hide_index=True,
+                use_container_width=True,
+                key="editor_datas"
             )
 
-            if st.button("🔧 Aplicar ajuste", type="primary", key="btn_reajuste"):
-                idx_tarefa = next((i for i, t in enumerate(tarefas_bucket) if t["id"] == tarefa_escolhida["id"]), 0)
-                deslocamento = nova_data_re - data_atual
+            alteradas = []
+            for i, row in df_editado.iterrows():
+                data_orig = df_re.iloc[i]["Nova Data"]
+                data_nova = row["Nova Data"]
+                if data_nova != data_orig:
+                    alteradas.append({
+                        "idx": i, "id": df_re.iloc[i]["id"],
+                        "titulo": row["Tarefa"],
+                        "data_orig": data_orig, "data_nova": data_nova,
+                        "due_iso": df_re.iloc[i]["due_iso"],
+                    })
 
-                if modo == "Alterar só esta tarefa":
-                    # Atualiza apenas a data dessa tarefa
-                    nova_due = f"{nova_data_re.strftime('%Y-%m-%d')}T03:00:00Z"
-                    result = graph_patch(token,
-                        f"https://graph.microsoft.com/v1.0/planner/tasks/{tarefa_escolhida['id']}",
-                        {"dueDateTime": nova_due}
-                    )
-                    if result in [200, 204]:
-                        st.success(f"✅ Data de **{tarefa_escolhida['titulo']}** atualizada para {nova_data_re.strftime('%d/%m/%Y')}!")
-                        buscar_tarefas_bucket.clear()
-                        st.rerun()
-                    else:
-                        st.error(f"Erro ao atualizar tarefa ({result}).")
+            if alteradas:
+                st.caption(f"**{len(alteradas)} tarefa(s) com data alterada**")
+                modo = st.radio(
+                    "Para as tarefas posteriores à primeira alteração:",
+                    ["Manter datas originais", "Recalcular em cascata (mesmo deslocamento)"],
+                    key="reajuste_modo", horizontal=True
+                )
+                if st.button("🔧 Salvar ajustes no Planner", type="primary", key="btn_reajuste"):
+                    tarefas_para_salvar = list(alteradas)
+                    if modo == "Recalcular em cascata (mesmo deslocamento)":
+                        primeira = min(alteradas, key=lambda x: x["idx"])
+                        deslocamento = primeira["data_nova"] - primeira["data_orig"]
+                        for i, t in enumerate(tarefas_bucket):
+                            if i <= primeira["idx"]: continue
+                            if any(a["id"] == t["id"] for a in alteradas): continue
+                            if not t["due_iso"]: continue
+                            dt_orig = datetime.fromisoformat(t["due_iso"].replace("Z", "+00:00")).replace(tzinfo=None).date()
+                            dt_nova = dt_orig + deslocamento
+                            if not is_util(dt_nova):
+                                dt_nova = proximo_util(dt_nova)
+                            tarefas_para_salvar.append({"id": t["id"], "titulo": t["titulo"], "data_nova": dt_nova, "due_iso": t["due_iso"]})
 
-                else:
-                    # Recalcula em cascata: desloca todas as tarefas a partir desta
-                    tarefas_afetadas = tarefas_bucket[idx_tarefa:]
                     progress = st.progress(0)
                     sucesso, erro = 0, 0
-                    for i, t in enumerate(tarefas_afetadas):
-                        if not t["due_iso"]:
-                            continue
-                        dt_orig = datetime.fromisoformat(t["due_iso"].replace("Z", "+00:00")).replace(tzinfo=None).date()
-                        nova_dt = dt_orig + deslocamento
-                        # Ajusta para dia útil se necessário (mantém regra básica)
-                        from cronograma_engine import is_util, proximo_util
-                        if not is_util(nova_dt):
-                            nova_dt = proximo_util(nova_dt)
-                        nova_due = f"{nova_dt.strftime('%Y-%m-%d')}T03:00:00Z"
-                        result = graph_patch(token,
-                            f"https://graph.microsoft.com/v1.0/planner/tasks/{t['id']}",
-                            {"dueDateTime": nova_due}
-                        )
-                        if result in [200, 204]:
-                            sucesso += 1
-                        else:
-                            erro += 1
-                        progress.progress((i + 1) / len(tarefas_afetadas))
-
+                    for i, t in enumerate(tarefas_para_salvar):
+                        nova_due = f"{t['data_nova'].strftime('%Y-%m-%d')}T03:00:00Z"
+                        result = graph_patch(token, f"https://graph.microsoft.com/v1.0/planner/tasks/{t['id']}", {"dueDateTime": nova_due})
+                        if result in [200, 204]: sucesso += 1
+                        else: erro += 1
+                        progress.progress((i + 1) / len(tarefas_para_salvar))
                     buscar_tarefas_bucket.clear()
                     st.cache_data.clear()
-                    if sucesso:
-                        st.success(f"✅ {sucesso} tarefa(s) atualizada(s) com deslocamento de {deslocamento.days} dias!")
-                    if erro:
-                        st.warning(f"⚠️ {erro} tarefa(s) não atualizadas.")
+                    if sucesso: st.success(f"✅ {sucesso} tarefa(s) atualizada(s) no Planner!")
+                    if erro: st.warning(f"⚠️ {erro} tarefa(s) não atualizadas.")
+                    st.rerun()
+            else:
+                st.info("Edite as datas na coluna 'Nova Data ✏️' para habilitar o ajuste.")
