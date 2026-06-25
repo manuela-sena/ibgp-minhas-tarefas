@@ -288,7 +288,26 @@ def graph_patch(token, url, body):
         "Content-Type": "application/json", "If-Match": etag}, json=body)
     return resp.status_code
 
+@st.cache_data(ttl=600, show_spinner=False)
+def buscar_plano_id(token):
+    groups = graph_get(token, "https://graph.microsoft.com/v1.0/me/memberOf")
+    for g in groups.get("value", []):
+        gid = g.get("id")
+        if not gid: continue
+        try:
+            result = graph_get(token, f"https://graph.microsoft.com/v1.0/groups/{gid}/planner/plans")
+            for p in result.get("value", []):
+                if NOME_PLANO.upper() in p.get("title", "").upper():
+                    return p["id"], gid
+        except: continue
+    return None, None
+
 @st.cache_data(ttl=300, show_spinner=False)
+def buscar_buckets_planner(token, plano_id):
+    data = graph_get(token, f"https://graph.microsoft.com/v1.0/planner/plans/{plano_id}/buckets")
+    return {b["name"]: b["id"] for b in data.get("value", [])}
+
+@st.cache_data(ttl=180, show_spinner=False)
 def buscar_tarefas(token, _cache_key=0):
     groups = graph_get(token, "https://graph.microsoft.com/v1.0/me/memberOf")
     planos = []
@@ -465,27 +484,17 @@ if not is_cronograma:
         if t["dias"] <= 7: return f'<span class="chip chip-semana">{t["data"]} · {t["dias"]}d restantes</span>'
         return f'<span class="chip chip-ok">{t["data"]} · {t["dias"]}d</span>'
 
-    # ─── NOTAS (salvas no Planner como descrição da tarefa) ─────────────────
-    @st.cache_data(ttl=300, show_spinner=False)
+    # ─── NOTAS ───────────────────────────────────────────────────────────────
+    # Notas ficam em session_state para não fazer chamadas API por tarefa
+    if "notas_cache" not in st.session_state:
+        st.session_state["notas_cache"] = {}
+
     def carregar_nota(task_id, _token):
-        """Busca a descrição da tarefa no Planner (campo notes)."""
-        try:
-            headers = {"Authorization": f"Bearer {_token}"}
-            resp = requests.get(
-                f"https://graph.microsoft.com/v1.0/planner/tasks/{task_id}/details",
-                headers=headers
-            )
-            if resp.status_code == 200:
-                return resp.json().get("description", "") or ""
-        except:
-            pass
-        return ""
+        return st.session_state["notas_cache"].get(task_id, "")
 
     def salvar_nota(task_id, texto, _token):
-        """Salva a nota como descrição da tarefa no Planner."""
         try:
             headers = {"Authorization": f"Bearer {_token}"}
-            # Precisa do ETag para fazer PATCH
             resp = requests.get(
                 f"https://graph.microsoft.com/v1.0/planner/tasks/{task_id}/details",
                 headers=headers
@@ -498,10 +507,12 @@ if not is_cronograma:
                 headers={**headers, "Content-Type": "application/json", "If-Match": etag},
                 json={"description": texto}
             )
-            carregar_nota.clear()
-            return patch_resp.status_code in [200, 204]
+            if patch_resp.status_code in [200, 204]:
+                st.session_state["notas_cache"][task_id] = texto
+                return True
         except:
-            return False
+            pass
+        return False
 
     def render_grupo(titulo, classe, lista, show_pessoa=False):
         if not lista: return
@@ -713,26 +724,6 @@ if is_gestora or is_cronograma:
         # ── CADASTRAR NO PLANNER ──────────────────────────────────────────────
         st.markdown("### 🚀 Cadastrar no Planner")
         st.caption("Após revisar os conflitos acima, cadastre as tarefas diretamente no Planner.")
-
-        # Busca ID do plano PLANNER IBGP
-        @st.cache_data(ttl=600, show_spinner=False)
-        def buscar_plano_id(token):
-            groups = graph_get(token, "https://graph.microsoft.com/v1.0/me/memberOf")
-            for g in groups.get("value", []):
-                gid = g.get("id")
-                if not gid: continue
-                try:
-                    result = graph_get(token, f"https://graph.microsoft.com/v1.0/groups/{gid}/planner/plans")
-                    for p in result.get("value", []):
-                        if NOME_PLANO.upper() in p.get("title", "").upper():
-                            return p["id"], gid
-                except: continue
-            return None, None
-
-        @st.cache_data(ttl=300, show_spinner=False)
-        def buscar_buckets_planner(token, plano_id):
-            data = graph_get(token, f"https://graph.microsoft.com/v1.0/planner/plans/{plano_id}/buckets")
-            return {b["name"]: b["id"] for b in data.get("value", [])}
 
         if st.button("🚀 Cadastrar todas as tarefas no Planner", type="primary"):
             plano_id, group_id = buscar_plano_id(token)
@@ -1093,12 +1084,11 @@ if is_gestora or is_cronograma:
 
         # Busca tarefas do bucket selecionado
         @st.cache_data(ttl=60, show_spinner=False)
-        def buscar_tarefas_bucket(token, plano_id, bucket_id):
-            todas = graph_get_all(token, f"https://graph.microsoft.com/v1.0/planner/plans/{plano_id}/tasks")
+        def buscar_tarefas_bucket(token, bucket_id):
+            # Busca tarefas diretamente do bucket (mais eficiente)
+            tarefas_raw = graph_get_all(token, f"https://graph.microsoft.com/v1.0/planner/buckets/{bucket_id}/tasks")
             resultado = []
-            for t in todas:
-                if t.get("bucketId") != bucket_id:
-                    continue
+            for t in tarefas_raw:
                 if t.get("percentComplete", 0) == 100:
                     continue
                 due = t.get("dueDateTime")
@@ -1114,7 +1104,7 @@ if is_gestora or is_cronograma:
                 })
             return sorted(resultado, key=lambda x: x["due_iso"])
 
-        tarefas_bucket = buscar_tarefas_bucket(token, plano_id_re, bucket_id_re)
+        tarefas_bucket = buscar_tarefas_bucket(token, bucket_id_re)
 
         if not tarefas_bucket:
             st.info("Nenhuma tarefa em aberto neste concurso.")
