@@ -511,43 +511,44 @@ if not is_cronograma:
             nota_salva = carregar_nota(t["id"], token)
             nota_icon = " 📝" if nota_salva else ""
 
-            col_card, col_nota, col_btn = st.columns([8, 1, 1])
+            # Tudo em uma linha: card + botões juntos no final
+            col_card, col_btns = st.columns([11, 1])
             with col_card:
                 st.markdown(f'''<div class="t-card">
                     <span class="municipio">🏛 {t["municipio"]}</span>
-                    <span class="t-nome">{pessoa_tag} {t["tarefa"]}{nota_icon}</span>
+                    <span class="t-nome">{pessoa_tag} {t["tarefa"]}</span>
                     {chip(t)}
                 </div>''', unsafe_allow_html=True)
                 if nota_salva:
-                    st.caption(f"📝 {nota_salva}")
-            with col_nota:
-                if st.button("📝", key=f"nota_{t['id']}", help="Adicionar/editar nota"):
-                    st.session_state[f"editando_nota_{t['id']}"] = True
-            with col_btn:
-                if st.button("✅", key=f"ok_{t['id']}", help="Marcar como concluída"):
+                    st.markdown(f'<div style="padding:4px 1.2rem 6px;font-size:0.8rem;color:#718096;border:1px solid #E2E8F0;border-top:none;border-radius:0 0 8px 8px;background:#FAFAFA">📝 {nota_salva}</div>', unsafe_allow_html=True)
+            with col_btns:
+                st.markdown('<div style="display:flex;flex-direction:column;gap:4px;padding-top:4px">', unsafe_allow_html=True)
+                if st.button("📝", key=f"nota_{t['id']}", help="Adicionar/editar nota", use_container_width=True):
+                    st.session_state[f"editando_nota_{t['id']}"] = not st.session_state.get(f"editando_nota_{t['id']}", False)
+                if st.button("✅", key=f"ok_{t['id']}", help="Marcar como concluída", use_container_width=True):
                     graph_patch(token, f"https://graph.microsoft.com/v1.0/planner/tasks/{t['id']}", {"percentComplete": 100})
                     st.cache_data.clear()
                     st.rerun()
+                st.markdown('</div>', unsafe_allow_html=True)
 
-            # Edição de nota inline
+            # Edição de nota inline (expande abaixo do card)
             if st.session_state.get(f"editando_nota_{t['id']}"):
-                with st.container():
-                    nova_nota = st.text_input(
-                        "Nota:", value=nota_salva,
-                        key=f"input_nota_{t['id']}",
-                        placeholder="Ex: Data alterada para 15/07 — aguardando confirmação"
-                    )
-                    col_s, col_c = st.columns([1, 1])
-                    with col_s:
-                        if st.button("💾 Salvar", key=f"salvar_nota_{t['id']}"):
-                            if salvar_nota(t["id"], nova_nota, token):
-                                st.success("Nota salva!")
+                nova_nota = st.text_input(
+                    "✏️ Nota:", value=nota_salva,
+                    key=f"input_nota_{t['id']}",
+                    placeholder="Ex: Data alterada para 15/07 — aguardando confirmação",
+                    label_visibility="collapsed"
+                )
+                col_s, col_c, _ = st.columns([1, 1, 6])
+                with col_s:
+                    if st.button("💾 Salvar", key=f"salvar_nota_{t['id']}", type="primary"):
+                        if salvar_nota(t["id"], nova_nota, token):
                             st.session_state[f"editando_nota_{t['id']}"] = False
                             st.rerun()
-                    with col_c:
-                        if st.button("✖ Cancelar", key=f"cancelar_nota_{t['id']}"):
-                            st.session_state[f"editando_nota_{t['id']}"] = False
-                            st.rerun()
+                with col_c:
+                    if st.button("✖ Cancelar", key=f"cancelar_nota_{t['id']}"):
+                        st.session_state[f"editando_nota_{t['id']}"] = False
+                        st.rerun()
 
     show_pessoa = (filtro_pessoa == "Toda a equipe")
     render_grupo("⚠️ VENCIDAS", "vencida-h", vencidas, show_pessoa)
