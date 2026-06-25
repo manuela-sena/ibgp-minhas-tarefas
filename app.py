@@ -1085,11 +1085,17 @@ if is_gestora or is_cronograma:
         # Busca tarefas do bucket selecionado
         @st.cache_data(ttl=60, show_spinner=False)
         def buscar_tarefas_bucket(token, bucket_id):
-            # $select garante que startDateTime seja retornado
-            url = f"https://graph.microsoft.com/v1.0/planner/buckets/{bucket_id}/tasks?$select=id,title,percentComplete,dueDateTime,startDateTime,bucketId"
-            tarefas_raw = graph_get_all(token, url)
+            headers = {"Authorization": f"Bearer {token}"}
+            results = []
+            next_url = f"https://graph.microsoft.com/v1.0/planner/buckets/{bucket_id}/tasks"
+            while next_url:
+                resp = requests.get(next_url, headers=headers)
+                resp.raise_for_status()
+                data = resp.json()
+                results.extend(data.get("value", []))
+                next_url = data.get("@odata.nextLink")
             resultado = []
-            for t in tarefas_raw:
+            for t in results:
                 if t.get("percentComplete", 0) == 100:
                     continue
                 due = t.get("dueDateTime")
