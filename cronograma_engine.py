@@ -138,6 +138,9 @@ def calcular_concurso_psp(
     tem_entrevista: bool = False,
     tem_competencias: bool = False,
     concomitancia_titulos_pratica: bool = False,
+    data_inicio_inscricao: date = None,   # Data manual (ignora regra dos 60 dias)
+    dias_inscricao: int = 30,             # Duração das inscrições em dias corridos
+    prazos_reduzidos: bool = False,       # PSS: prazo reduzido pós-prova (7 dias)
 ) -> list:
     tarefas = []
     seq = 1
@@ -153,13 +156,21 @@ def calcular_concurso_psp(
     add("PUBLICAÇÃO DO EDITAL", pub)
 
     if tem_isencao:
-        inicio_isencao = proximo_util(pub + timedelta(days=60))
+        if data_inicio_inscricao:
+            inicio_isencao = proximo_util(data_inicio_inscricao)
+        else:
+            inicio_isencao = proximo_util(pub + timedelta(days=60))
         fim_isencao = adicionar_dias_uteis(inicio_isencao, 2)
         add("PERÍODO SOLICITAÇÃO DE ISENÇÃO", inicio_isencao, fim_isencao)
 
     if tem_inscricao:
-        inicio_insc = inicio_isencao if tem_isencao else proximo_util(pub + timedelta(days=60))
-        fim_insc_raw = inicio_insc + timedelta(days=29)
+        if data_inicio_inscricao:
+            inicio_insc = proximo_util(data_inicio_inscricao)
+        elif tem_isencao:
+            inicio_insc = inicio_isencao
+        else:
+            inicio_insc = proximo_util(pub + timedelta(days=60))
+        fim_insc_raw = inicio_insc + timedelta(days=dias_inscricao - 1)
         fim_insc = proximo_util(fim_insc_raw) if not is_util(fim_insc_raw) else fim_insc_raw
         add("PERÍODO DE INSCRIÇÕES/PCD/SOLICITAÇÃO COND. ESPECIAL/ENVIO LAUDOS", inicio_insc, fim_insc)
 
@@ -417,6 +428,9 @@ def calcular_guarda(
     tem_competencias: bool = False,
     tem_sindicancia: bool = False,
     concomitancia_titulos_pratica: bool = False,
+    data_inicio_inscricao: date = None,   # Data manual (ignora regra dos 60 dias)
+    dias_inscricao: int = 30,             # Duração das inscrições em dias corridos
+    carga_horaria_curso: int = 0,         # Carga horária total do curso de formação (0 = sem curso)
 ) -> list:
     tarefas = []
     seq = 1
@@ -433,13 +447,21 @@ def calcular_guarda(
 
     if tem_isencao:
         # Guarda: mesmo início que concurso — 60 dias corridos, 3 dias úteis
-        inicio_isencao = proximo_util(pub + timedelta(days=60))
+        if data_inicio_inscricao:
+            inicio_isencao = proximo_util(data_inicio_inscricao)
+        else:
+            inicio_isencao = proximo_util(pub + timedelta(days=60))
         fim_isencao = adicionar_dias_uteis(inicio_isencao, 2)
         add("PERÍODO SOLICITAÇÃO DE ISENÇÃO", inicio_isencao, fim_isencao)
 
     if tem_inscricao:
-        inicio_insc = inicio_isencao if tem_isencao else proximo_util(pub + timedelta(days=60))
-        fim_insc_raw = inicio_insc + timedelta(days=29)
+        if data_inicio_inscricao:
+            inicio_insc = proximo_util(data_inicio_inscricao)
+        elif tem_isencao:
+            inicio_insc = inicio_isencao
+        else:
+            inicio_insc = proximo_util(pub + timedelta(days=60))
+        fim_insc_raw = inicio_insc + timedelta(days=dias_inscricao - 1)
         fim_insc = proximo_util(fim_insc_raw) if not is_util(fim_insc_raw) else fim_insc_raw
         add("PERÍODO DE INSCRIÇÕES/PCD/SOLICITAÇÃO COND. ESPECIAL/ENVIO LAUDOS", inicio_insc, fim_insc)
 
@@ -682,14 +704,39 @@ def calcular_guarda(
             add("RESULTADO PÓS-RECURSO DO PROCEDIMENTO HETEROIDENTIFICAÇÃO", res_pos_hetero)
             ref_fase_anterior = res_pos_hetero
 
-        # Classificação
-        add("CLASSIFICAÇÃO PRELIMINAR", ref_fase_anterior)
-        inicio_rec_class = proximo_util_apos(ref_fase_anterior)
-        fim_rec_class = adicionar_dias_uteis(inicio_rec_class, 2)
-        add("ABERTURA DE RECURSO CONTRA CLASSIFICAÇÃO PRELIMINAR", inicio_rec_class, fim_rec_class)
-        analise_class = adicionar_dias_uteis(fim_rec_class, 2)
-        add("ANÁLISE DOS RECURSOS CONTRA CLASSIFICAÇÃO PRELIMINAR", analise_class)
-        class_final = proximo_util_apos(analise_class)
+        # Curso de Formação (Guarda) — 10h/dia, seg a sex
+        if carga_horaria_curso > 0:
+            dias_curso = -(-carga_horaria_curso // 10)
+            conv_curso = proximo_util_apos(ref_fase_anterior)
+            add("CONVOCAÇÃO PARA O CURSO DE FORMAÇÃO", conv_curso)
+            inicio_curso = proximo_util_apos(conv_curso)
+            fim_curso = inicio_curso
+            dias_contados = 0
+            while dias_contados < dias_curso:
+                if fim_curso.weekday() < 5 and not is_feriado(fim_curso) and not is_recesso(fim_curso):
+                    dias_contados += 1
+                if dias_contados < dias_curso:
+                    fim_curso += timedelta(days=1)
+            add("REALIZAÇÃO DO CURSO DE FORMAÇÃO", inicio_curso, fim_curso)
+            res_prel_curso = proximo_util_apos(fim_curso)
+            add("RESULTADO PRELIMINAR DO CURSO DE FORMAÇÃO", res_prel_curso)
+            inicio_rec_curso = proximo_util_apos(res_prel_curso)
+            fim_rec_curso = adicionar_dias_uteis(inicio_rec_curso, 4)
+            add("ABERTURA DE RECURSO (05 DIAS ÚTEIS) CONTRA RESULTADO DO CURSO DE FORMAÇÃO E CLASSIFICAÇÃO PRELIMINAR",
+                inicio_rec_curso, fim_rec_curso)
+            analise_curso = adicionar_dias_uteis(fim_rec_curso, 2)
+            add("ANÁLISE DOS RECURSOS CONTRA CLASSIFICAÇÃO PRELIMINAR", analise_curso)
+            class_final = proximo_util_apos(analise_curso)
+        else:
+            # Classificação sem curso
+            add("CLASSIFICAÇÃO PRELIMINAR", ref_fase_anterior)
+            inicio_rec_class = proximo_util_apos(ref_fase_anterior)
+            fim_rec_class = adicionar_dias_uteis(inicio_rec_class, 2)
+            add("ABERTURA DE RECURSO CONTRA CLASSIFICAÇÃO PRELIMINAR", inicio_rec_class, fim_rec_class)
+            analise_class = adicionar_dias_uteis(fim_rec_class, 2)
+            add("ANÁLISE DOS RECURSOS CONTRA CLASSIFICAÇÃO PRELIMINAR", analise_class)
+            class_final = proximo_util_apos(analise_class)
+
         add("CLASSIFICAÇÃO FINAL", class_final)
         add("HOMOLOGAÇÃO", class_final)
 
@@ -701,12 +748,23 @@ def calcular_guarda(
 def calcular_cronograma(tipo_certame: str = "CONCURSO/PSP", **kwargs) -> list:
     """
     Calcula cronograma baseado no tipo de certame.
-    tipo_certame: 'CONCURSO/PSP' ou 'GUARDA'
+    tipo_certame: 'CONCURSO/PSP', 'PSS' ou 'GUARDA'
     """
     if tipo_certame == "GUARDA":
+        # Remove parâmetros exclusivos de outros tipos
+        kwargs.pop("tem_sindicancia", None) if "tem_sindicancia" not in kwargs else None
+        kwargs.pop("prazos_reduzidos", None)
         return calcular_guarda(**kwargs)
-    else:
+    elif tipo_certame == "PSS":
+        # PSS = Concurso com prazos reduzidos
         kwargs.pop("tem_sindicancia", None)
+        kwargs.pop("carga_horaria_curso", None)
+        kwargs["prazos_reduzidos"] = True
+        return calcular_concurso_psp(**kwargs)
+    else:
+        # Concurso padrão
+        kwargs.pop("tem_sindicancia", None)
+        kwargs.pop("carga_horaria_curso", None)
         return calcular_concurso_psp(**kwargs)
 
 

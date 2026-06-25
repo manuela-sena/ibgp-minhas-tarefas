@@ -375,6 +375,17 @@ hoje_str = date.today().strftime("%d/%m/%Y — %A").replace(
 st.markdown(f'<div class="header"><h1>✅ Olá, {user_name}!</h1><p>Tarefas da equipe · {hoje_str}</p></div>', unsafe_allow_html=True)
 
 col_r, col_u = st.columns([8,1])
+with col_r:
+    # Navegação rápida
+    nav_cols = st.columns(4)
+    with nav_cols[0]:
+        st.markdown('<a href="#tarefas" style="text-decoration:none"><button style="width:100%;padding:6px;border-radius:6px;border:1px solid #CBD5E0;background:#EBF4FF;color:#2B6CB0;cursor:pointer;font-size:0.8rem">📋 Tarefas</button></a>', unsafe_allow_html=True)
+    with nav_cols[1]:
+        st.markdown('<a href="#validar-cronograma" style="text-decoration:none"><button style="width:100%;padding:6px;border-radius:6px;border:1px solid #CBD5E0;background:#EBF4FF;color:#2B6CB0;cursor:pointer;font-size:0.8rem">📊 Validar</button></a>', unsafe_allow_html=True)
+    with nav_cols[2]:
+        st.markdown('<a href="#gerador-de-cronograma-completo" style="text-decoration:none"><button style="width:100%;padding:6px;border-radius:6px;border:1px solid #CBD5E0;background:#EBF4FF;color:#2B6CB0;cursor:pointer;font-size:0.8rem">🗓 Gerar</button></a>', unsafe_allow_html=True)
+    with nav_cols[3]:
+        pass
 with col_u:
     if st.button("↻ Atualizar", use_container_width=True):
         st.cache_data.clear()
@@ -727,10 +738,24 @@ if is_gestora or is_cronograma:
     from datetime import timedelta
 
     nome_novo_concurso = st.text_input("Nome do concurso (será o nome do bucket no Planner)", placeholder="Ex: MUNICÍPIO X - EDITAL Nº 01/2026 - CONCURSO PÚBLICO")
-    
-    tipo_certame = st.radio("Tipo de certame", ["CONCURSO/PSP", "GUARDA"], horizontal=True)
-    
+
+    tipo_certame = st.radio("Tipo de certame", ["CONCURSO", "PSS", "GUARDA"], horizontal=True)
+
     data_pub = st.date_input("Data de publicação do edital", value=date.today(), key="data_pub_gerador")
+
+    col_insc1, col_insc2 = st.columns(2)
+    with col_insc1:
+        usar_data_manual = st.checkbox("Definir data de início das inscrições manualmente")
+        data_inicio_inscricao = st.date_input("Data de início das inscrições", value=date.today(), key="data_inicio_insc") if usar_data_manual else None
+    with col_insc2:
+        dias_inscricao = st.number_input("Duração das inscrições (dias corridos)", min_value=1, max_value=60, value=10 if tipo_certame == "PSS" else 30, key="dias_insc")
+
+    carga_horaria_curso = 0
+    if tipo_certame == "GUARDA":
+        carga_horaria_curso = st.number_input("Carga horária total do Curso de Formação (0 = sem curso)", min_value=0, max_value=2000, value=0, step=10, key="ch_curso")
+        if carga_horaria_curso > 0:
+            dias_curso = -(-carga_horaria_curso // 10)
+            st.caption(f"📚 {carga_horaria_curso}h ÷ 10h/dia = **{dias_curso} dias úteis** de curso")
 
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -771,6 +796,9 @@ if is_gestora or is_cronograma:
             tem_competencias=f_competencias,
             tem_sindicancia=f_sindicancia,
             concomitancia_titulos_pratica=concom,
+            data_inicio_inscricao=data_inicio_inscricao,
+            dias_inscricao=int(dias_inscricao),
+            carga_horaria_curso=int(carga_horaria_curso),
         )
         st.session_state["cronograma_gerado"] = cronograma
         st.session_state["nome_concurso_gerado"] = nome_novo_concurso
@@ -806,12 +834,44 @@ if is_gestora or is_cronograma:
             if not match.empty:
                 conflitos_cron[row["seq"]] = match.iloc[0]["municipio"]
 
+        # Verificação de sobrecarga por pessoa
+        LIMITE_SOBRECARGA = 3
+        sobrecarga_pessoa = {}
+        for row in cronograma:
+            nome_tarefa = row["atividade"]
+            resp = ATRIBUICOES.get(nome_tarefa)
+            if not resp:
+                continue
+            data_fim = row["data_fim"]
+            # Conta tarefas do Planner para essa pessoa nesse dia
+            planner_pessoa_dia = df_planner_cron[
+                (df_planner_cron["responsavel"] == resp) &
+                (df_planner_cron["data"] == data_fim)
+            ] if "responsavel" in df_planner_cron.columns else pd.DataFrame()
+            novas_pessoa_dia = [r for r in cronograma if ATRIBUICOES.get(r["atividade"]) == resp and r["data_fim"] == data_fim]
+            total = len(planner_pessoa_dia) + len(novas_pessoa_dia)
+            if total > LIMITE_SOBRECARGA:
+                chave = f"{resp}|{data_fim.strftime('%d/%m/%Y')}"
+                if chave not in sobrecarga_pessoa:
+                    sobrecarga_pessoa[chave] = {"resp": resp, "data": data_fim.strftime("%d/%m/%Y"), "total": total}
+
         # Exibe tabela com indicação de conflitos
         total_conflitos = len(conflitos_cron)
+        total_sobrecarga = len(sobrecarga_pessoa)
+        col_m1, col_m2 = st.columns(2)
         if total_conflitos:
-            st.warning(f"⚠️ {total_conflitos} tarefa(s) com conflito de data com outros concursos no Planner.")
+            col_m1.warning(f"⚠️ {total_conflitos} tarefa(s) com conflito de mesma atividade no Planner.")
         else:
-            st.success("✅ Nenhum conflito encontrado com o Planner!")
+            col_m1.success("✅ Sem conflitos de atividade!")
+        if total_sobrecarga:
+            col_m2.warning(f"🔴 {total_sobrecarga} dia(s) com sobrecarga por pessoa.")
+        else:
+            col_m2.success("✅ Sem sobrecarga por pessoa!")
+
+        if sobrecarga_pessoa:
+            st.markdown("##### 🔴 Dias sobrecarregados por pessoa")
+            for s in sobrecarga_pessoa.values():
+                st.markdown(f"- **{s['resp']}** em {s['data']} — {s['total']} tarefas no total")
 
         # Monta tabela com coluna de status
         rows_exib = []
