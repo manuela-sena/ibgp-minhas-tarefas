@@ -30,14 +30,23 @@ html,body,[class*="css"]{font-family:'Public Sans',system-ui,sans-serif;color:#1
 [data-testid="stSidebar"]{background:#16243d!important;min-width:220px!important;max-width:220px!important}
 [data-testid="stSidebar"] *{color:#9caac2!important}
 [data-testid="stSidebarContent"]{padding:16px 12px!important}
-/* Botões da sidebar */
+/* Botões da sidebar — remove todo espaço padrão */
+[data-testid="stSidebar"] .stButton{margin:0!important;padding:0!important}
+[data-testid="stSidebar"] .stButton>div{margin:0!important;padding:0!important}
 [data-testid="stSidebar"] .stButton button{
-  display:flex;align-items:center;gap:10px;width:100%;
-  padding:10px 12px;border:none;border-left:3px solid transparent;
-  background:transparent;color:#9caac2!important;font:600 13px 'Public Sans',system-ui,sans-serif;
-  border-radius:8px;cursor:pointer;text-align:left;margin-bottom:2px
+  display:flex!important;align-items:center;gap:10px;width:100%;
+  padding:9px 12px!important;border:none!important;border-left:3px solid transparent!important;
+  background:transparent!important;color:#9caac2!important;
+  font:600 13px 'Public Sans',system-ui,sans-serif!important;
+  border-radius:7px!important;cursor:pointer;text-align:left!important;
+  margin:0 0 1px 0!important;line-height:1.3!important;min-height:0!important
 }
-[data-testid="stSidebar"] .stButton button:hover{background:rgba(255,255,255,0.07)!important;color:#dde4ef!important}
+[data-testid="stSidebar"] .stButton button:hover{
+  background:rgba(255,255,255,0.07)!important;color:#dde4ef!important
+}
+[data-testid="stSidebar"] .stButton button:focus{
+  box-shadow:none!important;outline:none!important
+}
 /* Página principal */
 .stApp{background:#eef1f6}
 .block-container{padding:1.5rem 2rem!important;max-width:100%!important}
@@ -124,26 +133,33 @@ with st.sidebar:
     <div style="font-size:9.5px;font-weight:700;letter-spacing:.12em;color:#5f6e8a;padding:2px 8px 8px">FLUXO DE CRONOGRAMA</div>
     """, unsafe_allow_html=True)
 
-    paginas = [("tarefas", "≡  Tarefas"), ("validar", "↑  Validar"), ("gerar", "▦  Gerar"), ("reajustar", "⊞  Reajustar")]
-    if not is_cronograma:
-        pass
-    else:
+    paginas = [("tarefas", "📋  Tarefas"), ("validar", "📊  Validar"), ("gerar", "🗓  Gerar"), ("reajustar", "🔧  Reajustar")]
+    if is_cronograma:
         paginas = paginas[1:]
 
     if "pagina" not in st.session_state:
-        st.session_state["pagina"] = "cronograma" if is_cronograma else "tarefas"
+        st.session_state["pagina"] = "validar" if is_cronograma else "tarefas"
+
+    pagina_atual = st.session_state["pagina"]
+
+    # CSS dinâmico para botão ativo
+    ativo_css = ""
+    for pid, _ in paginas:
+        if pagina_atual == pid:
+            ativo_css += f"""
+            [data-testid="stSidebar"] div:has(button[data-testid*="nav_{pid}"]) button,
+            [data-testid="stSidebar"] div:has(button[key="nav_{pid}"]) button {{
+              background:rgba(255,255,255,0.12)!important;
+              color:#fff!important;
+              border-left:3px solid #2f6cc4!important;
+            }}"""
+    if ativo_css:
+        st.markdown(f"<style>{ativo_css}</style>", unsafe_allow_html=True)
 
     for pid, plabel in paginas:
-        ativo = st.session_state["pagina"] == pid
-        style = "background:rgba(255,255,255,0.10)!important;color:#fff!important;border-left:3px solid #2f6cc4!important" if ativo else ""
         if st.button(plabel, key=f"nav_{pid}", use_container_width=True):
             st.session_state["pagina"] = pid
             st.rerun()
-        if ativo:
-            st.markdown(f"""<style>
-            div[data-testid="stSidebar"] div:has(> button[kind="secondary"][id*="nav_{pid}"]) button {{
-              background:rgba(255,255,255,0.10)!important;color:#fff!important;border-left:3px solid #2f6cc4!important
-            }}</style>""", unsafe_allow_html=True)
 
     st.markdown(f"""<div style="position:fixed;bottom:16px;left:0;width:220px;padding:12px 14px;border-top:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:9px">
       <div style="width:30px;height:30px;border-radius:50%;background:#6b4fa3;color:#fff!important;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex:none">{nome_interno[0].upper()}</div>
@@ -207,21 +223,59 @@ def chip_pessoa(nome):
 
 def render_grupo(lista, titulo, bg_hdr, cor_lbl, bg_badge, cor_badge, show_pessoa):
     if not lista: return
-    rows = ""
-    for t in lista:
-        pessoa = chip_pessoa(t["responsavel"]) if show_pessoa else ""
-        rows += f"""<div class="t-row">
-          <div style="flex:1;min-width:0">
-            <div class="t-mun">{t["municipio"]}</div>
-            <div style="display:flex;align-items:center;gap:7px;margin-top:3px">{pessoa}<span class="t-desc">{t["tarefa"]}</span></div>
-          </div>
-          {chip_data(t["dias"], t["data"])}
-        </div>"""
     st.markdown(f"""<div class="group-card">
       <div class="group-hdr" style="background:{bg_hdr}">
         <span class="group-lbl" style="color:{cor_lbl}">{titulo}</span>
         <span class="group-badge" style="background:{bg_badge};color:{cor_badge}">{len(lista)} tarefas</span>
-      </div>{rows}</div>""", unsafe_allow_html=True)
+      </div></div>""", unsafe_allow_html=True)
+    for t in lista:
+        pessoa = chip_pessoa(t["responsavel"]) if show_pessoa else ""
+        nota = st.session_state.get(f"notas_cache_{t['id']}", "")
+        nota_html = f'<div style="font-size:11px;color:#9aa6b8;font-style:italic;margin-top:2px">📝 {nota}</div>' if nota else ""
+        col_info, col_chip, col_btns = st.columns([7, 2, 1])
+        with col_info:
+            st.markdown(f"""<div style="padding:10px 0 4px">
+              <div class="t-mun">{t["municipio"]}</div>
+              <div style="display:flex;align-items:center;gap:7px;margin-top:3px">{pessoa}<span class="t-desc">{t["tarefa"]}</span></div>
+              {nota_html}
+            </div>""", unsafe_allow_html=True)
+        with col_chip:
+            st.markdown(f'<div style="padding:12px 0;display:flex;justify-content:flex-end">{chip_data(t["dias"], t["data"])}</div>', unsafe_allow_html=True)
+        with col_btns:
+            c1, c2 = st.columns(2)
+            with c1:
+                if st.button("📝", key=f"nota_{t['id']}", help="Nota"):
+                    st.session_state[f"editando_{t['id']}"] = not st.session_state.get(f"editando_{t['id']}", False)
+                    st.rerun()
+            with c2:
+                if st.button("✅", key=f"ok_{t['id']}", help="Concluída"):
+                    r1 = requests.get(f"https://graph.microsoft.com/v1.0/planner/tasks/{t['id']}", headers={"Authorization":f"Bearer {token}"})
+                    etag = r1.headers.get("ETag","*")
+                    requests.patch(f"https://graph.microsoft.com/v1.0/planner/tasks/{t['id']}",
+                        headers={"Authorization":f"Bearer {token}","Content-Type":"application/json","If-Match":etag},
+                        json={"percentComplete":100})
+                    st.cache_data.clear(); st.rerun()
+        # Campo de edição de nota
+        if st.session_state.get(f"editando_{t['id']}"):
+            nova_nota = st.text_input("✏️ Nota:", value=nota, key=f"input_{t['id']}",
+                placeholder="Ex: Data alterada para 15/07", label_visibility="collapsed")
+            cs, cc = st.columns([1,1])
+            with cs:
+                if st.button("💾 Salvar", key=f"salvar_{t['id']}", type="primary"):
+                    r1 = requests.get(f"https://graph.microsoft.com/v1.0/planner/tasks/{t['id']}/details",
+                        headers={"Authorization":f"Bearer {token}"})
+                    etag = r1.headers.get("ETag","*")
+                    requests.patch(f"https://graph.microsoft.com/v1.0/planner/tasks/{t['id']}/details",
+                        headers={"Authorization":f"Bearer {token}","Content-Type":"application/json","If-Match":etag},
+                        json={"description": nova_nota})
+                    st.session_state[f"notas_cache_{t['id']}"] = nova_nota
+                    st.session_state[f"editando_{t['id']}"] = False
+                    st.rerun()
+            with cc:
+                if st.button("✖", key=f"cancelar_{t['id']}"):
+                    st.session_state[f"editando_{t['id']}"] = False
+                    st.rerun()
+        st.markdown('<div style="border-top:1px solid #eef1f6;margin:0 -1rem"></div>', unsafe_allow_html=True)
 
 # ── PÁGINA ────────────────────────────────────────────────────────────────────
 pagina = st.session_state.get("pagina", "tarefas")
