@@ -686,3 +686,188 @@ if is_gestora:
                     st.success(f"✅ {sucesso} tarefa(s) cadastrada(s) no Planner com sucesso!")
                 if erro:
                     st.warning(f"⚠️ {erro} tarefa(s) não foram cadastradas.")
+
+    # ── GERADOR DE CRONOGRAMA COMPLETO ────────────────────────────────────────
+    st.divider()
+    st.markdown("### 🗓 Gerador de Cronograma Completo")
+    st.caption("Informe a data de publicação e as fases do concurso para calcular todas as datas automaticamente, respeitando dias úteis, feriados e recesso IBGP.")
+
+    from cronograma_engine import calcular_cronograma, is_util, is_recesso
+    import pandas as pd
+    from datetime import timedelta
+
+    nome_novo_concurso = st.text_input("Nome do concurso (será o nome do bucket no Planner)", placeholder="Ex: MUNICÍPIO X - EDITAL Nº 01/2026 - CONCURSO PÚBLICO")
+    data_pub = st.date_input("Data de publicação do edital", value=date.today(), key="data_pub_gerador")
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        f_isencao     = st.checkbox("Isenção", value=True)
+        f_inscricao   = st.checkbox("Inscrições", value=True)
+        f_discursiva  = st.checkbox("Prova Discursiva")
+        f_pratica     = st.checkbox("Prova Prática")
+    with col2:
+        f_taf         = st.checkbox("TAF / Capacidade Física")
+        f_titulos     = st.checkbox("Prova de Títulos")
+        f_psicologica = st.checkbox("Avaliação Psicológica")
+        f_medica      = st.checkbox("Avaliação Médica")
+    with col3:
+        f_clinica     = st.checkbox("Avaliação Clínica")
+        f_hetero      = st.checkbox("Heteroidentificação")
+        f_entrevista  = st.checkbox("Entrevista Devolutiva")
+        concom        = st.checkbox("Concomitância Títulos + Prática/TAF") if f_titulos and (f_pratica or f_taf) else False
+
+    if st.button("🗓 Calcular cronograma", type="primary", key="btn_calcular"):
+        cronograma = calcular_cronograma(
+            data_publicacao=data_pub,
+            tem_inscricao=f_inscricao,
+            tem_isencao=f_isencao,
+            tem_discursiva=f_discursiva,
+            tem_pratica=f_pratica,
+            tem_taf=f_taf,
+            tem_titulos=f_titulos,
+            tem_psicologica=f_psicologica,
+            tem_medica=f_medica,
+            tem_clinica=f_clinica,
+            tem_hetero=f_hetero,
+            tem_entrevista=f_entrevista,
+            concomitancia_titulos_pratica=concom,
+        )
+        st.session_state["cronograma_gerado"] = cronograma
+        st.session_state["nome_concurso_gerado"] = nome_novo_concurso
+
+    if "cronograma_gerado" in st.session_state:
+        cronograma = st.session_state["cronograma_gerado"]
+        nome_concurso_gerado = st.session_state.get("nome_concurso_gerado", "")
+        st.success(f"✅ {len(cronograma)} atividades calculadas!")
+
+        df_cron = pd.DataFrame(cronograma)
+        df_cron["data_inicio_fmt"] = df_cron["data_inicio"].apply(lambda d: d.strftime("%d/%m/%Y"))
+        df_cron["data_fim_fmt"]    = df_cron["data_fim"].apply(lambda d: d.strftime("%d/%m/%Y"))
+        # Cruza com Planner para detectar conflitos
+        with st.spinner("Verificando conflitos com o Planner..."):
+            tarefas_planner = buscar_tarefas(token)
+
+        planner_rows = []
+        for t in tarefas_planner:
+            if t["data"] != "Sem data":
+                try:
+                    dt = datetime.strptime(t["data"], "%d/%m/%Y").date()
+                    planner_rows.append({"tarefa": t["tarefa"], "data": dt, "municipio": t["municipio"]})
+                except: pass
+        df_planner_cron = pd.DataFrame(planner_rows) if planner_rows else pd.DataFrame(columns=["tarefa","data","municipio"])
+
+        # Marca conflitos em cada tarefa do cronograma
+        from cronograma_engine import is_util as _is_util, is_recesso as _is_recesso
+        conflitos_cron = {}
+        for row in cronograma:
+            nome = row["atividade"]
+            data_fim = row["data_fim"]
+            match = df_planner_cron[(df_planner_cron["tarefa"] == nome) & (df_planner_cron["data"] == data_fim)]
+            if not match.empty:
+                conflitos_cron[row["seq"]] = match.iloc[0]["municipio"]
+
+        # Exibe tabela com indicação de conflitos
+        total_conflitos = len(conflitos_cron)
+        if total_conflitos:
+            st.warning(f"⚠️ {total_conflitos} tarefa(s) com conflito de data com outros concursos no Planner.")
+        else:
+            st.success("✅ Nenhum conflito encontrado com o Planner!")
+
+        # Monta tabela com coluna de status
+        rows_exib = []
+        for row in cronograma:
+            conflito = conflitos_cron.get(row["seq"])
+            status = f"⚠️ Conflito com: {conflito}" if conflito else "✅ OK"
+            rows_exib.append({
+                "Seq": row["seq"],
+                "Atividade": row["atividade"],
+                "Data Início": row["data_inicio"].strftime("%d/%m/%Y"),
+                "Data Fim": row["data_fim"].strftime("%d/%m/%Y"),
+                "Status": status,
+            })
+        df_exib = pd.DataFrame(rows_exib)
+        st.dataframe(df_exib, use_container_width=True, hide_index=True)
+
+        # Sugere ajustes para conflitos
+        if conflitos_cron:
+            st.markdown("#### 💡 Ajustes sugeridos para conflitos")
+            st.caption("Próximo dia útil disponível para cada tarefa com conflito.")
+            cronograma_ajustado = list(cronograma)
+            for row in cronograma_ajustado:
+                if row["seq"] not in conflitos_cron:
+                    continue
+                data_original = row["data_fim"]
+                datas_ocupadas = set(df_planner_cron[df_planner_cron["tarefa"] == row["atividade"]]["data"].tolist())
+                # Busca próximo dia útil livre
+                nova = data_original + timedelta(days=1)
+                tentativas = 0
+                while (nova in datas_ocupadas or not _is_util(nova)) and tentativas < 14:
+                    nova += timedelta(days=1)
+                    tentativas += 1
+                duracao = (row["data_fim"] - row["data_inicio"]).days
+                row["data_inicio"] = nova - timedelta(days=duracao)
+                row["data_fim"] = nova
+                st.markdown(f"- **{row['atividade']}**: ~~{data_original.strftime('%d/%m/%Y')}~~ → **{nova.strftime('%d/%m/%Y')}**")
+
+            st.session_state["cronograma_ajustado"] = cronograma_ajustado
+
+            if st.button("✅ Usar datas ajustadas", key="btn_usar_ajustadas"):
+                st.session_state["cronograma_gerado"] = cronograma_ajustado
+                st.rerun()
+
+        # Botão cadastrar no Planner
+        if nome_concurso_gerado:
+            if st.button("🚀 Cadastrar cronograma no Planner", type="primary", key="btn_cad_cron"):
+                plano_id, group_id = buscar_plano_id(token)
+                if not plano_id:
+                    st.error("Não foi possível encontrar o plano PLANNER IBGP.")
+                else:
+                    buckets = buscar_buckets_planner(token, plano_id)
+                    bucket_nome = nome_concurso_gerado.strip()
+
+                    if bucket_nome not in buckets:
+                        resp_bucket = requests.post(
+                            "https://graph.microsoft.com/v1.0/planner/buckets",
+                            headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+                            json={"name": bucket_nome, "planId": plano_id, "orderHint": " !"}
+                        )
+                        if resp_bucket.status_code == 201:
+                            bucket_id = resp_bucket.json()["id"]
+                        else:
+                            st.error(f"Erro ao criar bucket: {resp_bucket.text}")
+                            st.stop()
+                    else:
+                        bucket_id = buckets[bucket_nome]
+
+                    sucesso, erro = 0, 0
+                    progress = st.progress(0)
+                    total = len(cronograma)
+
+                    for i, t in enumerate(cronograma):
+                        due_str   = t["data_fim"].strftime("%Y-%m-%dT03:00:00Z")
+                        inicio_str = t["data_inicio"].strftime("%Y-%m-%dT03:00:00Z")
+                        payload = {
+                            "planId": plano_id,
+                            "bucketId": bucket_id,
+                            "title": t["atividade"],
+                            "dueDateTime": due_str,
+                            "startDateTime": inicio_str,
+                        }
+                        resp_t = requests.post(
+                            "https://graph.microsoft.com/v1.0/planner/tasks",
+                            headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+                            json=payload
+                        )
+                        if resp_t.status_code == 201:
+                            sucesso += 1
+                        else:
+                            erro += 1
+                        progress.progress((i + 1) / total)
+
+                    st.cache_data.clear()
+                    if sucesso:
+                        st.success(f"✅ {sucesso} tarefa(s) cadastrada(s) no Planner!")
+                    if erro:
+                        st.warning(f"⚠️ {erro} tarefa(s) não cadastradas.")
+        else:
+            st.info("Preencha o nome do concurso acima para habilitar o cadastro no Planner.")
