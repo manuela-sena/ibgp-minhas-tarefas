@@ -444,6 +444,7 @@ def calcular_guarda(
     # 1. Publicação
     pub = proximo_util(data_publicacao)
     add("PUBLICAÇÃO DO EDITAL", pub)
+    ref_fase_anterior = pub  # valor padrão
 
     if tem_isencao:
         # Guarda: mesmo início que concurso — 60 dias corridos, 3 dias úteis
