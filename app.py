@@ -211,6 +211,16 @@ def buscar_tarefas(token):
     return tarefas, buckets
 
 # ── CHIPS ─────────────────────────────────────────────────────────────────────
+def new_date_fmt(iso):
+    if not iso: return "—"
+    try: return datetime.fromisoformat(iso.replace("Z","+00:00")).replace(tzinfo=None).strftime("%d/%m/%Y")
+    except: return "—"
+
+def to_date(iso):
+    if not iso: return None
+    try: return datetime.fromisoformat(iso.replace("Z","+00:00")).replace(tzinfo=None).date()
+    except: return None
+
 def chip_data(dias, data):
     if dias is None: return f'<span class="chip-d" style="background:#eef1f6;color:#4a566d;border:1px solid #d8dee8">Sem data</span>'
     if dias < 0:     return f'<span class="chip-d" style="background:#fdeceb;color:#c0322f;border:1px solid #f3cfcd">Venceu há {abs(dias)}d</span>'
@@ -353,18 +363,321 @@ if pagina == "tarefas":
 elif pagina == "validar":
     st.markdown('<span style="font-size:19px;font-weight:800;color:#1f2a3d">📊 Validar Novo Cronograma</span>', unsafe_allow_html=True)
     st.caption("Suba a planilha do novo concurso para verificar conflitos e sobrecarga antes de cadastrar no Planner.")
+
     arquivo = st.file_uploader("Selecione a planilha (.xlsx)", type=["xlsx"])
     if arquivo:
-        st.info("Validação disponível — integração em andamento.")
+        import pandas as pd
+        df = pd.read_excel(arquivo)
+        df.columns = [str(c).strip() for c in df.columns]
+        col_tarefa = next((c for c in df.columns if "tarefa" in c.lower() or "atividade" in c.lower()), df.columns[0])
+        col_data   = next((c for c in df.columns if "data" in c.lower() or "date" in c.lower()), df.columns[1] if len(df.columns) > 1 else df.columns[0])
+
+        with st.spinner("Cruzando com o Planner..."):
+            tarefas_planner, buckets_v = buscar_tarefas(token)
+
+        from datetime import timedelta
+        planner_set = {}
+        for t in tarefas_planner:
+            if t["data"]:
+                try:
+                    dt = datetime.strptime(t["data"], "%d/%m/%Y").date()
+                    planner_set.setdefault(t["tarefa"], []).append((dt, t["municipio"], t["responsavel"]))
+                except: pass
+
+        conflitos, sobrecargas, ok_count = [], {}, 0
+        for _, row in df.iterrows():
+            nome = str(row.get(col_tarefa, "")).strip()
+            data_val = row.get(col_data)
+            if not nome or not data_val: continue
+            try:
+                if isinstance(data_val, str):
+                    for fmt in ["%d/%m/%Y","%Y-%m-%d","%d-%m-%Y"]:
+                        try: dt = datetime.strptime(data_val.strip(), fmt).date(); break
+                        except: dt = None
+                else:
+                    dt = pd.to_datetime(data_val).date()
+            except: dt = None
+            if not dt: continue
+
+            match = planner_set.get(nome, [])
+            conflitou = False
+            for (dt_p, mun, resp) in match:
+                if dt_p == dt:
+                    conflitos.append({"tarefa": nome, "data": dt.strftime("%d/%m/%Y"), "conflito_com": mun, "responsavel": resp})
+                    conflitou = True
+            if not conflitou:
+                ok_count += 1
+                # Verifica sobrecarga por responsável
+                resp_tarefa = ATRIBUICOES.get(nome)
+                if resp_tarefa:
+                    sobrecargas.setdefault((resp_tarefa, dt), []).append(nome)
+
+        dias_sobrecarregados = {k: v for k, v in sobrecargas.items() if len(v) > 2}
+
+        c1v, c2v = st.columns(2)
+        c1v.metric("Conflitos encontrados", len(conflitos), delta=None)
+        c2v.metric("Dias sobrecarregados", len(dias_sobrecarregados), delta=None)
+
+        if conflitos:
+            st.warning(f"⚠️ {len(conflitos)} tarefa(s) com conflito de data no Planner")
+            df_conf = pd.DataFrame(conflitos)
+            df_conf.columns = ["Tarefa", "Data", "Conflito com", "Responsável"]
+            st.dataframe(df_conf, use_container_width=True, hide_index=True)
+        if dias_sobrecarregados:
+            st.warning(f"🔴 {len(dias_sobrecarregados)} dia(s) com sobrecarga por pessoa")
+            for (resp, dt), nomes in dias_sobrecarregados.items():
+                st.markdown(f"- **{resp}** em {dt.strftime('%d/%m/%Y')}: {len(nomes)} tarefas")
+        if not conflitos and not dias_sobrecarregados:
+            st.success("✅ Nenhum conflito ou sobrecarga encontrado!")
 
 # ══════════ GERAR ══════════
 elif pagina == "gerar":
+    from cronograma_engine import calcular_cronograma
+
     st.markdown('<span style="font-size:19px;font-weight:800;color:#1f2a3d">🗓 Gerador de Cronograma Completo</span>', unsafe_allow_html=True)
-    st.caption("Informe a data de publicação e as fases do concurso para calcular todas as datas automaticamente.")
-    st.info("Use a versão anterior do app para gerar cronogramas com o motor de regras IBGP.")
+    st.caption("Informe a data de publicação e as fases do concurso para calcular todas as datas automaticamente, respeitando dias úteis, feriados e recesso IBGP.")
+
+    with st.container():
+        nome_concurso = st.text_input("Nome do concurso (será o nome do bucket no Planner)", placeholder="Ex: MUNICÍPIO X - EDITAL Nº 01/2026 - CONCURSO PÚBLICO")
+        tipo_certame  = st.radio("Tipo de certame", ["CONCURSO", "PSS", "GUARDA"], horizontal=True)
+
+        col_dp, col_di = st.columns(2)
+        with col_dp:
+            data_pub = st.date_input("Data de publicação do edital", value=date.today())
+        with col_di:
+            dias_insc = st.number_input("Duração das inscrições (dias corridos)", min_value=1, max_value=60, value=10 if tipo_certame=="PSS" else 30)
+
+        usar_manual = st.checkbox("Definir data de início das inscrições manualmente")
+        data_manual = st.date_input("Data de início das inscrições", value=date.today()) if usar_manual else None
+
+        ch_curso = 0
+        if tipo_certame == "GUARDA":
+            ch_curso = st.number_input("Carga horária do Curso de Formação (0 = sem curso)", min_value=0, max_value=2000, value=0, step=10)
+            if ch_curso > 0:
+                st.caption(f"📚 {ch_curso}h ÷ 10h/dia = **{-(-ch_curso//10)} dias úteis** de curso")
+
+        st.markdown("**Fases do concurso**")
+        col1g, col2g, col3g = st.columns(3)
+        with col1g:
+            f_obj  = st.checkbox("Prova Objetiva", value=True)
+            f_ise  = st.checkbox("Isenção", value=True)
+            f_ins  = st.checkbox("Inscrições", value=True)
+            f_dis  = st.checkbox("Prova Discursiva")
+            f_pra  = st.checkbox("Prova Prática")
+        with col2g:
+            f_taf  = st.checkbox("TAF / Capacidade Física")
+            f_tit  = st.checkbox("Prova de Títulos")
+            f_psi  = st.checkbox("Avaliação Psicológica")
+            f_med  = st.checkbox("Avaliação Médica")
+        with col3g:
+            f_cli  = st.checkbox("Avaliação Clínica")
+            f_het  = st.checkbox("Heteroidentificação")
+            f_ent  = st.checkbox("Entrevista Devolutiva")
+            f_comp = st.checkbox("Entrevista por Competências")
+            f_sind = st.checkbox("Sindicância Social") if tipo_certame == "GUARDA" else False
+            concom = st.checkbox("Concomitância Títulos + Prática/TAF") if f_tit and (f_pra or f_taf) else False
+
+    if st.button("🗓 Calcular cronograma", type="primary"):
+        cronograma = calcular_cronograma(
+            tipo_certame=tipo_certame,
+            data_publicacao=data_pub,
+            tem_objetiva=f_obj, tem_inscricao=f_ins, tem_isencao=f_ise,
+            tem_discursiva=f_dis, tem_pratica=f_pra, tem_taf=f_taf,
+            tem_titulos=f_tit, tem_psicologica=f_psi, tem_medica=f_med,
+            tem_clinica=f_cli, tem_hetero=f_het, tem_entrevista=f_ent,
+            tem_competencias=f_comp, tem_sindicancia=f_sind,
+            concomitancia_titulos_pratica=concom,
+            data_inicio_inscricao=data_manual,
+            dias_inscricao=int(dias_insc),
+            carga_horaria_curso=int(ch_curso),
+        )
+        st.session_state["cronograma_gerado"] = cronograma
+        st.session_state["nome_concurso_gerado"] = nome_concurso
+
+    if "cronograma_gerado" in st.session_state:
+        cron = st.session_state["cronograma_gerado"]
+        st.success(f"✅ {len(cron)} atividades calculadas!")
+        import pandas as pd
+        df_cron = pd.DataFrame([{
+            "Seq": r["seq"], "Atividade": r["atividade"],
+            "Data Início": r["data_inicio"].strftime("%d/%m/%Y"),
+            "Data Fim": r["data_fim"].strftime("%d/%m/%Y"),
+        } for r in cron])
+        st.dataframe(df_cron, use_container_width=True, hide_index=True)
+
+        nome_g = st.session_state.get("nome_concurso_gerado","")
+        if nome_g and st.button("🚀 Cadastrar no Planner", type="primary"):
+            with st.spinner("Cadastrando..."):
+                tarefas_v, buckets_g = buscar_tarefas(token)
+                plano_id = None
+                for grp in [requests.get("https://graph.microsoft.com/v1.0/me/memberOf", headers={"Authorization":f"Bearer {token}"}).json()]:
+                    for g2 in grp.get("value",[]):
+                        try:
+                            plans = requests.get(f"https://graph.microsoft.com/v1.0/groups/{g2['id']}/planner/plans", headers={"Authorization":f"Bearer {token}"}).json()
+                            for p in plans.get("value",[]):
+                                if NOME_PLANO.upper() in p.get("title","").upper():
+                                    plano_id = p["id"]; break
+                        except: pass
+                        if plano_id: break
+
+                if plano_id:
+                    bkts = requests.get(f"https://graph.microsoft.com/v1.0/planner/plans/{plano_id}/buckets", headers={"Authorization":f"Bearer {token}"}).json()
+                    bucket_map = {b["name"]:b["id"] for b in bkts.get("value",[])}
+                    if nome_g not in bucket_map:
+                        rb = requests.post("https://graph.microsoft.com/v1.0/planner/buckets",
+                            headers={"Authorization":f"Bearer {token}","Content-Type":"application/json"},
+                            json={"name":nome_g,"planId":plano_id,"orderHint":" !"})
+                        bucket_id = rb.json().get("id") if rb.status_code==201 else None
+                    else:
+                        bucket_id = bucket_map[nome_g]
+
+                    if bucket_id:
+                        ok2, err2 = 0, 0
+                        prog = st.progress(0)
+                        for i, t in enumerate(cron):
+                            r2 = requests.post("https://graph.microsoft.com/v1.0/planner/tasks",
+                                headers={"Authorization":f"Bearer {token}","Content-Type":"application/json"},
+                                json={"planId":plano_id,"bucketId":bucket_id,"title":t["atividade"],
+                                      "dueDateTime":t["data_fim"].strftime("%Y-%m-%dT03:00:00Z"),
+                                      "startDateTime":t["data_inicio"].strftime("%Y-%m-%dT03:00:00Z")})
+                            if r2.status_code==201: ok2+=1
+                            else: err2+=1
+                            prog.progress((i+1)/len(cron))
+                        st.cache_data.clear()
+                        if ok2: st.success(f"✅ {ok2} tarefa(s) cadastrada(s)!")
+                        if err2: st.warning(f"⚠️ {err2} erro(s).")
+        elif not nome_g:
+            st.info("Preencha o nome do concurso para habilitar o cadastro no Planner.")
 
 # ══════════ REAJUSTAR ══════════
 elif pagina == "reajustar":
     st.markdown('<span style="font-size:19px;font-weight:800;color:#1f2a3d">🔧 Reajustar Cronograma no Planner</span>', unsafe_allow_html=True)
     st.caption("Selecione um concurso e ajuste as datas das tarefas já cadastradas no Planner.")
-    st.info("Reajuste disponível — integração em andamento.")
+
+    @st.cache_data(ttl=300, show_spinner=False)
+    def buscar_plano_e_buckets(token):
+        def g(url): return requests.get(url, headers={"Authorization":f"Bearer {token}"}).json()
+        def g_all(url):
+            res, nxt = [], url
+            while nxt:
+                d = requests.get(nxt, headers={"Authorization":f"Bearer {token}"}).json()
+                res.extend(d.get("value",[])); nxt = d.get("@odata.nextLink")
+            return res
+        plano_id = None
+        for grp in g_all("https://graph.microsoft.com/v1.0/me/memberOf"):
+            gid = grp.get("id")
+            if not gid: continue
+            try:
+                for p in g(f"https://graph.microsoft.com/v1.0/groups/{gid}/planner/plans").get("value",[]):
+                    if NOME_PLANO.upper() in p.get("title","").upper(): plano_id = p["id"]; break
+            except: pass
+            if plano_id: break
+        if not plano_id: return None, {}
+        bkts = g(f"https://graph.microsoft.com/v1.0/planner/plans/{plano_id}/buckets")
+        return plano_id, {b["id"]:b["name"] for b in bkts.get("value",[])}
+
+    with st.spinner("Carregando concursos..."):
+        plano_id_r, buckets_r = buscar_plano_e_buckets(token)
+
+    if not plano_id_r:
+        st.error("Plano não encontrado.")
+    else:
+        opts = {v: k for k, v in sorted(buckets_r.items(), key=lambda x: x[1])}
+        concurso_sel = st.selectbox("Selecione o concurso:", [""] + list(opts.keys()))
+
+        if concurso_sel:
+            bucket_id_r = opts[concurso_sel]
+            with st.spinner("Carregando tarefas..."):
+                def get_bucket_tasks(token, bucket_id):
+                    res, nxt = [], f"https://graph.microsoft.com/v1.0/planner/buckets/{bucket_id}/tasks"
+                    while nxt:
+                        d = requests.get(nxt, headers={"Authorization":f"Bearer {token}"}).json()
+                        res.extend(d.get("value",[])); nxt = d.get("@odata.nextLink")
+                    return [t for t in res if t.get("percentComplete",0) != 100]
+
+                abertas = sorted(get_bucket_tasks(token, bucket_id_r), key=lambda x: x.get("dueDateTime",""))
+
+            if not abertas:
+                st.info("Nenhuma tarefa em aberto neste concurso.")
+            else:
+                st.caption(f"**{len(abertas)} tarefas em aberto** — edite Nova Início e Nova Fim e clique Salvar.")
+                import pandas as pd
+
+                df_reaj = pd.DataFrame([{
+                    "id": t["id"],
+                    "Tarefa": t.get("title",""),
+                    "Início Atual": new_date_fmt(t.get("startDateTime")),
+                    "Fim Atual": new_date_fmt(t.get("dueDateTime")),
+                    "Nova Início": to_date(t.get("startDateTime")),
+                    "Nova Fim": to_date(t.get("dueDateTime")),
+                    "start_iso": t.get("startDateTime",""),
+                    "due_iso": t.get("dueDateTime",""),
+                } for t in abertas])
+
+                df_edit = st.data_editor(
+                    df_reaj[["Tarefa","Início Atual","Fim Atual","Nova Início","Nova Fim"]],
+                    column_config={
+                        "Tarefa": st.column_config.TextColumn("Tarefa", disabled=True, width="large"),
+                        "Início Atual": st.column_config.TextColumn("Início Atual", disabled=True, width="small"),
+                        "Fim Atual": st.column_config.TextColumn("Fim Atual", disabled=True, width="small"),
+                        "Nova Início": st.column_config.DateColumn("Nova Início ✏️", width="small", format="DD/MM/YYYY"),
+                        "Nova Fim": st.column_config.DateColumn("Nova Fim ✏️", width="small", format="DD/MM/YYYY"),
+                    },
+                    hide_index=True, use_container_width=True, key="editor_reajuste"
+                )
+
+                alteradas = []
+                for i, row in df_edit.iterrows():
+                    orig_ini = df_reaj.iloc[i]["Nova Início"]
+                    orig_fim = df_reaj.iloc[i]["Nova Fim"]
+                    if row["Nova Início"] != orig_ini or row["Nova Fim"] != orig_fim:
+                        alteradas.append({"idx":i,"id":df_reaj.iloc[i]["id"],
+                            "nova_ini":row["Nova Início"],"nova_fim":row["Nova Fim"],
+                            "orig_ini":orig_ini,"orig_fim":orig_fim,
+                            "start_iso":df_reaj.iloc[i]["start_iso"],"due_iso":df_reaj.iloc[i]["due_iso"]})
+
+                if alteradas:
+                    st.caption(f"**{len(alteradas)} tarefa(s) com data alterada**")
+                    cascata = st.checkbox("Recalcular em cascata (mesmo deslocamento para tarefas posteriores)")
+
+                    if st.button("💾 Salvar alterações no Planner", type="primary"):
+                        from cronograma_engine import is_util, proximo_util
+                        from datetime import timedelta
+                        to_save = list(alteradas)
+
+                        if cascata and alteradas:
+                            first = min(alteradas, key=lambda x: x["idx"])
+                            if first["orig_fim"] and first["nova_fim"]:
+                                delta = first["nova_fim"] - first["orig_fim"]
+                                for i, t in enumerate(abertas):
+                                    if i <= first["idx"]: continue
+                                    if any(a["id"]==t["id"] for a in alteradas): continue
+                                    if not t.get("dueDateTime"): continue
+                                    dt_fim = datetime.fromisoformat(t["dueDateTime"].replace("Z","+00:00")).replace(tzinfo=None).date() + delta
+                                    if not is_util(dt_fim): dt_fim = proximo_util(dt_fim)
+                                    dt_ini = None
+                                    if t.get("startDateTime"):
+                                        dt_ini = datetime.fromisoformat(t["startDateTime"].replace("Z","+00:00")).replace(tzinfo=None).date() + delta
+                                        if not is_util(dt_ini): dt_ini = proximo_util(dt_ini)
+                                    to_save.append({"id":t["id"],"nova_fim":dt_fim,"nova_ini":dt_ini})
+
+                        prog2 = st.progress(0)
+                        ok3, err3 = 0, 0
+                        for i, t in enumerate(to_save):
+                            payload = {}
+                            if t["nova_fim"]: payload["dueDateTime"] = t["nova_fim"].strftime("%Y-%m-%dT03:00:00Z")
+                            if t["nova_ini"]: payload["startDateTime"] = t["nova_ini"].strftime("%Y-%m-%dT03:00:00Z")
+                            if payload:
+                                url_t = f"https://graph.microsoft.com/v1.0/planner/tasks/{t['id']}"
+                                r3 = requests.get(url_t, headers={"Authorization":f"Bearer {token}"})
+                                etag = r3.headers.get("ETag","*")
+                                r4 = requests.patch(url_t, headers={"Authorization":f"Bearer {token}","Content-Type":"application/json","If-Match":etag}, json=payload)
+                                if r4.status_code in [200,204]: ok3+=1
+                                else: err3+=1
+                            prog2.progress((i+1)/len(to_save))
+                        st.cache_data.clear()
+                        if ok3: st.success(f"✅ {ok3} tarefa(s) atualizada(s)!")
+                        if err3: st.warning(f"⚠️ {err3} erro(s).")
+                        st.rerun()
+                else:
+                    st.info("Edite as colunas 'Nova Início ✏️' e 'Nova Fim ✏️' para habilitar o ajuste.")
