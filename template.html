@@ -498,7 +498,8 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
 <!-- ══ SIDEBAR ══════════════════════════════════ -->
 <aside>
   <div class="logo">
-    <div class="logo-icon">IB</div>
+    <img src="https://raw.githubusercontent.com/manuela-sena/ibgp-minhas-tarefas/main/logo.png"
+         style="width:36px;height:36px;object-fit:contain;flex:none" alt="IBGP">
     <div>
       <div class="logo-name">IBGP</div>
       <div class="logo-sub">Minhas Tarefas</div>
@@ -2457,6 +2458,7 @@ function exportarXLSX(){
 
   // Cabeçalho BOM para UTF-8 no Excel
   let csv = '\uFEFF';
+  csv += `IBGP - Instituto Brasileiro de Gestão e Pesquisa | www.ibgp.org.br\n`;
   csv += `CRONOGRAMA - ${nome}\n`;
   csv += `Gerado em: ${hoje} | Tipo: ${_lastParams?.tipo||'CONCURSO'}\n\n`;
   csv += 'Seq\tAtividade\tData Início\tData Fim\n';
@@ -2507,9 +2509,10 @@ function exportarPDF(){
   .header { border-bottom: 2px solid #1f4e8c; padding-bottom: 12px; margin-bottom: 18px; }
   .header-top { display: flex; align-items: flex-start; justify-content: space-between; }
   .logo-box { display: flex; align-items: center; gap: 10px; }
-  .logo-sq { width: 38px; height: 38px; border-radius: 8px; background: linear-gradient(135deg,#2f6cc4,#1f4e8c); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; font-size: 14px; }
-  .org-name { font-size: 13px; font-weight: 700; color: #1f2a3d; }
+  .logo-sq { width: 44px; height: 44px; object-fit: contain; }
+  .org-name { font-size: 14px; font-weight: 800; color: #1f2a3d; letter-spacing: -.01em; }
   .org-sub  { font-size: 10px; color: #7a869c; margin-top: 2px; }
+  .org-site { font-size: 10px; color: #2f6cc4; margin-top: 1px; }
   .meta { text-align: right; font-size: 10.5px; color: #7a869c; }
   .title { font-size: 16px; font-weight: 800; color: #1f2a3d; margin-top: 14px; }
   .badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 9px; border-radius: 20px; background: #e9f1fb; color: #1f4e8c; margin-left: 8px; vertical-align: middle; }
@@ -2526,10 +2529,11 @@ function exportarPDF(){
 <div class="header">
   <div class="header-top">
     <div class="logo-box">
-      <div class="logo-sq">IB</div>
+      <img class="logo-sq" src="https://raw.githubusercontent.com/manuela-sena/ibgp-minhas-tarefas/main/logo.png" alt="IBGP">
       <div>
         <div class="org-name">IBGP</div>
         <div class="org-sub">Instituto Brasileiro de Gestão e Pesquisa</div>
+        <div class="org-site">www.ibgp.org.br</div>
       </div>
     </div>
     <div class="meta">
@@ -2551,7 +2555,7 @@ function exportarPDF(){
   </thead>
   <tbody>${rows}</tbody>
 </table>
-<div class="footer">IBGP · Minhas Tarefas · Cronograma gerado automaticamente em ${hoje}</div>
+<div class="footer">IBGP · Instituto Brasileiro de Gestão e Pesquisa · www.ibgp.org.br · Cronograma gerado em ${hoje}</div>
 </body>
 </html>`;
 
