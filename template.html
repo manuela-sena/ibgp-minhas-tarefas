@@ -1091,7 +1091,6 @@ function renderVisibleGroup(){
 // ── TASK ROW (tabela) ─────────────────────────────────────────────────
 function renderTaskRow(t, showP){
   const nota=_notas[t.id]||'';
-  const notaChip=nota?`<span class="chip-nota">📝 nota</span>`:'';
   return `
 <div>
 <div class="t-row" style="display:grid;grid-template-columns:1fr 3fr 120px 140px 76px;gap:0;align-items:center">
@@ -1100,14 +1099,11 @@ function renderTaskRow(t, showP){
   </div>
   <div class="t-info" style="padding-right:10px">
     <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-      ${showP?chipP(t.responsavel):''}
       <span class="t-desc">${t.tarefa}</span>
     </div>
-    <div style="display:flex;align-items:center;gap:6px;margin-top:3px;flex-wrap:wrap">
-      ${nota?`<span class="chip-nota">📝 ${nota.length>40?nota.substring(0,40)+'…':nota}</span>`:''}
-    </div>
+    ${nota?`<div style="display:flex;align-items:center;gap:6px;margin-top:3px"><span class="chip-nota">📝 ${nota.length>40?nota.substring(0,40)+'…':nota}</span></div>`:''}
   </div>
-  <div>${!showP&&t.responsavel?chipP(t.responsavel):showP?'':chipP(t.responsavel)}</div>
+  <div>${t.responsavel?chipP(t.responsavel):''}</div>
   <div>${chipD(t.dias,t.data)}</div>
   <div class="act-wrap">
     <button class="act-trigger" onclick="toggleMenu('${t.id}')" title="Ações">···</button>
@@ -2458,7 +2454,7 @@ function exportarXLSX(){
 
   // Cabeçalho BOM para UTF-8 no Excel
   let csv = '\uFEFF';
-  csv += `IBGP - Instituto Brasileiro de Gestão e Pesquisa | www.ibgp.org.br\n`;
+  csv += `IBGP - Instituto Brasileiro de Gestão e Pesquisa | novo.ibgpconcursos.com.br\n`;
   csv += `CRONOGRAMA - ${nome}\n`;
   csv += `Gerado em: ${hoje} | Tipo: ${_lastParams?.tipo||'CONCURSO'}\n\n`;
   csv += 'Seq\tAtividade\tData Início\tData Fim\n';
@@ -2533,7 +2529,7 @@ function exportarPDF(){
       <div>
         <div class="org-name">IBGP</div>
         <div class="org-sub">Instituto Brasileiro de Gestão e Pesquisa</div>
-        <div class="org-site">www.ibgp.org.br</div>
+        <div class="org-site">novo.ibgpconcursos.com.br</div>
       </div>
     </div>
     <div class="meta">
@@ -2555,7 +2551,7 @@ function exportarPDF(){
   </thead>
   <tbody>${rows}</tbody>
 </table>
-<div class="footer">IBGP · Instituto Brasileiro de Gestão e Pesquisa · www.ibgp.org.br · Cronograma gerado em ${hoje}</div>
+<div class="footer">IBGP · Instituto Brasileiro de Gestão e Pesquisa · novo.ibgpconcursos.com.br · Cronograma gerado em ${hoje}</div>
 </body>
 </html>`;
 
