@@ -1443,11 +1443,98 @@ function togglePhase(id){
   el.innerHTML=p.on?'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':'';
 }
 function calcularCronograma(){
+  const nome=document.getElementById('g-nome')?.value||'';
+  const dataPub=document.getElementById('g-data-pub')?.value;
+  if(!dataPub){ alert('Informe a data de publicação.'); return; }
+  const manualCb=document.getElementById('g-data-manual-cb')?.checked;
+  const dataIniInsc=manualCb?(document.getElementById('g-data-ini-insc')?.value||''):'';
+  const diasInsc=document.getElementById('g-dias-insc')?.value||'30';
+  const ch=tipoAtual==='GUARDA'?(document.getElementById('g-ch')?.value||'0'):'0';
+  const fases={};
+  PHASES.forEach(p=>{ fases[p.id]=p.on; });
+  const params={
+    nome, tipo:tipoAtual, data_pub:dataPub,
+    data_ini_insc:dataIniInsc, dias_insc:parseInt(diasInsc),
+    ch_curso:parseInt(ch),
+    tem_objetiva:fases.objetiva, tem_inscricao:fases.inscricao,
+    tem_isencao:fases.isencao, tem_discursiva:fases.discursiva,
+    tem_pratica:fases.pratica, tem_taf:fases.taf,
+    tem_titulos:fases.titulos, tem_psicologica:fases.psicologica,
+    tem_medica:fases.medica, tem_clinica:fases.clinica,
+    tem_hetero:fases.hetero, tem_entrevista:fases.entrevista,
+    tem_competencias:fases.competencias, tem_sindicancia:fases.sind||false,
+    concomitancia:false,
+  };
   document.getElementById('gerar-result').innerHTML=`
-<div class="card card-pad" style="background:#e9f1fb;border-color:#b8d0ef">
-  <div style="font-size:14px;color:#1f4e8c;font-weight:600">ℹ️ Motor de cálculo em integração</div>
-  <div style="font-size:13px;color:#41506b;margin-top:6px">O motor de regras IBGP (dias úteis, feriados, recesso, cascata) será integrado nesta interface em breve.</div>
+<div class="card card-pad" style="background:#e9f1fb;border-color:#b8d0ef;display:flex;align-items:center;gap:12px">
+  <div class="spinner" style="border-top-color:#1f4e8c"></div>
+  <div style="font-size:13.5px;color:#1f4e8c;font-weight:600">Calculando cronograma com motor IBGP...</div>
 </div>`;
+  // Navega o topo da página (Streamlit) com os parâmetros — rerun Python
+  window.top.location.href = window.top.location.origin +
+    window.top.location.pathname +
+    '?calc_cron=' + encodeURIComponent(JSON.stringify(params));
+}
+
+// Renderizar resultado do cronograma se disponível
+function renderCronResult(){
+  const r=DADOS_INICIAIS.cronResult;
+  const el=document.getElementById('gerar-result');
+  if(!r||!el) return;
+  if(r.erro){
+    el.innerHTML=`<div class="card card-pad" style="background:#fdeceb;border-color:#f3cfcd">
+      <div style="color:#c0322f;font-weight:600">Erro ao calcular: ${r.erro}</div></div>`;
+    return;
+  }
+  const nome=DADOS_INICIAIS.cronNome||'';
+  // Mensagem do Planner se houver
+  let plannerMsg='';
+  if(DADOS_INICIAIS.plannerOk!==null && DADOS_INICIAIS.plannerOk!==undefined){
+    plannerMsg=`<div style="margin-bottom:12px;padding:10px 14px;background:#e4f3ea;border:1px solid #a8dbb8;border-radius:9px;color:#2e7d52;font-weight:600;font-size:13px">
+      ✅ ${DADOS_INICIAIS.plannerOk} tarefa(s) cadastrada(s) no Planner!
+      ${DADOS_INICIAIS.plannerErr?`<span style="color:#c0322f"> ⚠️ ${DADOS_INICIAIS.plannerErr} erro(s).</span>`:''}
+    </div>`;
+  }
+  const rows=r.map(t=>`<tr>
+    <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8a9ab5;width:36px">${t.seq}</td>
+    <td style="font-size:12.5px;color:#1f2a3d">${t.atividade}</td>
+    <td style="font-size:12px;color:#41506b;white-space:nowrap;width:100px">${t.data_inicio}</td>
+    <td style="font-size:12px;color:#41506b;white-space:nowrap;width:100px">${t.data_fim}</td>
+  </tr>`).join('');
+  el.innerHTML=`
+${plannerMsg}
+<div class="card" style="overflow:hidden">
+  <div style="padding:13px 18px;border-bottom:1px solid #eef1f6;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+    <div>
+      <div style="font-size:13.5px;font-weight:700;color:#1f2a3d">✅ ${r.length} atividades calculadas</div>
+      ${nome?`<div style="font-size:11.5px;color:#8a9ab5;margin-top:2px">${nome}</div>`:''}
+    </div>
+    ${nome?`<button class="btn-primary" onclick="cadastrarPlanner()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+      Cadastrar no Planner
+    </button>`:'<div style="font-size:11.5px;color:#f0a020">Informe o nome do concurso para cadastrar no Planner</div>'}
+  </div>
+  <div style="overflow-x:auto">
+    <table>
+      <thead><tr>
+        <th>#</th><th>Atividade</th><th>Início</th><th>Fim</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>
+</div>`;
+  // Ir para a aba Gerar
+  goPage('gerar');
+}
+
+function cadastrarPlanner(){
+  const nome=DADOS_INICIAIS.cronNome||'';
+  if(!nome){ alert('Sem nome de concurso para cadastrar.'); return; }
+  if(!confirm(`Cadastrar ${DADOS_INICIAIS.cronResult?.length||0} tarefas no Planner para "${nome}"?`)) return;
+  document.getElementById('gerar-result').innerHTML+='<div style="padding:10px 18px;color:#1f4e8c;font-size:13px;display:flex;align-items:center;gap:8px"><div class="spinner" style="border-top-color:#1f4e8c"></div>Cadastrando no Planner...</div>';
+  window.top.location.href = window.top.location.origin +
+    window.top.location.pathname +
+    '?cadastrar_planner=' + encodeURIComponent(JSON.stringify({nome}));
 }
 
 // ── REFRESH ──────────────────────────────────────────────────────────
@@ -1462,6 +1549,7 @@ async function refreshAll(){
 // ── INIT ──────────────────────────────────────────────────────────────
 renderPhases();
 renderNotifs();
+renderCronResult();
 if(typeof IS_CRONOGRAMA!=='undefined'&&IS_CRONOGRAMA){
   document.querySelector('[data-page="tarefas"]')?.style && (document.querySelector('[data-page="tarefas"]').style.display='none');
   document.querySelector('[data-page="dashboard"]')?.style && (document.querySelector('[data-page="dashboard"]').style.display='none');
