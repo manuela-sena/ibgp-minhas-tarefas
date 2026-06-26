@@ -1795,7 +1795,8 @@ function calcularCronograma(){
   try {
     const result=calcularConcurso(params);
     _cronResultado=result; _cronNome=nome;
-    exibirResultadoCron(result, nome);
+    const {conflitos, sobrecargas} = analisarConflitos(result);
+    exibirResultadoCron(result, nome, conflitos, sobrecargas);
   } catch(e){
     document.getElementById('gerar-result').innerHTML=`
 <div class="card card-pad" style="background:#fdeceb;border-color:#f3cfcd">
@@ -1804,18 +1805,143 @@ function calcularCronograma(){
   }
 }
 
-function exibirResultadoCron(result, nome){
-  const rows=result.map(t=>`<tr>
-    <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8a9ab5;width:36px">${t.seq}</td>
-    <td style="font-size:12.5px;color:#1f2a3d">${t.atividade}</td>
-    <td style="font-size:12px;color:#41506b;white-space:nowrap;width:100px">${fmtBR(t.data_inicio)}</td>
-    <td style="font-size:12px;color:#41506b;white-space:nowrap;width:100px">${fmtBR(t.data_fim)}</td>
-  </tr>`).join('');
+// ── ANÁLISE DE CONFLITOS E SOBRECARGA ──────────────────────────────────
+function dateKey(d){ return d.toISOString().substring(0,10); }
+
+function analisarConflitos(novosCron){
+  const conflitos=[], sobrecargas=[];
+
+  // Monta índices das tarefas existentes no Planner (_allTasks já carregado)
+  // Por tarefa: { nomeAtividade → [{municipio, responsavel, due}] }
+  const porAtividade={};
+  // Por pessoa+dia: { "Lorena|2026-08-10" → [lista de tarefas] }
+  const porPessoaDia={};
+
+  for(const t of _allTasks){
+    if(!t.due) continue;
+    const dueDate=new Date(t.due); if(isNaN(dueDate)) continue;
+    const dk=dateKey(dueDate);
+    // índice por atividade
+    if(!porAtividade[t.tarefa]) porAtividade[t.tarefa]=[];
+    porAtividade[t.tarefa].push({municipio:t.municipio, responsavel:t.responsavel, dk});
+    // índice por responsável+dia
+    const pk=`${t.responsavel}|${dk}`;
+    if(!porPessoaDia[pk]) porPessoaDia[pk]=[];
+    porPessoaDia[pk].push({tarefa:t.tarefa, municipio:t.municipio});
+  }
+
+  // Atribuições do novo cronograma (usa ATRIBUICOES injetado pelo Python)
+  const ATRIB = typeof ATRIBUICOES_JS !== 'undefined' ? ATRIBUICOES_JS : {};
+
+  for(const t of novosCron){
+    const dkIni=dateKey(t.data_inicio), dkFim=dateKey(t.data_fim);
+
+    // 1. Conflito de data: mesma tarefa com mesma data_fim em outro concurso
+    const existing=porAtividade[t.atividade]||[];
+    for(const ex of existing){
+      if(ex.dk===dkFim && ex.municipio!==_cronNome){
+        conflitos.push({
+          seq:t.seq, atividade:t.atividade,
+          dataFim:fmtBR(t.data_fim),
+          conflitoCom:ex.municipio, responsavel:ex.responsavel
+        });
+      }
+    }
+
+    // 2. Sobrecarga: responsável da nova tarefa já tem 2+ tarefas no mesmo dia
+    const resp=ATRIB[t.atividade];
+    if(resp){
+      const pk=`${resp}|${dkFim}`;
+      const existentes=porPessoaDia[pk]||[];
+      if(existentes.length>=2){
+        sobrecargas.push({
+          seq:t.seq, atividade:t.atividade,
+          responsavel:resp,
+          dataFim:fmtBR(t.data_fim),
+          outrasNoDia:existentes.map(e=>`${e.tarefa} (${e.municipio})`).slice(0,3)
+        });
+      }
+    }
+  }
+  return {conflitos, sobrecargas};
+}
+
+function exibirResultadoCron(result, nome, conflitos=[], sobrecargas=[]){
+  // Monta set de seqs com problema para marcar na tabela
+  const seqConflito=new Set(conflitos.map(c=>c.seq));
+  const seqSobrec=new Set(sobrecargas.map(s=>s.seq));
+
+  const rows=result.map(t=>{
+    const hasC=seqConflito.has(t.seq), hasS=seqSobrec.has(t.seq);
+    const rowBg=hasC?'background:#fff8f0':hasS?'background:#fffbec':'';
+    const icon=hasC?'<span title="Conflito de data" style="color:#d93b3b;margin-right:4px">⚠️</span>':
+                hasS?'<span title="Responsável sobrecarregado" style="color:#d98a1f;margin-right:4px">🔴</span>':'';
+    return `<tr style="${rowBg}">
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8a9ab5;width:36px">${t.seq}</td>
+      <td style="font-size:12.5px;color:#1f2a3d">${icon}${t.atividade}</td>
+      <td style="font-size:12px;color:#41506b;white-space:nowrap;width:100px">${fmtBR(t.data_inicio)}</td>
+      <td style="font-size:12px;color:#41506b;white-space:nowrap;width:100px">${fmtBR(t.data_fim)}</td>
+    </tr>`;
+  }).join('');
+
+  // Painel de alertas
+  let alertasHtml='';
+  if(conflitos.length){
+    const rows_c=conflitos.map(c=>`
+<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #f3cfcd">
+  <div style="flex:none;font-size:11px;font-family:'JetBrains Mono',monospace;color:#c0322f;padding-top:1px">#${c.seq}</div>
+  <div style="flex:1;min-width:0">
+    <div style="font-size:12.5px;font-weight:600;color:#1f2a3d">${c.atividade}</div>
+    <div style="font-size:11.5px;color:#c0322f;margin-top:2px">
+      📅 ${c.dataFim} — bate com <strong>${c.conflitoCom}</strong>
+      ${c.responsavel?`<span style="margin-left:6px">${chipP(c.responsavel)}</span>`:''}
+    </div>
+  </div>
+</div>`).join('');
+    alertasHtml+=`
+<div class="card card-pad" style="background:#fff5f5;border-color:#f3cfcd;margin-bottom:12px">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+    <span style="font-size:15px">⚠️</span>
+    <div style="font-weight:700;color:#c0322f;font-size:13px">${conflitos.length} conflito(s) de data com outros processos</div>
+  </div>
+  ${rows_c}
+</div>`;
+  }
+  if(sobrecargas.length){
+    const rows_s=sobrecargas.map(s=>`
+<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #f3e2bf">
+  <div style="flex:none;font-size:11px;font-family:'JetBrains Mono',monospace;color:#a06c12;padding-top:1px">#${s.seq}</div>
+  <div style="flex:1;min-width:0">
+    <div style="font-size:12.5px;font-weight:600;color:#1f2a3d">${s.atividade}</div>
+    <div style="font-size:11.5px;color:#a06c12;margin-top:2px">
+      ${chipP(s.responsavel)} já tem ${s.outrasNoDia.length} tarefa(s) em ${s.dataFim}:
+      <span style="color:#5b6880">${s.outrasNoDia.join(' · ')}</span>
+    </div>
+  </div>
+</div>`).join('');
+    alertasHtml+=`
+<div class="card card-pad" style="background:#fffbec;border-color:#f0dfa0;margin-bottom:12px">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+    <span style="font-size:15px">🔴</span>
+    <div style="font-weight:700;color:#a06c12;font-size:13px">${sobrecargas.length} sobrecarga(s) de responsável detectada(s)</div>
+  </div>
+  ${rows_s}
+</div>`;
+  }
+  if(!conflitos.length && !sobrecargas.length){
+    alertasHtml=`
+<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:#e4f3ea;border:1px solid #a8dbb8;border-radius:9px;margin-bottom:12px">
+  <span style="font-size:15px">✅</span>
+  <div style="font-size:13px;font-weight:600;color:#2e7d52">Nenhum conflito ou sobrecarga detectado!</div>
+</div>`;
+  }
+
   document.getElementById('gerar-result').innerHTML=`
-<div class="card" style="overflow:hidden;margin-top:0">
+${alertasHtml}
+<div class="card" style="overflow:hidden">
   <div style="padding:13px 18px;border-bottom:1px solid #eef1f6;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
     <div>
-      <div style="font-size:13.5px;font-weight:700;color:#1f2a3d">✅ ${result.length} atividades calculadas</div>
+      <div style="font-size:13.5px;font-weight:700;color:#1f2a3d">📋 ${result.length} atividades calculadas</div>
       ${nome?`<div style="font-size:11.5px;color:#8a9ab5;margin-top:2px">${nome}</div>`:''}
     </div>
     ${nome?`<button class="btn-primary" onclick="cadastrarPlanner()">
@@ -1825,7 +1951,9 @@ function exibirResultadoCron(result, nome){
   </div>
   <div style="overflow-x:auto">
     <table>
-      <thead><tr><th>#</th><th>Atividade</th><th>Início</th><th>Fim</th></tr></thead>
+      <thead><tr>
+        <th>#</th><th>Atividade</th><th>Início</th><th>Fim</th>
+      </tr></thead>
       <tbody>${rows}</tbody>
     </table>
   </div>
