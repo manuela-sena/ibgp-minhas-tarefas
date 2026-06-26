@@ -266,6 +266,7 @@ html = html.replace("// PLACEHOLDER_CONFIG",
 const IS_CRONOGRAMA = {'true' if is_cronograma else 'false'};
 const NOME_USUARIO  = {json.dumps(nome_interno)};
 const DADOS_INICIAIS = {dados_iniciais};""")
-html = html.replace("// PLACEHOLDER_ATRIB", "")
+html = html.replace("// PLACEHOLDER_ATRIB",
+    f"const ATRIBUICOES_JS = {json.dumps(ATRIBUICOES)};")
 
 components.html(html, height=900, scrolling=False)
