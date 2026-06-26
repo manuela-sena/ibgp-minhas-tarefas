@@ -2448,33 +2448,25 @@ async function cadastrarPlanner(){
 // ── EXPORTAR XLSX ─────────────────────────────────────────────────────
 function exportarXLSX(){
   if(!_cronResultado?.length){ alert('Calcule o cronograma primeiro.'); return; }
-  // Monta CSV-like com separador para Excel
-  const nome = _cronNome || 'cronograma';
-  const hoje = new Date().toLocaleDateString('pt-BR');
 
-  // Cabeçalho BOM para UTF-8 no Excel
-  let csv = '\uFEFF';
-  csv += `IBGP - Instituto Brasileiro de Gestão e Pesquisa | novo.ibgpconcursos.com.br\n`;
-  csv += `CRONOGRAMA - ${nome}\n`;
-  csv += `Gerado em: ${hoje} | Tipo: ${_lastParams?.tipo||'CONCURSO'}\n\n`;
-  csv += 'Seq\tAtividade\tData Início\tData Fim\n';
+  // Serializar tarefas com datas em dd/mm/aaaa para o Python
+  const tarefas = _cronResultado.map(t=>({
+    seq: t.seq,
+    atividade: t.atividade,
+    data_inicio: fmtBR(t.data_inicio),
+    data_fim: fmtBR(t.data_fim),
+  }));
 
-  for(const t of _cronResultado){
-    // Datas no formato dd/mm/aaaa para o Excel reconhecer
-    const ini = fmtBR(t.data_inicio);
-    const fim = fmtBR(t.data_fim);
-    // Escapar tabs na atividade
-    const atv = t.atividade.replace(/\t/g,' ');
-    csv += `${t.seq}\t${atv}\t${ini}\t${fim}\n`;
-  }
+  const params = {
+    nome: _cronNome || 'Cronograma',
+    tipo: _lastParams?.tipo || 'CONCURSO',
+    tarefas,
+  };
 
-  const blob = new Blob([csv], {type:'text/tab-separated-values;charset=utf-8'});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href     = url;
-  a.download = `${nome.replace(/[^a-zA-Z0-9_\-]/g,'_')}_cronograma.xls`;
-  a.click();
-  URL.revokeObjectURL(url);
+  // Redireciona o Streamlit para gerar e baixar o arquivo
+  window.top.location.href = window.top.location.origin +
+    window.top.location.pathname +
+    '?download_xlsx=' + encodeURIComponent(JSON.stringify(params));
 }
 
 // ── EXPORTAR PDF ──────────────────────────────────────────────────────
