@@ -2362,10 +2362,20 @@ ${alertasHtml}
       <div style="font-size:13.5px;font-weight:700;color:#1f2a3d">📋 ${result.length} atividades calculadas</div>
       ${nome?`<div style="font-size:11.5px;color:#8a9ab5;margin-top:2px">${nome}</div>`:''}
     </div>
-    ${nome?`<button class="btn-primary" onclick="cadastrarPlanner()">
-      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
-      Cadastrar no Planner
-    </button>`:'<div style="font-size:11.5px;color:#f0a020">Preencha o nome do concurso para cadastrar</div>'}
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <button class="btn-secondary" onclick="exportarXLSX()" title="Baixar Excel">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        .xlsx
+      </button>
+      <button class="btn-secondary" onclick="exportarPDF()" title="Baixar PDF">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+        .pdf
+      </button>
+      ${nome?`<button class="btn-primary" onclick="cadastrarPlanner()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+        Cadastrar no Planner
+      </button>`:'<div style="font-size:11.5px;color:#f0a020">Preencha o nome do concurso para cadastrar</div>'}
+    </div>
   </div>
   <div style="overflow-x:auto">
     <table>
@@ -2436,6 +2446,120 @@ async function cadastrarPlanner(){
     alert('Erro ao cadastrar: '+e.message);
     if(btn){ btn.disabled=false; btn.innerHTML='Cadastrar no Planner'; }
   }
+}
+
+// ── EXPORTAR XLSX ─────────────────────────────────────────────────────
+function exportarXLSX(){
+  if(!_cronResultado?.length){ alert('Calcule o cronograma primeiro.'); return; }
+  // Monta CSV-like com separador para Excel
+  const nome = _cronNome || 'cronograma';
+  const hoje = new Date().toLocaleDateString('pt-BR');
+
+  // Cabeçalho BOM para UTF-8 no Excel
+  let csv = '\uFEFF';
+  csv += `CRONOGRAMA - ${nome}\n`;
+  csv += `Gerado em: ${hoje} | Tipo: ${_lastParams?.tipo||'CONCURSO'}\n\n`;
+  csv += 'Seq\tAtividade\tData Início\tData Fim\n';
+
+  for(const t of _cronResultado){
+    // Datas no formato dd/mm/aaaa para o Excel reconhecer
+    const ini = fmtBR(t.data_inicio);
+    const fim = fmtBR(t.data_fim);
+    // Escapar tabs na atividade
+    const atv = t.atividade.replace(/\t/g,' ');
+    csv += `${t.seq}\t${atv}\t${ini}\t${fim}\n`;
+  }
+
+  const blob = new Blob([csv], {type:'text/tab-separated-values;charset=utf-8'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `${nome.replace(/[^a-zA-Z0-9_\-]/g,'_')}_cronograma.xls`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── EXPORTAR PDF ──────────────────────────────────────────────────────
+function exportarPDF(){
+  if(!_cronResultado?.length){ alert('Calcule o cronograma primeiro.'); return; }
+  const nome   = _cronNome || 'Cronograma';
+  const hoje   = new Date().toLocaleDateString('pt-BR');
+  const tipo   = _lastParams?.tipo || 'CONCURSO';
+
+  // Monta HTML formatado para impressão
+  const rows = _cronResultado.map(t=>`
+    <tr>
+      <td style="width:36px;text-align:center;color:#8a9ab5;font-size:11px">${t.seq}</td>
+      <td style="font-size:12px;color:#1f2a3d;padding:6px 10px">${t.atividade}</td>
+      <td style="width:90px;text-align:center;font-size:11.5px;color:#41506b;white-space:nowrap">${fmtBR(t.data_inicio)}</td>
+      <td style="width:90px;text-align:center;font-size:11.5px;color:#41506b;white-space:nowrap">${fmtBR(t.data_fim)}</td>
+    </tr>`).join('');
+
+  const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Cronograma - ${nome}</title>
+<style>
+  @page { margin: 18mm 14mm; size: A4 portrait; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; color: #1f2a3d; background: #fff; }
+  .header { border-bottom: 2px solid #1f4e8c; padding-bottom: 12px; margin-bottom: 18px; }
+  .header-top { display: flex; align-items: flex-start; justify-content: space-between; }
+  .logo-box { display: flex; align-items: center; gap: 10px; }
+  .logo-sq { width: 38px; height: 38px; border-radius: 8px; background: linear-gradient(135deg,#2f6cc4,#1f4e8c); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; font-size: 14px; }
+  .org-name { font-size: 13px; font-weight: 700; color: #1f2a3d; }
+  .org-sub  { font-size: 10px; color: #7a869c; margin-top: 2px; }
+  .meta { text-align: right; font-size: 10.5px; color: #7a869c; }
+  .title { font-size: 16px; font-weight: 800; color: #1f2a3d; margin-top: 14px; }
+  .badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 9px; border-radius: 20px; background: #e9f1fb; color: #1f4e8c; margin-left: 8px; vertical-align: middle; }
+  table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+  thead tr { background: #1f4e8c; color: #fff; }
+  thead th { padding: 8px 10px; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; text-align: left; }
+  tbody tr:nth-child(even) { background: #f7f9fc; }
+  tbody tr { border-bottom: 1px solid #eef1f6; page-break-inside: avoid; }
+  td { padding: 5px 10px; vertical-align: middle; }
+  .footer { margin-top: 18px; font-size: 10px; color: #9aa6b8; text-align: center; border-top: 1px solid #eef1f6; padding-top: 10px; }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-top">
+    <div class="logo-box">
+      <div class="logo-sq">IB</div>
+      <div>
+        <div class="org-name">IBGP</div>
+        <div class="org-sub">Instituto Brasileiro de Gestão e Pesquisa</div>
+      </div>
+    </div>
+    <div class="meta">
+      Gerado em: ${hoje}<br>
+      Tipo: ${tipo}<br>
+      Total: ${_cronResultado.length} atividades
+    </div>
+  </div>
+  <div class="title">${nome} <span class="badge">${tipo}</span></div>
+</div>
+<table>
+  <thead>
+    <tr>
+      <th style="width:36px">#</th>
+      <th>Atividade</th>
+      <th style="width:90px;text-align:center">Início</th>
+      <th style="width:90px;text-align:center">Fim</th>
+    </tr>
+  </thead>
+  <tbody>${rows}</tbody>
+</table>
+<div class="footer">IBGP · Minhas Tarefas · Cronograma gerado automaticamente em ${hoje}</div>
+</body>
+</html>`;
+
+  const win = window.open('','_blank','width=900,height=700');
+  if(!win){ alert('Permita pop-ups para gerar o PDF.'); return; }
+  win.document.write(html);
+  win.document.close();
+  win.onload = ()=>{ setTimeout(()=>{ win.print(); }, 400); };
 }
 
 function renderCronResult(){ /* reservado para resultados vindos do Python */ }
