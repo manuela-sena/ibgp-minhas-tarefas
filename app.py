@@ -193,7 +193,44 @@ if "cadastrar_planner" in st.query_params:
     st.query_params.clear()
     st.rerun()
 
-# ── BUSCAR TAREFAS ────────────────────────────────────────────────────
+# ── DOWNLOAD XLSX (acionado via query param) ──────────────────────────
+if "download_xlsx" in st.query_params:
+    try:
+        import sys
+        sys.path.insert(0, "/mount/src/ibgp-minhas-tarefas")
+        from gerar_xlsx import gerar_xlsx_ibgp
+        from datetime import datetime
+
+        p = json.loads(st.query_params["download_xlsx"])
+        nome = p.get("nome", "Cronograma")
+        tipo = p.get("tipo", "CONCURSO")
+        tarefas_x = p.get("tarefas", [])
+
+        # Converter strings de data de volta para datetime
+        parsed = []
+        for t in tarefas_x:
+            ini = datetime.strptime(t["data_inicio"], "%d/%m/%Y")
+            fim = datetime.strptime(t["data_fim"],    "%d/%m/%Y")
+            parsed.append({"seq": t["seq"], "atividade": t["atividade"],
+                           "data_inicio": ini, "data_fim": fim})
+
+        xlsx_bytes = gerar_xlsx_ibgp(nome, tipo, parsed)
+        nome_arquivo = nome.replace("/","_").replace(" ","_")[:60] + "_cronograma.xlsx"
+
+        st.query_params.clear()
+        st.download_button(
+            label="📥 Clique aqui para baixar o XLSX",
+            data=xlsx_bytes,
+            file_name=nome_arquivo,
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+        st.stop()
+    except Exception as e:
+        st.error(f"Erro ao gerar XLSX: {e}")
+        st.query_params.clear()
+        st.rerun()
+
+
 def g(url):
     r = requests.get(url, headers={"Authorization":f"Bearer {token}"})
     r.raise_for_status(); return r.json()
