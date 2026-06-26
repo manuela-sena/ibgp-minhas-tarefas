@@ -1769,6 +1769,9 @@ function calcularConcurso(p){
 
 let _cronResultado=null, _cronNome='';
 
+// ── PARAMS GLOBAIS DO ÚLTIMO CÁLCULO (para recalcular em cascata) ─────
+let _lastParams = null;
+
 function calcularCronograma(){
   const nome=document.getElementById('g-nome')?.value||'';
   const dataPubStr=document.getElementById('g-data-pub')?.value;
@@ -1779,7 +1782,8 @@ function calcularCronograma(){
   const ch=tipoAtual==='GUARDA'?parseInt(document.getElementById('g-ch')?.value||'0'):0;
   const fases={}; PHASES.forEach(p=>{ fases[p.id]=p.on; });
 
-  const params={
+  _lastParams={
+    tipo: tipoAtual,
     dataPub: new Date(dataPubStr+'T12:00:00'),
     dataIniInsc: dataIniInscStr?new Date(dataIniInscStr+'T12:00:00'):null,
     diasInsc, chCurso:ch,
@@ -1793,7 +1797,7 @@ function calcularCronograma(){
   };
 
   try {
-    const result=calcularConcurso(params);
+    const result = motorCronograma(_lastParams);
     _cronResultado=result; _cronNome=nome;
     const {conflitos, sobrecargas} = analisarConflitos(result);
     exibirResultadoCron(result, nome, conflitos, sobrecargas);
@@ -1805,77 +1809,473 @@ function calcularCronograma(){
   }
 }
 
+// ── DISPATCHER: escolhe motor pelo tipo ───────────────────────────────
+function motorCronograma(p){
+  if(p.tipo==='PSS')    return calcularPSS(p);
+  if(p.tipo==='GUARDA') return calcularGuarda(p);
+  return calcularConcurso(p);
+}
+
+// ── MOTOR PSS ─────────────────────────────────────────────────────────
+// Diferença principal: do dia da prova até gabarito pós-recurso = 7 dias corridos
+// (em vez dos ~15 dias do CONCURSO); resto igual ao CONCURSO
+function calcularPSS(p){
+  // Reutiliza motor CONCURSO mas sobrescreve o prazo pós-prova
+  return calcularConcurso({...p, _modoPSS: true});
+}
+
+// ── MOTOR CONCURSO (com flag PSS) ─────────────────────────────────────
+function calcularConcurso(p){
+  const tasks=[]; let seq=1;
+  const add=(a,ini,fim)=>{ tasks.push({seq:seq++,atividade:a,data_inicio:ini,data_fim:fim||ini}); };
+  let ref;
+  const pub=proxUtil(p.dataPub);
+  add('PUBLICAÇÃO DO EDITAL',pub);
+  let fimInsc;
+
+  if(p.temIsencao){
+    const iniIse=p.dataIniInsc?proxUtil(p.dataIniInsc):proxUtil(addDays(pub,60));
+    const fimIse=addDiasUteis(iniIse,2);
+    add('PERÍODO SOLICITAÇÃO DE ISENÇÃO',iniIse,fimIse);
+    if(p.temInscricao){
+      fimInsc=proxUtil(addDays(iniIse,p.diasInsc-1));
+      add('PERÍODO DE INSCRIÇÕES/PCD/SOLICITAÇÃO COND. ESPECIAL/ENVIO LAUDOS',iniIse,fimInsc);
+    }
+    const rPrelIse=addDiasUteis(fimIse,5);
+    add('RESULTADO PRELIMINAR DA SOLICITAÇÃO DE ISENÇÃO',rPrelIse);
+    const iniRecIse=proxUtilApos(rPrelIse), fimRecIse=addDiasUteis(iniRecIse,2);
+    add('ABERTURA DE RECURSO CONTRA RESULTADO PRELIMINAR DA SOLICITAÇÃO DE ISENÇÃO',iniRecIse,fimRecIse);
+    const analIse=addDiasUteis(fimRecIse,2);
+    add('ANÁLISE DA BANCA DOS RECURSOS CONTRA SOLICITAÇÃO DE ISENÇÃO',analIse);
+    add('RESULTADO PÓS-RECURSO DA SOLICITAÇÃO DE ISENÇÃO',proxUtilApos(analIse));
+  } else if(p.temInscricao){
+    const iniInsc=p.dataIniInsc?proxUtil(p.dataIniInsc):proxUtil(addDays(pub,60));
+    fimInsc=proxUtil(addDays(iniInsc,p.diasInsc-1));
+    add('PERÍODO DE INSCRIÇÕES/PCD/SOLICITAÇÃO COND. ESPECIAL/ENVIO LAUDOS',iniInsc,fimInsc);
+  }
+
+  if(p.temInscricao && fimInsc){
+    add('2ª VIA E PAGAMENTO DO BOLETO',proxUtilApos(fimInsc));
+    const rPrelInsc=addDiasUteis(fimInsc,5);
+    add('RESULTADO PRELIMINAR INSCRIÇÕES/PCD/NEGROS/SOLIC CONDIÇÃO ESPECIAL',rPrelInsc);
+    const iniRI=proxUtilApos(rPrelInsc), fimRI=addDiasUteis(iniRI,2);
+    add('ABERTURA DE RECURSO CONTRA RESULTADO PRELIMINAR INSCRIÇÕES/PCD/NEGROS/SOLIC CONDIÇÃO ESPECIAL',iniRI,fimRI);
+    const analInsc=addDiasUteis(fimRI,2);
+    add('ANÁLISE DA BANCA DOS RECURSOS CONTRA RESULTADO PRELIMINAR INSCRIÇÕES/PCD/NEGROS/SOLIC CONDIÇÃO ESPECIAL',analInsc);
+    const rPosInsc=proxUtilApos(analInsc);
+    add('RESULTADO PÓS-RECURSO INSCRIÇÕES/PCD/NEGROS/SOLIC CONDIÇÃO ESPECIAL',rPosInsc);
+    ref=rPosInsc;
+  } else { ref=pub; }
+
+  if(p.temObjetiva){
+    const cdi=proxTerca(ref,1);
+    add('COMPROVANTE DEFINITIVO DE INSCRIÇÃO (CDI) - PUBLICAÇÃO DO LOCAL DE PROVA',cdi);
+    const provaObj=proxDomingo(cdi);
+    add(p.temDiscursiva?'PROVA OBJETIVA E PROVA DISCURSIVA':'PROVA OBJETIVA',provaObj);
+    add('GABARITO PRELIMINAR',provaObj);
+    const iniRQ=proxUtilApos(provaObj), fimRQ=addDiasUteis(iniRQ,2);
+    add('ABERTURA DE RECURSO CONTRA QUESTÕES PROVA OBJETIVA',iniRQ,fimRQ);
+    // PSS: análise = 7 dias corridos da prova; CONCURSO: 15 dias corridos
+    const analQ = p._modoPSS ? proxUtil(addDays(provaObj,7)) : addDays(fimRQ,15);
+    add('ANÁLISE DA BANCA DOS RECURSOS CONTRA QUESTÕES PROVA OBJETIVA',analQ);
+    const gabPos=proxUtilApos(analQ);
+    add('GABARITO PÓS-RECURSO',gabPos);
+    const iniRG=proxUtilApos(gabPos), fimRG=addDiasUteis(iniRG,2);
+    add('ABERTURA DE RECURSO CONTRA GABARITO PÓS-RECURSO (SE HOUVER ALTERAÇÃO/ANULAÇÃO DE QUESTÕES)',iniRG,fimRG);
+    const analGab=addDiasUteis(fimRG,4);
+    add('ANÁLISE DA BANCA DOS RECURSOS CONTRA GABARITO PÓS-RECURSO',analGab);
+    const rPrelTot=proxUtilApos(analGab);
+    add('GABARITO PÓS-RECURSO - RETIFICADO (SE HOUVER ALTERAÇÃO/ANULAÇÃO DE QUESTÕES) E RESULTADO PRELIMINAR DA TOTALIZAÇÃO DA PROVA OBJETIVA',rPrelTot);
+    if(p.temDiscursiva) add('ENVIAR PROVAS DISCURSIVAS PARA CORREÇÃO',rPrelTot);
+    const iniRT=proxUtilApos(rPrelTot), fimRT=addDiasUteis(iniRT,2);
+    add('ABERTURA DE RECURSO CONTRA TOTALIZAÇÃO DA PROVA OBJETIVA',iniRT,fimRT);
+    const analTot=addDiasUteis(fimRT,3);
+    add('ANÁLISE BANCA DOS RECURSOS CONTRA TOTALIZAÇÃO DA PROVA OBJETIVA',analTot);
+    const rPosTot=proxUtilApos(analTot);
+    if(p.temDiscursiva){
+      add('RESULTADO PÓS-RECURSO DA TOTALIZAÇÃO DA PROVA OBJETIVA E RESULTADO PRELIMINAR DA PROVA DISCURSIVA',rPosTot);
+      const iniRD=proxUtilApos(rPosTot), fimRD=addDiasUteis(iniRD,2);
+      add('ABERTURA DE RECURSO CONTRA O RESULTADO DA PROVA DISCURSIVA',iniRD,fimRD);
+      const analDisc=addDiasUteis(fimRD,3);
+      add('PERÍODO DE ANÁLISE DOS RECURSOS DA PROVA DISCURSIVA',analDisc);
+      const rPosDisc=proxUtilApos(analDisc);
+      add('RESULTADO PÓS-RECURSO DA PROVA DISCURSIVA',rPosDisc); ref=rPosDisc;
+    } else { add('RESULTADO PÓS-RECURSO DA TOTALIZAÇÃO DA PROVA OBJETIVA',rPosTot); ref=rPosTot; }
+  }
+
+  ref=_addFasesComuns(add,ref,p);
+  _addClassificacao(add,ref,p);
+  return tasks;
+}
+
+// ── MOTOR GUARDA ──────────────────────────────────────────────────────
+// Diferenças: prova ~30 dias após fim inscrições (sempre domingo),
+// convocações 5 dias úteis antes, análise recursos = 1 dia útil,
+// Sindicância Social exclusiva
+function calcularGuarda(p){
+  const tasks=[]; let seq=1;
+  const add=(a,ini,fim)=>{ tasks.push({seq:seq++,atividade:a,data_inicio:ini,data_fim:fim||ini}); };
+  let ref;
+  const pub=proxUtil(p.dataPub);
+  add('PUBLICAÇÃO DO EDITAL',pub);
+  let fimInsc;
+
+  if(p.temIsencao){
+    const iniIse=p.dataIniInsc?proxUtil(p.dataIniInsc):proxUtil(addDays(pub,60));
+    const fimIse=addDiasUteis(iniIse,2);
+    add('PERÍODO SOLICITAÇÃO DE ISENÇÃO',iniIse,fimIse);
+    if(p.temInscricao){
+      fimInsc=proxUtil(addDays(iniIse,p.diasInsc-1));
+      add('PERÍODO DE INSCRIÇÕES/PCD/SOLICITAÇÃO COND. ESPECIAL/ENVIO LAUDOS',iniIse,fimInsc);
+    }
+    const rPrelIse=addDiasUteis(fimIse,5);
+    add('RESULTADO PRELIMINAR DA SOLICITAÇÃO DE ISENÇÃO',rPrelIse);
+    const iniRI=proxUtilApos(rPrelIse), fimRI=addDiasUteis(iniRI,2);
+    add('ABERTURA DE RECURSO CONTRA RESULTADO PRELIMINAR DA SOLICITAÇÃO DE ISENÇÃO',iniRI,fimRI);
+    // Guarda: análise = 1 dia útil
+    const analIse=proxUtilApos(fimRI);
+    add('ANÁLISE DA BANCA DOS RECURSOS CONTRA SOLICITAÇÃO DE ISENÇÃO',analIse);
+    add('RESULTADO PÓS-RECURSO DA SOLICITAÇÃO DE ISENÇÃO',proxUtilApos(analIse));
+  } else if(p.temInscricao){
+    const iniInsc=p.dataIniInsc?proxUtil(p.dataIniInsc):proxUtil(addDays(pub,60));
+    fimInsc=proxUtil(addDays(iniInsc,p.diasInsc-1));
+    add('PERÍODO DE INSCRIÇÕES/PCD/SOLICITAÇÃO COND. ESPECIAL/ENVIO LAUDOS',iniInsc,fimInsc);
+  }
+
+  if(p.temInscricao && fimInsc){
+    add('2ª VIA E PAGAMENTO DO BOLETO',proxUtilApos(fimInsc));
+    const rPrelInsc=addDiasUteis(fimInsc,5);
+    add('RESULTADO PRELIMINAR INSCRIÇÕES/PCD/NEGROS/SOLIC CONDIÇÃO ESPECIAL',rPrelInsc);
+    const iniRI2=proxUtilApos(rPrelInsc), fimRI2=addDiasUteis(iniRI2,2);
+    add('ABERTURA DE RECURSO CONTRA RESULTADO PRELIMINAR INSCRIÇÕES/PCD/NEGROS/SOLIC CONDIÇÃO ESPECIAL',iniRI2,fimRI2);
+    // Guarda: análise = 1 dia útil; resultado = 2º dia útil
+    const analInsc=proxUtilApos(fimRI2);
+    add('ANÁLISE DA BANCA DOS RECURSOS CONTRA RESULTADO PRELIMINAR INSCRIÇÕES/PCD/NEGROS/SOLIC CONDIÇÃO ESPECIAL',analInsc);
+    const rPosInsc=segundoUtilApos(analInsc);
+    add('RESULTADO PÓS-RECURSO INSCRIÇÕES/PCD/NEGROS/SOLIC CONDIÇÃO ESPECIAL',rPosInsc);
+    ref=rPosInsc;
+  } else { ref=pub; }
+
+  if(p.temObjetiva && fimInsc){
+    // Guarda: prova ~30 dias corridos após fim inscrições, sempre domingo
+    const provaObj=proxDomingo(addDays(fimInsc,29));
+    // CDI = 5 dias úteis antes
+    const cdi=diasUteisAntes(provaObj,5);
+    add('COMPROVANTE DEFINITIVO DE INSCRIÇÃO (CDI) - PUBLICAÇÃO DO LOCAL DE PROVA',cdi);
+    add(p.temDiscursiva?'PROVA OBJETIVA E PROVA DISCURSIVA':'PROVA OBJETIVA',provaObj);
+    add('GABARITO PRELIMINAR',provaObj);
+    const iniRQ=proxUtilApos(provaObj), fimRQ=addDiasUteis(iniRQ,2);
+    add('ABERTURA DE RECURSO CONTRA QUESTÕES PROVA OBJETIVA',iniRQ,fimRQ);
+    // Guarda: análise ~15 dias corridos
+    const analQ=proxUtil(addDays(fimRQ,15));
+    add('ANÁLISE DA BANCA DOS RECURSOS CONTRA QUESTÕES PROVA OBJETIVA',analQ);
+    const gabPos=proxUtilApos(analQ);
+    add('GABARITO PÓS-RECURSO',gabPos);
+    const iniRG=proxUtilApos(gabPos), fimRG=addDiasUteis(iniRG,2);
+    add('ABERTURA DE RECURSO CONTRA GABARITO PÓS-RECURSO (SE HOUVER ALTERAÇÃO/ANULAÇÃO DE QUESTÕES)',iniRG,fimRG);
+    // Guarda: análise gabarito = 3 dias úteis
+    const analGab=addDiasUteis(proxUtilApos(fimRG),2);
+    add('ANÁLISE DOS RECURSOS CONTRA GABARITO PÓS-RECURSO',analGab);
+    const rPrelTot=proxUtilApos(analGab);
+    add('GABARITO PÓS-RECURSO - RETIFICADO (SE HOUVER ALTERAÇÃO/ANULAÇÃO DE QUESTÕES) E RESULTADO PRELIMINAR DA TOTALIZAÇÃO DA PROVA OBJETIVA',rPrelTot);
+    if(p.temDiscursiva) add('ENVIAR PROVAS DISCURSIVAS PARA CORREÇÃO',rPrelTot);
+    const iniRT=proxUtilApos(rPrelTot), fimRT=addDiasUteis(iniRT,2);
+    add('ABERTURA DE RECURSO CONTRA TOTALIZAÇÃO DA PROVA OBJETIVA',iniRT,fimRT);
+    // Guarda: análise totalização = 1 dia útil
+    const analTot=proxUtilApos(fimRT);
+    add('ANÁLISE BANCA DOS RECURSOS CONTRA TOTALIZAÇÃO DA PROVA OBJETIVA',analTot);
+    const rPosTot=proxUtilApos(analTot);
+    if(p.temDiscursiva){
+      add('RESULTADO PÓS-RECURSO DA TOTALIZAÇÃO DA PROVA OBJETIVA E RESULTADO PRELIMINAR DA PROVA DISCURSIVA',rPosTot);
+      const iniRD=proxUtilApos(rPosTot), fimRD=addDiasUteis(iniRD,2);
+      add('ABERTURA DE RECURSO CONTRA O RESULTADO DA PROVA DISCURSIVA',iniRD,fimRD);
+      const analDisc=addDiasUteis(proxUtilApos(fimRD),2);
+      add('PERÍODO DE ANÁLISE DOS RECURSOS DA PROVA DISCURSIVA',analDisc);
+      const rPosDisc=proxUtilApos(analDisc);
+      add('RESULTADO PÓS-RECURSO DA PROVA DISCURSIVA',rPosDisc); ref=rPosDisc;
+    } else { add('RESULTADO PÓS-RECURSO DA TOTALIZAÇÃO DA PROVA OBJETIVA',rPosTot); ref=rPosTot; }
+  }
+
+  // Prova Prática / TAF — Guarda: convocação 5 dias úteis antes do sábado
+  if(p.temPratica||p.temTaf){
+    const nomePrat=p.temPratica?'PROVA PRÁTICA':'PROVA DE CAPACIDADE FÍSICA';
+    const sabPrat=proxDiaSemana(ref,6,1);
+    const convPrat=diasUteisAntes(sabPrat,5);
+    add(`CONVOCAÇÃO PARA ${nomePrat}`,convPrat);
+    add(`REALIZAÇÃO ${nomePrat}`,sabPrat,addDays(sabPrat,1));
+    const rPrelPrat=proxUtil(addDays(sabPrat,8));
+    add(`RESULTADO PRELIMINAR ${nomePrat}`,rPrelPrat);
+    const iniRP=proxUtilApos(rPrelPrat), fimRP=addDiasUteis(iniRP,2);
+    add(`ABERTURA DE RECURSO CONTRA O RESULTADO ${nomePrat}`,iniRP,fimRP);
+    const analPrat=addDiasUteis(proxUtilApos(fimRP),2);
+    add(`PERÍODO DE ANÁLISE DOS RECURSOS DA ${nomePrat}`,analPrat);
+    const rPosPrat=segundoUtilApos(analPrat);
+    add(`RESULTADO PÓS-RECURSO DA ${nomePrat}`,rPosPrat); ref=rPosPrat;
+  }
+
+  // Sindicância Social — exclusiva da Guarda
+  if(p.temSindicancia){
+    add('CONVOCAÇÃO PARA A ENTREGA DA DOCUMENTAÇÃO PARA SINDICÂNCIA SOCIAL',ref);
+    const iniE=proxUtilApos(ref), fimE=addDiasUteis(iniE,2);
+    add('PERÍODO DE ENTREGA DA DOCUMENTAÇÃO PARA SINDICÂNCIA SOCIAL',iniE,fimE);
+    const fimAS=proxUtil(addDays(fimE,30));
+    add('ANÁLISE PELA COMISSÃO DA DOCUMENTAÇÃO DE SINDICÂNCIA SOCIAL',proxUtilApos(fimE),fimAS);
+    const rPrelS=proxUtilApos(fimAS);
+    add('RESULTADO PRELIMINAR DA SINDICÂNCIA SOCIAL',rPrelS);
+    const iniRS=proxUtilApos(rPrelS), fimRS=addDiasUteis(iniRS,2);
+    add('ABERTURA DE RECURSOS CONTRA RESULTADO DA SINDICÂNCIA SOCIAL',iniRS,fimRS);
+    const analS=addDiasUteis(proxUtilApos(fimRS),2);
+    add('ANÁLISE BANCA DOS RECURSOS CONTRA SINDICÂNCIA SOCIAL',analS);
+    const rPosS=proxUtilApos(analS);
+    add('RESULTADO PÓS-RECURSO CONTRA SINDICÂNCIA SOCIAL',rPosS); ref=rPosS;
+  }
+
+  ref=_addFasesComuns(add,ref,p,true); // true = modo Guarda
+  _addClassificacaoGuarda(add,ref,p);
+  return tasks;
+}
+
+// ── FASES COMUNS (Títulos, Psicológica, Competências, Médica, Clínica, Hetero) ──
+function _addFasesComuns(add,ref,p,isGuarda=false){
+  if(p.temTitulos){
+    add('CONVOCAÇÃO PARA PROVA DE TÍTULOS',ref);
+    const iniT=proxUtilApos(ref), fimT=addDiasUteis(iniT,2);
+    add('PERÍODO PARA ENVIO DOS TÍTULOS',iniT,fimT);
+    const analT=addDiasUteis(fimT,5);
+    add('PERÍODO PARA ANÁLISE DOS TÍTULOS',analT);
+    const rPrelT=proxUtilApos(analT);
+    add('RESULTADO PRELIMINAR PROVA DE TÍTULOS',rPrelT);
+    const iniRT=proxUtilApos(rPrelT), fimRT=addDiasUteis(iniRT,2);
+    add('ABERTURA DE RECURSO CONTRA O RESULTADO PROVA DE TÍTULOS',iniRT,fimRT);
+    const analRT=isGuarda?proxUtilApos(fimRT):addDiasUteis(fimRT,3);
+    add('PERÍODO DE ANÁLISE DOS RECURSOS DA PROVA DE TÍTULOS',analRT);
+    const rPosT=isGuarda?segundoUtilApos(analRT):proxUtilApos(analRT);
+    add('RESULTADO PÓS-RECURSO DA PROVA DE TÍTULOS',rPosT); ref=rPosT;
+  }
+  if(p.temPratica&&!isGuarda||p.temTaf&&!isGuarda){
+    const nomePrat=p.temPratica?'PROVA PRÁTICA':'PROVA DE CAPACIDADE FÍSICA';
+    const convPrat=proxTerca(ref);
+    add(`CONVOCAÇÃO PARA ${nomePrat}`,convPrat);
+    const sabPrat=proxDiaSemana(convPrat,6);
+    add(`REALIZAÇÃO ${nomePrat}`,sabPrat,addDays(sabPrat,1));
+    const rPrelPrat=proxUtil(addDays(sabPrat,8));
+    add(`RESULTADO PRELIMINAR ${nomePrat}`,rPrelPrat);
+    const iniRP=proxUtilApos(rPrelPrat), fimRP=addDiasUteis(iniRP,2);
+    add(`ABERTURA DE RECURSO CONTRA O RESULTADO ${nomePrat}`,iniRP,fimRP);
+    const analPrat=addDiasUteis(fimRP,3);
+    add(`PERÍODO DE ANÁLISE DOS RECURSOS DA ${nomePrat}`,analPrat);
+    const rPosPrat=proxUtilApos(analPrat);
+    add(`RESULTADO PÓS-RECURSO DA ${nomePrat}`,rPosPrat); ref=rPosPrat;
+  }
+  if(p.temPsicologica){
+    const sabP=isGuarda?proxDiaSemana(ref,6,1):proxDiaSemana(proxTerca(ref),6);
+    const convP=isGuarda?diasUteisAntes(sabP,5):proxTerca(ref);
+    add('CONVOCAÇÃO PARA AVALIAÇÃO PSICOLÓGICA',convP);
+    add('REALIZAÇÃO DA AVALIAÇÃO PSICOLÓGICA',sabP,addDays(sabP,1));
+    const corrP=addDiasUteis(addDays(sabP,1),3);
+    add('CORREÇÃO DOS TESTES DA AVALIAÇÃO PSICOLÓGICA',corrP);
+    const rPrelP=proxUtilApos(corrP);
+    add('RESULTADO PRELIMINAR DA AVALIAÇÃO PSICOLÓGICA',rPrelP);
+    let iniRecP;
+    if(p.temEntrevista){
+      const manif=addDiasUteis(rPrelP,1);
+      add('MANIFESTAÇÃO DE INTERESSE DE RECEBER ENTREVISTA DEVOLUTIVA',manif);
+      const entrev=proxUtilApos(manif);
+      add('REALIZAÇÃO DA ENTREVISTA DEVOLUTIVA',entrev);
+      iniRecP=addDiasUteis(entrev,3);
+    } else { iniRecP=proxUtilApos(rPrelP); }
+    const fimRecP=addDiasUteis(iniRecP,2);
+    add('ABERTURA DE RECURSOS CONTRA AVALIAÇÃO PSICOLÓGICA',iniRecP,fimRecP);
+    const analP=isGuarda?addDiasUteis(proxUtilApos(fimRecP),2):addDiasUteis(fimRecP,3);
+    add('ANÁLISE BANCA DOS RECURSOS DA AVALIAÇÃO PSICOLÓGICA',analP);
+    const rPosP=proxUtilApos(analP);
+    add('RESULTADO PÓS-RECURSO DA AVALIAÇÃO PSICOLÓGICA',rPosP); ref=rPosP;
+  }
+  if(p.temCompetencias){
+    const convC=proxTerca(ref);
+    add('CONVOCAÇÃO PARA ENTREVISTA POR COMPETÊNCIAS',convC);
+    const sabC=proxDiaSemana(convC,6);
+    add('REALIZAÇÃO ENTREVISTA POR COMPETÊNCIAS',sabC,addDays(sabC,1));
+    const rPrelC=addDiasUteis(addDays(sabC,1),2);
+    add('RESULTADO PRELIMINAR DA ENTREVISTA POR COMPETÊNCIAS',rPrelC);
+    const iniRC=proxUtilApos(rPrelC), fimRC=addDiasUteis(iniRC,2);
+    add('ABERTURA DE RECURSO CONTRA A ENTREVISTA POR COMPETÊNCIAS',iniRC,fimRC);
+    const analC=addDiasUteis(fimRC,2);
+    add('ANÁLISE BANCA DOS RECURSOS DA ENTREVISTA POR COMPETÊNCIAS',analC);
+    const rPosC=proxUtilApos(analC);
+    add('RESULTADO PÓS-RECURSO DA ENTREVISTA POR COMPETÊNCIAS',rPosC); ref=rPosC;
+  }
+  if(p.temMedica){
+    const sabM=isGuarda?proxDiaSemana(ref,6,1):proxDiaSemana(proxTerca(ref),6);
+    const convM=isGuarda?diasUteisAntes(sabM,5):proxTerca(ref);
+    add('CONVOCAÇÃO PARA AVALIAÇÃO MÉDICA',convM);
+    add('REALIZAÇÃO DA AVALIAÇÃO MÉDICA',sabM,addDays(sabM,1));
+    const rPrelM=addDiasUteis(addDays(sabM,1),3);
+    add('RESULTADO PRELIMINAR DA AVALIAÇÃO MÉDICA',rPrelM);
+    const iniRM=proxUtilApos(rPrelM), fimRM=addDiasUteis(iniRM,2);
+    add('ABERTURA DE RECURSOS CONTRA AVALIAÇÃO MÉDICA',iniRM,fimRM);
+    const analM=addDiasUteis(fimRM,2);
+    add('ANÁLISE DA BANCA DOS RECURSOS CONTRA AVALIAÇÃO MÉDICA',analM);
+    const rPosM=proxUtilApos(analM);
+    add('RESULTADO PÓS-RECURSO DA AVALIAÇÃO MÉDICA',rPosM); ref=rPosM;
+  }
+  if(p.temClinica){
+    const sabCl=isGuarda?proxDiaSemana(ref,6,1):proxDiaSemana(proxTerca(ref),6);
+    const convCl=isGuarda?diasUteisAntes(sabCl,5):proxTerca(ref);
+    add('CONVOCAÇÃO PARA AVALIAÇÃO CLÍNICA',convCl);
+    add('REALIZAÇÃO DA AVALIAÇÃO CLÍNICA',sabCl,addDays(sabCl,1));
+    const rPrelCl=addDiasUteis(addDays(sabCl,1),3);
+    add('RESULTADO PRELIMINAR DA AVALIAÇÃO CLÍNICA',rPrelCl);
+    const iniRCl=proxUtilApos(rPrelCl), fimRCl=addDiasUteis(iniRCl,2);
+    add('ABERTURA DE RECURSOS CONTRA AVALIAÇÃO CLÍNICA',iniRCl,fimRCl);
+    const analCl=addDiasUteis(fimRCl,2);
+    add('ANÁLISE DA BANCA DOS RECURSOS CONTRA AVALIAÇÃO CLÍNICA',analCl);
+    const rPosCl=proxUtilApos(analCl);
+    add('RESULTADO PÓS-RECURSO DA AVALIAÇÃO CLÍNICA',rPosCl); ref=rPosCl;
+  }
+  if(p.temHetero){
+    const convH=proxUtilApos(ref);
+    add('CONVOCAÇÃO PROCEDIMENTO HETEROIDENTIFICAÇÃO',convH);
+    const iniFoto=proxUtilApos(convH), fimFoto=addDiasUteis(iniFoto,2);
+    add('ENVIO FOTO/VÍDEO PARA PROCEDIMENTO HETEROIDENTIFICAÇÃO',iniFoto,fimFoto);
+    const iniAvH=proxUtilApos(fimFoto), fimAvH=addDiasUteis(iniAvH,2);
+    add('PROCEDIMENTO HETEROIDENTIFICAÇÃO - AVALIAÇÃO DA BANCA',iniAvH,fimAvH);
+    const rPrelH=proxUtilApos(fimAvH);
+    add('RESULTADO PRELIMINAR DO PROCEDIMENTO HETEROIDENTIFICAÇÃO',rPrelH);
+    const iniRH=proxUtilApos(rPrelH), fimRH=addDiasUteis(iniRH,2);
+    add('ABERTURA DE RECURSO CONTRA O RESULTADO DO PROCEDIMENTO HETEROIDENTIFICAÇÃO',iniRH,fimRH);
+    const analH=isGuarda?proxUtilApos(fimRH):addDiasUteis(fimRH,2);
+    add('ANÁLISE BANCA DOS RECURSOS DO PROCEDIMENTO HETEROIDENTIFICAÇÃO',analH);
+    const rPosH=proxUtilApos(analH);
+    add('RESULTADO PÓS-RECURSO DO PROCEDIMENTO HETEROIDENTIFICAÇÃO',rPosH); ref=rPosH;
+  }
+  return ref;
+}
+
+function _addClassificacao(add,ref,p){
+  add('CLASSIFICAÇÃO PRELIMINAR',ref);
+  const iniRC=proxUtilApos(ref), fimRC=addDiasUteis(iniRC,2);
+  add('ABERTURA DE RECURSO CONTRA CLASSIFICAÇÃO PRELIMINAR',iniRC,fimRC);
+  const analC=addDiasUteis(fimRC,2);
+  add('ANÁLISE DOS RECURSOS CONTRA CLASSIFICAÇÃO PRELIMINAR',analC);
+  const cf=proxUtilApos(analC);
+  add('CLASSIFICAÇÃO FINAL',cf); add('HOMOLOGAÇÃO',cf);
+}
+
+function _addClassificacaoGuarda(add,ref,p){
+  if(p.chCurso>0){
+    const diasCurso=Math.ceil(p.chCurso/10);
+    const convCurso=proxUtilApos(ref);
+    add('CONVOCAÇÃO PARA O CURSO DE FORMAÇÃO',convCurso);
+    let iniCurso=proxUtilApos(convCurso), fimCurso=new Date(iniCurso), dc=0;
+    while(dc<diasCurso){ if(fimCurso.getDay()<5&&!isFeriado(fimCurso)&&!isRecesso(fimCurso))dc++; if(dc<diasCurso)fimCurso=addDays(fimCurso,1); }
+    add('REALIZAÇÃO DO CURSO DE FORMAÇÃO',iniCurso,fimCurso);
+    const rPrelCurso=proxUtilApos(fimCurso);
+    add('RESULTADO PRELIMINAR DO CURSO DE FORMAÇÃO',rPrelCurso);
+    const iniRC=proxUtilApos(rPrelCurso), fimRC=addDiasUteis(iniRC,4);
+    add('ABERTURA DE RECURSO (05 DIAS ÚTEIS) CONTRA RESULTADO DO CURSO DE FORMAÇÃO E CLASSIFICAÇÃO PRELIMINAR',iniRC,fimRC);
+    const analC=addDiasUteis(fimRC,2);
+    add('ANÁLISE DOS RECURSOS CONTRA CLASSIFICAÇÃO PRELIMINAR',analC);
+    const cf=proxUtilApos(analC);
+    add('CLASSIFICAÇÃO FINAL',cf); add('HOMOLOGAÇÃO',cf);
+  } else { _addClassificacao(add,ref,p); }
+}
+
 // ── ANÁLISE DE CONFLITOS E SOBRECARGA ──────────────────────────────────
+// Tarefas com "PERÍODO DE INSCRIÇÕES" são ignoradas na sobrecarga
+const IGNORAR_SOBRECARGA = ['PERÍODO DE INSCRIÇÕES','PERÍODO SOLICITAÇÃO DE ISENÇÃO'];
+
 function dateKey(d){ return d.toISOString().substring(0,10); }
 
 function analisarConflitos(novosCron){
   const conflitos=[], sobrecargas=[];
+  const ATRIB=typeof ATRIBUICOES_JS!=='undefined'?ATRIBUICOES_JS:{};
 
-  // Monta índices das tarefas existentes no Planner (_allTasks já carregado)
-  // Por tarefa: { nomeAtividade → [{municipio, responsavel, due}] }
-  const porAtividade={};
-  // Por pessoa+dia: { "Lorena|2026-08-10" → [lista de tarefas] }
-  const porPessoaDia={};
-
+  // Índices das tarefas existentes no Planner
+  const porAtividade={}, porPessoaDia={};
   for(const t of _allTasks){
     if(!t.due) continue;
-    const dueDate=new Date(t.due); if(isNaN(dueDate)) continue;
-    const dk=dateKey(dueDate);
-    // índice por atividade
+    const due=new Date(t.due); if(isNaN(due)) continue;
+    const dk=dateKey(due);
     if(!porAtividade[t.tarefa]) porAtividade[t.tarefa]=[];
-    porAtividade[t.tarefa].push({municipio:t.municipio, responsavel:t.responsavel, dk});
-    // índice por responsável+dia
+    porAtividade[t.tarefa].push({municipio:t.municipio,responsavel:t.responsavel,dk});
     const pk=`${t.responsavel}|${dk}`;
     if(!porPessoaDia[pk]) porPessoaDia[pk]=[];
-    porPessoaDia[pk].push({tarefa:t.tarefa, municipio:t.municipio});
+    porPessoaDia[pk].push({tarefa:t.tarefa,municipio:t.municipio});
   }
-
-  // Atribuições do novo cronograma (usa ATRIBUICOES injetado pelo Python)
-  const ATRIB = typeof ATRIBUICOES_JS !== 'undefined' ? ATRIBUICOES_JS : {};
 
   for(const t of novosCron){
-    const dkIni=dateKey(t.data_inicio), dkFim=dateKey(t.data_fim);
-
-    // 1. Conflito de data: mesma tarefa com mesma data_fim em outro concurso
-    const existing=porAtividade[t.atividade]||[];
-    for(const ex of existing){
+    const dkFim=dateKey(t.data_fim);
+    // 1. Conflito de data: mesma atividade, mesma data_fim, outro concurso
+    for(const ex of (porAtividade[t.atividade]||[])){
       if(ex.dk===dkFim && ex.municipio!==_cronNome){
-        conflitos.push({
-          seq:t.seq, atividade:t.atividade,
-          dataFim:fmtBR(t.data_fim),
-          conflitoCom:ex.municipio, responsavel:ex.responsavel
-        });
+        conflitos.push({seq:t.seq,atividade:t.atividade,dataFim:fmtBR(t.data_fim),
+          conflitoCom:ex.municipio,responsavel:ex.responsavel,data_fim_obj:t.data_fim});
       }
     }
-
-    // 2. Sobrecarga: responsável da nova tarefa já tem 2+ tarefas no mesmo dia
-    const resp=ATRIB[t.atividade];
-    if(resp){
-      const pk=`${resp}|${dkFim}`;
-      const existentes=porPessoaDia[pk]||[];
-      if(existentes.length>=2){
-        sobrecargas.push({
-          seq:t.seq, atividade:t.atividade,
-          responsavel:resp,
-          dataFim:fmtBR(t.data_fim),
-          outrasNoDia:existentes.map(e=>`${e.tarefa} (${e.municipio})`).slice(0,3)
-        });
+    // 2. Sobrecarga — ignorar tarefas de inscrição
+    const ignorar=IGNORAR_SOBRECARGA.some(k=>t.atividade.toUpperCase().includes(k));
+    if(!ignorar){
+      const resp=ATRIB[t.atividade];
+      if(resp){
+        const pk=`${resp}|${dkFim}`;
+        const existentes=porPessoaDia[pk]||[];
+        if(existentes.length>=2){
+          sobrecargas.push({seq:t.seq,atividade:t.atividade,responsavel:resp,
+            dataFim:fmtBR(t.data_fim),data_fim_obj:t.data_fim,
+            outrasNoDia:existentes.map(e=>`${e.tarefa} (${e.municipio})`).slice(0,3)});
+        }
       }
     }
   }
-  return {conflitos, sobrecargas};
+  return {conflitos,sobrecargas};
+}
+
+// ── SUGESTÃO DE DATA ALTERNATIVA ─────────────────────────────────────
+// Encontra próxima data válida sem conflito, respeitando regras do tipo
+function sugerirNovaData(dataOriginal, tipo){
+  // Avança até encontrar uma data útil livre de conflito no Planner
+  const ATRIB=typeof ATRIBUICOES_JS!=='undefined'?ATRIBUICOES_JS:{};
+  const ocupadas=new Set(_allTasks.filter(t=>t.due).map(t=>dateKey(new Date(t.due))));
+  let candidata=proxUtilApos(dataOriginal);
+  // Para provas (domingo), avança para o próximo domingo
+  // Para outras atividades, qualquer dia útil serve
+  for(let i=0;i<60;i++){
+    if(!ocupadas.has(dateKey(candidata))) return candidata;
+    candidata=proxUtilApos(candidata);
+  }
+  return candidata;
+}
+
+// Recalcula cronograma deslocando a data de publicação pelo delta de dias
+function recalcularComNovaDataFim(seqAlvo, novaDataFim){
+  if(!_lastParams||!_cronResultado) return;
+  // Acha a tarefa alvo no cronograma atual
+  const alvo=_cronResultado.find(t=>t.seq===seqAlvo);
+  if(!alvo) return;
+  const delta=Math.round((novaDataFim-alvo.data_fim)/86400000); // dias
+  // Desloca data de publicação pelo mesmo delta
+  const novaDataPub=addDays(_lastParams.dataPub,delta);
+  const novosParams={..._lastParams, dataPub:novaDataPub};
+  const novoCron=motorCronograma(novosParams);
+  // Mantém tarefas antes do seq alvo inalteradas
+  const final=_cronResultado.slice(0,seqAlvo-1).concat(novoCron.slice(seqAlvo-1));
+  _cronResultado=final;
+  const {conflitos,sobrecargas}=analisarConflitos(final);
+  exibirResultadoCron(final,_cronNome,conflitos,sobrecargas);
+  // Fechar modal de sugestão se aberto
+  document.getElementById('modal-sugestao')?.remove();
 }
 
 function exibirResultadoCron(result, nome, conflitos=[], sobrecargas=[]){
-  // Monta set de seqs com problema para marcar na tabela
   const seqConflito=new Set(conflitos.map(c=>c.seq));
   const seqSobrec=new Set(sobrecargas.map(s=>s.seq));
 
   const rows=result.map(t=>{
     const hasC=seqConflito.has(t.seq), hasS=seqSobrec.has(t.seq);
-    const rowBg=hasC?'background:#fff8f0':hasS?'background:#fffbec':'';
-    const icon=hasC?'<span title="Conflito de data" style="color:#d93b3b;margin-right:4px">⚠️</span>':
-                hasS?'<span title="Responsável sobrecarregado" style="color:#d98a1f;margin-right:4px">🔴</span>':'';
+    const rowBg=hasC?'background:#fff8f5':hasS?'background:#fffbec':'';
+    const icon=hasC?'<span style="color:#d93b3b;margin-right:5px">⚠️</span>':
+                hasS?'<span style="color:#d98a1f;margin-right:5px">🔴</span>':'';
     return `<tr style="${rowBg}">
       <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8a9ab5;width:36px">${t.seq}</td>
       <td style="font-size:12.5px;color:#1f2a3d">${icon}${t.atividade}</td>
@@ -1884,51 +2284,69 @@ function exibirResultadoCron(result, nome, conflitos=[], sobrecargas=[]){
     </tr>`;
   }).join('');
 
-  // Painel de alertas
+  // ── Painéis de alerta com botões de sugestão ──
   let alertasHtml='';
   if(conflitos.length){
-    const rows_c=conflitos.map(c=>`
-<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #f3cfcd">
-  <div style="flex:none;font-size:11px;font-family:'JetBrains Mono',monospace;color:#c0322f;padding-top:1px">#${c.seq}</div>
+    const itens=conflitos.map(c=>{
+      const sugestao=sugerirNovaData(c.data_fim_obj, tipoAtual);
+      return `
+<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f3cfcd">
+  <div style="flex:none;font-size:11px;font-family:'JetBrains Mono',monospace;color:#c0322f;padding-top:2px;width:24px">#${c.seq}</div>
   <div style="flex:1;min-width:0">
     <div style="font-size:12.5px;font-weight:600;color:#1f2a3d">${c.atividade}</div>
-    <div style="font-size:11.5px;color:#c0322f;margin-top:2px">
-      📅 ${c.dataFim} — bate com <strong>${c.conflitoCom}</strong>
-      ${c.responsavel?`<span style="margin-left:6px">${chipP(c.responsavel)}</span>`:''}
+    <div style="font-size:11.5px;color:#c0322f;margin-top:3px">
+      📅 Data atual: <strong>${c.dataFim}</strong> — conflito com <strong>${c.conflitoCom}</strong>
+      ${c.responsavel?`<span style="margin-left:4px">${chipP(c.responsavel)}</span>`:''}
+    </div>
+    <div style="margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <div style="font-size:11.5px;color:#41506b">💡 Sugestão: <strong style="color:#1f4e8c">${fmtBR(sugestao)}</strong> (próximo dia útil livre)</div>
+      <button class="btn-primary" style="height:28px;padding:0 12px;font-size:11.5px"
+        onclick="confirmarSugestao(${c.seq},'${sugestao.toISOString()}','${c.atividade.replace(/'/g,"\\'")}','${fmtBR(sugestao)}')">
+        ✅ Aceitar e recalcular em cascata
+      </button>
+      <button class="btn-secondary" style="height:28px;padding:0 10px;font-size:11.5px"
+        onclick="ignorarAlerta(this)">Ignorar</button>
     </div>
   </div>
-</div>`).join('');
+</div>`;
+    }).join('');
     alertasHtml+=`
 <div class="card card-pad" style="background:#fff5f5;border-color:#f3cfcd;margin-bottom:12px">
-  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-    <span style="font-size:15px">⚠️</span>
-    <div style="font-weight:700;color:#c0322f;font-size:13px">${conflitos.length} conflito(s) de data com outros processos</div>
-  </div>
-  ${rows_c}
+  <div style="font-weight:700;color:#c0322f;font-size:13px;margin-bottom:6px">⚠️ ${conflitos.length} conflito(s) de data com outros processos</div>
+  ${itens}
 </div>`;
   }
   if(sobrecargas.length){
-    const rows_s=sobrecargas.map(s=>`
-<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #f3e2bf">
-  <div style="flex:none;font-size:11px;font-family:'JetBrains Mono',monospace;color:#a06c12;padding-top:1px">#${s.seq}</div>
+    const itens=sobrecargas.map(s=>{
+      const sugestao=sugerirNovaData(s.data_fim_obj, tipoAtual);
+      return `
+<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f3e2bf">
+  <div style="flex:none;font-size:11px;font-family:'JetBrains Mono',monospace;color:#a06c12;padding-top:2px;width:24px">#${s.seq}</div>
   <div style="flex:1;min-width:0">
     <div style="font-size:12.5px;font-weight:600;color:#1f2a3d">${s.atividade}</div>
-    <div style="font-size:11.5px;color:#a06c12;margin-top:2px">
-      ${chipP(s.responsavel)} já tem ${s.outrasNoDia.length} tarefa(s) em ${s.dataFim}:
-      <span style="color:#5b6880">${s.outrasNoDia.join(' · ')}</span>
+    <div style="font-size:11.5px;color:#a06c12;margin-top:3px">
+      ${chipP(s.responsavel)} sobrecarregado(a) em <strong>${s.dataFim}</strong>
+      <span style="color:#5b6880;margin-left:4px">— ${s.outrasNoDia.join(' · ')}</span>
+    </div>
+    <div style="margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <div style="font-size:11.5px;color:#41506b">💡 Sugestão: <strong style="color:#1f4e8c">${fmtBR(sugestao)}</strong> (próximo dia útil livre)</div>
+      <button class="btn-primary" style="height:28px;padding:0 12px;font-size:11.5px"
+        onclick="confirmarSugestao(${s.seq},'${sugestao.toISOString()}','${s.atividade.replace(/'/g,"\\'")}','${fmtBR(sugestao)}')">
+        ✅ Aceitar e recalcular em cascata
+      </button>
+      <button class="btn-secondary" style="height:28px;padding:0 10px;font-size:11.5px"
+        onclick="ignorarAlerta(this)">Ignorar</button>
     </div>
   </div>
-</div>`).join('');
+</div>`;
+    }).join('');
     alertasHtml+=`
 <div class="card card-pad" style="background:#fffbec;border-color:#f0dfa0;margin-bottom:12px">
-  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-    <span style="font-size:15px">🔴</span>
-    <div style="font-weight:700;color:#a06c12;font-size:13px">${sobrecargas.length} sobrecarga(s) de responsável detectada(s)</div>
-  </div>
-  ${rows_s}
+  <div style="font-weight:700;color:#a06c12;font-size:13px;margin-bottom:6px">🔴 ${sobrecargas.length} sobrecarga(s) de responsável detectada(s)</div>
+  ${itens}
 </div>`;
   }
-  if(!conflitos.length && !sobrecargas.length){
+  if(!conflitos.length&&!sobrecargas.length){
     alertasHtml=`
 <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:#e4f3ea;border:1px solid #a8dbb8;border-radius:9px;margin-bottom:12px">
   <span style="font-size:15px">✅</span>
@@ -1951,13 +2369,21 @@ ${alertasHtml}
   </div>
   <div style="overflow-x:auto">
     <table>
-      <thead><tr>
-        <th>#</th><th>Atividade</th><th>Início</th><th>Fim</th>
-      </tr></thead>
+      <thead><tr><th>#</th><th>Atividade</th><th>Início</th><th>Fim</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
   </div>
 </div>`;
+}
+
+function confirmarSugestao(seq, novaDataISO, atividade, novaDataBR){
+  if(!confirm(`Aceitar nova data para:\n"${atividade}"\n\nNova data: ${novaDataBR}\n\nTodas as atividades seguintes serão recalculadas em cascata.`)) return;
+  recalcularComNovaDataFim(seq, new Date(novaDataISO));
+}
+
+function ignorarAlerta(btn){
+  btn.closest('div[style*="display:flex;align-items:flex-start"]').style.opacity='0.4';
+  btn.closest('div[style*="display:flex;align-items:flex-start"]').style.pointerEvents='none';
 }
 
 async function cadastrarPlanner(){
