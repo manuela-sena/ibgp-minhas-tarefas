@@ -1404,14 +1404,22 @@ async function salvarReajuste(original){
 }
 
 // ── GERAR ─────────────────────────────────────────────────────────────
+// ── FASES ─────────────────────────────────────────────────────────────
 const PHASES=[
-  {id:'objetiva',label:'Prova Objetiva',on:true},{id:'isencao',label:'Isenção',on:true},
-  {id:'inscricao',label:'Inscrições',on:true},{id:'discursiva',label:'Prova Discursiva',on:false},
-  {id:'pratica',label:'Prova Prática',on:false},{id:'taf',label:'TAF / Capacidade Física',on:false},
-  {id:'titulos',label:'Prova de Títulos',on:false},{id:'psicologica',label:'Avaliação Psicológica',on:false},
-  {id:'medica',label:'Avaliação Médica',on:false},{id:'clinica',label:'Avaliação Clínica',on:false},
-  {id:'hetero',label:'Heteroidentificação',on:false},{id:'entrevista',label:'Entrevista Devolutiva',on:false},
+  {id:'objetiva',label:'Prova Objetiva',on:true},
+  {id:'isencao',label:'Isenção',on:true},
+  {id:'inscricao',label:'Inscrições',on:true},
+  {id:'discursiva',label:'Prova Discursiva',on:false},
+  {id:'pratica',label:'Prova Prática',on:false},
+  {id:'taf',label:'TAF / Capacidade Física',on:false},
+  {id:'titulos',label:'Prova de Títulos',on:false},
+  {id:'psicologica',label:'Avaliação Psicológica',on:false},
+  {id:'medica',label:'Avaliação Médica',on:false},
+  {id:'clinica',label:'Avaliação Clínica',on:false},
+  {id:'hetero',label:'Heteroidentificação',on:false},
+  {id:'entrevista',label:'Entrevista Devolutiva',on:false},
   {id:'competencias',label:'Entrevista por Competências',on:false},
+  {id:'sindicancia',label:'Sindicância Social',on:false,guardaOnly:true},
 ];
 let tipoAtual='CONCURSO';
 function setTipo(t){
@@ -1425,117 +1433,458 @@ function setTipo(t){
   if(di) di.value=t==='PSS'?10:30;
   const chw=document.getElementById('g-ch-wrap');
   if(chw) chw.style.display=t==='GUARDA'?'block':'none';
+  renderPhases();
 }
 function toggleDataManual(){ const w=document.getElementById('g-data-manual-wrap'); if(w) w.style.display=document.getElementById('g-data-manual-cb')?.checked?'block':'none'; }
 function updateChInfo(){ const ch=parseInt(document.getElementById('g-ch')?.value)||0; const el=document.getElementById('g-ch-info'); if(el) el.textContent=ch>0?`📚 ${ch}h ÷ 10h/dia = ${Math.ceil(ch/10)} dias úteis de curso`:''; }
 function renderPhases(){
   const pg=document.getElementById('phase-grid'); if(!pg) return;
-  pg.innerHTML=PHASES.map(p=>`
+  const visible=PHASES.filter(p=>!p.guardaOnly || tipoAtual==='GUARDA');
+  pg.innerHTML=visible.map(p=>`
 <div class="phase-item" onclick="togglePhase('${p.id}')">
   <div class="phase-cb ${p.on?'on':''}" id="ph-${p.id}">${p.on?'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div>
   <span>${p.label}</span>
 </div>`).join('');
 }
 function togglePhase(id){
-  const p=PHASES.find(p=>p.id===id); p.on=!p.on;
+  const p=PHASES.find(p=>p.id===id); if(!p) return; p.on=!p.on;
   const el=document.getElementById('ph-'+id);
+  if(!el) return;
   el.className='phase-cb '+(p.on?'on':'');
   el.innerHTML=p.on?'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':'';
 }
-function calcularCronograma(){
-  const nome=document.getElementById('g-nome')?.value||'';
-  const dataPub=document.getElementById('g-data-pub')?.value;
-  if(!dataPub){ alert('Informe a data de publicação.'); return; }
-  const manualCb=document.getElementById('g-data-manual-cb')?.checked;
-  const dataIniInsc=manualCb?(document.getElementById('g-data-ini-insc')?.value||''):'';
-  const diasInsc=document.getElementById('g-dias-insc')?.value||'30';
-  const ch=tipoAtual==='GUARDA'?(document.getElementById('g-ch')?.value||'0'):'0';
-  const fases={};
-  PHASES.forEach(p=>{ fases[p.id]=p.on; });
-  const params={
-    nome, tipo:tipoAtual, data_pub:dataPub,
-    data_ini_insc:dataIniInsc, dias_insc:parseInt(diasInsc),
-    ch_curso:parseInt(ch),
-    tem_objetiva:fases.objetiva, tem_inscricao:fases.inscricao,
-    tem_isencao:fases.isencao, tem_discursiva:fases.discursiva,
-    tem_pratica:fases.pratica, tem_taf:fases.taf,
-    tem_titulos:fases.titulos, tem_psicologica:fases.psicologica,
-    tem_medica:fases.medica, tem_clinica:fases.clinica,
-    tem_hetero:fases.hetero, tem_entrevista:fases.entrevista,
-    tem_competencias:fases.competencias, tem_sindicancia:fases.sind||false,
-    concomitancia:false,
-  };
-  document.getElementById('gerar-result').innerHTML=`
-<div class="card card-pad" style="background:#e9f1fb;border-color:#b8d0ef;display:flex;align-items:center;gap:12px">
-  <div class="spinner" style="border-top-color:#1f4e8c"></div>
-  <div style="font-size:13.5px;color:#1f4e8c;font-weight:600">Calculando cronograma com motor IBGP...</div>
-</div>`;
-  // Navega o topo da página (Streamlit) com os parâmetros — rerun Python
-  window.top.location.href = window.top.location.origin +
-    window.top.location.pathname +
-    '?calc_cron=' + encodeURIComponent(JSON.stringify(params));
+
+// ── MOTOR DE CRONOGRAMA EM JS ──────────────────────────────────────────
+// Feriados fixos (dia, mês)
+const FERIADOS_FIXOS=[[1,1],[21,4],[1,5],[7,9],[12,10],[2,11],[15,11],[25,12]];
+function pascoa(ano){
+  const a=ano%19,b=Math.floor(ano/100),c=ano%100,d=Math.floor(b/4),e=b%4;
+  const f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3);
+  const h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4;
+  const l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451);
+  const mes=Math.floor((h+l-7*m+114)/31),dia=((h+l-7*m+114)%31)+1;
+  return new Date(ano,mes-1,dia);
+}
+function feriadosMoveis(ano){
+  const p=pascoa(ano);
+  return [
+    addDays(p,-48),addDays(p,-47),addDays(p,-2),
+    new Date(p),addDays(p,60)
+  ];
+}
+function isFeriado(d){
+  if(FERIADOS_FIXOS.some(([dia,mes])=>d.getDate()===dia&&d.getMonth()+1===mes)) return true;
+  return feriadosMoveis(d.getFullYear()).some(f=>f.toDateString()===d.toDateString());
+}
+function isRecesso(d){
+  const m=d.getMonth()+1,dia=d.getDate();
+  return (m===12&&dia>=20)||(m===1&&dia<=5);
+}
+function isUtil(d){
+  if(d.getDay()===0||d.getDay()===6) return false;
+  if(isFeriado(d)||isRecesso(d)) return false;
+  return true;
+}
+function addDays(d,n){ const r=new Date(d); r.setDate(r.getDate()+n); return r; }
+function proxUtil(d){ let r=new Date(d); while(!isUtil(r)) r=addDays(r,1); return r; }
+function proxUtilApos(d){ return proxUtil(addDays(d,1)); }
+function addDiasUteis(d,n){ let c=0,r=new Date(d); while(c<n){r=addDays(r,1);if(isUtil(r))c++;} return r; }
+function diasUteisAntes(d,n){ let c=0,r=new Date(d); while(c<n){r=addDays(r,-1);if(isUtil(r))c++;} return r; }
+function segundoUtilApos(d){ return addDiasUteis(proxUtilApos(d),1); }
+function proxDomingo(d){ let r=new Date(d); let dias=(7-r.getDay())%7; if(dias===0)dias=7; r.setDate(r.getDate()+dias); return r; }
+function proxDiaSemana(d,diaSem,semanasDepois=0){ let r=new Date(d); let dias=(diaSem-r.getDay()+7)%7; if(dias===0)dias=7; r.setDate(r.getDate()+dias+semanasDepois*7); return r; }
+function proxTerca(d,semanasDepois=0){ let r=proxDiaSemana(d,2,semanasDepois); while(!isUtil(r)) r=proxUtilApos(r); return r; }
+function fmtBR(d){ return d.toLocaleDateString('pt-BR'); }
+
+function calcularConcurso(p){
+  const tasks=[]; let seq=1;
+  const add=(a,ini,fim)=>{ tasks.push({seq:seq++,atividade:a,data_inicio:ini,data_fim:fim||ini}); };
+  let ref;
+  const pub=proxUtil(p.dataPub);
+  add('PUBLICAÇÃO DO EDITAL',pub);
+
+  let inicioIsencao, fimInsc;
+
+  if(p.temIsencao){
+    inicioIsencao = p.dataIniInsc ? proxUtil(p.dataIniInsc) : proxUtil(addDays(pub,60));
+    const fimIsencao=addDiasUteis(inicioIsencao,2);
+    add('PERÍODO SOLICITAÇÃO DE ISENÇÃO',inicioIsencao,fimIsencao);
+    if(p.temInscricao){
+      const iniInsc=inicioIsencao;
+      fimInsc=proxUtil(addDays(iniInsc,p.diasInsc-1));
+      if(!isUtil(fimInsc)) fimInsc=proxUtil(fimInsc);
+      add('PERÍODO DE INSCRIÇÕES/PCD/SOLICITAÇÃO COND. ESPECIAL/ENVIO LAUDOS',iniInsc,fimInsc);
+    }
+    const resPrelIse=addDiasUteis(fimIsencao,5);
+    add('RESULTADO PRELIMINAR DA SOLICITAÇÃO DE ISENÇÃO',resPrelIse);
+    const iniRecIse=proxUtilApos(resPrelIse), fimRecIse=addDiasUteis(iniRecIse,2);
+    add('ABERTURA DE RECURSO CONTRA RESULTADO PRELIMINAR DA SOLICITAÇÃO DE ISENÇÃO',iniRecIse,fimRecIse);
+    const analIse=addDiasUteis(fimRecIse,2);
+    add('ANÁLISE DA BANCA DOS RECURSOS CONTRA SOLICITAÇÃO DE ISENÇÃO',analIse);
+    const resPosIse=proxUtilApos(analIse);
+    add('RESULTADO PÓS-RECURSO DA SOLICITAÇÃO DE ISENÇÃO',resPosIse);
+  } else if(p.temInscricao){
+    const iniInsc=p.dataIniInsc?proxUtil(p.dataIniInsc):proxUtil(addDays(pub,60));
+    fimInsc=addDays(iniInsc,p.diasInsc-1);
+    if(!isUtil(fimInsc)) fimInsc=proxUtil(fimInsc);
+    add('PERÍODO DE INSCRIÇÕES/PCD/SOLICITAÇÃO COND. ESPECIAL/ENVIO LAUDOS',iniInsc,fimInsc);
+  }
+
+  if(p.temInscricao && fimInsc){
+    add('2ª VIA E PAGAMENTO DO BOLETO',proxUtilApos(fimInsc));
+    const resPrelInsc=addDiasUteis(fimInsc,5);
+    add('RESULTADO PRELIMINAR INSCRIÇÕES/PCD/NEGROS/SOLIC CONDIÇÃO ESPECIAL',resPrelInsc);
+    const iniRecInsc=proxUtilApos(resPrelInsc), fimRecInsc=addDiasUteis(iniRecInsc,2);
+    add('ABERTURA DE RECURSO CONTRA RESULTADO PRELIMINAR INSCRIÇÕES/PCD/NEGROS/SOLIC CONDIÇÃO ESPECIAL',iniRecInsc,fimRecInsc);
+    const analInsc=addDiasUteis(fimRecInsc,2);
+    add('ANÁLISE DA BANCA DOS RECURSOS CONTRA RESULTADO PRELIMINAR INSCRIÇÕES/PCD/NEGROS/SOLIC CONDIÇÃO ESPECIAL',analInsc);
+    const resPosInsc=proxUtilApos(analInsc);
+    add('RESULTADO PÓS-RECURSO INSCRIÇÕES/PCD/NEGROS/SOLIC CONDIÇÃO ESPECIAL',resPosInsc);
+    ref=resPosInsc;
+  } else { ref=pub; }
+
+  if(p.temObjetiva){
+    const cdi=proxTerca(ref,1);
+    add('COMPROVANTE DEFINITIVO DE INSCRIÇÃO (CDI) - PUBLICAÇÃO DO LOCAL DE PROVA',cdi);
+    const provaObj=proxDomingo(cdi);
+    const nomeProva=p.temDiscursiva?'PROVA OBJETIVA E PROVA DISCURSIVA':'PROVA OBJETIVA';
+    add(nomeProva,provaObj); add('GABARITO PRELIMINAR',provaObj);
+    const iniRecQ=proxUtilApos(provaObj), fimRecQ=addDiasUteis(iniRecQ,2);
+    add('ABERTURA DE RECURSO CONTRA QUESTÕES PROVA OBJETIVA',iniRecQ,fimRecQ);
+    const analQ=addDays(fimRecQ,15);
+    add('ANÁLISE DA BANCA DOS RECURSOS CONTRA QUESTÕES PROVA OBJETIVA',analQ);
+    const gabPos=proxUtilApos(analQ);
+    add('GABARITO PÓS-RECURSO',gabPos);
+    const iniRecGab=proxUtilApos(gabPos), fimRecGab=addDiasUteis(iniRecGab,2);
+    add('ABERTURA DE RECURSO CONTRA GABARITO PÓS-RECURSO (SE HOUVER ALTERAÇÃO/ANULAÇÃO DE QUESTÕES)',iniRecGab,fimRecGab);
+    const analGab=addDiasUteis(fimRecGab,4);
+    add('ANÁLISE DA BANCA DOS RECURSOS CONTRA GABARITO PÓS-RECURSO',analGab);
+    const resPrelTotal=proxUtilApos(analGab);
+    add('GABARITO PÓS-RECURSO - RETIFICADO (SE HOUVER ALTERAÇÃO/ANULAÇÃO DE QUESTÕES) E RESULTADO PRELIMINAR DA TOTALIZAÇÃO DA PROVA OBJETIVA',resPrelTotal);
+    if(p.temDiscursiva) add('ENVIAR PROVAS DISCURSIVAS PARA CORREÇÃO',resPrelTotal);
+    const iniRecTot=proxUtilApos(resPrelTotal), fimRecTot=addDiasUteis(iniRecTot,2);
+    add('ABERTURA DE RECURSO CONTRA TOTALIZAÇÃO DA PROVA OBJETIVA',iniRecTot,fimRecTot);
+    const analTot=addDiasUteis(fimRecTot,3);
+    add('ANÁLISE BANCA DOS RECURSOS CONTRA TOTALIZAÇÃO DA PROVA OBJETIVA',analTot);
+    const resPosTot=proxUtilApos(analTot);
+    if(p.temDiscursiva){
+      add('RESULTADO PÓS-RECURSO DA TOTALIZAÇÃO DA PROVA OBJETIVA E RESULTADO PRELIMINAR DA PROVA DISCURSIVA',resPosTot);
+      const iniRecDisc=proxUtilApos(resPosTot), fimRecDisc=addDiasUteis(iniRecDisc,2);
+      add('ABERTURA DE RECURSO CONTRA O RESULTADO DA PROVA DISCURSIVA',iniRecDisc,fimRecDisc);
+      const analDisc=addDiasUteis(fimRecDisc,3);
+      add('PERÍODO DE ANÁLISE DOS RECURSOS DA PROVA DISCURSIVA',analDisc);
+      const resPosDisc=proxUtilApos(analDisc);
+      add('RESULTADO PÓS-RECURSO DA PROVA DISCURSIVA',resPosDisc);
+      ref=resPosDisc;
+    } else {
+      add('RESULTADO PÓS-RECURSO DA TOTALIZAÇÃO DA PROVA OBJETIVA',resPosTot);
+      ref=resPosTot;
+    }
+  }
+
+  // Prova Prática / TAF
+  if(p.temPratica||p.temTaf){
+    const nomePrat=p.temPratica?'PROVA PRÁTICA':'PROVA DE CAPACIDADE FÍSICA';
+    const convPrat=proxTerca(ref);
+    add(`CONVOCAÇÃO PARA ${nomePrat}`,convPrat);
+    const sabPrat=proxDiaSemana(convPrat,6);
+    const domPrat=addDays(sabPrat,1);
+    add(`REALIZAÇÃO ${nomePrat}`,sabPrat,domPrat);
+    const resPrelPrat=proxUtil(addDays(domPrat,7));
+    add(`RESULTADO PRELIMINAR ${nomePrat}`,resPrelPrat);
+    const iniRecPrat=proxUtilApos(resPrelPrat), fimRecPrat=addDiasUteis(iniRecPrat,2);
+    add(`ABERTURA DE RECURSO CONTRA O RESULTADO ${nomePrat}`,iniRecPrat,fimRecPrat);
+    const analPrat=addDiasUteis(fimRecPrat,3);
+    add(`PERÍODO DE ANÁLISE DOS RECURSOS DA ${nomePrat}`,analPrat);
+    const resPosPrat=proxUtilApos(analPrat);
+    add(`RESULTADO PÓS-RECURSO DA ${nomePrat}`,resPosPrat);
+    ref=resPosPrat;
+  }
+
+  // Títulos
+  if(p.temTitulos){
+    add('CONVOCAÇÃO PARA PROVA DE TÍTULOS',ref);
+    const iniTit=proxUtilApos(ref), fimTit=addDiasUteis(iniTit,2);
+    add('PERÍODO PARA ENVIO DOS TÍTULOS',iniTit,fimTit);
+    const analTit=addDiasUteis(fimTit,5);
+    add('PERÍODO PARA ANÁLISE DOS TÍTULOS',analTit);
+    const resPrelTit=proxUtilApos(analTit);
+    add('RESULTADO PRELIMINAR PROVA DE TÍTULOS',resPrelTit);
+    const iniRecTit=proxUtilApos(resPrelTit), fimRecTit=addDiasUteis(iniRecTit,2);
+    add('ABERTURA DE RECURSO CONTRA O RESULTADO PROVA DE TÍTULOS',iniRecTit,fimRecTit);
+    const analRecTit=addDiasUteis(fimRecTit,3);
+    add('PERÍODO DE ANÁLISE DOS RECURSOS DA PROVA DE TÍTULOS',analRecTit);
+    const resPosTit=proxUtilApos(analRecTit);
+    add('RESULTADO PÓS-RECURSO DA PROVA DE TÍTULOS',resPosTit);
+    ref=resPosTit;
+  }
+
+  // Psicológica
+  if(p.temPsicologica){
+    const convPsico=proxTerca(ref);
+    add('CONVOCAÇÃO PARA AVALIAÇÃO PSICOLÓGICA',convPsico);
+    const sabPsico=proxDiaSemana(convPsico,6), domPsico=addDays(sabPsico,1);
+    add('REALIZAÇÃO DA AVALIAÇÃO PSICOLÓGICA',sabPsico,domPsico);
+    const corrPsico=addDiasUteis(domPsico,3);
+    add('CORREÇÃO DOS TESTES DA AVALIAÇÃO PSICOLÓGICA',corrPsico);
+    const resPrelPsico=proxUtilApos(corrPsico);
+    add('RESULTADO PRELIMINAR DA AVALIAÇÃO PSICOLÓGICA',resPrelPsico);
+    let iniRecPsico;
+    if(p.temEntrevista){
+      const manif=addDiasUteis(resPrelPsico,1);
+      add('MANIFESTAÇÃO DE INTERESSE DE RECEBER ENTREVISTA DEVOLUTIVA',manif);
+      const entrev=proxUtilApos(manif);
+      add('REALIZAÇÃO DA ENTREVISTA DEVOLUTIVA',entrev);
+      iniRecPsico=addDiasUteis(entrev,3);
+    } else { iniRecPsico=proxUtilApos(resPrelPsico); }
+    const fimRecPsico=addDiasUteis(iniRecPsico,2);
+    add('ABERTURA DE RECURSOS CONTRA AVALIAÇÃO PSICOLÓGICA',iniRecPsico,fimRecPsico);
+    const analPsico=addDiasUteis(fimRecPsico,3);
+    add('ANÁLISE BANCA DOS RECURSOS DA AVALIAÇÃO PSICOLÓGICA',analPsico);
+    const resPosPsico=proxUtilApos(analPsico);
+    add('RESULTADO PÓS-RECURSO DA AVALIAÇÃO PSICOLÓGICA',resPosPsico);
+    ref=resPosPsico;
+  }
+
+  // Competências
+  if(p.temCompetencias){
+    const convComp=proxTerca(ref);
+    add('CONVOCAÇÃO PARA ENTREVISTA POR COMPETÊNCIAS',convComp);
+    const sabComp=proxDiaSemana(convComp,6), domComp=addDays(sabComp,1);
+    add('REALIZAÇÃO ENTREVISTA POR COMPETÊNCIAS',sabComp,domComp);
+    const resPrelComp=addDiasUteis(domComp,2);
+    add('RESULTADO PRELIMINAR DA ENTREVISTA POR COMPETÊNCIAS',resPrelComp);
+    const iniRecComp=proxUtilApos(resPrelComp), fimRecComp=addDiasUteis(iniRecComp,2);
+    add('ABERTURA DE RECURSO CONTRA A ENTREVISTA POR COMPETÊNCIAS',iniRecComp,fimRecComp);
+    const analComp=addDiasUteis(fimRecComp,2);
+    add('ANÁLISE BANCA DOS RECURSOS DA ENTREVISTA POR COMPETÊNCIAS',analComp);
+    const resPosComp=proxUtilApos(analComp);
+    add('RESULTADO PÓS-RECURSO DA ENTREVISTA POR COMPETÊNCIAS',resPosComp);
+    ref=resPosComp;
+  }
+
+  // Médica
+  if(p.temMedica){
+    const convMed=proxTerca(ref);
+    add('CONVOCAÇÃO PARA AVALIAÇÃO MÉDICA',convMed);
+    const sabMed=proxDiaSemana(convMed,6), domMed=addDays(sabMed,1);
+    add('REALIZAÇÃO DA AVALIAÇÃO MÉDICA',sabMed,domMed);
+    const resPrelMed=addDiasUteis(domMed,3);
+    add('RESULTADO PRELIMINAR DA AVALIAÇÃO MÉDICA',resPrelMed);
+    const iniRecMed=proxUtilApos(resPrelMed), fimRecMed=addDiasUteis(iniRecMed,2);
+    add('ABERTURA DE RECURSOS CONTRA AVALIAÇÃO MÉDICA',iniRecMed,fimRecMed);
+    const analMed=addDiasUteis(fimRecMed,2);
+    add('ANÁLISE DA BANCA DOS RECURSOS CONTRA AVALIAÇÃO MÉDICA',analMed);
+    const resPosMed=proxUtilApos(analMed);
+    add('RESULTADO PÓS-RECURSO DA AVALIAÇÃO MÉDICA',resPosMed);
+    ref=resPosMed;
+  }
+
+  // Clínica
+  if(p.temClinica){
+    const convClin=proxTerca(ref);
+    add('CONVOCAÇÃO PARA AVALIAÇÃO CLÍNICA',convClin);
+    const sabClin=proxDiaSemana(convClin,6), domClin=addDays(sabClin,1);
+    add('REALIZAÇÃO DA AVALIAÇÃO CLÍNICA',sabClin,domClin);
+    const resPrelClin=addDiasUteis(domClin,3);
+    add('RESULTADO PRELIMINAR DA AVALIAÇÃO CLÍNICA',resPrelClin);
+    const iniRecClin=proxUtilApos(resPrelClin), fimRecClin=addDiasUteis(iniRecClin,2);
+    add('ABERTURA DE RECURSOS CONTRA AVALIAÇÃO CLÍNICA',iniRecClin,fimRecClin);
+    const analClin=addDiasUteis(fimRecClin,2);
+    add('ANÁLISE DA BANCA DOS RECURSOS CONTRA AVALIAÇÃO CLÍNICA',analClin);
+    const resPosClin=proxUtilApos(analClin);
+    add('RESULTADO PÓS-RECURSO DA AVALIAÇÃO CLÍNICA',resPosClin);
+    ref=resPosClin;
+  }
+
+  // Heteroidentificação
+  if(p.temHetero){
+    const convHetero=proxUtilApos(ref);
+    add('CONVOCAÇÃO PROCEDIMENTO HETEROIDENTIFICAÇÃO',convHetero);
+    const iniFoto=proxUtilApos(convHetero), fimFoto=addDiasUteis(iniFoto,2);
+    add('ENVIO FOTO/VÍDEO PARA PROCEDIMENTO HETEROIDENTIFICAÇÃO',iniFoto,fimFoto);
+    const iniAvHetero=proxUtilApos(fimFoto), fimAvHetero=addDiasUteis(iniAvHetero,2);
+    add('PROCEDIMENTO HETEROIDENTIFICAÇÃO - AVALIAÇÃO DA BANCA',iniAvHetero,fimAvHetero);
+    const resPrelHetero=proxUtilApos(fimAvHetero);
+    add('RESULTADO PRELIMINAR DO PROCEDIMENTO HETEROIDENTIFICAÇÃO',resPrelHetero);
+    const iniRecHetero=proxUtilApos(resPrelHetero), fimRecHetero=addDiasUteis(iniRecHetero,2);
+    add('ABERTURA DE RECURSO CONTRA O RESULTADO DO PROCEDIMENTO HETEROIDENTIFICAÇÃO',iniRecHetero,fimRecHetero);
+    const analHetero=addDiasUteis(fimRecHetero,2);
+    add('ANÁLISE BANCA DOS RECURSOS DO PROCEDIMENTO HETEROIDENTIFICAÇÃO',analHetero);
+    const resPosHetero=proxUtilApos(analHetero);
+    add('RESULTADO PÓS-RECURSO DO PROCEDIMENTO HETEROIDENTIFICAÇÃO',resPosHetero);
+    ref=resPosHetero;
+  }
+
+  // Sindicância Social (Guarda)
+  if(p.temSindicancia){
+    add('CONVOCAÇÃO PARA A ENTREGA DA DOCUMENTAÇÃO PARA SINDICÂNCIA SOCIAL',ref);
+    const iniEntrega=proxUtilApos(ref), fimEntrega=addDiasUteis(iniEntrega,2);
+    add('PERÍODO DE ENTREGA DA DOCUMENTAÇÃO PARA SINDICÂNCIA SOCIAL',iniEntrega,fimEntrega);
+    const fimAnalSind=proxUtil(addDays(fimEntrega,30));
+    add('ANÁLISE PELA COMISSÃO DA DOCUMENTAÇÃO DE SINDICÂNCIA SOCIAL',proxUtilApos(fimEntrega),fimAnalSind);
+    const resPrelSind=proxUtilApos(fimAnalSind);
+    add('RESULTADO PRELIMINAR DA SINDICÂNCIA SOCIAL',resPrelSind);
+    const iniRecSind=proxUtilApos(resPrelSind), fimRecSind=addDiasUteis(iniRecSind,2);
+    add('ABERTURA DE RECURSOS CONTRA RESULTADO DA SINDICÂNCIA SOCIAL',iniRecSind,fimRecSind);
+    const analSind=addDiasUteis(proxUtilApos(fimRecSind),2);
+    add('ANÁLISE BANCA DOS RECURSOS CONTRA SINDICÂNCIA SOCIAL',analSind);
+    const resPosSind=proxUtilApos(analSind);
+    add('RESULTADO PÓS-RECURSO CONTRA SINDICÂNCIA SOCIAL',resPosSind);
+    ref=resPosSind;
+  }
+
+  // Curso de Formação (Guarda)
+  if(p.chCurso>0){
+    const diasCurso=Math.ceil(p.chCurso/10);
+    const convCurso=proxUtilApos(ref);
+    add('CONVOCAÇÃO PARA O CURSO DE FORMAÇÃO',convCurso);
+    let iniCurso=proxUtilApos(convCurso), fimCurso=new Date(iniCurso), diasContados=0;
+    while(diasContados<diasCurso){
+      if(fimCurso.getDay()<5&&!isFeriado(fimCurso)&&!isRecesso(fimCurso)) diasContados++;
+      if(diasContados<diasCurso) fimCurso=addDays(fimCurso,1);
+    }
+    add('REALIZAÇÃO DO CURSO DE FORMAÇÃO',iniCurso,fimCurso);
+    const resPrelCurso=proxUtilApos(fimCurso);
+    add('RESULTADO PRELIMINAR DO CURSO DE FORMAÇÃO',resPrelCurso);
+    const iniRecCurso=proxUtilApos(resPrelCurso), fimRecCurso=addDiasUteis(iniRecCurso,4);
+    add('ABERTURA DE RECURSO (05 DIAS ÚTEIS) CONTRA RESULTADO DO CURSO DE FORMAÇÃO E CLASSIFICAÇÃO PRELIMINAR',iniRecCurso,fimRecCurso);
+    const analCurso=addDiasUteis(fimRecCurso,2);
+    add('ANÁLISE DOS RECURSOS CONTRA CLASSIFICAÇÃO PRELIMINAR',analCurso);
+    const classFinal=proxUtilApos(analCurso);
+    add('CLASSIFICAÇÃO FINAL',classFinal);
+    add('HOMOLOGAÇÃO',classFinal);
+  } else {
+    add('CLASSIFICAÇÃO PRELIMINAR',ref);
+    const iniRecClass=proxUtilApos(ref), fimRecClass=addDiasUteis(iniRecClass,2);
+    add('ABERTURA DE RECURSO CONTRA CLASSIFICAÇÃO PRELIMINAR',iniRecClass,fimRecClass);
+    const analClass=addDiasUteis(fimRecClass,2);
+    add('ANÁLISE DOS RECURSOS CONTRA CLASSIFICAÇÃO PRELIMINAR',analClass);
+    const classFinal=proxUtilApos(analClass);
+    add('CLASSIFICAÇÃO FINAL',classFinal);
+    add('HOMOLOGAÇÃO',classFinal);
+  }
+  return tasks;
 }
 
-// Renderizar resultado do cronograma se disponível
-function renderCronResult(){
-  const r=DADOS_INICIAIS.cronResult;
-  const el=document.getElementById('gerar-result');
-  if(!r||!el) return;
-  if(r.erro){
-    el.innerHTML=`<div class="card card-pad" style="background:#fdeceb;border-color:#f3cfcd">
-      <div style="color:#c0322f;font-weight:600">Erro ao calcular: ${r.erro}</div></div>`;
-    return;
+let _cronResultado=null, _cronNome='';
+
+function calcularCronograma(){
+  const nome=document.getElementById('g-nome')?.value||'';
+  const dataPubStr=document.getElementById('g-data-pub')?.value;
+  if(!dataPubStr){ alert('Informe a data de publicação.'); return; }
+  const manualCb=document.getElementById('g-data-manual-cb')?.checked;
+  const dataIniInscStr=manualCb?(document.getElementById('g-data-ini-insc')?.value||''):'';
+  const diasInsc=parseInt(document.getElementById('g-dias-insc')?.value||'30');
+  const ch=tipoAtual==='GUARDA'?parseInt(document.getElementById('g-ch')?.value||'0'):0;
+  const fases={}; PHASES.forEach(p=>{ fases[p.id]=p.on; });
+
+  const params={
+    dataPub: new Date(dataPubStr+'T12:00:00'),
+    dataIniInsc: dataIniInscStr?new Date(dataIniInscStr+'T12:00:00'):null,
+    diasInsc, chCurso:ch,
+    temObjetiva:fases.objetiva, temInscricao:fases.inscricao,
+    temIsencao:fases.isencao, temDiscursiva:fases.discursiva,
+    temPratica:fases.pratica, temTaf:fases.taf,
+    temTitulos:fases.titulos, temPsicologica:fases.psicologica,
+    temMedica:fases.medica, temClinica:fases.clinica,
+    temHetero:fases.hetero, temEntrevista:fases.entrevista,
+    temCompetencias:fases.competencias, temSindicancia:fases.sindicancia||false,
+  };
+
+  try {
+    const result=calcularConcurso(params);
+    _cronResultado=result; _cronNome=nome;
+    exibirResultadoCron(result, nome);
+  } catch(e){
+    document.getElementById('gerar-result').innerHTML=`
+<div class="card card-pad" style="background:#fdeceb;border-color:#f3cfcd">
+  <div style="color:#c0322f;font-weight:600">Erro ao calcular: ${e.message}</div>
+</div>`;
   }
-  const nome=DADOS_INICIAIS.cronNome||'';
-  // Mensagem do Planner se houver
-  let plannerMsg='';
-  if(DADOS_INICIAIS.plannerOk!==null && DADOS_INICIAIS.plannerOk!==undefined){
-    plannerMsg=`<div style="margin-bottom:12px;padding:10px 14px;background:#e4f3ea;border:1px solid #a8dbb8;border-radius:9px;color:#2e7d52;font-weight:600;font-size:13px">
-      ✅ ${DADOS_INICIAIS.plannerOk} tarefa(s) cadastrada(s) no Planner!
-      ${DADOS_INICIAIS.plannerErr?`<span style="color:#c0322f"> ⚠️ ${DADOS_INICIAIS.plannerErr} erro(s).</span>`:''}
-    </div>`;
-  }
-  const rows=r.map(t=>`<tr>
+}
+
+function exibirResultadoCron(result, nome){
+  const rows=result.map(t=>`<tr>
     <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8a9ab5;width:36px">${t.seq}</td>
     <td style="font-size:12.5px;color:#1f2a3d">${t.atividade}</td>
-    <td style="font-size:12px;color:#41506b;white-space:nowrap;width:100px">${t.data_inicio}</td>
-    <td style="font-size:12px;color:#41506b;white-space:nowrap;width:100px">${t.data_fim}</td>
+    <td style="font-size:12px;color:#41506b;white-space:nowrap;width:100px">${fmtBR(t.data_inicio)}</td>
+    <td style="font-size:12px;color:#41506b;white-space:nowrap;width:100px">${fmtBR(t.data_fim)}</td>
   </tr>`).join('');
-  el.innerHTML=`
-${plannerMsg}
-<div class="card" style="overflow:hidden">
+  document.getElementById('gerar-result').innerHTML=`
+<div class="card" style="overflow:hidden;margin-top:0">
   <div style="padding:13px 18px;border-bottom:1px solid #eef1f6;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
     <div>
-      <div style="font-size:13.5px;font-weight:700;color:#1f2a3d">✅ ${r.length} atividades calculadas</div>
+      <div style="font-size:13.5px;font-weight:700;color:#1f2a3d">✅ ${result.length} atividades calculadas</div>
       ${nome?`<div style="font-size:11.5px;color:#8a9ab5;margin-top:2px">${nome}</div>`:''}
     </div>
     ${nome?`<button class="btn-primary" onclick="cadastrarPlanner()">
       <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
       Cadastrar no Planner
-    </button>`:'<div style="font-size:11.5px;color:#f0a020">Informe o nome do concurso para cadastrar no Planner</div>'}
+    </button>`:'<div style="font-size:11.5px;color:#f0a020">Preencha o nome do concurso para cadastrar</div>'}
   </div>
   <div style="overflow-x:auto">
     <table>
-      <thead><tr>
-        <th>#</th><th>Atividade</th><th>Início</th><th>Fim</th>
-      </tr></thead>
+      <thead><tr><th>#</th><th>Atividade</th><th>Início</th><th>Fim</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
   </div>
 </div>`;
-  // Ir para a aba Gerar
-  goPage('gerar');
 }
 
-function cadastrarPlanner(){
-  const nome=DADOS_INICIAIS.cronNome||'';
-  if(!nome){ alert('Sem nome de concurso para cadastrar.'); return; }
-  if(!confirm(`Cadastrar ${DADOS_INICIAIS.cronResult?.length||0} tarefas no Planner para "${nome}"?`)) return;
-  document.getElementById('gerar-result').innerHTML+='<div style="padding:10px 18px;color:#1f4e8c;font-size:13px;display:flex;align-items:center;gap:8px"><div class="spinner" style="border-top-color:#1f4e8c"></div>Cadastrando no Planner...</div>';
-  window.top.location.href = window.top.location.origin +
-    window.top.location.pathname +
-    '?cadastrar_planner=' + encodeURIComponent(JSON.stringify({nome}));
+async function cadastrarPlanner(){
+  if(!_cronNome){ alert('Sem nome de concurso.'); return; }
+  if(!_cronResultado?.length){ alert('Calcule o cronograma primeiro.'); return; }
+  if(!confirm(`Cadastrar ${_cronResultado.length} tarefas no Planner para "${_cronNome}"?`)) return;
+
+  // Buscar plano e criar bucket via Graph API
+  const btn=event.target.closest('button');
+  if(btn){ btn.disabled=true; btn.innerHTML='<div class="spinner" style="width:14px;height:14px;border-width:2px"></div> Cadastrando...'; }
+
+  try {
+    // Buscar grupos para achar o plano
+    let planoId=null, bucketId=null;
+    const grps=await api('https://graph.microsoft.com/v1.0/me/memberOf?$top=50');
+    for(const g of(grps.value||[])){
+      if(!g.id) continue;
+      try{
+        const plans=await api(`https://graph.microsoft.com/v1.0/groups/${g.id}/planner/plans`);
+        for(const pl of(plans.value||[])){
+          if(pl.title.toUpperCase().includes('PLANNER IBGP')){ planoId=pl.id; break; }
+        }
+      }catch(e){}
+      if(planoId) break;
+    }
+    if(!planoId) throw new Error('Plano não encontrado');
+
+    // Verificar se bucket já existe
+    const bkts=await api(`https://graph.microsoft.com/v1.0/planner/plans/${planoId}/buckets`);
+    const existing=(bkts.value||[]).find(b=>b.name===_cronNome);
+    if(existing){ bucketId=existing.id; }
+    else {
+      const rb=await fetch('https://graph.microsoft.com/v1.0/planner/buckets',{method:'POST',headers:{'Authorization':'Bearer '+TOKEN,'Content-Type':'application/json'},body:JSON.stringify({name:_cronNome,planId:planoId,orderHint:' !'})});
+      const bd=await rb.json(); bucketId=bd.id;
+    }
+    if(!bucketId) throw new Error('Bucket não criado');
+
+    let ok=0, err=0;
+    for(const t of _cronResultado){
+      try{
+        const r=await fetch('https://graph.microsoft.com/v1.0/planner/tasks',{method:'POST',headers:{'Authorization':'Bearer '+TOKEN,'Content-Type':'application/json'},body:JSON.stringify({planId:planoId,bucketId,title:t.atividade,dueDateTime:t.data_fim.toISOString().split('T')[0]+'T03:00:00Z',startDateTime:t.data_inicio.toISOString().split('T')[0]+'T03:00:00Z'})});
+        if(r.ok) ok++; else err++;
+      }catch(e){ err++; }
+    }
+    document.getElementById('gerar-result').innerHTML=`
+<div style="padding:12px 16px;background:#e4f3ea;border:1px solid #a8dbb8;border-radius:9px;color:#2e7d52;font-weight:600;font-size:13px;margin-bottom:12px">
+  ✅ ${ok} tarefa(s) cadastrada(s) no Planner!${err?` ⚠️ ${err} erro(s).`:''}
+</div>`+document.getElementById('gerar-result').innerHTML;
+  } catch(e){
+    alert('Erro ao cadastrar: '+e.message);
+    if(btn){ btn.disabled=false; btn.innerHTML='Cadastrar no Planner'; }
+  }
 }
+
+function renderCronResult(){ /* reservado para resultados vindos do Python */ }
 
 // ── REFRESH ──────────────────────────────────────────────────────────
 async function refreshAll(){
