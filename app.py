@@ -22,7 +22,6 @@ ATRIBUICOES = {k: v for k, v in re.findall(r'"([^"]+)":\s*"([^"]+)"', _atrib_raw
 
 st.set_page_config(page_title="IBGP · Minhas Tarefas", page_icon="✅", layout="wide")
 
-# Esconde todo o chrome do Streamlit
 st.markdown("""<style>
 header[data-testid="stHeader"]{display:none}
 footer{display:none}
@@ -93,10 +92,106 @@ except Exception:
     st.button("Entrar novamente", on_click=lambda: st.session_state.pop("access_token"))
     st.stop()
 
-is_gestora   = nome_interno == "Manuela"
+is_gestora    = nome_interno == "Manuela"
 is_cronograma = nome_interno == "Fabiano"
 perfil = ("Gestora · Equipe IBGP" if is_gestora
           else ("Cronograma · IBGP" if is_cronograma else "Equipe IBGP"))
+
+# ── CALCULAR CRONOGRAMA (acionado via query param) ────────────────────
+CRON_RESULT_KEY = "cronograma_result"
+
+if "calc_cron" in st.query_params:
+    try:
+        p = json.loads(st.query_params["calc_cron"])
+        from cronograma_engine import calcular_cronograma
+        data_pub = date.fromisoformat(p["data_pub"])
+        result = calcular_cronograma(
+            tipo_certame        = p.get("tipo","CONCURSO"),
+            data_publicacao     = data_pub,
+            tem_objetiva        = p.get("tem_objetiva", True),
+            tem_inscricao       = p.get("tem_inscricao", True),
+            tem_isencao         = p.get("tem_isencao", True),
+            tem_discursiva      = p.get("tem_discursiva", False),
+            tem_pratica         = p.get("tem_pratica", False),
+            tem_taf             = p.get("tem_taf", False),
+            tem_titulos         = p.get("tem_titulos", False),
+            tem_psicologica     = p.get("tem_psicologica", False),
+            tem_medica          = p.get("tem_medica", False),
+            tem_clinica         = p.get("tem_clinica", False),
+            tem_hetero          = p.get("tem_hetero", False),
+            tem_entrevista      = p.get("tem_entrevista", False),
+            tem_competencias    = p.get("tem_competencias", False),
+            tem_sindicancia     = p.get("tem_sindicancia", False),
+            concomitancia_titulos_pratica = p.get("concomitancia", False),
+            data_inicio_inscricao = date.fromisoformat(p["data_ini_insc"]) if p.get("data_ini_insc") else None,
+            dias_inscricao      = int(p.get("dias_insc", 30)),
+            carga_horaria_curso = int(p.get("ch_curso", 0)),
+        )
+        # Serializar datas para JSON
+        result_json = [{"seq":r["seq"],"atividade":r["atividade"],
+                        "data_inicio":r["data_inicio"].strftime("%d/%m/%Y"),
+                        "data_fim":r["data_fim"].strftime("%d/%m/%Y")} for r in result]
+        st.session_state[CRON_RESULT_KEY] = result_json
+        st.session_state["cron_nome"]     = p.get("nome","")
+        st.session_state["cron_raw"]      = result  # para cadastro no Planner
+    except Exception as e:
+        st.session_state[CRON_RESULT_KEY] = {"erro": str(e)}
+    st.query_params.clear()
+    st.rerun()
+
+# ── CADASTRAR NO PLANNER (acionado via query param) ──────────────────
+if "cadastrar_planner" in st.query_params:
+    try:
+        p       = json.loads(st.query_params["cadastrar_planner"])
+        nome_b  = p.get("nome","")
+        tarefas_c = st.session_state.get("cron_raw", [])
+        # Buscar plano
+        def g(url): return requests.get(url, headers={"Authorization":f"Bearer {token}"}).json()
+        def g_all(url):
+            res, nxt = [], url
+            while nxt:
+                d = requests.get(nxt, headers={"Authorization":f"Bearer {token}"}).json()
+                res.extend(d.get("value",[])); nxt = d.get("@odata.nextLink")
+            return res
+        plano_id = None
+        for grp in g_all("https://graph.microsoft.com/v1.0/me/memberOf"):
+            gid = grp.get("id")
+            if not gid: continue
+            try:
+                for pl in g(f"https://graph.microsoft.com/v1.0/groups/{gid}/planner/plans").get("value",[]):
+                    if NOME_PLANO.upper() in pl.get("title","").upper():
+                        plano_id = pl["id"]; break
+            except: pass
+            if plano_id: break
+        if plano_id and nome_b and tarefas_c:
+            bkts = requests.get(f"https://graph.microsoft.com/v1.0/planner/plans/{plano_id}/buckets",
+                                headers={"Authorization":f"Bearer {token}"}).json()
+            bucket_map = {b["name"]:b["id"] for b in bkts.get("value",[])}
+            if nome_b not in bucket_map:
+                rb = requests.post("https://graph.microsoft.com/v1.0/planner/buckets",
+                    headers={"Authorization":f"Bearer {token}","Content-Type":"application/json"},
+                    json={"name":nome_b,"planId":plano_id,"orderHint":" !"})
+                bucket_id = rb.json().get("id") if rb.status_code==201 else None
+            else:
+                bucket_id = bucket_map[nome_b]
+            ok2, err2 = 0, 0
+            if bucket_id:
+                for t in tarefas_c:
+                    r2 = requests.post("https://graph.microsoft.com/v1.0/planner/tasks",
+                        headers={"Authorization":f"Bearer {token}","Content-Type":"application/json"},
+                        json={"planId":plano_id,"bucketId":bucket_id,"title":t["atividade"],
+                              "dueDateTime":t["data_fim"].strftime("%Y-%m-%dT03:00:00Z"),
+                              "startDateTime":t["data_inicio"].strftime("%Y-%m-%dT03:00:00Z")})
+                    if r2.status_code==201: ok2+=1
+                    else: err2+=1
+            st.session_state["planner_ok"]  = ok2
+            st.session_state["planner_err"] = err2
+            st.cache_data.clear()
+    except Exception as e:
+        st.session_state["planner_ok"]  = 0
+        st.session_state["planner_err"] = str(e)
+    st.query_params.clear()
+    st.rerun()
 
 # ── BUSCAR TAREFAS ────────────────────────────────────────────────────
 def g(url):
@@ -123,7 +218,6 @@ def buscar_tarefas(token):
         except Exception: pass
         if plano_id: break
     if not plano_id: return [], {}, None
-
     buckets = {b["id"]:b["name"]
                for b in g(f"https://graph.microsoft.com/v1.0/planner/plans/{plano_id}/buckets").get("value",[])}
     tarefas = []
@@ -133,50 +227,45 @@ def buscar_tarefas(token):
         resp = ATRIBUICOES.get(nome)
         if not resp: continue
         due = t.get("dueDateTime")
-        due_iso = due or ""
-        dt = None
-        if due:
-            try: dt = datetime.fromisoformat(due.replace("Z","+00:00")).replace(tzinfo=None)
-            except Exception: pass
         tarefas.append({
             "id": t["id"],
             "municipio": buckets.get(t.get("bucketId",""),"—"),
             "tarefa": nome,
             "responsavel": resp,
-            "due": due_iso,
+            "due": due or "",
         })
     return tarefas, buckets, plano_id
 
 with st.spinner("Carregando tarefas..."):
     tarefas, buckets, plano_id = buscar_tarefas(token)
 
-# ── MONTAR DADOS_INICIAIS para o JS ──────────────────────────────────
+# ── MONTAR DADOS_INICIAIS ─────────────────────────────────────────────
+cron_result  = st.session_state.pop(CRON_RESULT_KEY, None)
+cron_nome    = st.session_state.get("cron_nome","")
+planner_ok   = st.session_state.pop("planner_ok", None)
+planner_err  = st.session_state.pop("planner_err", None)
+
 dados_iniciais = json.dumps({
-    "tarefas": tarefas,
-    "buckets": buckets,
-    "planoId": plano_id,
+    "tarefas"      : tarefas,
+    "buckets"      : buckets,
+    "planoId"      : plano_id,
+    "cronResult"   : cron_result,
+    "cronNome"     : cron_nome,
+    "plannerOk"    : planner_ok,
+    "plannerErr"   : planner_err,
 })
 
-# ── LER TEMPLATE ─────────────────────────────────────────────────────
+# ── LER E INJETAR TEMPLATE ────────────────────────────────────────────
 with open("/mount/src/ibgp-minhas-tarefas/template.html", "r", encoding="utf-8") as f:
     html = f.read()
 
-# ── INJETAR VARIÁVEIS ────────────────────────────────────────────────
-html = html.replace(
-    "// PLACEHOLDER_TOKEN",
-    f"const TOKEN = {json.dumps(token)};"
-)
-html = html.replace(
-    "// PLACEHOLDER_CONFIG",
+html = html.replace("// PLACEHOLDER_TOKEN",
+    f"const TOKEN = {json.dumps(token)};")
+html = html.replace("// PLACEHOLDER_CONFIG",
     f"""const IS_GESTORA    = {'true' if is_gestora   else 'false'};
 const IS_CRONOGRAMA = {'true' if is_cronograma else 'false'};
 const NOME_USUARIO  = {json.dumps(nome_interno)};
-const DADOS_INICIAIS = {dados_iniciais};"""
-)
-html = html.replace(
-    "// PLACEHOLDER_ATRIB",
-    ""  # atribuições já estão no Python via ATRIBUICOES
-)
+const DADOS_INICIAIS = {dados_iniciais};""")
+html = html.replace("// PLACEHOLDER_ATRIB", "")
 
-# Ajustar altura para preencher a tela toda
 components.html(html, height=900, scrolling=False)
