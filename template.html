@@ -129,7 +129,7 @@ nav{display:flex;flex-direction:column;gap:1px}
 .page.active{display:flex;flex-direction:column;gap:16px}
 
 /* ── CARDS BASE ─────────────────────────────── */
-.card{background:#fff;border:1px solid #e2e7ef;border-radius:14px;box-shadow:0 1px 4px rgba(16,30,54,0.05)}
+.card{background:#fff;border:1px solid #e2e7ef;border-radius:14px;box-shadow:0 1px 4px rgba(16,30,54,0.05);overflow:hidden}
 .card-pad{padding:18px 20px}
 
 /* ── KPIs ──────────────────────────────────── */
@@ -234,7 +234,7 @@ nav{display:flex;flex-direction:column;gap:1px}
 }
 .act-trigger:hover{background:#f4f6fa;color:#1f2a3d;border-color:#c8d0dd}
 .act-menu{
-  position:absolute;right:0;top:36px;z-index:9999;
+  position:fixed;z-index:9999;
   background:#fff;border:1px solid #e2e7ef;border-radius:10px;
   box-shadow:0 8px 28px rgba(16,30,54,0.14);
   min-width:176px;overflow:hidden;
@@ -753,7 +753,7 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
       </div>
 
       <!-- Abas de grupo -->
-      <div style="background:#fff;border:1px solid #e2e7ef;border-radius:14px;box-shadow:0 1px 4px rgba(16,30,54,0.05);position:relative">
+      <div style="background:#fff;border:1px solid #e2e7ef;border-radius:14px;box-shadow:0 1px 4px rgba(16,30,54,0.05);overflow:hidden">
         <div style="padding:0 18px;border-bottom:2px solid #e2e7ef" id="task-tabs-header">
           <div class="tabs" style="border-bottom:none;margin-bottom:0">
             <button class="tab active" id="tab-vencidas" onclick="setTab('vencidas')">
@@ -1106,7 +1106,7 @@ function renderTaskRow(t, showP){
   <div>${t.responsavel?chipP(t.responsavel):''}</div>
   <div>${chipD(t.dias,t.data)}</div>
   <div class="act-wrap">
-    <button class="act-trigger" onclick="toggleMenu('${t.id}')" title="Ações">···</button>
+    <button class="act-trigger" onclick="toggleMenu('${t.id}',this)" title="Ações">···</button>
     <div class="act-menu" id="menu-${t.id}">
       <button class="act-item" onclick="openNota('${t.id}');closeMenu('${t.id}')">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-edit"/></svg>
@@ -1141,11 +1141,16 @@ function renderTaskRow(t, showP){
 }
 
 // ── MENU AÇÕES ──────────────────────────────────────────────────────
-function toggleMenu(id){
+function toggleMenu(id, btn){
   const menu=document.getElementById('menu-'+id);
   const isOpen=menu.classList.contains('open');
   document.querySelectorAll('.act-menu.open').forEach(m=>m.classList.remove('open'));
-  if(!isOpen) menu.classList.add('open');
+  if(!isOpen){
+    const rect=btn.getBoundingClientRect();
+    menu.style.top  = (rect.bottom + 4) + 'px';
+    menu.style.right = (window.innerWidth - rect.right) + 'px';
+    menu.classList.add('open');
+  }
 }
 function closeMenu(id){ document.getElementById('menu-'+id)?.classList.remove('open'); }
 document.addEventListener('click',e=>{
