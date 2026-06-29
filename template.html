@@ -312,8 +312,9 @@ nav{display:flex;flex-direction:column;gap:1px}
 /* Próximas entregas */
 .delivery-list{display:flex;flex-direction:column;gap:0}
 .delivery-row{
-  display:flex;align-items:center;gap:12px;
-  padding:10px 0;border-bottom:1px solid #eef1f6
+  display:flex;align-items:flex-start;gap:12px;
+  padding:10px 0;border-bottom:1px solid #eef1f6;
+  min-height:52px
 }
 .delivery-row:last-child{border-bottom:none}
 .delivery-date-col{
@@ -324,7 +325,9 @@ nav{display:flex;flex-direction:column;gap:1px}
 .delivery-day{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:#1f2a3d;line-height:1}
 .delivery-month{font-size:9px;font-weight:700;letter-spacing:.06em;color:#8a9ab5;text-transform:uppercase}
 .delivery-info{flex:1;min-width:0}
-.delivery-desc{font-size:12.5px;font-weight:600;color:#1f2a3d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.delivery-desc{font-size:12.5px;font-weight:600;color:#1f2a3d;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  overflow:hidden;line-height:1.35;max-height:2.7em}
 .delivery-mun{font-size:11px;color:#8a9ab5;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* Concursos ativos */
@@ -1311,17 +1314,22 @@ function renderDashboard(){
   // Próximas entregas
   const proximas=all.filter(t=>t.dias!==null&&t.dias>=0&&t.dias<=14).sort((a,b)=>a.dias-b.dias).slice(0,6);
   document.getElementById('delivery-list').innerHTML=proximas.length?proximas.map(t=>{
-    const d=t.due||TODAY;
+    const d=t.due instanceof Date ? t.due : TODAY;
+    // Título abreviado: máx 60 chars com tooltip do nome completo
+    const tituloBreve = t.tarefa.length>60 ? t.tarefa.substring(0,58)+'…' : t.tarefa;
     return `<div class="delivery-row">
-  <div class="delivery-date-col">
+  <div class="delivery-date-col" style="flex:none">
     <div class="delivery-day">${String(d.getDate()).padStart(2,'0')}</div>
     <div class="delivery-month">${MONTHS_SHORT[d.getMonth()]}</div>
   </div>
-  <div class="delivery-info">
-    <div class="delivery-desc">${t.tarefa}</div>
-    <div class="delivery-mun">${t.municipio} · ${chipP(t.responsavel)}</div>
+  <div class="delivery-info" style="flex:1;min-width:0">
+    <div class="delivery-desc" title="${t.tarefa.replace(/"/g,'&quot;')}">${tituloBreve}</div>
+    <div class="delivery-mun" style="margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+      <span style="font-size:10.5px;color:#8a9ab5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px" title="${t.municipio}">${t.municipio}</span>
+      ${chipP(t.responsavel)}
+    </div>
   </div>
-  ${chipD(t.dias,t.data)}
+  <div style="flex:none;margin-left:6px">${chipD(t.dias,t.data)}</div>
 </div>`;
   }).join(''):'<div class="empty-state" style="padding:12px 0"><div class="empty-desc">Nenhuma entrega próxima.</div></div>';
   // Concursos ativos
