@@ -245,6 +245,7 @@ def g_all(url):
 
 @st.cache_data(ttl=180, show_spinner=False)
 def buscar_tarefas(token):
+    from datetime import timezone, timedelta
     plano_id = None
     for grp in g_all("https://graph.microsoft.com/v1.0/me/memberOf"):
         gid = grp.get("id")
@@ -255,27 +256,41 @@ def buscar_tarefas(token):
                     plano_id = p["id"]; break
         except Exception: pass
         if plano_id: break
-    if not plano_id: return [], {}, None
+    if not plano_id: return [], [], {}, None
     buckets = {b["id"]:b["name"]
                for b in g(f"https://graph.microsoft.com/v1.0/planner/plans/{plano_id}/buckets").get("value",[])}
-    tarefas = []
+    tarefas, concluidas = [], []
+    limite_48h = datetime.utcnow().replace(tzinfo=timezone.utc) - timedelta(hours=48)
     for t in g_all(f"https://graph.microsoft.com/v1.0/planner/plans/{plano_id}/tasks"):
-        if t.get("percentComplete",0) == 100: continue
         nome = (t.get("title") or "").strip()
         resp = ATRIBUICOES.get(nome)
         if not resp: continue
-        due = t.get("dueDateTime")
-        tarefas.append({
+        due = t.get("dueDateTime") or ""
+        item = {
             "id": t["id"],
             "municipio": buckets.get(t.get("bucketId",""),"—"),
             "tarefa": nome,
             "responsavel": resp,
-            "due": due or "",
-        })
-    return tarefas, buckets, plano_id
+            "due": due,
+        }
+        if t.get("percentComplete",0) == 100:
+            # Só inclui concluídas das últimas 48h
+            completed_at = t.get("completedDateTime","")
+            if completed_at:
+                try:
+                    dt = datetime.fromisoformat(completed_at.replace("Z","+00:00"))
+                    if dt >= limite_48h:
+                        item["completedAt"] = completed_at
+                        concluidas.append(item)
+                except Exception: pass
+        else:
+            tarefas.append(item)
+    # Ordenar concluídas da mais recente para a mais antiga
+    concluidas.sort(key=lambda x: x.get("completedAt",""), reverse=True)
+    return tarefas, concluidas[:30], buckets, plano_id
 
 with st.spinner("Carregando tarefas..."):
-    tarefas, buckets, plano_id = buscar_tarefas(token)
+    tarefas, concluidas, buckets, plano_id = buscar_tarefas(token)
 
 # ── MONTAR DADOS_INICIAIS ─────────────────────────────────────────────
 cron_result  = st.session_state.pop(CRON_RESULT_KEY, None)
@@ -285,6 +300,7 @@ planner_err  = st.session_state.pop("planner_err", None)
 
 dados_iniciais = json.dumps({
     "tarefas"      : tarefas,
+    "concluidas"   : concluidas,
     "buckets"      : buckets,
     "planoId"      : plano_id,
     "cronResult"   : cron_result,
