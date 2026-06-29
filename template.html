@@ -2749,10 +2749,60 @@ function renderCronResult(){ /* reservado para resultados vindos do Python */ }
 // ── REFRESH ──────────────────────────────────────────────────────────
 async function refreshAll(){
   const btn=document.getElementById('refresh-btn');
-  if(btn) btn.classList.add('spinning');
-  _allTasks=[]; _planoId=null; _buckets={};
-  loadTarefas();
-  setTimeout(()=>btn?.classList.remove('spinning'),600);
+  if(btn){ btn.classList.add('spinning'); btn.disabled=true; }
+
+  try {
+    // Busca tarefas diretamente da API Graph (sem depender do Python)
+    // 1. Achar o plano
+    if(!_planoId){
+      const grps = await apiAll('https://graph.microsoft.com/v1.0/me/memberOf?$top=50');
+      for(const g of grps){
+        if(!g.id) continue;
+        try{
+          const plans = await api(`https://graph.microsoft.com/v1.0/groups/${g.id}/planner/plans`);
+          for(const p of(plans.value||[])){
+            if(p.title.toUpperCase().includes('PLANNER IBGP')){ _planoId=p.id; break; }
+          }
+        }catch(e){}
+        if(_planoId) break;
+      }
+    }
+    if(!_planoId){ alert('Plano não encontrado.'); return; }
+
+    // 2. Buckets
+    const bd = await api(`https://graph.microsoft.com/v1.0/planner/plans/${_planoId}/buckets`);
+    _buckets = {};
+    (bd.value||[]).forEach(b=>_buckets[b.id]=b.name);
+
+    // 3. Tarefas abertas
+    const rawTasks = await apiAll(`https://graph.microsoft.com/v1.0/planner/plans/${_planoId}/tasks`);
+    const ATRIB = typeof ATRIBUICOES_JS!=='undefined'?ATRIBUICOES_JS:{};
+    const novas = [];
+    for(const t of rawTasks){
+      if(t.percentComplete===100) continue;
+      const nome=(t.title||'').trim();
+      const resp=ATRIB[nome]; if(!resp) continue;
+      novas.push({
+        id:t.id,
+        municipio:_buckets[t.bucketId]||'—',
+        tarefa:nome,
+        responsavel:resp,
+        due:t.dueDateTime||'',
+      });
+    }
+
+    // 4. Atualiza DADOS_INICIAIS e recarrega
+    DADOS_INICIAIS.tarefas = novas;
+    DADOS_INICIAIS.buckets = _buckets;
+    _allTasks = [];
+    loadTarefas();
+    addMov('Tarefas atualizadas do Planner', '#2e7d52');
+    addNotif('🔄 Tarefas atualizadas com sucesso!');
+  } catch(e){
+    alert('Erro ao atualizar: '+e.message);
+  } finally {
+    setTimeout(()=>{ btn?.classList.remove('spinning'); btn && (btn.disabled=false); }, 600);
+  }
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────
