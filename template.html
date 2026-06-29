@@ -129,7 +129,7 @@ nav{display:flex;flex-direction:column;gap:1px}
 .page.active{display:flex;flex-direction:column;gap:16px}
 
 /* ── CARDS BASE ─────────────────────────────── */
-.card{background:#fff;border:1px solid #e2e7ef;border-radius:14px;box-shadow:0 1px 4px rgba(16,30,54,0.05);overflow:hidden}
+.card{background:#fff;border:1px solid #e2e7ef;border-radius:14px;box-shadow:0 1px 4px rgba(16,30,54,0.05)}
 .card-pad{padding:18px 20px}
 
 /* ── KPIs ──────────────────────────────────── */
@@ -234,7 +234,7 @@ nav{display:flex;flex-direction:column;gap:1px}
 }
 .act-trigger:hover{background:#f4f6fa;color:#1f2a3d;border-color:#c8d0dd}
 .act-menu{
-  position:absolute;right:0;top:36px;z-index:200;
+  position:absolute;right:0;top:36px;z-index:9999;
   background:#fff;border:1px solid #e2e7ef;border-radius:10px;
   box-shadow:0 8px 28px rgba(16,30,54,0.14);
   min-width:176px;overflow:hidden;
@@ -753,7 +753,7 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
       </div>
 
       <!-- Abas de grupo -->
-      <div style="background:#fff;border:1px solid #e2e7ef;border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(16,30,54,0.05)">
+      <div style="background:#fff;border:1px solid #e2e7ef;border-radius:14px;box-shadow:0 1px 4px rgba(16,30,54,0.05);position:relative">
         <div style="padding:0 18px;border-bottom:2px solid #e2e7ef" id="task-tabs-header">
           <div class="tabs" style="border-bottom:none;margin-bottom:0">
             <button class="tab active" id="tab-vencidas" onclick="setTab('vencidas')">
@@ -775,7 +775,7 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
           </div>
         </div>
         <!-- Header da tabela -->
-        <div id="task-table-header" style="display:grid;grid-template-columns:1fr 3fr 120px 140px 76px;gap:0;padding:8px 18px;background:#f7f9fc;border-bottom:1px solid #e2e7ef">
+        <div id="task-table-header" style="display:grid;grid-template-columns:180px 1fr 120px 140px 76px;gap:0;padding:8px 18px;background:#f7f9fc;border-bottom:1px solid #e2e7ef;border-radius:14px 14px 0 0">
           <div style="font-size:10.5px;font-weight:700;color:#8a9ab5;letter-spacing:.07em;text-transform:uppercase">Concurso</div>
           <div style="font-size:10.5px;font-weight:700;color:#8a9ab5;letter-spacing:.07em;text-transform:uppercase">Tarefa</div>
           <div style="font-size:10.5px;font-weight:700;color:#8a9ab5;letter-spacing:.07em;text-transform:uppercase">Responsável</div>
@@ -1093,9 +1093,9 @@ function renderTaskRow(t, showP){
   const nota=_notas[t.id]||'';
   return `
 <div>
-<div class="t-row" style="display:grid;grid-template-columns:1fr 3fr 120px 140px 76px;gap:0;align-items:center">
-  <div style="min-width:0">
-    <div class="t-mun" style="font-size:11px;font-weight:700;color:#8a9ab5">${t.municipio}</div>
+<div class="t-row" style="display:grid;grid-template-columns:180px 1fr 120px 140px 76px;gap:0;align-items:center">
+  <div style="min-width:0;padding-right:8px">
+    <div class="t-mun" style="font-size:11px;font-weight:700;color:#8a9ab5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${t.municipio}">${t.municipio}</div>
   </div>
   <div class="t-info" style="padding-right:10px">
     <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
