@@ -2356,6 +2356,8 @@ function exibirResultadoCron(result, nome, conflitos=[], sobrecargas=[]){
   if(conflitos.length){
     const itens=conflitos.map(c=>{
       const sugestao=sugerirNovaData(c.data_fim_obj, c.atividade);
+      const regra=regraParaAtividade(c.atividade);
+      const labelRegra=regra==='domingo'?'próximo domingo disponível':regra==='terca'?'próxima terça-feira útil':'próximo dia útil livre';
       return `
 <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f3cfcd">
   <div style="flex:none;font-size:11px;font-family:'JetBrains Mono',monospace;color:#c0322f;padding-top:2px;width:24px">#${c.seq}</div>
@@ -2366,7 +2368,7 @@ function exibirResultadoCron(result, nome, conflitos=[], sobrecargas=[]){
       ${c.responsavel?`<span style="margin-left:4px">${chipP(c.responsavel)}</span>`:''}
     </div>
     <div style="margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-      <div style="font-size:11.5px;color:#41506b">💡 Sugestão: <strong style="color:#1f4e8c">${fmtBR(sugestao)}</strong> (próximo dia útil livre)</div>
+      <div style="font-size:11.5px;color:#41506b">💡 Sugestão: <strong style="color:#1f4e8c">${fmtBR(sugestao)}</strong> (${labelRegra})</div>
       <button class="btn-primary" style="height:28px;padding:0 12px;font-size:11.5px"
         onclick="confirmarSugestao(${c.seq},'${sugestao.toISOString()}','${c.atividade.replace(/'/g,"\\'")}','${fmtBR(sugestao)}')">
         ✅ Aceitar e recalcular em cascata
@@ -2386,6 +2388,8 @@ function exibirResultadoCron(result, nome, conflitos=[], sobrecargas=[]){
   if(sobrecargas.length){
     const itens=sobrecargas.map(s=>{
       const sugestao=sugerirNovaData(s.data_fim_obj, s.atividade);
+      const regra=regraParaAtividade(s.atividade);
+      const labelRegra=regra==='domingo'?'próximo domingo disponível':regra==='terca'?'próxima terça-feira útil':'próximo dia útil livre';
       return `
 <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f3e2bf">
   <div style="flex:none;font-size:11px;font-family:'JetBrains Mono',monospace;color:#a06c12;padding-top:2px;width:24px">#${s.seq}</div>
@@ -2396,7 +2400,7 @@ function exibirResultadoCron(result, nome, conflitos=[], sobrecargas=[]){
       <span style="color:#5b6880;margin-left:4px">— ${s.outrasNoDia.join(' · ')}</span>
     </div>
     <div style="margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-      <div style="font-size:11.5px;color:#41506b">💡 Sugestão: <strong style="color:#1f4e8c">${fmtBR(sugestao)}</strong> (próximo dia útil livre)</div>
+      <div style="font-size:11.5px;color:#41506b">💡 Sugestão: <strong style="color:#1f4e8c">${fmtBR(sugestao)}</strong> (${labelRegra})</div>
       <button class="btn-primary" style="height:28px;padding:0 12px;font-size:11.5px"
         onclick="confirmarSugestao(${s.seq},'${sugestao.toISOString()}','${s.atividade.replace(/'/g,"\\'")}','${fmtBR(sugestao)}')">
         ✅ Aceitar e recalcular em cascata
