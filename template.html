@@ -2230,16 +2230,86 @@ function analisarConflitos(novosCron){
 
 // ── SUGESTÃO DE DATA ALTERNATIVA ─────────────────────────────────────
 // Encontra próxima data válida sem conflito, respeitando regras do tipo
-function sugerirNovaData(dataOriginal, tipo){
-  // Avança até encontrar uma data útil livre de conflito no Planner
-  const ATRIB=typeof ATRIBUICOES_JS!=='undefined'?ATRIBUICOES_JS:{};
-  const ocupadas=new Set(_allTasks.filter(t=>t.due).map(t=>dateKey(new Date(t.due))));
-  let candidata=proxUtilApos(dataOriginal);
-  // Para provas (domingo), avança para o próximo domingo
-  // Para outras atividades, qualquer dia útil serve
-  for(let i=0;i<60;i++){
-    if(!ocupadas.has(dateKey(candidata))) return candidata;
-    candidata=proxUtilApos(candidata);
+// ── CLASSIFICAÇÃO DE ATIVIDADES PARA SUGESTÃO ────────────────────────
+// Cada tipo de atividade tem uma regra de "data válida"
+const REGRAS_ATIVIDADE = [
+  // Provas presenciais → sempre domingo
+  { match: ['PROVA OBJETIVA','PROVA DISCURSIVA','PROVA OBJETIVA E PROVA DISCURSIVA',
+            'PROVA DE CAPACIDADE FÍSICA','PROVA PRÁTICA',
+            'REALIZAÇÃO DA AVALIAÇÃO PSICOLÓGICA','REALIZAÇÃO DA AVALIAÇÃO MÉDICA',
+            'REALIZAÇÃO DA AVALIAÇÃO CLÍNICA','REALIZAÇÃO ENTREVISTA POR COMPETÊNCIAS',
+            'REALIZAÇÃO DO CURSO DE FORMAÇÃO'],
+    regra: 'domingo' },
+  // Gabarito preliminar → mesmo dia da prova (domingo)
+  { match: ['GABARITO PRELIMINAR'],
+    regra: 'domingo' },
+  // CDI → terça-feira útil
+  { match: ['COMPROVANTE DEFINITIVO DE INSCRIÇÃO','CDI'],
+    regra: 'terca' },
+  // Convocações → terça-feira útil
+  { match: ['CONVOCAÇÃO'],
+    regra: 'terca' },
+  // Período (abertura de recurso, inscrições, envio) → dias úteis, qualquer
+  { match: ['PERÍODO','ABERTURA DE RECURSO','ENVIO','ANÁLISE','ANÁLISE BANCA',
+            'CORREÇÃO','MANIFESTAÇÃO'],
+    regra: 'util' },
+  // Resultados → dia útil
+  { match: ['RESULTADO','GABARITO PÓS-RECURSO','CLASSIFICAÇÃO','HOMOLOGAÇÃO','PUBLICAÇÃO'],
+    regra: 'util' },
+];
+
+function regraParaAtividade(atividade){
+  const a = atividade.toUpperCase();
+  for(const r of REGRAS_ATIVIDADE){
+    if(r.match.some(k => a.includes(k))) return r.regra;
+  }
+  return 'util';
+}
+
+// Conta quantas tarefas a pessoa tem num dado dia (para calcular sobrecarga)
+function cargaPessoaDia(responsavel, dk){
+  return _allTasks.filter(t => {
+    if(!t.due) return false;
+    const d = new Date(t.due);
+    return t.responsavel === responsavel && dateKey(d) === dk;
+  }).length;
+}
+
+function sugerirNovaData(dataOriginal, atividade){
+  const regra = regraParaAtividade(atividade);
+  const ocupadas = new Set(_allTasks.filter(t=>t.due).map(t=>dateKey(new Date(t.due))));
+
+  // Ponto de partida: 1 dia após a data com conflito
+  let candidata = addDays(dataOriginal, 1);
+
+  for(let i = 0; i < 90; i++){
+    // Aplica regra do tipo de atividade
+    let valida = false;
+    if(regra === 'domingo'){
+      // Próximo domingo que não seja feriado ou recesso
+      while(candidata.getDay() !== 0) candidata = addDays(candidata, 1);
+      valida = !isFeriado(candidata) && !isRecesso(candidata);
+    } else if(regra === 'terca'){
+      // Próxima terça-feira útil
+      while(candidata.getDay() !== 2 || !isUtil(candidata)) candidata = addDays(candidata, 1);
+      valida = true;
+    } else {
+      // Qualquer dia útil
+      if(isUtil(candidata)) valida = true;
+    }
+
+    if(valida){
+      const dk = dateKey(candidata);
+      // Verifica se essa data já está muito ocupada no Planner (máx 1 conflito)
+      const qtd = Array.from(ocupadas).filter(o => o === dk).length;
+      if(qtd === 0) return candidata; // Dia completamente livre → ótimo
+      if(qtd === 1) {
+        // Dia com só 1 conflito → aceitável se não for prova
+        if(regra !== 'domingo') return candidata;
+      }
+    }
+
+    candidata = addDays(candidata, 1);
   }
   return candidata;
 }
@@ -2285,7 +2355,7 @@ function exibirResultadoCron(result, nome, conflitos=[], sobrecargas=[]){
   let alertasHtml='';
   if(conflitos.length){
     const itens=conflitos.map(c=>{
-      const sugestao=sugerirNovaData(c.data_fim_obj, tipoAtual);
+      const sugestao=sugerirNovaData(c.data_fim_obj, c.atividade);
       return `
 <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f3cfcd">
   <div style="flex:none;font-size:11px;font-family:'JetBrains Mono',monospace;color:#c0322f;padding-top:2px;width:24px">#${c.seq}</div>
@@ -2315,7 +2385,7 @@ function exibirResultadoCron(result, nome, conflitos=[], sobrecargas=[]){
   }
   if(sobrecargas.length){
     const itens=sobrecargas.map(s=>{
-      const sugestao=sugerirNovaData(s.data_fim_obj, tipoAtual);
+      const sugestao=sugerirNovaData(s.data_fim_obj, s.atividade);
       return `
 <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f3e2bf">
   <div style="flex:none;font-size:11px;font-family:'JetBrains Mono',monospace;color:#a06c12;padding-top:2px;width:24px">#${s.seq}</div>
