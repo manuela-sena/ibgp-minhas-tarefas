@@ -991,6 +991,16 @@ function loadTarefas(){
   if(typeof DADOS_INICIAIS !== 'undefined'){
     _buckets = DADOS_INICIAIS.buckets||{};
     _planoId = DADOS_INICIAIS.planoId;
+    // Carregar concluídas das últimas 48h vindas do Planner
+    const rawConcl = DADOS_INICIAIS.concluidas||[];
+    if(rawConcl.length && !_concluidasSessao.length){
+      _concluidasSessao = rawConcl.map(t=>({
+        ...t,
+        due: parseISO(t.due),
+        data: fmtDate(parseISO(t.due)),
+        fromPlanner: true,
+      }));
+    }
   }
   _allTasks = raw.map(t=>{
     const due=parseISO(t.due);
@@ -1233,15 +1243,35 @@ function renderMovimentos(){
 function renderConcluidas(){
   const el=document.getElementById('concl-list');
   if(!el) return;
-  if(!_concluidasSessao.length){ el.innerHTML='<div class="empty-state"><div class="empty-icon">✅</div><div class="empty-title">Nenhuma tarefa concluída ainda</div><div class="empty-desc">As tarefas que você concluir nesta sessão aparecerão aqui.</div></div>'; return; }
-  el.innerHTML=_concluidasSessao.map(t=>`
+  if(!_concluidasSessao.length){
+    el.innerHTML='<div class="empty-state"><div class="empty-icon">✅</div><div class="empty-title">Nenhuma tarefa concluída recentemente</div><div class="empty-desc">Tarefas concluídas nas últimas 48h aparecerão aqui.</div></div>';
+    return;
+  }
+  el.innerHTML=_concluidasSessao.map(t=>{
+    let tempo = '';
+    if(t.completedAt){
+      try{
+        const dt=new Date(t.completedAt);
+        tempo = dt.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+      }catch(e){}
+    } else if(t.fromPlanner) {
+      tempo = 'Concluída recentemente';
+    } else {
+      tempo = 'Esta sessão';
+    }
+    return `
 <div class="mov-row">
   <div class="mov-dot" style="background:#2e7d52"></div>
-  <div class="mov-info">
-    <div class="mov-desc" style="text-decoration:line-through;color:#8a9ab5">${t.tarefa}</div>
-    <div class="mov-time">${t.municipio}</div>
+  <div class="mov-info" style="flex:1;min-width:0">
+    <div style="font-size:12.5px;font-weight:500;color:#28344a;text-decoration:line-through;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.tarefa}</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:2px;flex-wrap:wrap">
+      <span style="font-size:11px;color:#8a9ab5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px">${t.municipio}</span>
+      ${t.responsavel?chipP(t.responsavel):''}
+      <span style="font-size:10.5px;color:#b0bac8">✅ ${tempo}</span>
+    </div>
   </div>
-</div>`).join('');
+</div>`;
+  }).join('');
 }
 
 // ── NOTIFICAÇÕES ────────────────────────────────────────────────────
@@ -2807,8 +2837,21 @@ async function refreshAll(){
     // 4. Atualiza DADOS_INICIAIS e recarrega
     DADOS_INICIAIS.tarefas = novas;
     DADOS_INICIAIS.buckets = _buckets;
+    // Buscar concluídas recentes separadamente
+    const rawConcl = await apiAll(`https://graph.microsoft.com/v1.0/planner/plans/${_planoId}/tasks?$filter=percentComplete eq 100`).catch(()=>[]);
+    const limite = new Date(Date.now() - 48*3600*1000);
+    _concluidasSessao = rawConcl
+      .filter(t=>{ const cd=t.completedDateTime; return cd && new Date(cd)>=limite && ATRIB[(t.title||'').trim()]; })
+      .sort((a,b)=>b.completedDateTime.localeCompare(a.completedDateTime))
+      .slice(0,30)
+      .map(t=>({
+        id:t.id, municipio:_buckets[t.bucketId]||'—',
+        tarefa:(t.title||'').trim(), responsavel:ATRIB[(t.title||'').trim()]||'',
+        due:t.dueDateTime||'', completedAt:t.completedDateTime, fromPlanner:true,
+      }));
     _allTasks = [];
     loadTarefas();
+    renderConcluidas();
     addMov('Tarefas atualizadas do Planner', '#2e7d52');
     addNotif('🔄 Tarefas atualizadas com sucesso!');
   } catch(e){
@@ -2828,6 +2871,7 @@ if(typeof IS_CRONOGRAMA!=='undefined'&&IS_CRONOGRAMA){
   goPage('validar');
 } else {
   loadTarefas();
+  renderConcluidas();
 }
 </script>
 </body>
