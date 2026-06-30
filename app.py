@@ -16,6 +16,7 @@ NOME_MAP = {
     "manuela":"Manuela","manu":"Manuela",
     "fabiano":"Fabiano","fabiano costa barreiros":"Fabiano",
     "maria":"Maria Cristina","maria cristina":"Maria Cristina","maria cristina salomão":"Maria Cristina","cristina":"Maria Cristina",
+    "josiane":"Josiane","josiane teixeira do monte":"Josiane","josiane teixeira":"Josiane",
 }
 
 _atrib_raw = open("/mount/src/ibgp-minhas-tarefas/atribuicoes.js").read()
@@ -93,7 +94,7 @@ except Exception:
     st.button("Entrar novamente", on_click=lambda: st.session_state.pop("access_token"))
     st.stop()
 
-is_gestora    = nome_interno == "Manuela"
+is_gestora    = nome_interno in ("Manuela", "Josiane")
 is_cronograma = nome_interno in ("Fabiano", "Maria Cristina")
 perfil = ("Gestora · Equipe IBGP" if is_gestora
           else ("Cronograma · IBGP" if is_cronograma else "Equipe IBGP"))
