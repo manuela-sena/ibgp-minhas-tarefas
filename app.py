@@ -272,6 +272,7 @@ def buscar_tarefas(token):
             "tarefa": nome,
             "responsavel": resp,
             "due": due,
+            "hasNota": bool(t.get("hasDescription", False)),
         }
         if t.get("percentComplete",0) == 100:
             # Só inclui concluídas das últimas 48h
