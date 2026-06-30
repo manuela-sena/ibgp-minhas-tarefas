@@ -1103,7 +1103,9 @@ function renderVisibleGroup(){
 
 // ── TASK ROW (tabela) ─────────────────────────────────────────────────
 function renderTaskRow(t, showP){
-  const nota=_notas[t.id]||'';
+  const nota=_notas[t.id];
+  const temNota = nota!==undefined ? !!nota : !!t.hasNota;
+  const notaPreview = nota || (t.hasNota ? 'Carregando observação…' : '');
   return `
 <div>
 <div class="t-row" style="display:grid;grid-template-columns:180px 1fr 120px 140px 76px;gap:0;align-items:center">
@@ -1114,7 +1116,7 @@ function renderTaskRow(t, showP){
     <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
       <span class="t-desc">${t.tarefa}</span>
     </div>
-    ${nota?`<div style="display:flex;align-items:center;gap:6px;margin-top:3px"><span class="chip-nota">📝 ${nota.length>40?nota.substring(0,40)+'…':nota}</span></div>`:''}
+    ${temNota?`<div style="display:flex;align-items:center;gap:6px;margin-top:3px"><span class="chip-nota" id="nota-preview-${t.id}">📝 ${notaPreview.length>40?notaPreview.substring(0,40)+'…':notaPreview}</span></div>`:''}
   </div>
   <div>${t.responsavel?chipP(t.responsavel):''}</div>
   <div>${chipD(t.dias,t.data)}</div>
@@ -1171,8 +1173,29 @@ document.addEventListener('click',e=>{
 });
 
 // ── NOTA ────────────────────────────────────────────────────────────
-function openNota(id){ document.getElementById('np-'+id)?.classList.add('open'); }
+async function openNota(id){
+  const panel=document.getElementById('np-'+id);
+  const textarea=document.getElementById('ni-'+id);
+  panel?.classList.add('open');
+  // Se já temos a nota em cache, usa direto
+  if(_notas[id]!==undefined){ if(textarea) textarea.value=_notas[id]; return; }
+  // Caso contrário, busca do Planner
+  if(textarea){ textarea.value='Carregando...'; textarea.disabled=true; }
+  try{
+    const d=await api(`https://graph.microsoft.com/v1.0/planner/tasks/${id}/details`);
+    const texto=d.description||'';
+    _notas[id]=texto;
+    if(textarea){ textarea.value=texto; textarea.disabled=false; }
+    atualizarPreviewNota(id, texto);
+  }catch(e){
+    if(textarea){ textarea.value=''; textarea.disabled=false; }
+  }
+}
 function closeNota(id){ document.getElementById('np-'+id)?.classList.remove('open'); }
+function atualizarPreviewNota(id, texto){
+  const prev=document.getElementById('nota-preview-'+id);
+  if(prev) prev.innerHTML='📝 '+(texto.length>40?texto.substring(0,40)+'…':texto);
+}
 async function saveNota(id){
   const texto=document.getElementById('ni-'+id)?.value||'';
   try{
@@ -1181,6 +1204,8 @@ async function saveNota(id){
     await fetch(`https://graph.microsoft.com/v1.0/planner/tasks/${id}/details`,{method:'PATCH',headers:{'Authorization':'Bearer '+TOKEN,'Content-Type':'application/json','If-Match':etag},body:JSON.stringify({description:texto})});
     _notas[id]=texto;
     closeNota(id);
+    // Atualiza tarefa na lista para refletir hasNota
+    const t=_allTasks.find(x=>x.id===id); if(t) t.hasNota=!!texto;
     applyFilters();
     addMov(`Nota salva em "${_allTasks.find(t=>t.id===id)?.tarefa||id}"`, '#2f6cc4');
   }catch(e){ alert('Erro ao salvar nota: '+e.message); }
