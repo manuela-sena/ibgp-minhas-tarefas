@@ -1492,6 +1492,11 @@ function setTipo(t){
   });
   const di=document.getElementById('g-dias-insc');
   if(di) di.value=t==='PSS'?10:30;
+  // GUARDA: marcar Curso de Formação e Sindicância por padrão
+  const curso=PHASES.find(p=>p.id==='curso');
+  const sindicancia=PHASES.find(p=>p.id==='sindicancia');
+  if(curso) curso.on = t==='GUARDA';
+  if(sindicancia) sindicancia.on = t==='GUARDA';
   renderPhases();
 }
 function toggleDataManual(){ const w=document.getElementById('g-data-manual-wrap'); if(w) w.style.display=document.getElementById('g-data-manual-cb')?.checked?'block':'none'; }
