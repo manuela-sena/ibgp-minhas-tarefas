@@ -1,0 +1,46 @@
+{
+  "usuarios": [
+    {
+      "nome_interno": "Manuela",
+      "aliases": ["manuela", "manu"],
+      "perfil": "gestora",
+      "ativo": true
+    },
+    {
+      "nome_interno": "Josiane",
+      "aliases": ["josiane", "josiane teixeira", "josiane teixeira do monte"],
+      "perfil": "gestora",
+      "ativo": true
+    },
+    {
+      "nome_interno": "Lorena",
+      "aliases": ["lorena"],
+      "perfil": "equipe",
+      "ativo": true
+    },
+    {
+      "nome_interno": "Laryssa",
+      "aliases": ["laryssa", "execução"],
+      "perfil": "equipe",
+      "ativo": true
+    },
+    {
+      "nome_interno": "Natália",
+      "aliases": ["natália", "natalia"],
+      "perfil": "equipe",
+      "ativo": true
+    },
+    {
+      "nome_interno": "Fabiano",
+      "aliases": ["fabiano", "fabiano costa barreiros"],
+      "perfil": "cronograma",
+      "ativo": true
+    },
+    {
+      "nome_interno": "Maria Cristina",
+      "aliases": ["maria", "maria cristina", "maria cristina salomão", "cristina"],
+      "perfil": "cronograma",
+      "ativo": true
+    }
+  ]
+}
