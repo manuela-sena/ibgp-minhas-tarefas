@@ -10,14 +10,30 @@ REDIRECT_URI = "https://ibgp-minhas-tarefas-jkdmypmipxemkvhh6c5vjv.streamlit.app
 SCOPES       = "Tasks.ReadWrite Group.Read.All User.Read offline_access"
 NOME_PLANO   = "PLANNER IBGP"
 
-NOME_MAP = {
-    "execução":"Laryssa","laryssa":"Laryssa","lorena":"Lorena",
-    "natália":"Natália","natalia":"Natália",
-    "manuela":"Manuela","manu":"Manuela",
-    "fabiano":"Fabiano","fabiano costa barreiros":"Fabiano",
-    "maria":"Maria Cristina","maria cristina":"Maria Cristina","maria cristina salomão":"Maria Cristina","cristina":"Maria Cristina",
-    "josiane":"Josiane","josiane teixeira do monte":"Josiane","josiane teixeira":"Josiane",
-}
+USUARIOS_PATH = "/mount/src/ibgp-minhas-tarefas/usuarios.json"
+
+def carregar_usuarios():
+    try:
+        with open(USUARIOS_PATH, "r", encoding="utf-8") as f:
+            return json.load(f)["usuarios"]
+    except Exception:
+        return []
+
+def usuarios_para_nome_map(usuarios):
+    m = {}
+    for u in usuarios:
+        if not u.get("ativo", True): continue
+        for alias in u.get("aliases", []):
+            m[alias.lower()] = u["nome_interno"]
+    return m
+
+def usuarios_com_perfil(usuarios, perfil):
+    return [u["nome_interno"] for u in usuarios if u.get("ativo",True) and u.get("perfil")==perfil]
+
+USUARIOS      = carregar_usuarios()
+NOME_MAP      = usuarios_para_nome_map(USUARIOS)
+GESTORAS      = usuarios_com_perfil(USUARIOS, "gestora")
+CRONOGRAMAS   = usuarios_com_perfil(USUARIOS, "cronograma")
 
 _atrib_raw = open("/mount/src/ibgp-minhas-tarefas/atribuicoes.js").read()
 ATRIBUICOES = {k: v for k, v in re.findall(r'"([^"]+)":\s*"([^"]+)"', _atrib_raw)}
@@ -94,10 +110,39 @@ except Exception:
     st.button("Entrar novamente", on_click=lambda: st.session_state.pop("access_token"))
     st.stop()
 
-is_gestora    = nome_interno in ("Manuela", "Josiane")
-is_cronograma = nome_interno in ("Fabiano", "Maria Cristina")
+is_gestora    = nome_interno in GESTORAS
+is_cronograma = nome_interno in CRONOGRAMAS
 perfil = ("Gestora · Equipe IBGP" if is_gestora
           else ("Cronograma · IBGP" if is_cronograma else "Equipe IBGP"))
+
+# ── SALVAR USUÁRIOS (acionado via query param, só gestoras) ──────────
+if "salvar_usuarios" in st.query_params:
+    if is_gestora:
+        try:
+            novos = json.loads(st.query_params["salvar_usuarios"])
+            GH_TOKEN = st.secrets.get("GITHUB_TOKEN","")
+            REPO = "manuela-sena/ibgp-minhas-tarefas"
+            # Buscar SHA atual
+            r_sha = requests.get(
+                f"https://api.github.com/repos/{REPO}/contents/usuarios.json",
+                headers={"Authorization": f"Bearer {GH_TOKEN}"}
+            )
+            sha = r_sha.json().get("sha","")
+            conteudo = json.dumps({"usuarios": novos}, ensure_ascii=False, indent=2)
+            import base64
+            r_save = requests.put(
+                f"https://api.github.com/repos/{REPO}/contents/usuarios.json",
+                headers={"Authorization": f"Bearer {GH_TOKEN}", "Content-Type":"application/json"},
+                json={"message":"feat: atualização de usuários via app","content": base64.b64encode(conteudo.encode()).decode(),"sha":sha}
+            )
+            if "commit" in r_save.json():
+                st.session_state["usuarios_msg"] = "✅ Usuários salvos com sucesso!"
+            else:
+                st.session_state["usuarios_msg"] = f"⚠️ Erro: {r_save.json().get('message','?')}"
+        except Exception as e:
+            st.session_state["usuarios_msg"] = f"⚠️ Erro: {e}"
+    st.query_params.clear()
+    st.rerun()
 
 # ── CALCULAR CRONOGRAMA (acionado via query param) ────────────────────
 CRON_RESULT_KEY = "cronograma_result"
@@ -300,6 +345,8 @@ cron_nome    = st.session_state.get("cron_nome","")
 planner_ok   = st.session_state.pop("planner_ok", None)
 planner_err  = st.session_state.pop("planner_err", None)
 
+usuarios_msg = st.session_state.pop("usuarios_msg", None)
+
 dados_iniciais = json.dumps({
     "tarefas"      : tarefas,
     "concluidas"   : concluidas,
@@ -309,6 +356,8 @@ dados_iniciais = json.dumps({
     "cronNome"     : cron_nome,
     "plannerOk"    : planner_ok,
     "plannerErr"   : planner_err,
+    "usuarios"     : USUARIOS,
+    "usuariosMsg"  : usuarios_msg,
 })
 
 # ── LER E INJETAR TEMPLATE ────────────────────────────────────────────
