@@ -1423,9 +1423,16 @@ async function loadReajusteTarefas(){
   <div style="overflow-x:auto"><table><thead><tr><th>Tarefa</th><th>Início Atual</th><th>Fim Atual</th><th style="color:#1f4e8c">Nova Início ✏️</th><th style="color:#1f4e8c">Nova Fim ✏️</th></tr></thead><tbody id="reaj-tbody">${rows}</tbody></table></div>
   <div style="padding:14px 18px;display:flex;align-items:center;gap:16px;border-top:1px solid #eef1f6;flex-wrap:wrap">
     <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#41506b;cursor:pointer"><input type="checkbox" id="cascata-cb"> Recalcular em cascata</label>
+    <button class="btn-secondary" onclick="exportarXLSXReajuste()" title="Baixar Excel">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      .xlsx
+    </button>
     <button class="btn-primary" style="margin-left:auto" onclick='salvarReajuste(${orig})'><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Salvar alterações</button>
   </div>
 </div>`;
+    // Guardar tarefas atuais para exportação
+    window._reajTarefas = abertas;
+    window._reajNome = _buckets[bucketId] || document.getElementById('sel-reaj-concurso')?.selectedOptions[0]?.text || 'Cronograma';
   }catch(e){ document.getElementById('reajuste-tarefas').innerHTML='<div class="loading">Erro ao carregar.</div>'; }
 }
 async function salvarReajuste(original){
@@ -1461,6 +1468,51 @@ async function salvarReajuste(original){
   }
   alert(`✅ ${ok} tarefa(s) atualizada(s).${err?' ⚠️ '+err+' erro(s).':''}`);
   loadReajusteTarefas();
+}
+
+function exportarXLSXReajuste(){
+  // Lê as datas atuais da tabela (incluindo edições ainda não salvas)
+  const tbody = document.querySelectorAll('#reaj-tbody tr');
+  if(!tbody.length){ alert('Nenhuma tarefa carregada.'); return; }
+
+  const nome = window._reajNome || document.getElementById('sel-reaj-concurso')?.selectedOptions[0]?.text || 'Cronograma';
+  const tarefas = [];
+  tbody.forEach((row, i) => {
+    const titulo = row.cells[0]?.title || row.cells[0]?.textContent || '';
+    // Usa "Nova Fim" se preenchida, senão "Fim Atual"
+    const novaFimStr  = row.querySelector('[data-f="due"]')?.value;
+    const novaIniStr  = row.querySelector('[data-f="start"]')?.value;
+    const fimAtualTxt = row.cells[2]?.textContent?.trim();
+    const iniAtualTxt = row.cells[1]?.textContent?.trim();
+
+    // Converter dd/mm/aaaa → Date
+    function parseBR(s){ if(!s||s==='—') return null; const [d,m,y]=s.split('/'); return new Date(+y,+m-1,+d,12); }
+    function parseISO(s){ return s ? new Date(s+'T12:00:00') : null; }
+
+    const ini = novaIniStr ? parseISO(novaIniStr) : parseBR(iniAtualTxt);
+    const fim = novaFimStr ? parseISO(novaFimStr) : parseBR(fimAtualTxt);
+
+    if(titulo && fim) tarefas.push({ seq: i+1, atividade: titulo, data_inicio: ini||fim, data_fim: fim });
+  });
+
+  if(!tarefas.length){ alert('Nenhuma tarefa com data para exportar.'); return; }
+
+  // Reutiliza a função _gerarXLSX já existente
+  // Temporariamente define _cronResultado e _cronNome
+  const _bkpCron = _cronResultado, _bkpNome = _cronNome, _bkpParams = _lastParams;
+  _cronResultado = tarefas;
+  _cronNome = nome;
+  _lastParams = { tipo: 'CONCURSO' };
+
+  if(typeof XLSX === 'undefined'){
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    s.onload = () => { _gerarXLSX(); _cronResultado=_bkpCron; _cronNome=_bkpNome; _lastParams=_bkpParams; };
+    document.head.appendChild(s);
+  } else {
+    _gerarXLSX();
+    _cronResultado=_bkpCron; _cronNome=_bkpNome; _lastParams=_bkpParams;
+  }
 }
 
 // ── GERAR ─────────────────────────────────────────────────────────────
