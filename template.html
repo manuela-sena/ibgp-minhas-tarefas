@@ -1541,19 +1541,21 @@ function renderPhases(){
   const visible=PHASES.filter(p=>!p.guardaOnly || tipoAtual==='GUARDA');
   pg.innerHTML=visible.map(p=>{
     const volField = p.hasVolume ? `
-      <div id="vol-wrap-${p.id}" style="display:${p.on?'flex':'none'};align-items:center;gap:6px;margin-top:5px;margin-left:26px">
+      <div id="vol-wrap-${p.id}" style="display:${p.on?'flex':'none'};align-items:center;gap:6px;margin-left:8px">
         <input id="vol-${p.id}" type="number" min="0" max="999999" placeholder="Nº candidatos"
           style="width:130px;height:28px;padding:0 8px;border:1px solid #d7dde7;border-radius:7px;font:12px 'Public Sans',sans-serif;color:#1f2a3d"
           oninput="updateVolumeInfo('${p.id}')">
-        <span id="vol-info-${p.id}" style="font-size:11.5px;font-weight:600"></span>
+        <span id="vol-info-${p.id}" style="font-size:11.5px;font-weight:600;white-space:nowrap"></span>
       </div>` : '';
     return `
 <div style="display:flex;flex-direction:column">
-  <div class="phase-item" onclick="togglePhase('${p.id}')">
-    <div class="phase-cb ${p.on?'on':''}" id="ph-${p.id}">${p.on?'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div>
-    <span>${p.label}</span>
+  <div style="display:flex;align-items:center;flex-wrap:wrap;gap:0">
+    <div class="phase-item" onclick="togglePhase('${p.id}')">
+      <div class="phase-cb ${p.on?'on':''}" id="ph-${p.id}">${p.on?'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div>
+      <span>${p.label}</span>
+    </div>
+    ${volField}
   </div>
-  ${volField}
 </div>`;
   }).join('');
 }
