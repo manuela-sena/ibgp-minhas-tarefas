@@ -576,7 +576,7 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
   <!-- TOPBAR -->
   <header class="topbar">
     <div>
-      <div class="topbar-greeting" id="topbar-title">Olá, Manuela! 👋</div>
+      <div class="topbar-greeting" id="topbar-title">Olá, <span id="span-nome-usuario">Manuela</span>! 👋</div>
       <div class="topbar-sub" id="topbar-sub">Aqui está o resumo das suas tarefas e prazos.</div>
     </div>
     <div class="topbar-spacer"></div>
@@ -3039,6 +3039,23 @@ async function refreshAll(){
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────
+// Preencher nome do usuário no topbar e sidebar
+(function(){
+  const nome = typeof NOME_USUARIO!=='undefined' ? NOME_USUARIO : 'Usuário';
+  const isG  = typeof IS_GESTORA!=='undefined' && IS_GESTORA;
+  const isCr = typeof IS_CRONOGRAMA!=='undefined' && IS_CRONOGRAMA;
+  const perfil = isG ? 'Gestora · Equipe IBGP' : isCr ? 'Cronograma · IBGP' : 'Equipe IBGP';
+  const inicial = nome.charAt(0).toUpperCase();
+  const spanNome = document.getElementById('span-nome-usuario');
+  if(spanNome) spanNome.textContent = nome;
+  const av = document.getElementById('user-avatar');
+  if(av) av.textContent = inicial;
+  const nd = document.getElementById('user-name-display');
+  if(nd) nd.textContent = nome;
+  const rd = document.getElementById('user-role-display');
+  if(rd) rd.textContent = perfil;
+})();
+
 renderPhases();
 renderNotifs();
 renderCronResult();
