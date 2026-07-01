@@ -835,11 +835,6 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
           <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13.5px;font-weight:500"><input type="checkbox" id="g-data-manual-cb" onchange="toggleDataManual()"> Definir data de início das inscrições manualmente</label>
           <div id="g-data-manual-wrap" style="display:none;margin-top:8px"><input id="g-data-ini-insc" class="form-input" type="date" style="max-width:260px"></div>
         </div>
-        <div id="g-ch-wrap" style="display:none">
-          <label class="form-label">Carga horária do Curso de Formação (0 = sem curso)</label>
-          <input id="g-ch" class="form-input" type="number" value="0" min="0" max="2000" step="10" style="max-width:260px" oninput="updateChInfo()">
-          <div id="g-ch-info" style="font-size:12px;color:#7a869c;margin-top:4px"></div>
-        </div>
         <div><label class="form-label">Fases do concurso</label><div class="phase-grid" id="phase-grid"></div></div>
         <div style="display:flex;justify-content:flex-end">
           <button class="btn-primary" onclick="calcularCronograma()"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-gerar"/></svg>Calcular cronograma</button>
@@ -1485,6 +1480,7 @@ const PHASES=[
   {id:'entrevista',label:'Entrevista Devolutiva',on:false},
   {id:'competencias',label:'Entrevista por Competências',on:false},
   {id:'sindicancia',label:'Sindicância Social',on:false,guardaOnly:true},
+  {id:'curso',label:'Curso de Formação',on:false,hasCH:true,chLabel:'horas'},
 ];
 let tipoAtual='CONCURSO';
 function setTipo(t){
@@ -1496,8 +1492,6 @@ function setTipo(t){
   });
   const di=document.getElementById('g-dias-insc');
   if(di) di.value=t==='PSS'?10:30;
-  const chw=document.getElementById('g-ch-wrap');
-  if(chw) chw.style.display=t==='GUARDA'?'block':'none';
   renderPhases();
 }
 function toggleDataManual(){ const w=document.getElementById('g-data-manual-wrap'); if(w) w.style.display=document.getElementById('g-data-manual-cb')?.checked?'block':'none'; }
@@ -1547,6 +1541,13 @@ function renderPhases(){
           oninput="updateVolumeInfo('${p.id}')">
         <span id="vol-info-${p.id}" style="font-size:11.5px;font-weight:600;white-space:nowrap"></span>
       </div>` : '';
+    const chField = p.hasCH ? `
+      <div id="ch-wrap-${p.id}" style="display:${p.on?'flex':'none'};align-items:center;gap:6px;margin-left:8px">
+        <input id="ch-${p.id}" type="number" min="0" max="2000" step="10" placeholder="Carga horária (h)"
+          style="width:150px;height:28px;padding:0 8px;border:1px solid #d7dde7;border-radius:7px;font:12px 'Public Sans',sans-serif;color:#1f2a3d"
+          oninput="updateCHInfo('${p.id}')">
+        <span id="ch-info-${p.id}" style="font-size:11.5px;font-weight:600;white-space:nowrap;color:#2f6cc4"></span>
+      </div>` : '';
     return `
 <div style="display:flex;flex-direction:column">
   <div style="display:flex;align-items:center;flex-wrap:wrap;gap:0">
@@ -1554,7 +1555,7 @@ function renderPhases(){
       <div class="phase-cb ${p.on?'on':''}" id="ph-${p.id}">${p.on?'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div>
       <span>${p.label}</span>
     </div>
-    ${volField}
+    ${volField}${chField}
   </div>
 </div>`;
   }).join('');
@@ -1569,6 +1570,20 @@ function togglePhase(id){
   // Mostrar/esconder campo de volume
   const vw=document.getElementById(`vol-wrap-${id}`);
   if(vw) vw.style.display=p.on?'flex':'none';
+  // Mostrar/esconder campo de carga horária
+  const cw=document.getElementById(`ch-wrap-${id}`);
+  if(cw) cw.style.display=p.on?'flex':'none';
+}
+
+function updateCHInfo(id){
+  const ch=parseInt(document.getElementById(`ch-${id}`)?.value)||0;
+  const el=document.getElementById(`ch-info-${id}`);
+  if(el) el.textContent=ch>0?`→ ${Math.ceil(ch/10)} dias úteis`:'';
+}
+
+function getCH(id){
+  const el=document.getElementById(`ch-${id}`);
+  return el ? parseInt(el.value)||0 : 0;
 }
 
 // ── MOTOR DE CRONOGRAMA EM JS ──────────────────────────────────────────
@@ -1902,7 +1917,7 @@ function calcularCronograma(){
   const manualCb=document.getElementById('g-data-manual-cb')?.checked;
   const dataIniInscStr=manualCb?(document.getElementById('g-data-ini-insc')?.value||''):'';
   const diasInsc=parseInt(document.getElementById('g-dias-insc')?.value||'30');
-  const ch=tipoAtual==='GUARDA'?parseInt(document.getElementById('g-ch')?.value||'0'):0;
+  const ch = getCH('curso');
   const fases={}; PHASES.forEach(p=>{ fases[p.id]=p.on; });
 
   // Capturar volumes de candidatos para fases com hasVolume
@@ -1928,6 +1943,7 @@ function calcularCronograma(){
     temMedica:fases.medica, temClinica:fases.clinica,
     temHetero:fases.hetero, temEntrevista:fases.entrevista,
     temCompetencias:fases.competencias, temSindicancia:fases.sindicancia||false,
+    temCurso: fases.curso||false,
     // Dias de análise calculados por volume
     diasAnalTitulos, diasAnalDiscursiva, diasAnalHetero,
     // Volumes informados (para exibir no resultado)
@@ -2293,17 +2309,8 @@ function _addFasesComuns(add,ref,p,isGuarda=false){
 }
 
 function _addClassificacao(add,ref,p){
-  add('CLASSIFICAÇÃO PRELIMINAR',ref);
-  const iniRC=proxUtilApos(ref), fimRC=addDiasUteis(iniRC,2);
-  add('ABERTURA DE RECURSO CONTRA CLASSIFICAÇÃO PRELIMINAR',iniRC,fimRC);
-  const analC=addDiasUteis(fimRC,2);
-  add('ANÁLISE DOS RECURSOS CONTRA CLASSIFICAÇÃO PRELIMINAR',analC);
-  const cf=proxUtilApos(analC);
-  add('CLASSIFICAÇÃO FINAL',cf); add('HOMOLOGAÇÃO',cf);
-}
-
-function _addClassificacaoGuarda(add,ref,p){
-  if(p.chCurso>0){
+  if(p.temCurso && p.chCurso>0){
+    // Curso de Formação (disponível para todos os tipos)
     const diasCurso=Math.ceil(p.chCurso/10);
     const convCurso=proxUtilApos(ref);
     add('CONVOCAÇÃO PARA O CURSO DE FORMAÇÃO',convCurso);
@@ -2318,7 +2325,20 @@ function _addClassificacaoGuarda(add,ref,p){
     add('ANÁLISE DOS RECURSOS CONTRA CLASSIFICAÇÃO PRELIMINAR',analC);
     const cf=proxUtilApos(analC);
     add('CLASSIFICAÇÃO FINAL',cf); add('HOMOLOGAÇÃO',cf);
-  } else { _addClassificacao(add,ref,p); }
+  } else {
+    add('CLASSIFICAÇÃO PRELIMINAR',ref);
+    const iniRC=proxUtilApos(ref), fimRC=addDiasUteis(iniRC,2);
+    add('ABERTURA DE RECURSO CONTRA CLASSIFICAÇÃO PRELIMINAR',iniRC,fimRC);
+    const analC=addDiasUteis(fimRC,2);
+    add('ANÁLISE DOS RECURSOS CONTRA CLASSIFICAÇÃO PRELIMINAR',analC);
+    const cf=proxUtilApos(analC);
+    add('CLASSIFICAÇÃO FINAL',cf); add('HOMOLOGAÇÃO',cf);
+  }
+}
+
+function _addClassificacaoGuarda(add,ref,p){
+  // Guarda usa a mesma lógica — curso de formação é controlado pelo checkbox
+  _addClassificacao(add,ref,p);
 }
 
 // ── ANÁLISE DE CONFLITOS E SOBRECARGA ──────────────────────────────────
