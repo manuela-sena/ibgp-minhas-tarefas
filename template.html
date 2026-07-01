@@ -1474,14 +1474,14 @@ const PHASES=[
   {id:'objetiva',label:'Prova Objetiva',on:true},
   {id:'isencao',label:'Isenção',on:true},
   {id:'inscricao',label:'Inscrições',on:true},
-  {id:'discursiva',label:'Prova Discursiva',on:false},
+  {id:'discursiva',label:'Prova Discursiva',on:false,hasVolume:true,volumeLabel:'candidatos aprovados'},
   {id:'pratica',label:'Prova Prática',on:false},
   {id:'taf',label:'TAF / Capacidade Física',on:false},
-  {id:'titulos',label:'Prova de Títulos',on:false},
+  {id:'titulos',label:'Prova de Títulos',on:false,hasVolume:true,volumeLabel:'candidatos aprovados'},
   {id:'psicologica',label:'Avaliação Psicológica',on:false},
   {id:'medica',label:'Avaliação Médica',on:false},
   {id:'clinica',label:'Avaliação Clínica',on:false},
-  {id:'hetero',label:'Heteroidentificação',on:false},
+  {id:'hetero',label:'Heteroidentificação',on:false,hasVolume:true,volumeLabel:'candidatos aprovados'},
   {id:'entrevista',label:'Entrevista Devolutiva',on:false},
   {id:'competencias',label:'Entrevista por Competências',on:false},
   {id:'sindicancia',label:'Sindicância Social',on:false,guardaOnly:true},
@@ -1502,21 +1502,71 @@ function setTipo(t){
 }
 function toggleDataManual(){ const w=document.getElementById('g-data-manual-wrap'); if(w) w.style.display=document.getElementById('g-data-manual-cb')?.checked?'block':'none'; }
 function updateChInfo(){ const ch=parseInt(document.getElementById('g-ch')?.value)||0; const el=document.getElementById('g-ch-info'); if(el) el.textContent=ch>0?`📚 ${ch}h ÷ 10h/dia = ${Math.ceil(ch/10)} dias úteis de curso`:''; }
+
+// Taxas de produtividade da banca IBGP
+// Títulos: 100/h × 8h = 800/dia útil
+// Heteroidentificação: 400/h × 8h = 3.200/dia útil
+// Discursiva: 150/dia útil
+const PROD_TITULOS    = 800;  // candidatos/dia útil
+const PROD_HETERO     = 3200; // candidatos/dia útil
+const PROD_DISCURSIVA = 150;  // candidatos/dia útil
+
+function diasAnalise(id, qtd){
+  if(!qtd || qtd<=0) return null;
+  let prod = id==='titulos'?PROD_TITULOS : id==='hetero'?PROD_HETERO : id==='discursiva'?PROD_DISCURSIVA : null;
+  if(!prod) return null;
+  return Math.max(1, Math.ceil(qtd/prod));
+}
+
+function getVolume(id){
+  const el=document.getElementById(`vol-${id}`);
+  return el ? parseInt(el.value)||0 : 0;
+}
+
+function updateVolumeInfo(id){
+  const qtd=getVolume(id);
+  const dias=diasAnalise(id,qtd);
+  const info=document.getElementById(`vol-info-${id}`);
+  if(!info) return;
+  if(dias && qtd>0){
+    info.textContent=`→ ${dias} dia${dias>1?'s':''} útil${dias>1?'s':''} de análise`;
+    info.style.color='#2f6cc4';
+  } else {
+    info.textContent='';
+  }
+}
+
 function renderPhases(){
   const pg=document.getElementById('phase-grid'); if(!pg) return;
   const visible=PHASES.filter(p=>!p.guardaOnly || tipoAtual==='GUARDA');
-  pg.innerHTML=visible.map(p=>`
-<div class="phase-item" onclick="togglePhase('${p.id}')">
-  <div class="phase-cb ${p.on?'on':''}" id="ph-${p.id}">${p.on?'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div>
-  <span>${p.label}</span>
-</div>`).join('');
+  pg.innerHTML=visible.map(p=>{
+    const volField = p.hasVolume ? `
+      <div id="vol-wrap-${p.id}" style="display:${p.on?'flex':'none'};align-items:center;gap:6px;margin-top:5px;margin-left:26px">
+        <input id="vol-${p.id}" type="number" min="0" max="999999" placeholder="Nº candidatos"
+          style="width:130px;height:28px;padding:0 8px;border:1px solid #d7dde7;border-radius:7px;font:12px 'Public Sans',sans-serif;color:#1f2a3d"
+          oninput="updateVolumeInfo('${p.id}')">
+        <span id="vol-info-${p.id}" style="font-size:11.5px;font-weight:600"></span>
+      </div>` : '';
+    return `
+<div style="display:flex;flex-direction:column">
+  <div class="phase-item" onclick="togglePhase('${p.id}')">
+    <div class="phase-cb ${p.on?'on':''}" id="ph-${p.id}">${p.on?'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div>
+    <span>${p.label}</span>
+  </div>
+  ${volField}
+</div>`;
+  }).join('');
 }
+
 function togglePhase(id){
   const p=PHASES.find(p=>p.id===id); if(!p) return; p.on=!p.on;
   const el=document.getElementById('ph-'+id);
   if(!el) return;
   el.className='phase-cb '+(p.on?'on':'');
   el.innerHTML=p.on?'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':'';
+  // Mostrar/esconder campo de volume
+  const vw=document.getElementById(`vol-wrap-${id}`);
+  if(vw) vw.style.display=p.on?'flex':'none';
 }
 
 // ── MOTOR DE CRONOGRAMA EM JS ──────────────────────────────────────────
@@ -1634,7 +1684,11 @@ function calcularConcurso(p){
     const resPosTot=proxUtilApos(analTot);
     if(p.temDiscursiva){
       add('RESULTADO PÓS-RECURSO DA TOTALIZAÇÃO DA PROVA OBJETIVA E RESULTADO PRELIMINAR DA PROVA DISCURSIVA',resPosTot);
-      const iniRecDisc=proxUtilApos(resPosTot), fimRecDisc=addDiasUteis(iniRecDisc,2);
+      // Envio + correção (período baseado no volume)
+      const dDisc=p.diasAnalDiscursiva||5;
+      const iniCorr=proxUtilApos(resPosTot), fimCorr=addDiasUteis(iniCorr,dDisc);
+      add(`ENVIO E CORREÇÃO DAS PROVAS DISCURSIVAS${p.volDiscursiva?` (${p.volDiscursiva.toLocaleString('pt-BR')} provas · ${dDisc}du)`:''}`,iniCorr,fimCorr);
+      const iniRecDisc=proxUtilApos(fimCorr), fimRecDisc=addDiasUteis(iniRecDisc,2);
       add('ABERTURA DE RECURSO CONTRA O RESULTADO DA PROVA DISCURSIVA',iniRecDisc,fimRecDisc);
       const analDisc=addDiasUteis(fimRecDisc,3);
       add('PERÍODO DE ANÁLISE DOS RECURSOS DA PROVA DISCURSIVA',analDisc);
@@ -1671,8 +1725,9 @@ function calcularConcurso(p){
     add('CONVOCAÇÃO PARA PROVA DE TÍTULOS',ref);
     const iniTit=proxUtilApos(ref), fimTit=addDiasUteis(iniTit,2);
     add('PERÍODO PARA ENVIO DOS TÍTULOS',iniTit,fimTit);
-    const analTit=addDiasUteis(fimTit,5);
-    add('PERÍODO PARA ANÁLISE DOS TÍTULOS',analTit);
+    const dTit=p.diasAnalTitulos||5;
+    const analTit=addDiasUteis(fimTit,dTit);
+    add(`PERÍODO PARA ANÁLISE DOS TÍTULOS${p.volTitulos?` (${p.volTitulos.toLocaleString('pt-BR')} candidatos · ${dTit}du)`:''}`,fimTit,analTit);
     const resPrelTit=proxUtilApos(analTit);
     add('RESULTADO PRELIMINAR PROVA DE TÍTULOS',resPrelTit);
     const iniRecTit=proxUtilApos(resPrelTit), fimRecTit=addDiasUteis(iniRecTit,2);
@@ -1768,8 +1823,9 @@ function calcularConcurso(p){
     add('CONVOCAÇÃO PROCEDIMENTO HETEROIDENTIFICAÇÃO',convHetero);
     const iniFoto=proxUtilApos(convHetero), fimFoto=addDiasUteis(iniFoto,2);
     add('ENVIO FOTO/VÍDEO PARA PROCEDIMENTO HETEROIDENTIFICAÇÃO',iniFoto,fimFoto);
-    const iniAvHetero=proxUtilApos(fimFoto), fimAvHetero=addDiasUteis(iniAvHetero,2);
-    add('PROCEDIMENTO HETEROIDENTIFICAÇÃO - AVALIAÇÃO DA BANCA',iniAvHetero,fimAvHetero);
+    const dHetero=p.diasAnalHetero||2;
+    const iniAvHetero=proxUtilApos(fimFoto), fimAvHetero=addDiasUteis(iniAvHetero,dHetero);
+    add(`PROCEDIMENTO HETEROIDENTIFICAÇÃO - AVALIAÇÃO DA BANCA${p.volHetero?` (${p.volHetero.toLocaleString('pt-BR')} candidatos · ${dHetero}du)`:''}`,iniAvHetero,fimAvHetero);
     const resPrelHetero=proxUtilApos(fimAvHetero);
     add('RESULTADO PRELIMINAR DO PROCEDIMENTO HETEROIDENTIFICAÇÃO',resPrelHetero);
     const iniRecHetero=proxUtilApos(resPrelHetero), fimRecHetero=addDiasUteis(iniRecHetero,2);
@@ -1847,6 +1903,17 @@ function calcularCronograma(){
   const ch=tipoAtual==='GUARDA'?parseInt(document.getElementById('g-ch')?.value||'0'):0;
   const fases={}; PHASES.forEach(p=>{ fases[p.id]=p.on; });
 
+  // Capturar volumes de candidatos para fases com hasVolume
+  const volTitulos    = getVolume('titulos');
+  const volDiscursiva = getVolume('discursiva');
+  const volHetero     = getVolume('hetero');
+
+  // Calcular dias de análise baseado na produtividade da banca
+  // Se não informado, usa o padrão do motor
+  const diasAnalTitulos    = diasAnalise('titulos',    volTitulos)    || 5;
+  const diasAnalDiscursiva = diasAnalise('discursiva', volDiscursiva) || 5;
+  const diasAnalHetero     = diasAnalise('hetero',     volHetero)     || 2;
+
   _lastParams={
     tipo: tipoAtual,
     dataPub: new Date(dataPubStr+'T12:00:00'),
@@ -1859,6 +1926,10 @@ function calcularCronograma(){
     temMedica:fases.medica, temClinica:fases.clinica,
     temHetero:fases.hetero, temEntrevista:fases.entrevista,
     temCompetencias:fases.competencias, temSindicancia:fases.sindicancia||false,
+    // Dias de análise calculados por volume
+    diasAnalTitulos, diasAnalDiscursiva, diasAnalHetero,
+    // Volumes informados (para exibir no resultado)
+    volTitulos, volDiscursiva, volHetero,
   };
 
   try {
@@ -2106,8 +2177,9 @@ function _addFasesComuns(add,ref,p,isGuarda=false){
     add('CONVOCAÇÃO PARA PROVA DE TÍTULOS',ref);
     const iniT=proxUtilApos(ref), fimT=addDiasUteis(iniT,2);
     add('PERÍODO PARA ENVIO DOS TÍTULOS',iniT,fimT);
-    const analT=addDiasUteis(fimT,5);
-    add('PERÍODO PARA ANÁLISE DOS TÍTULOS',analT);
+    const dTit=p.diasAnalTitulos||5;
+    const analT=addDiasUteis(fimT,dTit);
+    add(`PERÍODO PARA ANÁLISE DOS TÍTULOS${p.volTitulos?` (${p.volTitulos.toLocaleString('pt-BR')} candidatos · ${dTit}du)`:''}`,fimT,analT);
     const rPrelT=proxUtilApos(analT);
     add('RESULTADO PRELIMINAR PROVA DE TÍTULOS',rPrelT);
     const iniRT=proxUtilApos(rPrelT), fimRT=addDiasUteis(iniRT,2);
@@ -2203,8 +2275,9 @@ function _addFasesComuns(add,ref,p,isGuarda=false){
     add('CONVOCAÇÃO PROCEDIMENTO HETEROIDENTIFICAÇÃO',convH);
     const iniFoto=proxUtilApos(convH), fimFoto=addDiasUteis(iniFoto,2);
     add('ENVIO FOTO/VÍDEO PARA PROCEDIMENTO HETEROIDENTIFICAÇÃO',iniFoto,fimFoto);
-    const iniAvH=proxUtilApos(fimFoto), fimAvH=addDiasUteis(iniAvH,2);
-    add('PROCEDIMENTO HETEROIDENTIFICAÇÃO - AVALIAÇÃO DA BANCA',iniAvH,fimAvH);
+    const dHetero=p.diasAnalHetero||2;
+    const iniAvH=proxUtilApos(fimFoto), fimAvH=addDiasUteis(iniAvH,dHetero);
+    add(`PROCEDIMENTO HETEROIDENTIFICAÇÃO - AVALIAÇÃO DA BANCA${p.volHetero?` (${p.volHetero.toLocaleString('pt-BR')} candidatos · ${dHetero}du)`:''}`,iniAvH,fimAvH);
     const rPrelH=proxUtilApos(fimAvH);
     add('RESULTADO PRELIMINAR DO PROCEDIMENTO HETEROIDENTIFICAÇÃO',rPrelH);
     const iniRH=proxUtilApos(rPrelH), fimRH=addDiasUteis(iniRH,2);
