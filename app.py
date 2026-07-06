@@ -458,9 +458,17 @@ if token and not st.session_state.get("_cache_cleared"):
 with st.spinner("Carregando tarefas..."):
     try:
         tarefas, concluidas, buckets, plano_id = buscar_tarefas(token)
-    except Exception:
+    except Exception as e:
         st.cache_data.clear()
-        tarefas, concluidas, buckets, plano_id = buscar_tarefas(token)
+        try:
+            tarefas, concluidas, buckets, plano_id = buscar_tarefas(token)
+        except Exception as e2:
+            st.error(f"Erro ao carregar tarefas: {e2}")
+            tarefas, concluidas, buckets, plano_id = [], [], {}, None
+
+# Debug temporário — remover após confirmar
+if not tarefas and token:
+    st.warning(f"⚠️ Tarefas vazias. token={bool(token)} plano={plano_id} buckets={len(buckets)}")
 
 # ── MONTAR DADOS_INICIAIS ─────────────────────────────────────────────
 cron_result  = st.session_state.pop(CRON_RESULT_KEY, None)
