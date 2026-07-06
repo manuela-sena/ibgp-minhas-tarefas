@@ -1075,9 +1075,9 @@ function loadTarefas(){
   // Popular filtros
   const concursos=[...new Set(_allTasks.map(t=>t.municipio))].sort();
   const tarefasUnicas=[...new Set(_allTasks.map(t=>t.tarefa))].sort();
-  const sc=document.getElementById('sel-concurso'), st=document.getElementById('sel-tarefa');
+  const sc=document.getElementById('sel-concurso'), selTarefa=document.getElementById('sel-tarefa');
   if(sc) sc.innerHTML='<option value="">Todos os concursos</option>'+concursos.map(c=>`<option>${c}</option>`).join('');
-  if(st) st.innerHTML='<option value="">Todas as tarefas</option>'+tarefasUnicas.map(t=>`<option>${t}</option>`).join('');
+  if(selTarefa) selTarefa.innerHTML='<option value="">Todas as tarefas</option>'+tarefasUnicas.map(t=>`<option>${t}</option>`).join('');
 
   if(typeof IS_GESTORA!=='undefined' && IS_GESTORA){
     const w=document.getElementById('filtro-pessoa-wrap');
@@ -1092,10 +1092,10 @@ function loadTarefas(){
 function clearFilters(){
   const sp=document.getElementById('sel-pessoa');
   const sc=document.getElementById('sel-concurso');
-  const st=document.getElementById('sel-tarefa');
+  const selTarefa=document.getElementById('sel-tarefa');
   if(sp) sp.value='';
   if(sc) sc.value='';
-  if(st) st.value='';
+  if(selTarefa) selTarefa.value='';
   applyFilters();
 }
 
