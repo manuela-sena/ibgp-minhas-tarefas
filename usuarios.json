@@ -4,58 +4,42 @@
       "nome_interno": "Manuela",
       "aliases": ["manuela", "manu"],
       "perfil": "gestora",
-      "auth_tipo": "microsoft",
       "ativo": true
     },
     {
       "nome_interno": "Josiane",
       "aliases": ["josiane", "josiane teixeira", "josiane teixeira do monte"],
       "perfil": "gestora",
-      "auth_tipo": "microsoft",
       "ativo": true
     },
     {
       "nome_interno": "Lorena",
       "aliases": ["lorena"],
       "perfil": "equipe",
-      "auth_tipo": "microsoft",
       "ativo": true
     },
     {
       "nome_interno": "Laryssa",
       "aliases": ["laryssa", "execução"],
       "perfil": "equipe",
-      "auth_tipo": "microsoft",
       "ativo": true
     },
     {
       "nome_interno": "Natália",
       "aliases": ["natália", "natalia"],
       "perfil": "equipe",
-      "auth_tipo": "microsoft",
       "ativo": true
     },
     {
       "nome_interno": "Fabiano",
       "aliases": ["fabiano", "fabiano costa barreiros"],
       "perfil": "cronograma",
-      "auth_tipo": "microsoft",
       "ativo": true
     },
     {
       "nome_interno": "Maria Cristina",
       "aliases": ["maria", "maria cristina", "maria cristina salomão", "cristina"],
       "perfil": "cronograma",
-      "auth_tipo": "microsoft",
-      "ativo": true
-    },
-    {
-      "nome_interno": "Jordan",
-      "aliases": ["jordan"],
-      "perfil": "operacional",
-      "auth_tipo": "local",
-      "senha_hash": "",
-      "primeiro_acesso": true,
       "ativo": true
     }
   ]
