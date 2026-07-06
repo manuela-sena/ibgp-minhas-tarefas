@@ -3138,6 +3138,21 @@ const TAREFAS_OP_TITULOS = [
   'ENVIO DAS PROVAS DISCURSIVAS PARA A BANCA',
 ];
 
+const TAREFAS_OP_RESP = {
+  'LEVANTAMENTO DE ESCOLAS PARA APLICAÇÃO':    'Laryssa',
+  'ALOCAÇÃO DE CANDIDATOS POR ESCOLA':         'Laryssa',
+  'IMPRESSÃO DAS PROVAS':                      'Jordan',
+  'IMPRESSÃO DA PAPELARIA DE APLICAÇÃO':       'Jordan',
+  'EMPACOTAMENTO (PROVAS + PAPELARIA)':        'Jordan',
+  'MONTAGEM DAS CAIXAS DE MATERIAL POR ESCOLA':'Jordan',
+  'MONTAGEM DAS PASTAS DO COORDENADOR':        'Jordan',
+  'ESCANEAMENTO DAS FOLHAS DE RESPOSTA':       'Jordan',
+  'ESCANEAMENTO DAS ATAS DE APLICAÇÃO':        'Jordan',
+  'LEITURA DAS FOLHAS E GERAÇÃO DO RESULTADO': 'Natália',
+  'SEPARAÇÃO DAS PROVAS DISCURSIVAS PARA CORREÇÃO':'Natália',
+  'ENVIO DAS PROVAS DISCURSIVAS PARA A BANCA': 'Natália',
+};
+
 const RESP_COLORS = {
   Laryssa:'#2e7d52', Jordan:'#2860b0', Natália:'#7b34c1', Manuela:'#6b4fa3'
 };
@@ -3150,8 +3165,41 @@ async function carregarPlanejamentos(){
   el.innerHTML = '<div class="loading"><div class="spinner"></div>Buscando tarefas operacionais...</div>';
 
   try {
-    // Usar tarefas já carregadas — filtrar só as operacionais
-    const tasksOp = _allTasks.filter(t => TAREFAS_OP_TITULOS.includes(t.tarefa.toUpperCase()));
+    // Garantir que temos o planoId
+    if(!_planoId){
+      const grps = await apiAll('https://graph.microsoft.com/v1.0/me/memberOf?$top=50');
+      for(const g of grps){
+        if(!g.id) continue;
+        try{
+          const plans = await api(`https://graph.microsoft.com/v1.0/groups/${g.id}/planner/plans`);
+          for(const pl of(plans.value||[])){
+            if(pl.title.toUpperCase().includes('PLANNER IBGP')){ _planoId=pl.id; break; }
+          }
+        }catch(e){}
+        if(_planoId) break;
+      }
+    }
+    if(!_planoId) throw new Error('Plano não encontrado');
+
+    // Buscar todos os buckets
+    await getBuckets();
+
+    // Buscar TODAS as tarefas do plano (abertas + concluídas)
+    const todasTarefas = await apiAll(`https://graph.microsoft.com/v1.0/planner/plans/${_planoId}/tasks`);
+
+    // Filtrar só as operacionais
+    const tasksOp = todasTarefas.filter(t =>
+      TAREFAS_OP_TITULOS.includes((t.title||'').toUpperCase().trim())
+    ).map(t => ({
+      id: t.id,
+      tarefa: (t.title||'').trim(),
+      municipio: _buckets[t.bucketId] || '—',
+      responsavel: TAREFAS_OP_RESP[t.title?.toUpperCase().trim()] || '—',
+      due: t.dueDateTime || '',
+      data: t.dueDateTime ? new Date(t.dueDateTime).toLocaleDateString('pt-BR') : '—',
+      dias: t.dueDateTime ? diffDays(parseISO(t.dueDateTime)) : null,
+      concluida: t.percentComplete === 100,
+    }));
 
     if(!tasksOp.length){
       el.innerHTML = `
@@ -3172,13 +3220,6 @@ async function carregarPlanejamentos(){
     for(const t of tasksOp){
       if(!porConcurso[t.municipio]) porConcurso[t.municipio] = [];
       porConcurso[t.municipio].push(t);
-    }
-
-    // Também buscar concluídas operacionais
-    const conclOp = _concluidasSessao.filter(t => TAREFAS_OP_TITULOS.includes(t.tarefa.toUpperCase()));
-    for(const t of conclOp){
-      if(!porConcurso[t.municipio]) porConcurso[t.municipio] = [];
-      if(!porConcurso[t.municipio].find(x=>x.id===t.id)) porConcurso[t.municipio].push({...t, concluida:true});
     }
 
     const cards = Object.entries(porConcurso).sort((a,b)=>a[0].localeCompare(b[0])).map(([concurso, tasks])=>{
