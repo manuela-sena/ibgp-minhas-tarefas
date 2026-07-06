@@ -384,36 +384,44 @@ if "download_xlsx" in st.query_params:
         st.rerun()
 
 
-def g(url):
-    r = requests.get(url, headers={"Authorization":f"Bearer {token}"})
+def g(url, tok=None):
+    t = tok or token
+    if not t: return {}
+    r = requests.get(url, headers={"Authorization":f"Bearer {t}"})
     r.raise_for_status(); return r.json()
 
-def g_all(url):
+def g_all(url, tok=None):
+    t = tok or token
+    if not t: return []
     res, nxt = [], url
     while nxt:
-        d = requests.get(nxt, headers={"Authorization":f"Bearer {token}"}).json()
+        d = requests.get(nxt, headers={"Authorization":f"Bearer {t}"}).json()
         res.extend(d.get("value",[])); nxt = d.get("@odata.nextLink")
     return res
 
 @st.cache_data(ttl=180, show_spinner=False)
 def buscar_tarefas(token):
+    # Usuário local sem token Microsoft — retorna vazio
+    if not token: return [], [], {}, None
     from datetime import timezone, timedelta
+    def _g(url): return g(url, token)
+    def _g_all(url): return g_all(url, token)
     plano_id = None
-    for grp in g_all("https://graph.microsoft.com/v1.0/me/memberOf"):
+    for grp in _g_all("https://graph.microsoft.com/v1.0/me/memberOf"):
         gid = grp.get("id")
         if not gid: continue
         try:
-            for p in g(f"https://graph.microsoft.com/v1.0/groups/{gid}/planner/plans").get("value",[]):
+            for p in _g(f"https://graph.microsoft.com/v1.0/groups/{gid}/planner/plans").get("value",[]):
                 if NOME_PLANO.upper() in p.get("title","").upper():
                     plano_id = p["id"]; break
         except Exception: pass
         if plano_id: break
     if not plano_id: return [], [], {}, None
     buckets = {b["id"]:b["name"]
-               for b in g(f"https://graph.microsoft.com/v1.0/planner/plans/{plano_id}/buckets").get("value",[])}
+               for b in _g(f"https://graph.microsoft.com/v1.0/planner/plans/{plano_id}/buckets").get("value",[])}
     tarefas, concluidas = [], []
     limite_48h = datetime.utcnow().replace(tzinfo=timezone.utc) - timedelta(hours=48)
-    for t in g_all(f"https://graph.microsoft.com/v1.0/planner/plans/{plano_id}/tasks"):
+    for t in _g_all(f"https://graph.microsoft.com/v1.0/planner/plans/{plano_id}/tasks"):
         nome = (t.get("title") or "").strip()
         resp = ATRIBUICOES.get(nome)
         if not resp: continue
