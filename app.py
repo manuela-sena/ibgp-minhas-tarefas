@@ -1,7 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
 from urllib.parse import urlencode
-import requests, json, re, secrets, hashlib
+import requests, json, re
 from datetime import datetime, date
 
 CLIENT_ID    = "cf858739-80c5-4bf0-bc5c-6f5b0cefb70d"
@@ -30,37 +30,10 @@ def usuarios_para_nome_map(usuarios):
 def usuarios_com_perfil(usuarios, perfil):
     return [u["nome_interno"] for u in usuarios if u.get("ativo",True) and u.get("perfil")==perfil]
 
-def hash_senha(senha):
-    return hashlib.sha256(senha.encode()).hexdigest()
-
-def verificar_senha(senha, hash_salvo):
-    return hashlib.sha256(senha.encode()).hexdigest() == hash_salvo
-
-def gerar_codigo():
-    return secrets.token_urlsafe(8)
-
-def salvar_usuarios_github(usuarios, gh_token):
-    import base64
-    REPO = "manuela-sena/ibgp-minhas-tarefas"
-    r_sha = requests.get(f"https://api.github.com/repos/{REPO}/contents/usuarios.json",
-        headers={"Authorization": f"Bearer {gh_token}"})
-    sha = r_sha.json().get("sha","")
-    conteudo = json.dumps({"usuarios": usuarios}, ensure_ascii=False, indent=2)
-    return requests.put(f"https://api.github.com/repos/{REPO}/contents/usuarios.json",
-        headers={"Authorization": f"Bearer {gh_token}", "Content-Type":"application/json"},
-        json={"message":"chore: atualização de usuários","content":base64.b64encode(conteudo.encode()).decode(),"sha":sha})
-
-def buscar_usuario_local(nome_interno):
-    for u in USUARIOS:
-        if u.get("nome_interno") == nome_interno and u.get("auth_tipo") == "local":
-            return u
-    return None
-
 USUARIOS      = carregar_usuarios()
 NOME_MAP      = usuarios_para_nome_map(USUARIOS)
 GESTORAS      = usuarios_com_perfil(USUARIOS, "gestora")
 CRONOGRAMAS   = usuarios_com_perfil(USUARIOS, "cronograma")
-OPERACIONAIS  = usuarios_com_perfil(USUARIOS, "operacional")
 
 _atrib_raw = open("/mount/src/ibgp-minhas-tarefas/atribuicoes.js").read()
 ATRIBUICOES = {k: v for k, v in re.findall(r'"([^"]+)":\s*"([^"]+)"', _atrib_raw)}
@@ -94,132 +67,53 @@ def trocar_codigo(code):
 params = st.query_params
 code   = params.get("code")
 
-# ── Processar callback Microsoft ──────────────────────────────────────
-if code and "access_token" not in st.session_state and "local_user" not in st.session_state:
-    with st.spinner("Autenticando..."):
-        td = trocar_codigo(code)
-    if "access_token" in td:
-        st.session_state["access_token"]  = td["access_token"]
-        st.session_state["refresh_token"] = td.get("refresh_token")
-        st.query_params.clear()
-        st.rerun()
+if "access_token" not in st.session_state:
+    if code:
+        with st.spinner("Autenticando..."):
+            td = trocar_codigo(code)
+        if "access_token" in td:
+            st.session_state["access_token"]  = td["access_token"]
+            st.session_state["refresh_token"] = td.get("refresh_token")
+            st.query_params.clear()
+            st.rerun()
+        else:
+            st.error(f"Erro: {td.get('error_description','')}")
     else:
-        st.error(f"Erro: {td.get('error_description','')}")
-    st.stop()
-
-# ── Verificar se está logado (Microsoft ou local) ─────────────────────
-logado_microsoft = "access_token" in st.session_state
-logado_local     = "local_user" in st.session_state
-
-if not logado_microsoft and not logado_local:
-    # ── Tela de login ──────────────────────────────────────────────────
-    st.markdown("""
-<div style="display:flex;height:100vh;align-items:center;justify-content:center;background:#eef1f6;font-family:'Segoe UI',sans-serif">
-  <div style="background:#fff;border:1px solid #e2e7ef;border-radius:16px;padding:2.5rem 2rem;
-              text-align:center;max-width:380px;width:100%;box-shadow:0 4px 24px rgba(16,30,54,0.08)">
-    <img src="https://raw.githubusercontent.com/manuela-sena/ibgp-minhas-tarefas/main/logo.png"
-         style="width:48px;height:48px;object-fit:contain;margin:0 auto 1rem;display:block">
-    <h2 style="margin:0 0 .3rem;font-size:1.1rem;font-weight:700;color:#1f2a3d">IBGP · Minhas Tarefas</h2>
-    <p style="color:#7a869c;font-size:.85rem;margin:0 0 1.8rem">Acesso restrito à equipe IBGP</p>
+        st.markdown("""
+<div style="display:flex;height:100vh;align-items:center;justify-content:center;background:#eef1f6">
+  <div style="background:#fff;border:1px solid #e2e7ef;border-radius:16px;padding:3rem;
+              text-align:center;max-width:360px;box-shadow:0 4px 24px rgba(16,30,54,0.08)">
+    <div style="width:52px;height:52px;background:linear-gradient(135deg,#2f6cc4,#1f4e8c);
+                border-radius:13px;display:flex;align-items:center;justify-content:center;
+                font-weight:800;color:#fff;font-size:19px;margin:0 auto 1.2rem">IB</div>
+    <h2 style="margin:0 0 .4rem;font-size:1.15rem;font-weight:700;color:#1f2a3d">IBGP · Minhas Tarefas</h2>
+    <p style="color:#7a869c;font-size:.875rem;margin:0 0 1.8rem">Entre com sua conta Microsoft para continuar.</p>
   </div>
 </div>""", unsafe_allow_html=True)
-
-    tab_ms, tab_local = st.columns([1,1])
-    with st.container():
-        col1, col2, col3 = st.columns([1,2,1])
+        col1, col2, col3 = st.columns([1,1,1])
         with col2:
             st.link_button("🔐 Entrar com Microsoft", auth_url(), use_container_width=True)
-            st.markdown("<div style='text-align:center;color:#9aa6b8;font-size:12px;margin:8px 0'>ou</div>", unsafe_allow_html=True)
-
-            with st.expander("👤 Entrar com usuário e senha"):
-                login_usuario = st.text_input("Usuário", key="login_usuario", placeholder="Ex: jordan")
-                login_senha   = st.text_input("Senha",   key="login_senha",   type="password", placeholder="Sua senha")
-                btn_login     = st.button("Entrar", use_container_width=True, type="primary")
-
-                if btn_login:
-                    usuario_encontrado = None
-                    for u in USUARIOS:
-                        if not u.get("ativo",True): continue
-                        if u.get("auth_tipo") != "local": continue
-                        nomes = [u.get("nome_interno","").lower()] + [a.lower() for a in u.get("aliases",[])]
-                        if login_usuario.strip().lower() in nomes:
-                            usuario_encontrado = u; break
-
-                    if not usuario_encontrado:
-                        st.error("Usuário não encontrado.")
-                    elif usuario_encontrado.get("primeiro_acesso"):
-                        # Primeiro acesso — verifica código de convite
-                        if verificar_senha(login_senha, usuario_encontrado.get("senha_hash","")):
-                            st.info("É o seu primeiro acesso! Defina uma nova senha.")
-                            nova_senha = st.text_input("Nova senha", type="password", key="nova_senha")
-                            conf_senha = st.text_input("Confirmar senha", type="password", key="conf_senha")
-                            if st.button("Definir senha", type="primary"):
-                                if nova_senha != conf_senha:
-                                    st.error("As senhas não coincidem.")
-                                elif len(nova_senha) < 6:
-                                    st.error("Senha deve ter pelo menos 6 caracteres.")
-                                else:
-                                    GH_TOKEN = st.secrets.get("GITHUB_TOKEN","")
-                                    for u2 in USUARIOS:
-                                        if u2.get("nome_interno") == usuario_encontrado["nome_interno"]:
-                                            u2["senha_hash"]    = hash_senha(nova_senha)
-                                            u2["primeiro_acesso"] = False
-                                    salvar_usuarios_github(USUARIOS, GH_TOKEN)
-                                    st.session_state["local_user"] = usuario_encontrado["nome_interno"]
-                                    st.rerun()
-                        else:
-                            st.error("Código de convite incorreto.")
-                    elif verificar_senha(login_senha, usuario_encontrado.get("senha_hash","")):
-                        st.session_state["local_user"] = usuario_encontrado["nome_interno"]
-                        st.rerun()
-                    else:
-                        st.error("Senha incorreta.")
     st.stop()
 
-token = st.session_state.get("access_token", None)
+token = st.session_state["access_token"]
 
 # ── USUÁRIO ───────────────────────────────────────────────────────────
-if logado_local:
-    # Login local — nome vem direto da sessão
-    nome_interno = st.session_state["local_user"]
-    token = None  # Sem token Microsoft
-else:
-    # Login Microsoft
-    try:
-        me           = requests.get("https://graph.microsoft.com/v1.0/me",
-                                    headers={"Authorization":f"Bearer {token}"}).json()
-        display_name = me.get("displayName","")
-        first_name   = display_name.split()[0] if display_name else "Usuário"
-        nome_interno = NOME_MAP.get(first_name.lower(),
-                       NOME_MAP.get(display_name.lower(), first_name))
-    except Exception:
-        st.error("Sessão expirada.")
-        st.button("Entrar novamente", on_click=lambda: st.session_state.pop("access_token"))
-        st.stop()
+try:
+    me           = requests.get("https://graph.microsoft.com/v1.0/me",
+                                headers={"Authorization":f"Bearer {token}"}).json()
+    display_name = me.get("displayName","")
+    first_name   = display_name.split()[0] if display_name else "Usuário"
+    nome_interno = NOME_MAP.get(first_name.lower(),
+                   NOME_MAP.get(display_name.lower(), first_name))
+except Exception:
+    st.error("Sessão expirada.")
+    st.button("Entrar novamente", on_click=lambda: st.session_state.pop("access_token"))
+    st.stop()
 
 is_gestora    = nome_interno in GESTORAS
 is_cronograma = nome_interno in CRONOGRAMAS
-is_operacional = nome_interno in OPERACIONAIS
 perfil = ("Gestora · Equipe IBGP" if is_gestora
-          else ("Cronograma · IBGP" if is_cronograma
-          else ("Operacional · IBGP" if is_operacional else "Equipe IBGP")))
-
-# ── GERAR CÓDIGO DE CONVITE ───────────────────────────────────────────
-if "gerar_convite" in st.query_params and is_gestora:
-    try:
-        nome_alvo = st.query_params["gerar_convite"]
-        codigo    = gerar_codigo()
-        GH_TOKEN  = st.secrets.get("GITHUB_TOKEN","")
-        for u in USUARIOS:
-            if u.get("nome_interno") == nome_alvo and u.get("auth_tipo") == "local":
-                u["senha_hash"]     = hash_senha(codigo)
-                u["primeiro_acesso"] = True
-        salvar_usuarios_github(USUARIOS, GH_TOKEN)
-        st.session_state["convite_gerado"] = {"nome": nome_alvo, "codigo": codigo}
-    except Exception as e:
-        st.session_state["convite_gerado"] = {"erro": str(e)}
-    st.query_params.clear()
-    st.rerun()
+          else ("Cronograma · IBGP" if is_cronograma else "Equipe IBGP"))
 
 # ── SALVAR USUÁRIOS (acionado via query param, só gestoras) ──────────
 if "salvar_usuarios" in st.query_params:
@@ -384,44 +278,36 @@ if "download_xlsx" in st.query_params:
         st.rerun()
 
 
-def g(url, tok=None):
-    t = tok or token
-    if not t: return {}
-    r = requests.get(url, headers={"Authorization":f"Bearer {t}"})
+def g(url):
+    r = requests.get(url, headers={"Authorization":f"Bearer {token}"})
     r.raise_for_status(); return r.json()
 
-def g_all(url, tok=None):
-    t = tok or token
-    if not t: return []
+def g_all(url):
     res, nxt = [], url
     while nxt:
-        d = requests.get(nxt, headers={"Authorization":f"Bearer {t}"}).json()
+        d = requests.get(nxt, headers={"Authorization":f"Bearer {token}"}).json()
         res.extend(d.get("value",[])); nxt = d.get("@odata.nextLink")
     return res
 
 @st.cache_data(ttl=180, show_spinner=False)
 def buscar_tarefas(token):
-    # Usuário local sem token Microsoft — retorna vazio
-    if not token: return [], [], {}, None
     from datetime import timezone, timedelta
-    def _g(url): return g(url, token)
-    def _g_all(url): return g_all(url, token)
     plano_id = None
-    for grp in _g_all("https://graph.microsoft.com/v1.0/me/memberOf"):
+    for grp in g_all("https://graph.microsoft.com/v1.0/me/memberOf"):
         gid = grp.get("id")
         if not gid: continue
         try:
-            for p in _g(f"https://graph.microsoft.com/v1.0/groups/{gid}/planner/plans").get("value",[]):
+            for p in g(f"https://graph.microsoft.com/v1.0/groups/{gid}/planner/plans").get("value",[]):
                 if NOME_PLANO.upper() in p.get("title","").upper():
                     plano_id = p["id"]; break
         except Exception: pass
         if plano_id: break
     if not plano_id: return [], [], {}, None
     buckets = {b["id"]:b["name"]
-               for b in _g(f"https://graph.microsoft.com/v1.0/planner/plans/{plano_id}/buckets").get("value",[])}
+               for b in g(f"https://graph.microsoft.com/v1.0/planner/plans/{plano_id}/buckets").get("value",[])}
     tarefas, concluidas = [], []
     limite_48h = datetime.utcnow().replace(tzinfo=timezone.utc) - timedelta(hours=48)
-    for t in _g_all(f"https://graph.microsoft.com/v1.0/planner/plans/{plano_id}/tasks"):
+    for t in g_all(f"https://graph.microsoft.com/v1.0/planner/plans/{plano_id}/tasks"):
         nome = (t.get("title") or "").strip()
         resp = ATRIBUICOES.get(nome)
         if not resp: continue
@@ -450,25 +336,8 @@ def buscar_tarefas(token):
     concluidas.sort(key=lambda x: x.get("completedAt",""), reverse=True)
     return tarefas, concluidas[:30], buckets, plano_id
 
-# Limpar cache se for nova sessão com token Microsoft válido
-if token and not st.session_state.get("_cache_cleared"):
-    st.cache_data.clear()
-    st.session_state["_cache_cleared"] = True
-
 with st.spinner("Carregando tarefas..."):
-    try:
-        tarefas, concluidas, buckets, plano_id = buscar_tarefas(token)
-    except Exception as e:
-        st.cache_data.clear()
-        try:
-            tarefas, concluidas, buckets, plano_id = buscar_tarefas(token)
-        except Exception as e2:
-            st.error(f"Erro ao carregar tarefas: {e2}")
-            tarefas, concluidas, buckets, plano_id = [], [], {}, None
-
-# Debug temporário — remover após confirmar
-if not tarefas and token:
-    st.warning(f"⚠️ Tarefas vazias. token={bool(token)} plano={plano_id} buckets={len(buckets)}")
+    tarefas, concluidas, buckets, plano_id = buscar_tarefas(token)
 
 # ── MONTAR DADOS_INICIAIS ─────────────────────────────────────────────
 cron_result  = st.session_state.pop(CRON_RESULT_KEY, None)
@@ -477,8 +346,6 @@ planner_ok   = st.session_state.pop("planner_ok", None)
 planner_err  = st.session_state.pop("planner_err", None)
 
 usuarios_msg = st.session_state.pop("usuarios_msg", None)
-
-convite_gerado = st.session_state.pop("convite_gerado", None)
 
 dados_iniciais = json.dumps({
     "tarefas"      : tarefas,
@@ -491,7 +358,6 @@ dados_iniciais = json.dumps({
     "plannerErr"   : planner_err,
     "usuarios"     : USUARIOS,
     "usuariosMsg"  : usuarios_msg,
-    "conviteGerado": convite_gerado,
 })
 
 # ── LER E INJETAR TEMPLATE ────────────────────────────────────────────
@@ -499,11 +365,10 @@ with open("/mount/src/ibgp-minhas-tarefas/template.html", "r", encoding="utf-8")
     html = f.read()
 
 html = html.replace("// PLACEHOLDER_TOKEN",
-    f"const TOKEN = {json.dumps(token or '')};")
+    f"const TOKEN = {json.dumps(token)};")
 html = html.replace("// PLACEHOLDER_CONFIG",
     f"""const IS_GESTORA    = {'true' if is_gestora   else 'false'};
 const IS_CRONOGRAMA = {'true' if is_cronograma else 'false'};
-const IS_OPERACIONAL = {'true' if is_operacional else 'false'};
 const NOME_USUARIO  = {json.dumps(nome_interno)};
 const DADOS_INICIAIS = {dados_iniciais};""")
 html = html.replace("// PLACEHOLDER_ATRIB",
