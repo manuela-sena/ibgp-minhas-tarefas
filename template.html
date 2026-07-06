@@ -3517,9 +3517,10 @@ async function criarTarefasRetroativas(){
 let _usuarios = [];
 
 const PERFIL_LABELS = {
-  gestora:    {label:'Gestora',    bg:'#e8f0fb',color:'#2860b0'},
-  cronograma: {label:'Cronograma', bg:'#e4f3ea',color:'#2e7d52'},
-  equipe:     {label:'Equipe',     bg:'#eef0f4',color:'#41506b'},
+  gestora:      {label:'Gestora',      bg:'#e8f0fb',color:'#2860b0'},
+  cronograma:   {label:'Cronograma',   bg:'#e4f3ea',color:'#2e7d52'},
+  equipe:       {label:'Equipe',       bg:'#eef0f4',color:'#41506b'},
+  operacional:  {label:'Operacional',  bg:'#f3eafb',color:'#7b34c1'},
 };
 
 function renderUsuarios(){
@@ -3536,9 +3537,14 @@ function renderUsuarios(){
       ? '<span style="background:#e4f3ea;color:#2e7d52;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700">Ativo</span>'
       : '<span style="background:#eef0f4;color:#8a9ab5;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700">Inativo</span>';
     const acoes = isG ? `
-      <button class="btn-secondary" style="height:28px;padding:0 10px;font-size:11.5px" onclick="abrirModalUsuario(${i})">Editar</button>` : '—';
+      <button class="btn-secondary" style="height:28px;padding:0 10px;font-size:11.5px" onclick="abrirModalUsuario(${i})">Editar</button>
+      ${u.auth_tipo==='local' ? `<button class="btn-secondary" style="height:28px;padding:0 10px;font-size:11.5px;margin-left:4px" onclick="gerarConvite('${u.nome_interno}')">🔑 Convite</button>` : ''}
+    ` : '—';
+    const authChip = u.auth_tipo==='local'
+      ? '<span style="font-size:10px;background:#f3eafb;color:#7b34c1;padding:1px 7px;border-radius:4px;font-weight:700;margin-left:6px">senha própria</span>'
+      : '<span style="font-size:10px;background:#e9f1fb;color:#2860b0;padding:1px 7px;border-radius:4px;font-weight:700;margin-left:6px">Microsoft</span>';
     return `<tr>
-      <td style="font-weight:600;color:#1f2a3d">${u.nome_interno}</td>
+      <td style="font-weight:600;color:#1f2a3d">${u.nome_interno}${authChip}</td>
       <td style="font-size:12px;color:#5b6880">${(u.aliases||[]).join(', ')}</td>
       <td><span style="background:${p.bg};color:${p.color};padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700">${p.label}</span></td>
       <td>${statusChip}</td>
@@ -3581,9 +3587,10 @@ function abrirModalUsuario(idx){
     <div>
       <label class="form-label">Perfil de acesso</label>
       <select id="mu-perfil" class="filter-select">
-        <option value="gestora"    ${u.perfil==='gestora'?'selected':''}>Gestora — acesso completo</option>
-        <option value="cronograma" ${u.perfil==='cronograma'?'selected':''}>Cronograma — Validar, Gerar, Reajustar</option>
-        <option value="equipe"     ${u.perfil==='equipe'?'selected':''}>Equipe — somente suas tarefas</option>
+        <option value="gestora"     ${u.perfil==='gestora'?'selected':''}>Gestora — acesso completo</option>
+        <option value="cronograma"  ${u.perfil==='cronograma'?'selected':''}>Cronograma — Validar, Gerar, Reajustar</option>
+        <option value="equipe"      ${u.perfil==='equipe'?'selected':''}>Equipe — somente suas tarefas</option>
+        <option value="operacional" ${u.perfil==='operacional'?'selected':''}>Operacional — Planejamentos e suas tarefas</option>
       </select>
     </div>
     <div>
@@ -3633,7 +3640,30 @@ function removerUsuario(idx){
   salvarUsuariosGitHub();
 }
 
-function salvarUsuariosGitHub(){
+function gerarConvite(nomeInterno){
+  if(!confirm(`Gerar novo código de convite para "${nomeInterno}"?\nO código anterior será invalidado.`)) return;
+  window.top.location.href = window.top.location.origin +
+    window.top.location.pathname +
+    '?gerar_convite=' + encodeURIComponent(nomeInterno);
+}
+
+function mostrarConviteGerado(){
+  const conv = DADOS_INICIAIS.conviteGerado;
+  if(!conv) return;
+  const el = document.getElementById('usuarios-msg');
+  if(!el) return;
+  if(conv.erro){
+    el.style.cssText='display:flex;align-items:center;gap:8px;padding:12px 16px;border-radius:9px;font-size:13px;font-weight:600;border:1px solid;background:#fdeceb;border-color:#f3cfcd;color:#c0322f';
+    el.textContent = '⚠️ Erro ao gerar convite: ' + conv.erro;
+  } else {
+    el.style.cssText='display:flex;flex-direction:column;gap:6px;padding:14px 18px;border-radius:9px;border:1px solid;background:#f3eafb;border-color:#c9a8e8;color:#5a2d91';
+    el.innerHTML = `
+<div style="font-weight:700;font-size:13px">🔑 Código de convite gerado para ${conv.nome}!</div>
+<div style="font-size:12.5px">Passe esse código para a pessoa usar no <strong>primeiro acesso</strong> como senha:</div>
+<div style="font-family:monospace;font-size:16px;font-weight:800;background:#fff;padding:8px 14px;border-radius:8px;border:1px solid #c9a8e8;letter-spacing:.1em;color:#3d1f6e">${conv.codigo}</div>
+<div style="font-size:11.5px;color:#8a6ba8">Após usar, a pessoa definirá uma senha própria. Este código expira no próximo acesso.</div>`;
+  }
+}
   const msg = document.getElementById('usuarios-msg');
   if(msg){ msg.style.display='flex'; msg.style.cssText='display:flex;align-items:center;gap:8px;padding:10px 14px;background:#e9f1fb;border:1px solid #b8d0ef;border-radius:9px;font-size:13px;color:#1f4e8c;font-weight:600'; msg.innerHTML='<div class="spinner" style="border-top-color:#1f4e8c;width:16px;height:16px;border-width:2px"></div> Salvando...'; }
 
@@ -3645,13 +3675,15 @@ function salvarUsuariosGitHub(){
 
 function renderUsuariosMsgInicial(){
   const msgPython = DADOS_INICIAIS.usuariosMsg;
-  if(!msgPython) return;
-  const msg = document.getElementById('usuarios-msg');
-  if(!msg) return;
-  const isOk = msgPython.startsWith('✅');
-  msg.style.cssText = `display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:9px;font-size:13px;font-weight:600;border:1px solid;${isOk?'background:#e4f3ea;border-color:#a8dbb8;color:#2e7d52':'background:#fdeceb;border-color:#f3cfcd;color:#c0322f'}`;
-  msg.textContent = msgPython;
-  setTimeout(()=>{ if(msg) msg.style.display='none'; }, 5000);
+  if(msgPython){
+    const msg = document.getElementById('usuarios-msg');
+    if(!msg) return;
+    const isOk = msgPython.startsWith('✅');
+    msg.style.cssText = `display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:9px;font-size:13px;font-weight:600;border:1px solid;${isOk?'background:#e4f3ea;border-color:#a8dbb8;color:#2e7d52':'background:#fdeceb;border-color:#f3cfcd;color:#c0322f'}`;
+    msg.textContent = msgPython;
+    setTimeout(()=>{ if(msg) msg.style.display='none'; }, 5000);
+  }
+  mostrarConviteGerado();
 }
 
 function renderCronResult(){ /* reservado para resultados vindos do Python */ }
@@ -3759,6 +3791,13 @@ if(typeof IS_CRONOGRAMA!=='undefined'&&IS_CRONOGRAMA){
   document.querySelector('[data-page="tarefas"]')?.style && (document.querySelector('[data-page="tarefas"]').style.display='none');
   document.querySelector('[data-page="dashboard"]')?.style && (document.querySelector('[data-page="dashboard"]').style.display='none');
   goPage('validar');
+} else if(typeof IS_OPERACIONAL!=='undefined'&&IS_OPERACIONAL){
+  // Operacional: esconde menus que não são dele
+  ['validar','gerar','reajustar','indicadores','concluidas','usuarios','equipes','config'].forEach(id=>{
+    const btn=document.querySelector(`[data-page="${id}"]`);
+    if(btn) btn.style.display='none';
+  });
+  goPage('dashboard');
 } else {
   loadTarefas();
   renderConcluidas();
