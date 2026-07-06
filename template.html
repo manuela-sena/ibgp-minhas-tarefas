@@ -3154,9 +3154,16 @@ async function carregarPlanejamentos(){
     const tasksOp = _allTasks.filter(t => TAREFAS_OP_TITULOS.includes(t.tarefa.toUpperCase()));
 
     if(!tasksOp.length){
-      el.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div>
-        <div class="empty-title">Nenhuma tarefa operacional encontrada</div>
-        <div class="empty-desc">As tarefas de planejamento aparecem aqui após você gerar e cadastrar um cronograma no Planner.</div></div>`;
+      el.innerHTML = `
+<div style="text-align:center;padding:32px 20px">
+  <div style="font-size:36px;margin-bottom:12px">📋</div>
+  <div style="font-size:14px;font-weight:700;color:#41506b;margin-bottom:6px">Nenhuma tarefa operacional encontrada</div>
+  <div style="font-size:12.5px;color:#8a9ab5;margin-bottom:20px">As tarefas de planejamento aparecem aqui após cadastrar um cronograma.<br>Você também pode adicionar as tarefas retroativamente para concursos já existentes.</div>
+  <button class="btn-primary" onclick="abrirGeracaoRetroativa()">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Adicionar concurso existente
+  </button>
+</div>`;
       return;
     }
 
@@ -3255,14 +3262,186 @@ async function carregarPlanejamentos(){
     el.innerHTML = `
 <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:4px">
   <div style="font-size:12.5px;color:#8a9ab5">${Object.keys(porConcurso).length} concurso(s) com tarefas operacionais</div>
-  <button class="btn-secondary" onclick="carregarPlanejamentos()" style="height:34px;padding:0 14px;font-size:12.5px">
-    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" style="margin-right:5px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>Atualizar
-  </button>
+  <div style="display:flex;gap:8px">
+    <button class="btn-secondary" onclick="abrirGeracaoRetroativa()" style="height:34px;padding:0 14px;font-size:12.5px">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" style="margin-right:5px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Adicionar concurso existente
+    </button>
+    <button class="btn-secondary" onclick="carregarPlanejamentos()" style="height:34px;padding:0 14px;font-size:12.5px">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" style="margin-right:5px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>Atualizar
+    </button>
+  </div>
 </div>
 <div style="display:flex;flex-direction:column;gap:14px">${cards}</div>`;
 
   } catch(e){
     el.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Erro ao carregar</div><div class="empty-desc">${e.message}</div></div>`;
+  }
+}
+
+// ── GERAÇÃO RETROATIVA DE TAREFAS OPERACIONAIS ───────────────────────
+
+async function abrirGeracaoRetroativa(){
+  // Buscar buckets do Planner
+  document.getElementById('modal-retroativo')?.remove();
+  const modal = document.createElement('div');
+  modal.id = 'modal-retroativo';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(16,30,54,0.4);z-index:9999;display:flex;align-items:center;justify-content:center';
+  modal.innerHTML = `
+<div style="background:#fff;border-radius:16px;padding:28px;width:520px;max-width:95vw;box-shadow:0 16px 48px rgba(16,30,54,0.18)">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+    <div style="font-size:16px;font-weight:800;color:#1f2a3d">Adicionar concurso existente</div>
+    <button onclick="document.getElementById('modal-retroativo').remove()" style="background:none;border:none;font-size:20px;color:#8a9ab5;cursor:pointer">×</button>
+  </div>
+  <div style="font-size:12.5px;color:#8a9ab5;margin-bottom:20px">Selecione um concurso já cadastrado no Planner. O sistema vai buscar as datas do cronograma e criar as tarefas operacionais que ainda não existem.</div>
+
+  <div style="margin-bottom:16px">
+    <label class="form-label">Concurso (bucket no Planner)</label>
+    <select id="retro-concurso" class="filter-select" onchange="previewRetroativo(this.value)">
+      <option value="">Carregando...</option>
+    </select>
+  </div>
+
+  <div id="retro-preview" style="min-height:60px"></div>
+
+  <div style="margin-top:8px">
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer">
+      <input type="checkbox" id="retro-disc"> Incluir fluxo de Correção Discursiva
+    </label>
+  </div>
+
+  <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:22px">
+    <button class="btn-secondary" onclick="document.getElementById('modal-retroativo').remove()">Cancelar</button>
+    <button class="btn-primary" id="retro-btn-criar" onclick="criarTarefasRetroativas()" disabled>
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      Criar tarefas no Planner
+    </button>
+  </div>
+</div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e=>{ if(e.target===modal) modal.remove(); });
+
+  // Carregar buckets
+  try {
+    await getBuckets();
+    const sorted = Object.entries(_buckets).sort((a,b)=>a[1].localeCompare(b[1]));
+    const sel = document.getElementById('retro-concurso');
+    sel.innerHTML = '<option value="">Selecione um concurso...</option>' +
+      sorted.map(([id,nome])=>`<option value="${id}">${nome}</option>`).join('');
+  } catch(e){
+    document.getElementById('retro-preview').innerHTML = `<div style="color:#c0322f;font-size:12.5px">Erro ao carregar concursos: ${e.message}</div>`;
+  }
+}
+
+let _retroTarefas = [], _retroBucketId = '', _retroNome = '';
+
+async function previewRetroativo(bucketId){
+  const preview = document.getElementById('retro-preview');
+  const btn = document.getElementById('retro-btn-criar');
+  _retroTarefas = []; _retroBucketId = bucketId;
+  if(!bucketId){ preview.innerHTML=''; btn && (btn.disabled=true); return; }
+
+  _retroNome = _buckets[bucketId] || '';
+  preview.innerHTML = '<div class="loading" style="padding:12px 0"><div class="spinner"></div>Analisando tarefas...</div>';
+  btn && (btn.disabled=true);
+
+  try {
+    // Buscar todas as tarefas do bucket
+    const tasks = await apiAll(`https://graph.microsoft.com/v1.0/planner/buckets/${bucketId}/tasks`);
+
+    // Identificar datas-âncora
+    let fimInscricoes=null, dataProva=null, resultPrelObjetiva=null;
+    const jaExistem = new Set();
+
+    for(const t of tasks){
+      const titulo = (t.title||'').toUpperCase();
+      const due = t.dueDateTime ? new Date(t.dueDateTime) : null;
+
+      if(titulo.includes('PERÍODO DE INSCRIÇÕES') && due && !fimInscricoes) fimInscricoes=due;
+      if((titulo==='PROVA OBJETIVA'||titulo==='PROVA OBJETIVA E PROVA DISCURSIVA') && due && !dataProva) dataProva=due;
+      if(titulo.includes('RESULTADO PRELIMINAR DA TOTALIZAÇÃO') && due && !resultPrelObjetiva) resultPrelObjetiva=due;
+      if(TAREFAS_OP_TITULOS.includes(titulo)) jaExistem.add(titulo);
+    }
+
+    if(!dataProva){
+      preview.innerHTML = `<div style="background:#fff8e6;border:1px solid #f0dfa0;border-radius:8px;padding:10px 14px;font-size:12.5px;color:#a06c12">
+        ⚠️ Não foi possível encontrar a data da Prova Objetiva neste bucket. Verifique se o cronograma está cadastrado corretamente.</div>`;
+      return;
+    }
+
+    // Calcular tarefas usando o motor
+    const temDisc = document.getElementById('retro-disc')?.checked || false;
+    const cronFake = [];
+    if(fimInscricoes) cronFake.push({atividade:'PERÍODO DE INSCRIÇÕES/PCD/SOLICITAÇÃO COND. ESPECIAL/ENVIO LAUDOS', data_fim:fimInscricoes});
+    cronFake.push({atividade:'PROVA OBJETIVA', data_fim:dataProva});
+    if(resultPrelObjetiva) cronFake.push({atividade:'RESULTADO PRELIMINAR DA TOTALIZAÇÃO DA PROVA OBJETIVA', data_fim:resultPrelObjetiva});
+
+    const todasOp = calcularTarefasOperacionais(cronFake, temDisc);
+    const novas = todasOp.filter(t => !jaExistem.has(t.titulo.toUpperCase()));
+    _retroTarefas = novas;
+
+    if(!novas.length){
+      preview.innerHTML = `<div style="background:#e4f3ea;border:1px solid #a8dbb8;border-radius:8px;padding:10px 14px;font-size:12.5px;color:#2e7d52">
+        ✅ Todas as tarefas operacionais já existem neste bucket!</div>`;
+      return;
+    }
+
+    const DIAS_PT=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    preview.innerHTML = `
+<div style="background:#e9f1fb;border:1px solid #b8d0ef;border-radius:8px;padding:12px 14px;margin-bottom:4px">
+  <div style="font-size:12px;font-weight:700;color:#1f4e8c;margin-bottom:8px">📋 ${novas.length} tarefa(s) serão criadas:</div>
+  ${novas.map(t=>`
+  <div style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid #d0e0f5">
+    <div style="flex:1;font-size:12px;color:#1f2a3d">${t.titulo}</div>
+    <div style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px;background:${(RESP_COLORS[t.resp]||'#5b6577')}18;color:${RESP_COLORS[t.resp]||'#5b6577'};flex:none">${t.resp}</div>
+    <div style="font-size:11px;color:#8a9ab5;flex:none">${t.fim.toLocaleDateString('pt-BR')} ${DIAS_PT[t.fim.getDay()]}</div>
+  </div>`).join('')}
+</div>`;
+
+    btn && (btn.disabled=false);
+  } catch(e){
+    preview.innerHTML = `<div style="color:#c0322f;font-size:12.5px">Erro: ${e.message}</div>`;
+  }
+}
+
+async function criarTarefasRetroativas(){
+  if(!_retroTarefas.length||!_retroBucketId) return;
+  const btn = document.getElementById('retro-btn-criar');
+  btn && (btn.disabled=true, btn.innerHTML='<div class="spinner" style="width:13px;height:13px;border-width:2px"></div> Criando...');
+
+  try {
+    await getBuckets();
+    let ok=0, err=0;
+    for(const t of _retroTarefas){
+      try{
+        const r = await fetch('https://graph.microsoft.com/v1.0/planner/tasks',{
+          method:'POST',
+          headers:{'Authorization':'Bearer '+TOKEN,'Content-Type':'application/json'},
+          body:JSON.stringify({
+            planId:_planoId, bucketId:_retroBucketId,
+            title:t.titulo,
+            dueDateTime:t.fim.toISOString().split('T')[0]+'T03:00:00Z',
+            startDateTime:t.ini.toISOString().split('T')[0]+'T03:00:00Z',
+          })
+        });
+        if(r.ok) ok++; else err++;
+      }catch(e){ err++; }
+    }
+
+    document.getElementById('modal-retroativo')?.remove();
+    // Recarregar planejamentos
+    await refreshAll();
+    carregarPlanejamentos();
+
+    const el = document.getElementById('plan-content');
+    const msg = document.createElement('div');
+    msg.style.cssText = 'background:#e4f3ea;border:1px solid #a8dbb8;border-radius:9px;padding:10px 16px;font-size:13px;font-weight:600;color:#2e7d52;margin-bottom:12px';
+    msg.textContent = `✅ ${ok} tarefa(s) criadas para "${_retroNome}"!${err?` ⚠️ ${err} erro(s).`:''}`;
+    el?.insertAdjacentElement('afterbegin', msg);
+    setTimeout(()=>msg.remove(), 5000);
+
+  } catch(e){
+    alert('Erro: '+e.message);
+    btn && (btn.disabled=false, btn.innerHTML='Criar tarefas no Planner');
   }
 }
 
