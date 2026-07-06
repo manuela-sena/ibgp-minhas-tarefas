@@ -450,8 +450,17 @@ def buscar_tarefas(token):
     concluidas.sort(key=lambda x: x.get("completedAt",""), reverse=True)
     return tarefas, concluidas[:30], buckets, plano_id
 
+# Limpar cache se for nova sessão com token Microsoft válido
+if token and not st.session_state.get("_cache_cleared"):
+    st.cache_data.clear()
+    st.session_state["_cache_cleared"] = True
+
 with st.spinner("Carregando tarefas..."):
-    tarefas, concluidas, buckets, plano_id = buscar_tarefas(token)
+    try:
+        tarefas, concluidas, buckets, plano_id = buscar_tarefas(token)
+    except Exception:
+        st.cache_data.clear()
+        tarefas, concluidas, buckets, plano_id = buscar_tarefas(token)
 
 # ── MONTAR DADOS_INICIAIS ─────────────────────────────────────────────
 cron_result  = st.session_state.pop(CRON_RESULT_KEY, None)
