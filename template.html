@@ -3303,12 +3303,6 @@ async function abrirGeracaoRetroativa(){
 
   <div id="retro-preview" style="min-height:60px"></div>
 
-  <div style="margin-top:8px">
-    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer">
-      <input type="checkbox" id="retro-disc"> Incluir fluxo de Correção Discursiva
-    </label>
-  </div>
-
   <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:22px">
     <button class="btn-secondary" onclick="document.getElementById('modal-retroativo').remove()">Cancelar</button>
     <button class="btn-primary" id="retro-btn-criar" onclick="criarTarefasRetroativas()" disabled>
@@ -3397,8 +3391,12 @@ async function previewRetroativo(bucketId){
       return;
     }
 
-    // Calcular tarefas usando o motor
-    const temDisc = document.getElementById('retro-disc')?.checked || false;
+    // Detectar discursiva automaticamente pelo conteúdo do bucket
+    const temDisc = tasks.some(t => {
+      const titulo = (t.title||'').toUpperCase().trim();
+      return titulo.includes('DISCURSIVA');
+    });
+
     const cronFake = [];
     if(fimInscricoes) cronFake.push({atividade:'PERÍODO DE INSCRIÇÕES/PCD/SOLICITAÇÃO COND. ESPECIAL/ENVIO LAUDOS', data_fim:fimInscricoes});
     cronFake.push({atividade:'PROVA OBJETIVA', data_fim:dataProva});
