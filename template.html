@@ -2752,63 +2752,98 @@ function ignorarAlerta(btn){
 }
 
 // ── MOTOR DE PLANEJAMENTO OPERACIONAL ────────────────────────────────
-// Calcula as tarefas operacionais a partir das datas do cronograma
-
 function calcularTarefasOperacionais(cronograma, temDiscursiva){
   const tarefas = [];
+  const alertas = [];
 
   // Extrair datas-âncora do cronograma
-  let fimInscricoes = null, dataProva = null, resultPrelObjetiva = null;
-
+  let fimInscricoes=null, dataProva=null, resultPrelObjetiva=null;
   for(const t of cronograma){
-    const a = t.atividade.toUpperCase();
-    if(a.includes('PERÍODO DE INSCRIÇÕES') && !fimInscricoes)
-      fimInscricoes = t.data_fim;
-    if((a==='PROVA OBJETIVA' || a==='PROVA OBJETIVA E PROVA DISCURSIVA') && !dataProva)
-      dataProva = t.data_fim;
-    if(a.includes('RESULTADO PRELIMINAR DA TOTALIZAÇÃO') && !resultPrelObjetiva)
-      resultPrelObjetiva = t.data_fim;
+    const a=t.atividade.toUpperCase();
+    if(a.includes('PERÍODO DE INSCRIÇÕES')&&!fimInscricoes) fimInscricoes=t.data_fim;
+    if((a==='PROVA OBJETIVA'||a.startsWith('PROVA OBJETIVA E'))&&!dataProva) dataProva=t.data_fim;
+    if(a.includes('RESULTADO PRELIMINAR DA TOTALIZAÇÃO')&&!resultPrelObjetiva) resultPrelObjetiva=t.data_fim;
   }
 
-  if(!dataProva) return tarefas; // Sem prova = sem fluxo de aplicação
+  if(!dataProva) return {tarefas, alertas};
 
-  // Datas calculadas
-  const quartaAntes = diasUteisAntes(dataProva, 4); // quarta = 4du antes do domingo
-  const tercaAntes  = diasUteisAntes(dataProva, 5); // terça = 5du antes do domingo
-  const seg         = addDays(dataProva, 1);         // segunda pós-prova
-  const terca       = addDays(dataProva, 2);         // terça pós-prova
-  const aposEsc     = addDiasUteis(terca, 2);        // Natália: 2du após escaneamento
-
-  // ── FLUXO 1: APLICAÇÃO DE PROVA ──────────────────────────────────────
+  // ── Calcular dias úteis disponíveis entre fim inscrições e prova ──
+  let duDisponiveis = 0;
   if(fimInscricoes){
-    const L1 = addDiasUteis(fimInscricoes, 3);
-    const L2 = addDiasUteis(L1, 3);
+    let d = new Date(fimInscricoes);
+    while(d < dataProva){ d=addDays(d,1); if(isUtil(d)) duDisponiveis++; }
+  }
+
+  // ── Alerta de intervalo curto ──────────────────────────────────────
+  if(fimInscricoes && duDisponiveis < 12){
+    alertas.push({
+      tipo:'risco',
+      msg:`⚠️ Intervalo curto: apenas ${duDisponiveis} dias úteis entre fim das inscrições e a prova. Pode não ser possível terminar o fluxo operacional antes da semana da prova.`
+    });
+  }
+
+  // ── Datas calculadas ───────────────────────────────────────────────
+  const quintaAntes = diasUteisAntes(dataProva, 4); // quinta = 4du antes do domingo
+  const terca       = addDays(dataProva, 2);         // terça pós-prova
+  const aposEsc     = addDiasUteis(terca, 2);
+
+  if(fimInscricoes){
+    // A1: Solicitar arquivos à banca → fim insc + 1du
+    const A1 = addDiasUteis(fimInscricoes, 1);
+    // A2: Receber arquivos → fim insc + 4du
+    const A2 = addDiasUteis(fimInscricoes, 4);
+    // L1: Levantamento escolas → fim insc + 2du
+    const L1 = addDiasUteis(fimInscricoes, 2);
+    // L2: Alocação → L1 + 2du
+    const L2 = addDiasUteis(L1, 2);
+    // J1: Impressão provas → A2 + 1du, dura 2du
+    const J1ini = addDiasUteis(A2, 1);
+    const J1fim = addDiasUteis(J1ini, 2);
+    // J2: Impressão papelaria → L2 + 1du, dura 2du (paralelo J1)
+    const J2ini = addDiasUteis(L2, 1);
+    const J2fim = addDiasUteis(J2ini, 2);
+    // J3: Empacotamento → após J1 e J2, dura 2du
+    const J3ini = proxUtilApos(J1fim > J2fim ? J1fim : J2fim);
+    const J3fim = addDiasUteis(J3ini, 2);
+    // J4: Caixas + pastas → J3 + 1du, dura 2du
+    const J4ini = addDiasUteis(J3fim, 1);
+    const J4fim = addDiasUteis(J4ini, 2);
+
+    // ── Alerta se J4 ultrapassa a quinta anterior à prova ─────────────
+    if(J4fim > quintaAntes){
+      alertas.push({
+        tipo:'atraso',
+        msg:`🔴 Fluxo não termina antes da semana da prova. Previsão de conclusão: ${fmtBR(J4fim)} — quinta limite: ${fmtBR(quintaAntes)}.`
+      });
+    }
 
     tarefas.push(
-      {titulo:'LEVANTAMENTO DE ESCOLAS PARA APLICAÇÃO',    resp:'Laryssa', ini:proxUtilApos(fimInscricoes), fim:L1},
-      {titulo:'ALOCAÇÃO DE CANDIDATOS POR ESCOLA',         resp:'Laryssa', ini:proxUtilApos(L1),            fim:L2},
-      {titulo:'IMPRESSÃO DAS PROVAS',                      resp:'Jordan',  ini:proxUtil(addDays(L2,1)),      fim:tercaAntes},
-      {titulo:'IMPRESSÃO DA PAPELARIA DE APLICAÇÃO',       resp:'Jordan',  ini:proxUtilApos(L2),             fim:tercaAntes},
-      {titulo:'EMPACOTAMENTO (PROVAS + PAPELARIA)',        resp:'Jordan',  ini:proxUtil(tercaAntes),         fim:tercaAntes},
-      {titulo:'MONTAGEM DAS CAIXAS DE MATERIAL POR ESCOLA',resp:'Jordan',  ini:proxUtilApos(tercaAntes),     fim:quartaAntes},
-      {titulo:'MONTAGEM DAS PASTAS DO COORDENADOR',        resp:'Jordan',  ini:proxUtilApos(tercaAntes),     fim:quartaAntes},
-      {titulo:'ESCANEAMENTO DAS FOLHAS DE RESPOSTA',       resp:'Jordan',  ini:seg,                          fim:terca},
-      {titulo:'ESCANEAMENTO DAS ATAS DE APLICAÇÃO',        resp:'Jordan',  ini:seg,                          fim:terca},
-      {titulo:'LEITURA DAS FOLHAS E GERAÇÃO DO RESULTADO', resp:'Natália', ini:proxUtilApos(terca),          fim:aposEsc},
+      {titulo:'SOLICITAR ARQUIVOS DE IMPRESSÃO À BANCA', resp:'Manuela', ini:A1,    fim:A1},
+      {titulo:'RECEBIMENTO DOS ARQUIVOS DE IMPRESSÃO',   resp:'Jordan',  ini:A1,    fim:A2},
+      {titulo:'LEVANTAMENTO DE ESCOLAS PARA APLICAÇÃO',  resp:'Laryssa', ini:proxUtilApos(fimInscricoes), fim:L1},
+      {titulo:'ALOCAÇÃO DE CANDIDATOS POR ESCOLA',       resp:'Laryssa', ini:proxUtilApos(L1),            fim:L2},
+      {titulo:'IMPRESSÃO DAS PROVAS',                    resp:'Jordan',  ini:J1ini,  fim:J1fim},
+      {titulo:'IMPRESSÃO DA PAPELARIA DE APLICAÇÃO',     resp:'Jordan',  ini:J2ini,  fim:J2fim},
+      {titulo:'EMPACOTAMENTO (PROVAS + PAPELARIA)',      resp:'Jordan',  ini:J3ini,  fim:J3fim},
+      {titulo:'MONTAGEM DAS CAIXAS DE MATERIAL POR ESCOLA',resp:'Jordan',ini:J4ini,  fim:J4fim},
+      {titulo:'MONTAGEM DAS PASTAS DO COORDENADOR',      resp:'Jordan',  ini:J4ini,  fim:J4fim},
+      {titulo:'ESCANEAMENTO DAS FOLHAS DE RESPOSTA',     resp:'Jordan',  ini:addDays(dataProva,1), fim:terca},
+      {titulo:'ESCANEAMENTO DAS ATAS DE APLICAÇÃO',      resp:'Jordan',  ini:addDays(dataProva,1), fim:terca},
+      {titulo:'LEITURA DAS FOLHAS E GERAÇÃO DO RESULTADO',resp:'Natália',ini:proxUtilApos(terca),  fim:aposEsc},
     );
   }
 
-  // ── FLUXO 2: CORREÇÃO DISCURSIVA ──────────────────────────────────────
+  // ── Fluxo Discursiva ──────────────────────────────────────────────
   if(temDiscursiva && resultPrelObjetiva){
-    const D1 = proxUtilApos(resultPrelObjetiva);
-    const D2 = proxUtilApos(D1);
+    const D1=proxUtilApos(resultPrelObjetiva);
+    const D2=proxUtilApos(D1);
     tarefas.push(
       {titulo:'SEPARAÇÃO DAS PROVAS DISCURSIVAS PARA CORREÇÃO', resp:'Natália', ini:D1, fim:D1},
       {titulo:'ENVIO DAS PROVAS DISCURSIVAS PARA A BANCA',      resp:'Natália', ini:proxUtilApos(D1), fim:D2},
     );
   }
 
-  return tarefas;
+  return {tarefas, alertas};
 }
 
 async function cadastrarPlanner(){
@@ -2816,11 +2851,15 @@ async function cadastrarPlanner(){
   if(!_cronResultado?.length){ alert('Calcule o cronograma primeiro.'); return; }
 
   const temDisc = _lastParams?.temDiscursiva || false;
-  const tarefasOp = calcularTarefasOperacionais(_cronResultado, temDisc);
+  const {tarefas: tarefasOp, alertas} = calcularTarefasOperacionais(_cronResultado, temDisc);
   const totalOp = tarefasOp.length;
 
+  // Mostrar alertas se houver
+  const alertasTxt = alertas.length ? '\n\n⚠️ ATENÇÃO:\n' + alertas.map(a=>a.msg).join('\n') : '';
+
   const msg = `Cadastrar ${_cronResultado.length} tarefas de cronograma no Planner para "${_cronNome}"?` +
-    (totalOp > 0 ? `\n\n+ ${totalOp} tarefas operacionais serão criadas automaticamente:\n${tarefasOp.map(t=>`  • ${t.titulo} → ${t.resp}`).join('\n')}` : '');
+    (totalOp > 0 ? `\n\n+ ${totalOp} tarefas operacionais:\n${tarefasOp.map(t=>`  • ${t.titulo} → ${t.resp}`).join('\n')}` : '') +
+    alertasTxt;
 
   if(!confirm(msg)) return;
 
@@ -3124,6 +3163,8 @@ function exportarPDF(){
 
 // ── PLANEJAMENTOS ─────────────────────────────────────────────────────
 const TAREFAS_OP_TITULOS = [
+  'SOLICITAR ARQUIVOS DE IMPRESSÃO À BANCA',
+  'RECEBIMENTO DOS ARQUIVOS DE IMPRESSÃO',
   'LEVANTAMENTO DE ESCOLAS PARA APLICAÇÃO',
   'ALOCAÇÃO DE CANDIDATOS POR ESCOLA',
   'IMPRESSÃO DAS PROVAS',
@@ -3139,18 +3180,20 @@ const TAREFAS_OP_TITULOS = [
 ];
 
 const TAREFAS_OP_RESP = {
-  'LEVANTAMENTO DE ESCOLAS PARA APLICAÇÃO':    'Laryssa',
-  'ALOCAÇÃO DE CANDIDATOS POR ESCOLA':         'Laryssa',
-  'IMPRESSÃO DAS PROVAS':                      'Jordan',
-  'IMPRESSÃO DA PAPELARIA DE APLICAÇÃO':       'Jordan',
-  'EMPACOTAMENTO (PROVAS + PAPELARIA)':        'Jordan',
-  'MONTAGEM DAS CAIXAS DE MATERIAL POR ESCOLA':'Jordan',
-  'MONTAGEM DAS PASTAS DO COORDENADOR':        'Jordan',
-  'ESCANEAMENTO DAS FOLHAS DE RESPOSTA':       'Jordan',
-  'ESCANEAMENTO DAS ATAS DE APLICAÇÃO':        'Jordan',
-  'LEITURA DAS FOLHAS E GERAÇÃO DO RESULTADO': 'Natália',
+  'SOLICITAR ARQUIVOS DE IMPRESSÃO À BANCA':    'Manuela',
+  'RECEBIMENTO DOS ARQUIVOS DE IMPRESSÃO':       'Jordan',
+  'LEVANTAMENTO DE ESCOLAS PARA APLICAÇÃO':      'Laryssa',
+  'ALOCAÇÃO DE CANDIDATOS POR ESCOLA':           'Laryssa',
+  'IMPRESSÃO DAS PROVAS':                        'Jordan',
+  'IMPRESSÃO DA PAPELARIA DE APLICAÇÃO':         'Jordan',
+  'EMPACOTAMENTO (PROVAS + PAPELARIA)':          'Jordan',
+  'MONTAGEM DAS CAIXAS DE MATERIAL POR ESCOLA':  'Jordan',
+  'MONTAGEM DAS PASTAS DO COORDENADOR':          'Jordan',
+  'ESCANEAMENTO DAS FOLHAS DE RESPOSTA':         'Jordan',
+  'ESCANEAMENTO DAS ATAS DE APLICAÇÃO':          'Jordan',
+  'LEITURA DAS FOLHAS E GERAÇÃO DO RESULTADO':   'Natália',
   'SEPARAÇÃO DAS PROVAS DISCURSIVAS PARA CORREÇÃO':'Natália',
-  'ENVIO DAS PROVAS DISCURSIVAS PARA A BANCA': 'Natália',
+  'ENVIO DAS PROVAS DISCURSIVAS PARA A BANCA':   'Natália',
 };
 
 const RESP_COLORS = {
@@ -3443,18 +3486,23 @@ async function previewRetroativo(bucketId){
     cronFake.push({atividade:'PROVA OBJETIVA', data_fim:dataProva});
     if(resultPrelObjetiva) cronFake.push({atividade:'RESULTADO PRELIMINAR DA TOTALIZAÇÃO DA PROVA OBJETIVA', data_fim:resultPrelObjetiva});
 
-    const todasOp = calcularTarefasOperacionais(cronFake, temDisc);
+    const {tarefas: todasOp, alertas} = calcularTarefasOperacionais(cronFake, temDisc);
     const novas = todasOp.filter(t => !jaExistem.has(t.titulo.toUpperCase()));
     _retroTarefas = novas;
 
+    const alertasHtml = alertas.length ? alertas.map(a=>`
+<div style="background:${a.tipo==='risco'?'#fff8e6':'#fff5f5'};border:1px solid ${a.tipo==='risco'?'#f0dfa0':'#f3cfcd'};border-radius:8px;padding:10px 14px;margin-bottom:8px;font-size:12px;color:${a.tipo==='risco'?'#a06c12':'#c0322f'}">
+  ${a.msg}
+</div>`).join('') : '';
+
     if(!novas.length){
-      preview.innerHTML = `<div style="background:#e4f3ea;border:1px solid #a8dbb8;border-radius:8px;padding:10px 14px;font-size:12.5px;color:#2e7d52">
+      preview.innerHTML = alertasHtml + `<div style="background:#e4f3ea;border:1px solid #a8dbb8;border-radius:8px;padding:10px 14px;font-size:12.5px;color:#2e7d52">
         ✅ Todas as tarefas operacionais já existem neste bucket!</div>`;
       return;
     }
 
     const DIAS_PT=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
-    preview.innerHTML = `
+    preview.innerHTML = alertasHtml + `
 <div style="background:#e9f1fb;border:1px solid #b8d0ef;border-radius:8px;padding:12px 14px;margin-bottom:4px">
   <div style="font-size:12px;font-weight:700;color:#1f4e8c;margin-bottom:8px">📋 ${novas.length} tarefa(s) serão criadas:</div>
   ${novas.map(t=>`
