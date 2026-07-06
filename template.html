@@ -3345,26 +3345,55 @@ async function previewRetroativo(bucketId){
   btn && (btn.disabled=true);
 
   try {
-    // Buscar todas as tarefas do bucket
+    // Buscar TODAS as tarefas do bucket (abertas + concluídas)
     const tasks = await apiAll(`https://graph.microsoft.com/v1.0/planner/buckets/${bucketId}/tasks`);
 
-    // Identificar datas-âncora
+    // Identificar datas-âncora — inclui tarefas concluídas
     let fimInscricoes=null, dataProva=null, resultPrelObjetiva=null;
     const jaExistem = new Set();
 
     for(const t of tasks){
-      const titulo = (t.title||'').toUpperCase();
+      const titulo = (t.title||'').toUpperCase().trim();
+      // Usar dueDateTime independente de estar concluída
       const due = t.dueDateTime ? new Date(t.dueDateTime) : null;
 
-      if(titulo.includes('PERÍODO DE INSCRIÇÕES') && due && !fimInscricoes) fimInscricoes=due;
-      if((titulo==='PROVA OBJETIVA'||titulo==='PROVA OBJETIVA E PROVA DISCURSIVA') && due && !dataProva) dataProva=due;
-      if(titulo.includes('RESULTADO PRELIMINAR DA TOTALIZAÇÃO') && due && !resultPrelObjetiva) resultPrelObjetiva=due;
+      // Fim das inscrições
+      if(titulo.includes('PERÍODO DE INSCRIÇÕES') && due && !fimInscricoes)
+        fimInscricoes = due;
+
+      // Data da prova — aceita qualquer variação
+      if(!dataProva && due && (
+        titulo === 'PROVA OBJETIVA' ||
+        titulo.startsWith('PROVA OBJETIVA E') ||
+        titulo.startsWith('PROVA OBJETIVA -') ||
+        titulo === 'PROVA OBJETIVA E PROVA DISCURSIVA'
+      )) dataProva = due;
+
+      // Resultado preliminar da totalização
+      if(!resultPrelObjetiva && due && (
+        titulo.includes('RESULTADO PRELIMINAR DA TOTALIZAÇÃO') ||
+        titulo.includes('GABARITO PÓS-RECURSO - RETIFICADO') ||
+        titulo.includes('RESULTADO PRELIMINAR DA PROVA OBJETIVA')
+      )) resultPrelObjetiva = due;
+
+      // Registrar operacionais que já existem
       if(TAREFAS_OP_TITULOS.includes(titulo)) jaExistem.add(titulo);
     }
 
     if(!dataProva){
-      preview.innerHTML = `<div style="background:#fff8e6;border:1px solid #f0dfa0;border-radius:8px;padding:10px 14px;font-size:12.5px;color:#a06c12">
-        ⚠️ Não foi possível encontrar a data da Prova Objetiva neste bucket. Verifique se o cronograma está cadastrado corretamente.</div>`;
+      const encontradas = [
+        fimInscricoes ? `✅ Fim das inscrições: ${fimInscricoes.toLocaleDateString('pt-BR')}` : '❌ Fim das inscrições: não encontrado',
+        '❌ Prova Objetiva: não encontrada',
+        resultPrelObjetiva ? `✅ Resultado preliminar: ${resultPrelObjetiva.toLocaleDateString('pt-BR')}` : '❌ Resultado preliminar: não encontrado',
+      ];
+      preview.innerHTML = `
+<div style="background:#fff8e6;border:1px solid #f0dfa0;border-radius:8px;padding:12px 14px;font-size:12.5px;color:#a06c12">
+  <div style="font-weight:700;margin-bottom:8px">⚠️ Não foi possível encontrar a data da Prova Objetiva</div>
+  <div style="display:flex;flex-direction:column;gap:4px;font-size:11.5px">
+    ${encontradas.map(e=>`<div>${e}</div>`).join('')}
+  </div>
+  <div style="margin-top:8px;font-size:11.5px">A tarefa precisa ter o título exato "PROVA OBJETIVA" ou "PROVA OBJETIVA E PROVA DISCURSIVA" no Planner.</div>
+</div>`;
       return;
     }
 
