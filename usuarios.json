@@ -92,6 +92,17 @@
       ],
       "perfil": "gestora",
       "ativo": true
+    },
+    {
+      "nome_interno": "Marcela",
+      "aliases": [
+        "marcela",
+        "marcela avelar",
+        "avelar"
+      ],
+      "perfil": "gestora",
+      "auth_tipo": "microsoft",
+      "ativo": true
     }
   ]
 }
