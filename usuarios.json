@@ -2,59 +2,84 @@
   "usuarios": [
     {
       "nome_interno": "Manuela",
-      "aliases": ["manuela", "manu"],
+      "aliases": [
+        "manuela",
+        "manu"
+      ],
       "perfil": "gestora",
       "auth_tipo": "microsoft",
       "ativo": true
     },
     {
       "nome_interno": "Josiane",
-      "aliases": ["josiane", "josiane teixeira", "josiane teixeira do monte"],
+      "aliases": [
+        "josiane",
+        "josiane teixeira",
+        "josiane teixeira do monte"
+      ],
       "perfil": "gestora",
       "auth_tipo": "microsoft",
       "ativo": true
     },
     {
       "nome_interno": "Lorena",
-      "aliases": ["lorena"],
+      "aliases": [
+        "lorena"
+      ],
       "perfil": "equipe",
       "auth_tipo": "microsoft",
       "ativo": true
     },
     {
       "nome_interno": "Laryssa",
-      "aliases": ["laryssa", "execução"],
+      "aliases": [
+        "laryssa",
+        "execução"
+      ],
       "perfil": "equipe",
       "auth_tipo": "microsoft",
       "ativo": true
     },
     {
       "nome_interno": "Natália",
-      "aliases": ["natália", "natalia"],
+      "aliases": [
+        "natália",
+        "natalia"
+      ],
       "perfil": "equipe",
       "auth_tipo": "microsoft",
       "ativo": true
     },
     {
       "nome_interno": "Fabiano",
-      "aliases": ["fabiano", "fabiano costa barreiros"],
+      "aliases": [
+        "fabiano",
+        "fabiano costa barreiros"
+      ],
       "perfil": "cronograma",
       "auth_tipo": "microsoft",
       "ativo": true
     },
     {
       "nome_interno": "Maria Cristina",
-      "aliases": ["maria", "maria cristina", "maria cristina salomão", "cristina"],
+      "aliases": [
+        "maria",
+        "maria cristina",
+        "maria cristina salomão",
+        "cristina"
+      ],
       "perfil": "cronograma",
       "auth_tipo": "microsoft",
       "ativo": true
     },
     {
       "nome_interno": "Jordan",
-      "aliases": ["jordan"],
+      "aliases": [
+        "jordan"
+      ],
       "perfil": "operacional",
       "auth_tipo": "local",
-      "senha_hash": "",
+      "senha_hash": "2adddb2456dd0dfdf8c15132e097e81fd4ba0f58d2111ade6fab043f5487822f",
       "primeiro_acesso": true,
       "ativo": true
     }
