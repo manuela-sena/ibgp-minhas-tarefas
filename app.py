@@ -501,6 +501,7 @@ dados_iniciais = json.dumps({
     "usuarios"     : USUARIOS,
     "usuariosMsg"  : usuarios_msg,
     "conviteGerado": convite_gerado,
+    "ghToken"      : st.secrets.get("GITHUB_TOKEN","") if is_gestora else "",
 })
 
 # ── LER E INJETAR TEMPLATE ────────────────────────────────────────────
