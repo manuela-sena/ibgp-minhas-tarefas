@@ -603,6 +603,8 @@ const NOME_USUARIO  = {json.dumps(nome_interno)};
 const DADOS_INICIAIS = {dados_iniciais};""")
 html = html.replace("// PLACEHOLDER_ATRIB",
     f"const ATRIBUICOES_JS = {json.dumps(ATRIBUICOES)};")
+html = html.replace('action="" target="_top"',
+    f'action="{REDIRECT_URI.rstrip("/")}" target="_top"')
 
 components.html(html, height=900, scrolling=False)
 
