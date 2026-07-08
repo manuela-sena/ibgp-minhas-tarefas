@@ -82,6 +82,15 @@
       "senha_hash": "1fb489cd185704e682ac3b5e30ad886f5d14b742a41137b0c77ca0ec6212a62b",
       "primeiro_acesso": false,
       "ativo": true
+    },
+    {
+      "nome_interno": "Marcela",
+      "aliases": [
+        "marcela",
+        "marcela avelar"
+      ],
+      "perfil": "gestora",
+      "ativo": true
     }
   ]
 }
