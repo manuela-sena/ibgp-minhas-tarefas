@@ -1007,8 +1007,10 @@ function goPage(id) {
 function goPageTab(page, tab) { goPage(page); setTab(tab); }
 
 function abrirResultados(){
-  const url = window.location.href.split('?')[0] + '?page=resultados';
-  window.open(url, '_blank');
+  const base = (typeof DADOS_INICIAIS!=='undefined' && DADOS_INICIAIS.appUrl)
+    ? DADOS_INICIAIS.appUrl
+    : 'https://ibgp-minhas-tarefas-jkdmypmipxemkvhh6c5vjv.streamlit.app';
+  window.open(base + '?page=resultados', '_blank');
 }
 
 // ── TABS ────────────────────────────────────────────────────────────
