@@ -3709,9 +3709,62 @@ function removerUsuario(idx){
 
 function gerarConvite(nomeInterno){
   if(!confirm(`Gerar novo código de convite para "${nomeInterno}"?\nO código anterior será invalidado.`)) return;
-  window.top.location.href = window.top.location.origin +
-    window.top.location.pathname +
-    '?gerar_convite=' + encodeURIComponent(nomeInterno);
+
+  // Gerar código aleatório direto no JS (8 chars)
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+  let codigo = '';
+  for(let i=0;i<8;i++) codigo += chars[Math.floor(Math.random()*chars.length)];
+
+  // Salvar o hash via GitHub API diretamente
+  _salvarConviteGitHub(nomeInterno, codigo);
+}
+
+async function _salvarConviteGitHub(nomeInterno, codigo){
+  // Calcular hash SHA-256 do código
+  const encoder = new TextEncoder();
+  const data = encoder.encode(codigo);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2,'0')).join('');
+
+  // Atualizar no array local
+  const u = _usuarios.find(u => u.nome_interno === nomeInterno);
+  if(u){
+    u.senha_hash = hashHex;
+    u.primeiro_acesso = true;
+  }
+
+  // Salvar no GitHub
+  const msg = document.getElementById('usuarios-msg');
+  if(msg){ msg.style.cssText='display:flex;align-items:center;gap:8px;padding:10px 14px;background:#e9f1fb;border:1px solid #b8d0ef;border-radius:9px;font-size:13px;color:#1f4e8c;font-weight:600'; msg.innerHTML='<div class="spinner" style="border-top-color:#1f4e8c;width:16px;height:16px;border-width:2px"></div> Gerando convite...'; }
+
+  try {
+    const GH_TOKEN = typeof DADOS_INICIAIS!=='undefined' ? (DADOS_INICIAIS.ghToken||'') : '';
+    // Buscar SHA do usuarios.json
+    const r1 = await fetch('https://api.github.com/repos/manuela-sena/ibgp-minhas-tarefas/contents/usuarios.json',
+      {headers:{'Authorization':'Bearer '+(GH_TOKEN||TOKEN)}});
+    const f1 = await r1.json();
+    const conteudo = btoa(unescape(encodeURIComponent(JSON.stringify({usuarios:_usuarios}, null, 2))));
+    const r2 = await fetch('https://api.github.com/repos/manuela-sena/ibgp-minhas-tarefas/contents/usuarios.json',
+      {method:'PUT', headers:{'Authorization':'Bearer '+(GH_TOKEN||TOKEN),'Content-Type':'application/json'},
+       body:JSON.stringify({message:'chore: gerar convite para '+nomeInterno, content:conteudo, sha:f1.sha})});
+    const d2 = await r2.json();
+    if(d2.commit){
+      // Mostrar o código gerado
+      if(msg){
+        msg.style.cssText='display:flex;flex-direction:column;gap:8px;padding:14px 18px;background:#f3eafb;border:1px solid #c9a8e8;border-radius:9px;color:#5a2d91';
+        msg.innerHTML = `
+<div style="font-weight:700;font-size:13px">🔑 Código de convite gerado para <strong>${nomeInterno}</strong>!</div>
+<div style="font-size:12.5px">Passe este código para a pessoa usar no <strong>primeiro acesso</strong> como senha:</div>
+<div style="font-family:monospace;font-size:20px;font-weight:800;background:#fff;padding:10px 16px;border-radius:8px;border:1px solid #c9a8e8;letter-spacing:.15em;color:#3d1f6e;text-align:center">${codigo}</div>
+<div style="font-size:11.5px;color:#8a6ba8">Após o primeiro acesso, a pessoa definirá uma senha própria e este código expirará.</div>`;
+      }
+    } else {
+      throw new Error(d2.message||'Erro desconhecido');
+    }
+  } catch(e){
+    if(msg){ msg.style.cssText='display:flex;align-items:center;gap:8px;padding:10px 14px;background:#fdeceb;border:1px solid #f3cfcd;border-radius:9px;font-size:13px;font-weight:600;color:#c0322f'; msg.textContent='⚠️ Erro ao gerar convite: '+e.message; }
+  }
 }
 
 function mostrarConviteGerado(){
