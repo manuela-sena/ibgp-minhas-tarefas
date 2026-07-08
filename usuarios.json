@@ -79,8 +79,8 @@
       ],
       "perfil": "operacional",
       "auth_tipo": "local",
-      "senha_hash": "2adddb2456dd0dfdf8c15132e097e81fd4ba0f58d2111ade6fab043f5487822f",
-      "primeiro_acesso": true,
+      "senha_hash": "1fb489cd185704e682ac3b5e30ad886f5d14b742a41137b0c77ca0ec6212a62b",
+      "primeiro_acesso": false,
       "ativo": true
     }
   ]
