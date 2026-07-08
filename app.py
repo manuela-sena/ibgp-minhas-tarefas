@@ -606,7 +606,13 @@ html = html.replace("// PLACEHOLDER_ATRIB",
 
 components.html(html, height=900, scrolling=False)
 
-# Capturar navegação via sendPrompt (fica invisível)
+# Esconder o chat_input de navegação
+st.markdown("""<style>
+[data-testid="stChatInput"]{display:none!important}
+[data-testid="stBottom"]{display:none!important}
+</style>""", unsafe_allow_html=True)
+
+# Capturar navegação via sendPrompt
 _nav_input = st.chat_input("nav", key="nav_input")
 if _nav_input == "__GOTO_RESULTADOS__":
     st.session_state["pagina"] = "resultados"
