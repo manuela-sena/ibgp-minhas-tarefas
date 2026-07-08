@@ -507,6 +507,19 @@ dados_iniciais = json.dumps({
 
 # ── PÁGINA DE RESULTADOS (fora do template HTML) ─────────────────────
 if st.query_params.get("page") == "resultados":
+    # Autenticar via sess_token (token Microsoft passado na URL)
+    sess_token = st.query_params.get("sess_token", "")
+    if sess_token and "access_token" not in st.session_state:
+        st.session_state["access_token"] = sess_token
+
+    # Verificar autenticação
+    _logado = "access_token" in st.session_state or "local_user" in st.session_state
+    if not _logado:
+        st.error("Sessão expirada. Feche esta aba e acesse novamente pelo app.")
+        if st.button("Ir para o login"):
+            st.query_params.clear()
+            st.rerun()
+        st.stop()
     import sys
     sys.path.insert(0, "/mount/src/ibgp-minhas-tarefas")
     from processar_inscricoes import processar, df_para_xlsx
