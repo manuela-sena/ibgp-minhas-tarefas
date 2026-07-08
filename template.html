@@ -1007,17 +1007,7 @@ function goPage(id) {
 function goPageTab(page, tab) { goPage(page); setTab(tab); }
 
 function abrirResultados(){
-  // Injeta um form oculto e faz submit para o Streamlit na mesma aba
-  const f = document.createElement('form');
-  f.method = 'GET';
-  f.action = (typeof DADOS_INICIAIS!=='undefined'&&DADOS_INICIAIS.appUrl)
-    ? DADOS_INICIAIS.appUrl : window.top.location.origin;
-  const i = document.createElement('input');
-  i.type='hidden'; i.name='page'; i.value='resultados';
-  f.appendChild(i);
-  // Adicionar ao top document para sair do iframe
-  try { window.top.document.body.appendChild(f); f.submit(); }
-  catch(e) { window.open(f.action+'?page=resultados','_self'); }
+  if(typeof sendPrompt === 'function') sendPrompt('__GOTO_RESULTADOS__');
 }
 
 // ── TABS ────────────────────────────────────────────────────────────
