@@ -140,7 +140,6 @@ if not logado_microsoft and not logado_local:
             st.session_state["login_erro"] = "Usuário não encontrado."
         st.rerun()
 
-    # Capturar definição de nova senha
     if "nova_senha" in st.query_params and st.session_state.get("convite_ok"):
         nome_alvo = st.session_state.get("primeiro_acesso_user","")
         nova = st.query_params["nova_senha"]
@@ -159,113 +158,105 @@ if not logado_microsoft and not logado_local:
             st.session_state.pop("primeiro_acesso_user", None)
         st.rerun()
 
-    erro = st.session_state.pop("login_erro", "")
+    erro          = st.session_state.pop("login_erro", "")
     primeiro_acesso = st.session_state.get("convite_ok", False)
     primeiro_nome   = st.session_state.get("primeiro_acesso_user", "")
+    ms_url        = auth_url()
+    erro_html     = f'<div class="erro">{erro}</div>' if erro else ""
 
     if primeiro_acesso:
-        # Tela de definir nova senha
-        st.markdown(f"""
+        html_login = f"""<!DOCTYPE html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-* {{box-sizing:border-box;margin:0;padding:0}}
-body {{background:#eef1f6;font-family:'Segoe UI',system-ui,sans-serif}}
-.login-wrap {{display:flex;min-height:100vh;align-items:center;justify-content:center;padding:20px}}
-.login-card {{background:#fff;border-radius:20px;padding:2.5rem 2rem;width:100%;max-width:400px;box-shadow:0 8px 40px rgba(16,30,54,0.12)}}
-.logo {{width:52px;height:52px;object-fit:contain;display:block;margin:0 auto 1.2rem}}
-h1 {{font-size:1.15rem;font-weight:700;color:#1f2a3d;text-align:center;margin-bottom:.3rem}}
-.sub {{color:#7a869c;font-size:.85rem;text-align:center;margin-bottom:1.8rem}}
-.field {{margin-bottom:1rem}}
-label {{display:block;font-size:.8rem;font-weight:600;color:#41506b;margin-bottom:.4rem}}
-input {{width:100%;padding:.65rem .9rem;border:1.5px solid #d7dde7;border-radius:10px;font-size:.9rem;color:#1f2a3d;outline:none;transition:border-color .15s}}
-input:focus {{border-color:#1f4e8c;box-shadow:0 0 0 3px rgba(31,78,140,.1)}}
-.btn {{width:100%;padding:.75rem;background:#1f4e8c;color:#fff;border:none;border-radius:10px;font-size:.95rem;font-weight:600;cursor:pointer;margin-top:.5rem;transition:background .15s}}
-.btn:hover {{background:#1a4378}}
-.erro {{background:#fdeceb;color:#c0322f;border-radius:8px;padding:.6rem .9rem;font-size:.82rem;margin-bottom:1rem;font-weight:500}}
-</style>
-<div class="login-wrap">
-  <div class="login-card">
-    <img class="logo" src="https://raw.githubusercontent.com/manuela-sena/ibgp-minhas-tarefas/main/logo.png">
-    <h1>Primeiro acesso</h1>
-    <p class="sub">Olá, <strong>{primeiro_nome}</strong>! Defina sua senha para continuar.</p>
-    {'<div class="erro">'+erro+'</div>' if erro else ''}
-    <form onsubmit="definirSenha(event)">
-      <div class="field"><label>Nova senha</label><input id="ns" type="password" placeholder="Mínimo 6 caracteres" required minlength="6"></div>
-      <div class="field"><label>Confirmar senha</label><input id="cs" type="password" placeholder="Repita a senha" required></div>
-      <button class="btn" type="submit">✅ Definir senha e entrar</button>
-    </form>
-  </div>
+*{{box-sizing:border-box;margin:0;padding:0}}
+body{{background:#eef1f6;font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}}
+.card{{background:#fff;border-radius:20px;padding:2.5rem 2rem;width:100%;max-width:400px;box-shadow:0 8px 40px rgba(16,30,54,0.12)}}
+.logo{{width:52px;height:52px;object-fit:contain;display:block;margin:0 auto 1.2rem}}
+h1{{font-size:1.1rem;font-weight:700;color:#1f2a3d;text-align:center;margin-bottom:.3rem}}
+.sub{{color:#7a869c;font-size:.85rem;text-align:center;margin-bottom:1.8rem;line-height:1.5}}
+.field{{margin-bottom:.9rem}}
+label{{display:block;font-size:.8rem;font-weight:600;color:#41506b;margin-bottom:.4rem}}
+input{{width:100%;padding:.65rem .9rem;border:1.5px solid #d7dde7;border-radius:10px;font-size:.9rem;color:#1f2a3d;outline:none}}
+input:focus{{border-color:#1f4e8c;box-shadow:0 0 0 3px rgba(31,78,140,.1)}}
+.btn{{width:100%;padding:.75rem;background:#1f4e8c;color:#fff;border:none;border-radius:10px;font-size:.95rem;font-weight:600;cursor:pointer;margin-top:.5rem}}
+.btn:hover{{background:#1a4378}}
+.erro{{background:#fdeceb;color:#c0322f;border-radius:8px;padding:.6rem .9rem;font-size:.82rem;margin-bottom:1rem;font-weight:500}}
+</style></head><body>
+<div class="card">
+  <img class="logo" src="https://raw.githubusercontent.com/manuela-sena/ibgp-minhas-tarefas/main/logo.png">
+  <h1>Primeiro acesso</h1>
+  <p class="sub">Olá, <strong>{primeiro_nome}</strong>!<br>Defina sua senha para continuar.</p>
+  {erro_html}
+  <form onsubmit="definirSenha(event)">
+    <div class="field"><label>Nova senha</label><input id="ns" type="password" placeholder="Mínimo 6 caracteres" required></div>
+    <div class="field"><label>Confirmar senha</label><input id="cs" type="password" placeholder="Repita a senha" required></div>
+    <button class="btn" type="submit">✅ Definir senha e entrar</button>
+  </form>
 </div>
 <script>
 function definirSenha(e){{
   e.preventDefault();
-  const ns=document.getElementById('ns').value;
-  const cs=document.getElementById('cs').value;
+  var ns=document.getElementById('ns').value;
+  var cs=document.getElementById('cs').value;
   if(ns!==cs){{alert('As senhas não coincidem.');return;}}
-  window.location.href=window.location.origin+window.location.pathname+'?nova_senha='+encodeURIComponent(ns);
+  window.top.location.href=window.top.location.origin+window.top.location.pathname+'?nova_senha='+encodeURIComponent(ns);
 }}
-</script>""", unsafe_allow_html=True)
+</script></body></html>"""
     else:
-        # Tela de login principal
-        st.markdown(f"""
+        html_login = f"""<!DOCTYPE html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-* {{box-sizing:border-box;margin:0;padding:0}}
-body {{background:#eef1f6;font-family:'Segoe UI',system-ui,sans-serif}}
-.login-wrap {{display:flex;min-height:100vh;align-items:center;justify-content:center;padding:20px}}
-.login-card {{background:#fff;border-radius:20px;padding:2.5rem 2rem;width:100%;max-width:400px;box-shadow:0 8px 40px rgba(16,30,54,0.12)}}
-.logo {{width:56px;height:56px;object-fit:contain;display:block;margin:0 auto 1.2rem}}
-h1 {{font-size:1.15rem;font-weight:700;color:#1f2a3d;text-align:center;margin-bottom:.3rem}}
-.sub {{color:#7a869c;font-size:.85rem;text-align:center;margin-bottom:2rem}}
-.btn-ms {{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:.8rem;background:#1f4e8c;color:#fff;border:none;border-radius:12px;font-size:.95rem;font-weight:600;cursor:pointer;text-decoration:none;transition:background .15s;margin-bottom:1.2rem}}
-.btn-ms:hover {{background:#1a4378}}
-.ms-icon {{width:20px;height:20px;flex:none}}
-.divider {{display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem}}
-.divider::before,.divider::after {{content:'';flex:1;height:1px;background:#e2e7ef}}
-.divider span {{color:#b0bac8;font-size:.8rem;white-space:nowrap}}
-.field {{margin-bottom:.9rem}}
-label {{display:block;font-size:.8rem;font-weight:600;color:#41506b;margin-bottom:.4rem}}
-input {{width:100%;padding:.65rem .9rem;border:1.5px solid #d7dde7;border-radius:10px;font-size:.9rem;color:#1f2a3d;outline:none;transition:border-color .15s}}
-input:focus {{border-color:#1f4e8c;box-shadow:0 0 0 3px rgba(31,78,140,.1)}}
-.btn-local {{width:100%;padding:.72rem;background:#f4f6fa;color:#1f2a3d;border:1.5px solid #e2e7ef;border-radius:10px;font-size:.9rem;font-weight:600;cursor:pointer;margin-top:.3rem;transition:background .15s}}
-.btn-local:hover {{background:#eaecf2}}
-.erro {{background:#fdeceb;color:#c0322f;border-radius:8px;padding:.6rem .9rem;font-size:.82rem;margin-bottom:1rem;font-weight:500}}
-</style>
-<div class="login-wrap">
-  <div class="login-card">
-    <img class="logo" src="https://raw.githubusercontent.com/manuela-sena/ibgp-minhas-tarefas/main/logo.png">
-    <h1>IBGP · Minhas Tarefas</h1>
-    <p class="sub">Acesso restrito à equipe IBGP</p>
-
-    <a class="btn-ms" href="{auth_url()}">
-      <svg class="ms-icon" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
-        <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
-        <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
-        <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
-        <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
-      </svg>
-      Entrar com Microsoft
-    </a>
-
-    <div class="divider"><span>ou acesso com senha</span></div>
-
-    {'<div class="erro">'+erro+'</div>' if erro else ''}
-
-    <form onsubmit="loginLocal(event)">
-      <div class="field"><label>Usuário</label><input id="lu" type="text" placeholder="Seu usuário" autocomplete="username"></div>
-      <div class="field"><label>Senha</label><input id="lp" type="password" placeholder="Sua senha" autocomplete="current-password"></div>
-      <button class="btn-local" type="submit">Entrar com usuário e senha</button>
-    </form>
-  </div>
+*{{box-sizing:border-box;margin:0;padding:0}}
+body{{background:#eef1f6;font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}}
+.card{{background:#fff;border-radius:20px;padding:2.5rem 2rem;width:100%;max-width:400px;box-shadow:0 8px 40px rgba(16,30,54,0.12)}}
+.logo{{width:56px;height:56px;object-fit:contain;display:block;margin:0 auto 1.2rem}}
+h1{{font-size:1.1rem;font-weight:700;color:#1f2a3d;text-align:center;margin-bottom:.3rem}}
+.sub{{color:#7a869c;font-size:.85rem;text-align:center;margin-bottom:2rem}}
+.btn-ms{{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:.8rem;background:#1f4e8c;color:#fff;border:none;border-radius:12px;font-size:.95rem;font-weight:600;cursor:pointer;text-decoration:none;margin-bottom:1.2rem}}
+.btn-ms:hover{{background:#1a4378}}
+.divider{{display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem}}
+.divider::before,.divider::after{{content:'';flex:1;height:1px;background:#e2e7ef}}
+.divider span{{color:#b0bac8;font-size:.8rem;white-space:nowrap}}
+.field{{margin-bottom:.9rem}}
+label{{display:block;font-size:.8rem;font-weight:600;color:#41506b;margin-bottom:.4rem}}
+input{{width:100%;padding:.65rem .9rem;border:1.5px solid #d7dde7;border-radius:10px;font-size:.9rem;color:#1f2a3d;outline:none}}
+input:focus{{border-color:#1f4e8c;box-shadow:0 0 0 3px rgba(31,78,140,.1)}}
+.btn-local{{width:100%;padding:.72rem;background:#f4f6fa;color:#1f2a3d;border:1.5px solid #e2e7ef;border-radius:10px;font-size:.9rem;font-weight:600;cursor:pointer;margin-top:.3rem}}
+.btn-local:hover{{background:#eaecf2}}
+.erro{{background:#fdeceb;color:#c0322f;border-radius:8px;padding:.6rem .9rem;font-size:.82rem;margin-bottom:1rem;font-weight:500}}
+</style></head><body>
+<div class="card">
+  <img class="logo" src="https://raw.githubusercontent.com/manuela-sena/ibgp-minhas-tarefas/main/logo.png">
+  <h1>IBGP · Minhas Tarefas</h1>
+  <p class="sub">Acesso restrito à equipe IBGP</p>
+  <a class="btn-ms" href="{ms_url}">
+    <svg width="20" height="20" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
+      <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
+      <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
+      <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
+      <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
+    </svg>
+    Entrar com Microsoft
+  </a>
+  <div class="divider"><span>ou acesso com senha</span></div>
+  {erro_html}
+  <form onsubmit="loginLocal(event)">
+    <div class="field"><label>Usuário</label><input id="lu" type="text" placeholder="Seu usuário" autocomplete="username"></div>
+    <div class="field"><label>Senha</label><input id="lp" type="password" placeholder="Sua senha" autocomplete="current-password"></div>
+    <button class="btn-local" type="submit">Entrar com usuário e senha</button>
+  </form>
 </div>
 <script>
 function loginLocal(e){{
   e.preventDefault();
-  const u=document.getElementById('lu').value.trim();
-  const p=document.getElementById('lp').value;
+  var u=document.getElementById('lu').value.trim();
+  var p=document.getElementById('lp').value;
   if(!u||!p){{alert('Preencha usuário e senha.');return;}}
-  window.location.href=window.location.origin+window.location.pathname+
-    '?login_u='+encodeURIComponent(u)+'&login_p='+encodeURIComponent(p);
+  window.top.location.href=window.top.location.origin+window.top.location.pathname+'?login_u='+encodeURIComponent(u)+'&login_p='+encodeURIComponent(p);
 }}
-</script>""", unsafe_allow_html=True)
+</script></body></html>"""
+
+    components.html(html_login, height=600, scrolling=False)
     st.stop()
 
 token = st.session_state.get("access_token", None)
