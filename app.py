@@ -505,26 +505,19 @@ dados_iniciais = json.dumps({
     "appUrl"       : REDIRECT_URI.rstrip('/'),
 })
 
-# ── PÁGINA DE RESULTADOS (fora do template HTML) ─────────────────────
-if st.query_params.get("page") == "resultados":
-    # Autenticar via sess_token (token Microsoft passado na URL)
-    sess_token = st.query_params.get("sess_token", "")
-    if sess_token and "access_token" not in st.session_state:
-        st.session_state["access_token"] = sess_token
+# ── NAVEGAÇÃO INTERNA (via sendPrompt do template) ───────────────────
+_nav = st.query_params.get("nav","")
+if _nav == "resultados":
+    st.session_state["pagina"] = "resultados"
+    st.query_params.clear()
+    st.rerun()
 
-    # Verificar autenticação
-    _logado = "access_token" in st.session_state or "local_user" in st.session_state
-    if not _logado:
-        st.error("Sessão expirada. Feche esta aba e acesse novamente pelo app.")
-        if st.button("Ir para o login"):
-            st.query_params.clear()
-            st.rerun()
-        st.stop()
+# ── PÁGINA DE RESULTADOS ──────────────────────────────────────────────
+if st.session_state.get("pagina") == "resultados":
     import sys
     sys.path.insert(0, "/mount/src/ibgp-minhas-tarefas")
     from processar_inscricoes import processar, df_para_xlsx
 
-    st.set_page_config(page_title="Resultados · IBGP", layout="wide")
     st.markdown("""
 <style>
 header[data-testid="stHeader"]{display:none}
@@ -535,21 +528,19 @@ header[data-testid="stHeader"]{display:none}
     col_back, col_title = st.columns([1,8])
     with col_back:
         if st.button("← Voltar"):
-            st.query_params.clear()
+            st.session_state.pop("pagina", None)
             st.rerun()
     with col_title:
         st.markdown("## 📋 Resultados · Inscrições")
 
     st.markdown("---")
-
     arquivo = st.file_uploader("Selecione o relatório geral (.xlsx)", type=["xlsx"])
 
     if arquivo:
         st.markdown("### Cargos com mesma prova *(opcional)*")
-        st.caption("Se houver cargos cujos candidatos farão a mesma prova, configure os conjuntos abaixo. Exemplo: 314 e 315 na mesma linha.")
+        st.caption("Configure conjuntos de cargos cujos candidatos farão a mesma prova. Ex: 314 e 315 na mesma linha.")
 
-        n_conjuntos = st.number_input("Quantos conjuntos de cargos com mesma prova?", min_value=0, max_value=20, value=0, step=1)
-
+        n_conjuntos = st.number_input("Quantos conjuntos?", min_value=0, max_value=20, value=0, step=1)
         conjuntos = []
         for i in range(int(n_conjuntos)):
             val = st.text_input(f"Conjunto {i+1} — códigos separados por vírgula", key=f"conj_{i}", placeholder="Ex: 314, 315")
@@ -563,55 +554,39 @@ header[data-testid="stHeader"]{display:none}
                 try:
                     dados = arquivo.read()
                     df_res, df_aloc, resumo = processar(dados, conjuntos_mesma_prova=conjuntos if conjuntos else None)
+                    st.success(f"✅ {resumo['total']} inscrições processadas!")
 
-                    st.success(f"✅ Processado com sucesso! {resumo['total']} inscrições analisadas.")
-
-                    # KPIs
                     c1,c2,c3,c4,c5,c6,c7 = st.columns(7)
-                    c1.metric("Total",        resumo['total'])
-                    c2.metric("Pagos",        resumo['pagos'])
-                    c3.metric("Deferidos",    resumo['deferidos'])
-                    c4.metric("Pendentes",    resumo['pendentes'])
-                    c5.metric("Indeferidos",  resumo['indeferidos'])
-                    c6.metric("Cancelados",   resumo['cancelados'])
-                    c7.metric("Para alocação",resumo['total_alocacao'])
+                    c1.metric("Total",         resumo['total'])
+                    c2.metric("Pagos",         resumo['pagos'])
+                    c3.metric("Deferidos",     resumo['deferidos'])
+                    c4.metric("Pendentes",     resumo['pendentes'])
+                    c5.metric("Indeferidos",   resumo['indeferidos'])
+                    c6.metric("Cancelados",    resumo['cancelados'])
+                    c7.metric("Para alocação", resumo['total_alocacao'])
 
                     st.markdown("---")
-                    col_d1, col_d2 = st.columns(2)
-
                     nome_base = arquivo.name.replace('.xlsx','').replace('.XLSX','')
-
+                    col_d1, col_d2 = st.columns(2)
                     with col_d1:
-                        xlsx_res = df_para_xlsx(df_res, "Resultado")
-                        st.download_button(
-                            "📥 Baixar Planilha de Resultado",
-                            data=xlsx_res,
+                        st.download_button("📥 Planilha de Resultado", data=df_para_xlsx(df_res,"Resultado"),
                             file_name=f"{nome_base}_RESULTADO.xlsx",
                             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                            use_container_width=True,
-                        )
+                            use_container_width=True)
                         st.caption(f"{len(df_res)} candidatos · todos os status")
-
                     with col_d2:
-                        xlsx_aloc = df_para_xlsx(df_aloc, "Alocação")
-                        st.download_button(
-                            "📥 Baixar Planilha de Alocação",
-                            data=xlsx_aloc,
+                        st.download_button("📥 Planilha de Alocação", data=df_para_xlsx(df_aloc,"Alocação"),
                             file_name=f"{nome_base}_ALOCACAO.xlsx",
                             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                            use_container_width=True,
-                        )
+                            use_container_width=True)
                         st.caption(f"{len(df_aloc)} candidatos · somente Pagos e Deferidos")
 
-                    # Preview
-                    with st.expander("👁 Visualizar cancelamentos gerados"):
+                    with st.expander("👁 Cancelamentos gerados"):
                         cancelados = df_res[df_res['STATUS']=='Cancelada'][['INSCRIÇÃO','CPF','CANDIDATO','CÓDIGO','CARGO','STATUS','DATA INSCRIÇÃO']]
                         st.dataframe(cancelados, use_container_width=True)
-
                 except Exception as e:
-                    st.error(f"Erro ao processar: {e}")
+                    st.error(f"Erro: {e}")
                     import traceback; st.code(traceback.format_exc())
-
     st.stop()
 
 # ── LER E INJETAR TEMPLATE ────────────────────────────────────────────
@@ -630,3 +605,9 @@ html = html.replace("// PLACEHOLDER_ATRIB",
     f"const ATRIBUICOES_JS = {json.dumps(ATRIBUICOES)};")
 
 components.html(html, height=900, scrolling=False)
+
+# Capturar navegação via sendPrompt (fica invisível)
+_nav_input = st.chat_input("nav", key="nav_input")
+if _nav_input == "__GOTO_RESULTADOS__":
+    st.session_state["pagina"] = "resultados"
+    st.rerun()
