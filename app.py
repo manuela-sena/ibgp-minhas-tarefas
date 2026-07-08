@@ -504,6 +504,102 @@ dados_iniciais = json.dumps({
     "ghToken"      : st.secrets.get("GITHUB_TOKEN","") if is_gestora else "",
 })
 
+# ── PÁGINA DE RESULTADOS (fora do template HTML) ─────────────────────
+if st.query_params.get("page") == "resultados":
+    import sys
+    sys.path.insert(0, "/mount/src/ibgp-minhas-tarefas")
+    from processar_inscricoes import processar, df_para_xlsx
+
+    st.set_page_config(page_title="Resultados · IBGP", layout="wide")
+    st.markdown("""
+<style>
+header[data-testid="stHeader"]{display:none}
+[data-testid="stAppViewContainer"]{background:#eef1f6}
+.block-container{padding:1.5rem 2rem!important}
+</style>""", unsafe_allow_html=True)
+
+    col_back, col_title = st.columns([1,8])
+    with col_back:
+        if st.button("← Voltar"):
+            st.query_params.clear()
+            st.rerun()
+    with col_title:
+        st.markdown("## 📋 Resultados · Inscrições")
+
+    st.markdown("---")
+
+    arquivo = st.file_uploader("Selecione o relatório geral (.xlsx)", type=["xlsx"])
+
+    if arquivo:
+        st.markdown("### Cargos com mesma prova *(opcional)*")
+        st.caption("Se houver cargos cujos candidatos farão a mesma prova, configure os conjuntos abaixo. Exemplo: 314 e 315 na mesma linha.")
+
+        n_conjuntos = st.number_input("Quantos conjuntos de cargos com mesma prova?", min_value=0, max_value=20, value=0, step=1)
+
+        conjuntos = []
+        for i in range(int(n_conjuntos)):
+            val = st.text_input(f"Conjunto {i+1} — códigos separados por vírgula", key=f"conj_{i}", placeholder="Ex: 314, 315")
+            if val.strip():
+                cods = [c.strip() for c in val.split(',') if c.strip()]
+                if len(cods) >= 2:
+                    conjuntos.append(cods)
+
+        if st.button("⚙️ Processar planilha", type="primary"):
+            with st.spinner("Processando..."):
+                try:
+                    dados = arquivo.read()
+                    df_res, df_aloc, resumo = processar(dados, conjuntos_mesma_prova=conjuntos if conjuntos else None)
+
+                    st.success(f"✅ Processado com sucesso! {resumo['total']} inscrições analisadas.")
+
+                    # KPIs
+                    c1,c2,c3,c4,c5,c6,c7 = st.columns(7)
+                    c1.metric("Total",        resumo['total'])
+                    c2.metric("Pagos",        resumo['pagos'])
+                    c3.metric("Deferidos",    resumo['deferidos'])
+                    c4.metric("Pendentes",    resumo['pendentes'])
+                    c5.metric("Indeferidos",  resumo['indeferidos'])
+                    c6.metric("Cancelados",   resumo['cancelados'])
+                    c7.metric("Para alocação",resumo['total_alocacao'])
+
+                    st.markdown("---")
+                    col_d1, col_d2 = st.columns(2)
+
+                    nome_base = arquivo.name.replace('.xlsx','').replace('.XLSX','')
+
+                    with col_d1:
+                        xlsx_res = df_para_xlsx(df_res, "Resultado")
+                        st.download_button(
+                            "📥 Baixar Planilha de Resultado",
+                            data=xlsx_res,
+                            file_name=f"{nome_base}_RESULTADO.xlsx",
+                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            use_container_width=True,
+                        )
+                        st.caption(f"{len(df_res)} candidatos · todos os status")
+
+                    with col_d2:
+                        xlsx_aloc = df_para_xlsx(df_aloc, "Alocação")
+                        st.download_button(
+                            "📥 Baixar Planilha de Alocação",
+                            data=xlsx_aloc,
+                            file_name=f"{nome_base}_ALOCACAO.xlsx",
+                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            use_container_width=True,
+                        )
+                        st.caption(f"{len(df_aloc)} candidatos · somente Pagos e Deferidos")
+
+                    # Preview
+                    with st.expander("👁 Visualizar cancelamentos gerados"):
+                        cancelados = df_res[df_res['STATUS']=='Cancelada'][['INSCRIÇÃO','CPF','CANDIDATO','CÓDIGO','CARGO','STATUS','DATA INSCRIÇÃO']]
+                        st.dataframe(cancelados, use_container_width=True)
+
+                except Exception as e:
+                    st.error(f"Erro ao processar: {e}")
+                    import traceback; st.code(traceback.format_exc())
+
+    st.stop()
+
 # ── LER E INJETAR TEMPLATE ────────────────────────────────────────────
 with open("/mount/src/ibgp-minhas-tarefas/template.html", "r", encoding="utf-8") as f:
     html = f.read()
