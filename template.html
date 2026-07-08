@@ -3739,14 +3739,15 @@ async function _salvarConviteGitHub(nomeInterno, codigo){
   if(msg){ msg.style.cssText='display:flex;align-items:center;gap:8px;padding:10px 14px;background:#e9f1fb;border:1px solid #b8d0ef;border-radius:9px;font-size:13px;color:#1f4e8c;font-weight:600'; msg.innerHTML='<div class="spinner" style="border-top-color:#1f4e8c;width:16px;height:16px;border-width:2px"></div> Gerando convite...'; }
 
   try {
-    const GH_TOKEN = typeof DADOS_INICIAIS!=='undefined' ? (DADOS_INICIAIS.ghToken||'') : '';
+    const ghToken = (typeof DADOS_INICIAIS!=='undefined' && DADOS_INICIAIS.ghToken) ? DADOS_INICIAIS.ghToken : '';
+    if(!ghToken){ throw new Error('Token GitHub não disponível. Verifique o secret GITHUB_TOKEN.'); }
     // Buscar SHA do usuarios.json
     const r1 = await fetch('https://api.github.com/repos/manuela-sena/ibgp-minhas-tarefas/contents/usuarios.json',
-      {headers:{'Authorization':'Bearer '+(GH_TOKEN||TOKEN)}});
+      {headers:{'Authorization':'Bearer '+ghToken}});
     const f1 = await r1.json();
     const conteudo = btoa(unescape(encodeURIComponent(JSON.stringify({usuarios:_usuarios}, null, 2))));
     const r2 = await fetch('https://api.github.com/repos/manuela-sena/ibgp-minhas-tarefas/contents/usuarios.json',
-      {method:'PUT', headers:{'Authorization':'Bearer '+(GH_TOKEN||TOKEN),'Content-Type':'application/json'},
+      {method:'PUT', headers:{'Authorization':'Bearer '+ghToken,'Content-Type':'application/json'},
        body:JSON.stringify({message:'chore: gerar convite para '+nomeInterno, content:conteudo, sha:f1.sha})});
     const d2 = await r2.json();
     if(d2.commit){
@@ -3787,10 +3788,29 @@ function mostrarConviteGerado(){
 
 function salvarUsuariosGitHub(){
   const msg = document.getElementById('usuarios-msg');
-  if(msg){ msg.style.display='flex'; msg.style.cssText='display:flex;align-items:center;gap:8px;padding:10px 14px;background:#e9f1fb;border:1px solid #b8d0ef;border-radius:9px;font-size:13px;color:#1f4e8c;font-weight:600'; msg.innerHTML='<div class="spinner" style="border-top-color:#1f4e8c;width:16px;height:16px;border-width:2px"></div> Salvando...'; }
-  window.top.location.href = window.top.location.origin +
-    window.top.location.pathname +
-    '?salvar_usuarios=' + encodeURIComponent(JSON.stringify(_usuarios));
+  if(msg){ msg.style.cssText='display:flex;align-items:center;gap:8px;padding:10px 14px;background:#e9f1fb;border:1px solid #b8d0ef;border-radius:9px;font-size:13px;color:#1f4e8c;font-weight:600'; msg.innerHTML='<div class="spinner" style="border-top-color:#1f4e8c;width:16px;height:16px;border-width:2px"></div> Salvando...'; }
+
+  const ghToken = (typeof DADOS_INICIAIS!=='undefined' && DADOS_INICIAIS.ghToken) ? DADOS_INICIAIS.ghToken : '';
+  if(!ghToken){ if(msg){ msg.style.cssText='display:flex;align-items:center;gap:8px;padding:10px 14px;background:#fdeceb;border:1px solid #f3cfcd;border-radius:9px;font-size:13px;font-weight:600;color:#c0322f'; msg.textContent='⚠️ Token GitHub não disponível.'; } return; }
+
+  fetch('https://api.github.com/repos/manuela-sena/ibgp-minhas-tarefas/contents/usuarios.json',
+    {headers:{'Authorization':'Bearer '+ghToken}})
+  .then(r=>r.json()).then(f=>{
+    const conteudo = btoa(unescape(encodeURIComponent(JSON.stringify({usuarios:_usuarios}, null, 2))));
+    return fetch('https://api.github.com/repos/manuela-sena/ibgp-minhas-tarefas/contents/usuarios.json',
+      {method:'PUT', headers:{'Authorization':'Bearer '+ghToken,'Content-Type':'application/json'},
+       body:JSON.stringify({message:'chore: atualização de usuários via app', content:conteudo, sha:f.sha})});
+  }).then(r=>r.json()).then(d=>{
+    if(d.commit){
+      if(msg){ msg.style.cssText='display:flex;align-items:center;gap:8px;padding:10px 14px;background:#e4f3ea;border:1px solid #a8dbb8;border-radius:9px;font-size:13px;font-weight:600;color:#2e7d52'; msg.textContent='✅ Usuários salvos com sucesso!'; }
+      renderUsuarios();
+      setTimeout(()=>{ if(msg) msg.style.display='none'; }, 5000);
+    } else {
+      throw new Error(d.message||'Erro');
+    }
+  }).catch(e=>{
+    if(msg){ msg.style.cssText='display:flex;align-items:center;gap:8px;padding:10px 14px;background:#fdeceb;border:1px solid #f3cfcd;border-radius:9px;font-size:13px;font-weight:600;color:#c0322f'; msg.textContent='⚠️ Erro ao salvar: '+e.message; }
+  });
 }
 
 function renderUsuariosMsgInicial(){
