@@ -125,7 +125,7 @@ nav{display:flex;flex-direction:column;gap:1px}
 .refresh-btn.spinning svg{transform:rotate(360deg)}
 
 .content{flex:1;overflow-y:auto;padding:22px 24px 60px}
-.page{display:none;max-width:1180px;margin:0 auto}
+.page{display:none;width:100%}
 .page.active{display:flex;flex-direction:column;gap:16px}
 
 /* ── CARDS BASE ─────────────────────────────── */
@@ -713,7 +713,7 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
           </div>
           <select class="filter-select" id="sel-pessoa" onchange="applyFilters()">
             <option value="">Toda a equipe</option>
-            <option>Lorena</option><option>Laryssa</option><option>Natália</option><option>Manuela</option>
+            <option>Lorena</option><option>Laryssa</option><option>Natália</option><option>Manuela</option><option>Marcela</option>
           </select>
         </div>
         <div class="filter-group" style="position:relative">
@@ -887,8 +887,43 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
 
     <!-- ══ PÁGINAS FUTURAS ══════════════════════ -->
     <div id="page-indicadores" class="page">
-      <div class="page-header"><div class="page-title-h1"><svg width="21" height="21" fill="none" stroke="#1f4e8c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-relat"/></svg>Painel de Indicadores</div><div class="page-sub">Em desenvolvimento.</div></div>
-      <div class="card card-pad"><div class="empty-state"><div class="empty-icon">📊</div><div class="empty-title">Em breve</div><div class="empty-desc">Esta página está em desenvolvimento.</div></div></div>
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:4px">
+        <div>
+          <div style="font-size:19px;font-weight:800;color:#1f2a3d;display:flex;align-items:center;gap:10px">
+            <svg width="21" height="21" fill="none" stroke="#1f4e8c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-relat"/></svg>
+            Painel de Indicadores
+          </div>
+          <div style="font-size:12.5px;color:#8a9ab5;margin-top:3px">Visão gerencial da equipe e dos concursos.</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
+          <div class="filter-group" style="min-width:150px">
+            <div class="filter-lbl">Responsável</div>
+            <select class="filter-select" id="ind-fil-pessoa" onchange="renderIndicadores()" style="height:36px">
+              <option value="">Toda a equipe</option>
+              <option>Lorena</option><option>Laryssa</option><option>Natália</option><option>Manuela</option><option>Marcela</option><option>Jordan</option>
+            </select>
+          </div>
+          <div class="filter-group" style="min-width:200px;position:relative">
+            <div class="filter-lbl">Concurso</div>
+            <div style="position:relative">
+              <input id="ind-inp-concurso" class="filter-select" type="text" placeholder="Todos" autocomplete="off"
+                oninput="filtrarIndConcurso()" onfocus="filtrarIndConcurso()" style="height:36px;padding-right:24px">
+              <svg style="position:absolute;right:6px;top:50%;transform:translateY(-50%);pointer-events:none" width="11" height="11" fill="none" stroke="#9aa6b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div id="drop-ind-concurso" style="display:none;position:absolute;left:0;right:0;z-index:500;background:#fff;border:1px solid #e2e7ef;border-radius:9px;box-shadow:0 8px 24px rgba(16,30,54,0.12);max-height:200px;overflow-y:auto;margin-top:2px"></div>
+            <input type="hidden" id="ind-fil-concurso">
+          </div>
+          <button class="btn-secondary" onclick="renderIndicadores()" style="height:36px;padding:0 12px;font-size:12px;margin-bottom:1px">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Atualizar
+          </button>
+          <button class="btn-secondary" onclick="exportarIndicadoresPDF()" style="height:36px;padding:0 12px;font-size:12px;margin-bottom:1px">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Exportar PDF
+          </button>
+        </div>
+      </div>
+      <div id="ind-content"><div class="loading"><div class="spinner"></div>Carregando indicadores...</div></div>
     </div>
     <div id="page-planejamentos" class="page">
       <div class="page-header">
@@ -1003,12 +1038,9 @@ function goPage(id) {
   if(id==='reajustar' && !_bucketsLoaded) { loadReajusteConcursos(); _bucketsLoaded=true; }
   if(id==='usuarios') renderUsuarios();
   if(id==='planejamentos') carregarPlanejamentos();
+  if(id==='indicadores') renderIndicadores();
 }
 function goPageTab(page, tab) { goPage(page); setTab(tab); }
-
-function abrirResultados(){
-  if(typeof sendPrompt === 'function') sendPrompt('__GOTO_RESULTADOS__');
-}
 
 // ── TABS ────────────────────────────────────────────────────────────
 let _currentTab = 'vencidas';
@@ -1437,7 +1469,7 @@ function renderDashboard(){
   const byPessoa={};
   all.forEach(t=>{ byPessoa[t.responsavel]=(byPessoa[t.responsavel]||0)+1; });
   const maxP=Math.max(1,...Object.values(byPessoa));
-  const colors={Lorena:'#2f6cc4',Laryssa:'#2e7d52',Natália:'#7b34c1',Manuela:'#6b4fa3',Fabiano:'#d98a1f'};
+  const colors={Lorena:'#2f6cc4',Laryssa:'#2e7d52',Natália:'#7b34c1',Manuela:'#6b4fa3',Marcela:'#c44d8c',Jordan:'#2860b0',Fabiano:'#d98a1f'};
   document.getElementById('chart-pessoa').innerHTML=Object.entries(byPessoa).sort((a,b)=>b[1]-a[1]).map(([nome,cnt])=>`
 <div class="bar-row">
   <div class="bar-lbl">${nome}</div>
@@ -4001,6 +4033,315 @@ function selecionarRetroDropdown(id, nome, el){
   drop?.querySelectorAll('.drop-item').forEach(d=>d.classList.remove('active'));
   if(el) el.classList.add('active');
   previewRetroativo(id);
+}
+
+// ── PAINEL DE INDICADORES ─────────────────────────────────────────────
+
+function filtrarIndConcurso(){
+  const lista = [...new Set(_allTasks.map(t=>t.municipio))].sort();
+  const inp  = document.getElementById('ind-inp-concurso');
+  const drop = document.getElementById('drop-ind-concurso');
+  if(!drop) return;
+  const termo = (inp?.value||'').toLowerCase();
+  const filtrados = termo ? lista.filter(c=>c.toLowerCase().includes(termo)) : lista;
+  drop.innerHTML = '<div class="drop-item" onclick="selecionarIndConcurso(\'\',this)" style="color:#8a9ab5">Todos os concursos</div>' +
+    filtrados.slice(0,80).map(c=>`<div class="drop-item" onclick="selecionarIndConcurso('${c.replace(/'/g,"\\'")}',this)" title="${c}">${c}</div>`).join('');
+  drop.style.display='block';
+}
+
+function selecionarIndConcurso(valor, el){
+  const inp    = document.getElementById('ind-inp-concurso');
+  const hidden = document.getElementById('ind-fil-concurso');
+  const drop   = document.getElementById('drop-ind-concurso');
+  if(inp)    inp.value    = valor;
+  if(hidden) hidden.value = valor;
+  if(drop)   drop.style.display='none';
+  renderIndicadores();
+}
+
+document.addEventListener('click', e=>{
+  const indInp  = document.getElementById('ind-inp-concurso');
+  const indDrop = document.getElementById('drop-ind-concurso');
+  if(indDrop && indInp && !indInp.closest('.filter-group')?.contains(e.target))
+    indDrop.style.display='none';
+});
+
+function getIndTarefas(){
+  let tasks = [..._allTasks];
+  const pessoa   = document.getElementById('ind-fil-pessoa')?.value || '';
+  const concurso = document.getElementById('ind-fil-concurso')?.value || '';
+  if(pessoa)   tasks = tasks.filter(t=>t.responsavel===pessoa);
+  if(concurso) tasks = tasks.filter(t=>t.municipio===concurso);
+  return tasks;
+}
+
+function renderIndicadores(){
+  const el = document.getElementById('ind-content');
+  if(!el) return;
+  if(!_allTasks.length){
+    el.innerHTML='<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-title">Sem dados</div><div class="empty-desc">Carregue as tarefas primeiro.</div></div>';
+    return;
+  }
+
+  const tasks    = getIndTarefas();
+  const pessoas  = ['Lorena','Laryssa','Natália','Manuela','Jordan'];
+  const CORES    = {Lorena:'#2f6cc4',Laryssa:'#2e7d52',Natália:'#7b34c1',Manuela:'#6b4fa3',Jordan:'#2860b0'};
+  const hoje7    = new Date(TODAY); hoje7.setDate(hoje7.getDate()+7);
+  const hoje30   = new Date(TODAY); hoje30.setDate(hoje30.getDate()+30);
+
+  // ── 1. VISÃO DA EQUIPE ──────────────────────────────────────────────
+  const cardsPessoa = pessoas.map(p=>{
+    const pt   = tasks.filter(t=>t.responsavel===p);
+    const venc = pt.filter(t=>t.dias!==null&&t.dias<0).length;
+    const hj   = pt.filter(t=>t.dias===0).length;
+    const s7   = pt.filter(t=>t.dias!==null&&t.dias>=1&&t.dias<=7).length;
+    if(!pt.length) return '';
+    const cor = CORES[p]||'#2f6cc4';
+    // Calor dos próximos 7 dias
+    const calor = Array.from({length:7},(_,i)=>{
+      const d=new Date(TODAY); d.setDate(d.getDate()+i);
+      const dk=dateKey(d);
+      const cnt=pt.filter(t=>t.due&&dateKey(parseISO(t.due))===dk).length;
+      const bg=cnt===0?'#f0f3f7':cnt===1?'#b8d0ef':cnt===2?'#2f6cc4':'#c0322f';
+      const dias=['D','S','T','Q','Q','S','S'];
+      return `<div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+        <div style="width:28px;height:28px;border-radius:7px;background:${bg};display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:${cnt>0?'#fff':'#8a9ab5'}">${cnt||''}</div>
+        <div style="font-size:9px;color:#8a9ab5;font-weight:600">${dias[d.getDay()]}</div>
+      </div>`;
+    }).join('');
+    // Alerta sobrecarga
+    let sobreAlert='';
+    for(let i=0;i<7;i++){
+      const d=new Date(TODAY); d.setDate(d.getDate()+i);
+      const cnt=pt.filter(t=>t.due&&dateKey(parseISO(t.due))===dateKey(d)).length;
+      if(cnt>=3){ sobreAlert=`<div style="font-size:11px;color:#c0322f;margin-top:6px;font-weight:600">⚠️ ${cnt} tarefas em ${d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}</div>`; break; }
+    }
+    return `
+<div class="card card-pad" style="border-left:4px solid ${cor};flex:1;min-width:200px;max-width:280px">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+    <div style="width:36px;height:36px;border-radius:50%;background:${cor}20;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:${cor}">${p[0]}</div>
+    <div>
+      <div style="font-size:13.5px;font-weight:700;color:#1f2a3d">${p}</div>
+      <div style="font-size:11px;color:#8a9ab5">${pt.length} tarefas em aberto</div>
+    </div>
+    ${venc>0?`<span style="margin-left:auto;background:#fdeceb;color:#c0322f;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700">⚠️ ${venc} vencida${venc>1?'s':''}</span>`:''}
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
+    <div style="text-align:center;background:#fdeceb;border-radius:8px;padding:8px 4px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:#c0322f">${venc}</div>
+      <div style="font-size:10px;color:#c0322f;font-weight:600">Vencidas</div>
+    </div>
+    <div style="text-align:center;background:#fbf1de;border-radius:8px;padding:8px 4px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:#c9821a">${hj}</div>
+      <div style="font-size:10px;color:#c9821a;font-weight:600">Hoje</div>
+    </div>
+    <div style="text-align:center;background:#e9f1fb;border-radius:8px;padding:8px 4px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:#2f6cc4">${s7}</div>
+      <div style="font-size:10px;color:#2f6cc4;font-weight:600">7 dias</div>
+    </div>
+  </div>
+  <div>
+    <div style="font-size:10px;font-weight:700;color:#8a9ab5;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Próximos 7 dias</div>
+    <div style="display:flex;gap:4px">${calor}</div>
+    ${sobreAlert}
+  </div>
+</div>`;
+  }).filter(Boolean).join('');
+
+  // ── 2. VISÃO DOS CONCURSOS ─────────────────────────────────────────
+  // Agrupar por concurso
+  const porConc={};
+  tasks.forEach(t=>{ if(!porConc[t.municipio]) porConc[t.municipio]={total:0,venc:0,hoje:0,s7:0,prova:null}; const c=porConc[t.municipio]; c.total++; if(t.dias!==null&&t.dias<0)c.venc++; if(t.dias===0)c.hoje++; if(t.dias!==null&&t.dias>=1&&t.dias<=7)c.s7++; });
+
+  // Concursos com prova próxima (busca nas tarefas com "PROVA OBJETIVA")
+  const concProvas = tasks.filter(t=>(t.tarefa.toUpperCase()==='PROVA OBJETIVA'||t.tarefa.toUpperCase().startsWith('PROVA OBJETIVA E'))&&t.dias!==null&&t.dias>=0&&t.dias<=45)
+    .sort((a,b)=>a.dias-b.dias).slice(0,8);
+
+  const provasHTML = concProvas.length ? concProvas.map(t=>{
+    const urgente = t.dias<=7;
+    const bg = t.dias===0?'#fdeceb':t.dias<=7?'#fff8e6':'#f0f3f7';
+    const cor = t.dias===0?'#c0322f':t.dias<=7?'#a06c12':'#41506b';
+    return `<div style="display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid #eef1f6">
+      <div style="flex:none;width:44px;height:44px;border-radius:10px;background:${bg};display:flex;flex-direction:column;align-items:center;justify-content:center">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:800;color:${cor};line-height:1">${t.dias===0?'Hj':t.dias}</div>
+        ${t.dias>0?`<div style="font-size:8px;color:${cor};font-weight:700">dias</div>`:''}
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12.5px;font-weight:600;color:#1f2a3d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.municipio}</div>
+        <div style="font-size:11px;color:#8a9ab5;margin-top:1px">${t.data}</div>
+      </div>
+      ${urgente?`<span style="flex:none;background:#fdeceb;color:#c0322f;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px">⚡ Urgente</span>`:''}
+    </div>`;
+  }).join('') : '<div style="font-size:12.5px;color:#8a9ab5;padding:12px 0">Nenhuma prova nos próximos 45 dias.</div>';
+
+  // Concursos com vencidas
+  const concVenc = Object.entries(porConc).filter(([,v])=>v.venc>0).sort((a,b)=>b[1].venc-a[1].venc).slice(0,6);
+  const concVencHTML = concVenc.length ? concVenc.map(([nome,v])=>`
+<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #eef1f6">
+  <div style="flex:1;min-width:0;font-size:12.5px;font-weight:500;color:#1f2a3d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${nome}</div>
+  <span style="flex:none;background:#fdeceb;color:#c0322f;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px">${v.venc} vencida${v.venc>1?'s':''}</span>
+</div>`).join('') : '<div style="font-size:12.5px;color:#2e7d52;padding:12px 0">✅ Nenhum concurso com tarefas vencidas!</div>';
+
+  // Distribuição por tipo
+  const tipos={CONCURSO:0,PSS:0,GUARDA:0,OUTRO:0};
+  Object.keys(porConc).forEach(n=>{
+    const u=n.toUpperCase();
+    if(u.includes('CONCURSO')||u.includes('PÚBLICO')) tipos.CONCURSO++;
+    else if(u.includes('PSS')||u.includes('SELETIVO')) tipos.PSS++;
+    else if(u.includes('GCM')||u.includes('GUARDA')) tipos.GUARDA++;
+    else tipos.OUTRO++;
+  });
+  const totalTipos=Object.values(tipos).reduce((a,b)=>a+b,0)||1;
+  const tiposHTML=Object.entries(tipos).filter(([,v])=>v>0).map(([k,v])=>{
+    const pct=Math.round(v/totalTipos*100);
+    const cores={CONCURSO:'#2f6cc4',PSS:'#2e7d52',GUARDA:'#7b34c1',OUTRO:'#8a9ab5'};
+    return `<div style="display:flex;align-items:center;gap:10px;padding:6px 0">
+      <div style="width:10px;height:10px;border-radius:3px;background:${cores[k]};flex:none"></div>
+      <div style="flex:1;font-size:12.5px;color:#41506b">${k}</div>
+      <div style="font-size:12px;font-weight:700;color:#1f2a3d">${v}</div>
+      <div style="width:80px;height:8px;background:#eef1f6;border-radius:4px;overflow:hidden">
+        <div style="width:${pct}%;height:100%;background:${cores[k]};border-radius:4px"></div>
+      </div>
+      <div style="font-size:11px;color:#8a9ab5;width:30px;text-align:right">${pct}%</div>
+    </div>`;
+  }).join('');
+
+  // ── 3. VISÃO OPERACIONAL ───────────────────────────────────────────
+  const tasksOp = _allTasks.filter(t=>TAREFAS_OP_TITULOS.includes(t.tarefa.toUpperCase()));
+  const opPorConc={};
+  tasksOp.forEach(t=>{ if(!opPorConc[t.municipio])opPorConc[t.municipio]={total:0,atrasadas:0}; opPorConc[t.municipio].total++; if(t.dias!==null&&t.dias<0)opPorConc[t.municipio].atrasadas++; });
+  const opConcl = _concluidasSessao.filter(t=>TAREFAS_OP_TITULOS.includes(t.tarefa.toUpperCase()));
+  opConcl.forEach(t=>{ if(!opPorConc[t.municipio])opPorConc[t.municipio]={total:0,atrasadas:0,concl:0}; if(!opPorConc[t.municipio].concl)opPorConc[t.municipio].concl=0; opPorConc[t.municipio].concl++; });
+
+  const opHTML = Object.keys(opPorConc).length ? Object.entries(opPorConc).sort((a,b)=>a[0].localeCompare(b[0])).slice(0,8).map(([nome,v])=>{
+    const totalOp = (v.total||0)+(v.concl||0);
+    const concl   = v.concl||0;
+    const pct     = totalOp>0?Math.round(concl/totalOp*100):0;
+    const cor     = v.atrasadas>0?'#d93b3b':pct===100?'#2e7d52':'#2f6cc4';
+    return `<div style="padding:10px 0;border-bottom:1px solid #eef1f6">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:10px">
+        <div style="font-size:12.5px;font-weight:600;color:#1f2a3d;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">${nome}</div>
+        <div style="flex:none;font-size:11px;color:#8a9ab5">${concl}/${totalOp} · ${pct}%</div>
+        ${v.atrasadas?`<span style="flex:none;background:#fdeceb;color:#c0322f;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px">⚠️ ${v.atrasadas}</span>`:''}
+      </div>
+      <div style="height:6px;background:#eef1f6;border-radius:4px;overflow:hidden">
+        <div style="width:${pct}%;height:100%;background:${cor};border-radius:4px;transition:width .5s"></div>
+      </div>
+    </div>`;
+  }).join('') : '<div style="font-size:12.5px;color:#8a9ab5;padding:12px 0">Nenhum fluxo operacional em andamento.</div>';
+
+  // ── 4. VISÃO HISTÓRICA ─────────────────────────────────────────────
+  // Tarefas concluídas nas últimas 4 semanas (por sessão)
+  const semanas=['4 sem atrás','3 sem atrás','2 sem atrás','Semana atual'];
+  const conclPorSemana=[0,0,0,_concluidasSessao.length];
+  const maxConcl=Math.max(1,...conclPorSemana);
+  const historicoHTML=semanas.map((s,i)=>{
+    const v=conclPorSemana[i];
+    const pct=Math.round(v/maxConcl*100);
+    return `<div class="bar-row">
+      <div class="bar-lbl" style="text-align:right;width:100px;font-size:11px">${s}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${pct}%;background:#2f6cc4">
+          <span class="bar-num">${v||''}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // ── RENDERIZAR ─────────────────────────────────────────────────────
+  el.innerHTML = `
+<div id="ind-exportable">
+
+<!-- 1. EQUIPE -->
+<div style="margin-bottom:4px">
+  <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8a9ab5;margin-bottom:12px">👥 Visão da Equipe</div>
+  <div style="display:flex;flex-wrap:wrap;gap:14px">
+    ${cardsPessoa||'<div style="color:#8a9ab5;font-size:13px">Nenhum dado para o filtro selecionado.</div>'}
+  </div>
+</div>
+
+<!-- 2. CONCURSOS -->
+<div style="display:grid;grid-template-columns:1.4fr 1.2fr 0.8fr;gap:14px">
+  <div class="chart-wrap">
+    <div class="chart-title">🗓 Provas Próximas</div>
+    <div class="chart-sub">Próximos 45 dias</div>
+    ${provasHTML}
+  </div>
+  <div class="chart-wrap">
+    <div class="chart-title">⚠️ Atenção Necessária</div>
+    <div class="chart-sub">Concursos com tarefas vencidas</div>
+    ${concVencHTML}
+  </div>
+  <div class="chart-wrap">
+    <div class="chart-title">📊 Por Tipo de Certame</div>
+    <div class="chart-sub">${Object.keys(porConc).length} concursos ativos</div>
+    ${tiposHTML}
+  </div>
+</div>
+
+<!-- 3 e 4. OPERACIONAL + HISTÓRICO -->
+<div style="display:grid;grid-template-columns:1.5fr 1fr;gap:14px">
+  <div class="chart-wrap">
+    <div class="chart-title">⚙️ Fluxo Operacional</div>
+    <div class="chart-sub">Progresso das tarefas de aplicação por concurso</div>
+    ${opHTML}
+  </div>
+  <div class="chart-wrap">
+    <div class="chart-title">📈 Tarefas Concluídas</div>
+    <div class="chart-sub">Histórico por semana (sessão atual)</div>
+    <div class="bar-chart">${historicoHTML}</div>
+  </div>
+</div>
+
+</div>`;
+}
+
+function exportarIndicadoresPDF(){
+  const hoje = new Date().toLocaleDateString('pt-BR');
+  const filtPessoa   = document.getElementById('ind-fil-pessoa')?.value  || 'Toda a equipe';
+  const filtConcurso = document.getElementById('ind-fil-concurso')?.value || 'Todos os concursos';
+  const conteudo     = document.getElementById('ind-exportable')?.innerHTML || '';
+
+  const win = window.open('','_blank','width=1100,height=800');
+  if(!win){ alert('Permita pop-ups para exportar.'); return; }
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
+<title>Painel de Indicadores IBGP</title>
+<style>
+@page{margin:14mm;size:A4 landscape}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',sans-serif}
+body{background:#fff;color:#1f2a3d;font-size:12px}
+.header{display:flex;align-items:center;justify-content:space-between;padding-bottom:10px;border-bottom:2px solid #1f4e8c;margin-bottom:16px}
+.logo{width:40px;height:40px;object-fit:contain}
+.title{font-size:16px;font-weight:800;color:#1f2a3d}
+.meta{font-size:10px;color:#7a869c;text-align:right;line-height:1.6}
+.chart-wrap{background:#f7f9fc;border:1px solid #e2e7ef;border-radius:8px;padding:12px;margin-bottom:12px}
+.chart-title{font-size:12px;font-weight:700;margin-bottom:2px}
+.chart-sub{font-size:10px;color:#8a9ab5;margin-bottom:10px}
+.bar-chart{display:flex;flex-direction:column;gap:6px}
+.bar-row{display:flex;align-items:center;gap:8px}
+.bar-lbl{font-size:10px;color:#41506b;text-align:right;white-space:nowrap}
+.bar-track{flex:1;height:18px;background:#eef1f6;border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px}
+.bar-num{font-size:10px;font-weight:700;color:#fff}
+</style></head><body>
+<div class="header">
+  <div style="display:flex;align-items:center;gap:10px">
+    <img class="logo" src="https://raw.githubusercontent.com/manuela-sena/ibgp-minhas-tarefas/main/logo.png">
+    <div>
+      <div class="title">IBGP · Painel de Indicadores</div>
+      <div style="font-size:10px;color:#7a869c">Instituto Brasileiro de Gestão e Pesquisa · novo.ibgpconcursos.com.br</div>
+    </div>
+  </div>
+  <div class="meta">
+    Gerado em: ${hoje}<br>
+    Responsável: ${filtPessoa}<br>
+    Concurso: ${filtConcurso}
+  </div>
+</div>
+${conteudo}
+</body></html>`);
+  win.document.close();
+  win.onload = ()=>{ setTimeout(()=>win.print(), 400); };
 }
 
 // ── REFRESH ──────────────────────────────────────────────────────────
