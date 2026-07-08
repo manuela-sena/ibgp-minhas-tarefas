@@ -1010,7 +1010,8 @@ function abrirResultados(){
   const base = (typeof DADOS_INICIAIS!=='undefined' && DADOS_INICIAIS.appUrl)
     ? DADOS_INICIAIS.appUrl
     : 'https://ibgp-minhas-tarefas-jkdmypmipxemkvhh6c5vjv.streamlit.app';
-  window.open(base + '?page=resultados', '_blank');
+  const token = (typeof TOKEN !== 'undefined' && TOKEN) ? TOKEN : '';
+  window.open(base + '?page=resultados&sess_token=' + encodeURIComponent(token), '_blank');
 }
 
 // ── TABS ────────────────────────────────────────────────────────────
