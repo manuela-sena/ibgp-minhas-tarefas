@@ -112,151 +112,94 @@ logado_microsoft = "access_token" in st.session_state
 logado_local     = "local_user" in st.session_state
 
 if not logado_microsoft and not logado_local:
-    # Capturar login local via query param
-    if "login_u" in st.query_params and "login_p" in st.query_params:
-        u_input = st.query_params["login_u"]
-        p_input = st.query_params["login_p"]
-        st.query_params.clear()
-        usuario_encontrado = None
-        for u in USUARIOS:
-            if not u.get("ativo", True): continue
-            if u.get("auth_tipo") != "local": continue
-            nomes = [u.get("nome_interno","").lower()] + [a.lower() for a in u.get("aliases",[])]
-            if u_input.strip().lower() in nomes:
-                usuario_encontrado = u; break
-        if usuario_encontrado:
-            if usuario_encontrado.get("primeiro_acesso"):
-                st.session_state["primeiro_acesso_user"] = usuario_encontrado["nome_interno"]
-                if verificar_senha(p_input, usuario_encontrado.get("senha_hash","")):
-                    st.session_state["convite_ok"] = True
-                else:
-                    st.session_state["login_erro"] = "Código de convite incorreto."
-            elif verificar_senha(p_input, usuario_encontrado.get("senha_hash","")):
-                st.session_state["local_user"] = usuario_encontrado["nome_interno"]
-                st.rerun()
-            else:
-                st.session_state["login_erro"] = "Senha incorreta."
-        else:
-            st.session_state["login_erro"] = "Usuário não encontrado."
-        st.rerun()
-
-    if "nova_senha" in st.query_params and st.session_state.get("convite_ok"):
-        nome_alvo = st.session_state.get("primeiro_acesso_user","")
-        nova = st.query_params["nova_senha"]
-        st.query_params.clear()
-        if len(nova) < 6:
-            st.session_state["login_erro"] = "Senha deve ter pelo menos 6 caracteres."
-        else:
-            GH_TOKEN = st.secrets.get("GITHUB_TOKEN","")
-            for u2 in USUARIOS:
-                if u2.get("nome_interno") == nome_alvo:
-                    u2["senha_hash"] = hash_senha(nova)
-                    u2["primeiro_acesso"] = False
-            salvar_usuarios_github(USUARIOS, GH_TOKEN)
-            st.session_state["local_user"] = nome_alvo
-            st.session_state.pop("convite_ok", None)
-            st.session_state.pop("primeiro_acesso_user", None)
-        st.rerun()
-
     erro          = st.session_state.pop("login_erro", "")
     primeiro_acesso = st.session_state.get("convite_ok", False)
     primeiro_nome   = st.session_state.get("primeiro_acesso_user", "")
-    ms_url        = auth_url()
-    erro_html     = f'<div class="erro">{erro}</div>' if erro else ""
+
+    # CSS para esconder chrome do Streamlit e estilizar o login
+    st.markdown("""
+<style>
+header[data-testid="stHeader"]{display:none}
+footer{display:none}
+#MainMenu{display:none}
+[data-testid="stAppViewContainer"]{background:#eef1f6}
+.block-container{padding:2rem 1rem!important;max-width:440px!important;margin:0 auto}
+[data-testid="stForm"]{background:#fff;border-radius:20px!important;padding:2rem!important;box-shadow:0 8px 40px rgba(16,30,54,0.12)!important;border:none!important}
+.stTextInput input{border-radius:10px!important;border:1.5px solid #d7dde7!important;font-size:.9rem!important}
+.stTextInput input:focus{border-color:#1f4e8c!important;box-shadow:0 0 0 3px rgba(31,78,140,.1)!important}
+.stButton button{border-radius:10px!important;font-weight:600!important;width:100%!important}
+.stLinkButton a{border-radius:12px!important;font-weight:600!important;width:100%!important;background:#1f4e8c!important;color:#fff!important;border:none!important}
+div[data-testid="stFormSubmitButton"] button{background:#f4f6fa!important;color:#1f2a3d!important;border:1.5px solid #e2e7ef!important}
+div[data-testid="stFormSubmitButton"] button:hover{background:#eaecf2!important}
+.divider{display:flex;align-items:center;gap:.8rem;margin:1rem 0}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:#e2e7ef}
+.divider span{color:#b0bac8;font-size:.8rem;white-space:nowrap}
+</style>""", unsafe_allow_html=True)
+
+    # Logo e título
+    st.markdown(f"""
+<div style="text-align:center;padding:2rem 0 1rem">
+  <img src="https://raw.githubusercontent.com/manuela-sena/ibgp-minhas-tarefas/main/logo.png"
+       style="width:56px;height:56px;object-fit:contain;margin-bottom:1rem;display:block;margin-left:auto;margin-right:auto">
+  <h2 style="font-size:1.15rem;font-weight:700;color:#1f2a3d;margin-bottom:.3rem">IBGP · Minhas Tarefas</h2>
+  <p style="color:#7a869c;font-size:.85rem">Acesso restrito à equipe IBGP</p>
+</div>""", unsafe_allow_html=True)
+
+    if erro:
+        st.error(erro)
 
     if primeiro_acesso:
-        html_login = f"""<!DOCTYPE html><html><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-*{{box-sizing:border-box;margin:0;padding:0}}
-body{{background:#eef1f6;font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}}
-.card{{background:#fff;border-radius:20px;padding:2.5rem 2rem;width:100%;max-width:400px;box-shadow:0 8px 40px rgba(16,30,54,0.12)}}
-.logo{{width:52px;height:52px;object-fit:contain;display:block;margin:0 auto 1.2rem}}
-h1{{font-size:1.1rem;font-weight:700;color:#1f2a3d;text-align:center;margin-bottom:.3rem}}
-.sub{{color:#7a869c;font-size:.85rem;text-align:center;margin-bottom:1.8rem;line-height:1.5}}
-.field{{margin-bottom:.9rem}}
-label{{display:block;font-size:.8rem;font-weight:600;color:#41506b;margin-bottom:.4rem}}
-input{{width:100%;padding:.65rem .9rem;border:1.5px solid #d7dde7;border-radius:10px;font-size:.9rem;color:#1f2a3d;outline:none}}
-input:focus{{border-color:#1f4e8c;box-shadow:0 0 0 3px rgba(31,78,140,.1)}}
-.btn{{width:100%;padding:.75rem;background:#1f4e8c;color:#fff;border:none;border-radius:10px;font-size:.95rem;font-weight:600;cursor:pointer;margin-top:.5rem}}
-.btn:hover{{background:#1a4378}}
-.erro{{background:#fdeceb;color:#c0322f;border-radius:8px;padding:.6rem .9rem;font-size:.82rem;margin-bottom:1rem;font-weight:500}}
-</style></head><body>
-<div class="card">
-  <img class="logo" src="https://raw.githubusercontent.com/manuela-sena/ibgp-minhas-tarefas/main/logo.png">
-  <h1>Primeiro acesso</h1>
-  <p class="sub">Olá, <strong>{primeiro_nome}</strong>!<br>Defina sua senha para continuar.</p>
-  {erro_html}
-  <form onsubmit="definirSenha(event)">
-    <div class="field"><label>Nova senha</label><input id="ns" type="password" placeholder="Mínimo 6 caracteres" required></div>
-    <div class="field"><label>Confirmar senha</label><input id="cs" type="password" placeholder="Repita a senha" required></div>
-    <button class="btn" type="submit">✅ Definir senha e entrar</button>
-  </form>
-</div>
-<script>
-function definirSenha(e){{
-  e.preventDefault();
-  var ns=document.getElementById('ns').value;
-  var cs=document.getElementById('cs').value;
-  if(ns!==cs){{alert('As senhas não coincidem.');return;}}
-  window.top.location.href=window.top.location.origin+window.top.location.pathname+'?nova_senha='+encodeURIComponent(ns);
-}}
-</script></body></html>"""
+        st.info(f"Olá, **{primeiro_nome}**! É seu primeiro acesso. Defina uma senha.")
+        with st.form("form_nova_senha"):
+            nova = st.text_input("Nova senha", type="password", placeholder="Mínimo 6 caracteres")
+            conf = st.text_input("Confirmar senha", type="password", placeholder="Repita a senha")
+            if st.form_submit_button("✅ Definir senha e entrar", type="primary", use_container_width=True):
+                if nova != conf:
+                    st.session_state["login_erro"] = "As senhas não coincidem."
+                elif len(nova) < 6:
+                    st.session_state["login_erro"] = "Senha deve ter pelo menos 6 caracteres."
+                else:
+                    nome_alvo = st.session_state.get("primeiro_acesso_user","")
+                    GH_TOKEN = st.secrets.get("GITHUB_TOKEN","")
+                    for u2 in USUARIOS:
+                        if u2.get("nome_interno") == nome_alvo:
+                            u2["senha_hash"] = hash_senha(nova)
+                            u2["primeiro_acesso"] = False
+                    salvar_usuarios_github(USUARIOS, GH_TOKEN)
+                    st.session_state["local_user"] = nome_alvo
+                    st.session_state.pop("convite_ok", None)
+                    st.session_state.pop("primeiro_acesso_user", None)
+                    st.rerun()
     else:
-        html_login = f"""<!DOCTYPE html><html><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-*{{box-sizing:border-box;margin:0;padding:0}}
-body{{background:#eef1f6;font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}}
-.card{{background:#fff;border-radius:20px;padding:2.5rem 2rem;width:100%;max-width:400px;box-shadow:0 8px 40px rgba(16,30,54,0.12)}}
-.logo{{width:56px;height:56px;object-fit:contain;display:block;margin:0 auto 1.2rem}}
-h1{{font-size:1.1rem;font-weight:700;color:#1f2a3d;text-align:center;margin-bottom:.3rem}}
-.sub{{color:#7a869c;font-size:.85rem;text-align:center;margin-bottom:2rem}}
-.btn-ms{{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:.8rem;background:#1f4e8c;color:#fff;border:none;border-radius:12px;font-size:.95rem;font-weight:600;cursor:pointer;text-decoration:none;margin-bottom:1.2rem}}
-.btn-ms:hover{{background:#1a4378}}
-.divider{{display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem}}
-.divider::before,.divider::after{{content:'';flex:1;height:1px;background:#e2e7ef}}
-.divider span{{color:#b0bac8;font-size:.8rem;white-space:nowrap}}
-.field{{margin-bottom:.9rem}}
-label{{display:block;font-size:.8rem;font-weight:600;color:#41506b;margin-bottom:.4rem}}
-input{{width:100%;padding:.65rem .9rem;border:1.5px solid #d7dde7;border-radius:10px;font-size:.9rem;color:#1f2a3d;outline:none}}
-input:focus{{border-color:#1f4e8c;box-shadow:0 0 0 3px rgba(31,78,140,.1)}}
-.btn-local{{width:100%;padding:.72rem;background:#f4f6fa;color:#1f2a3d;border:1.5px solid #e2e7ef;border-radius:10px;font-size:.9rem;font-weight:600;cursor:pointer;margin-top:.3rem}}
-.btn-local:hover{{background:#eaecf2}}
-.erro{{background:#fdeceb;color:#c0322f;border-radius:8px;padding:.6rem .9rem;font-size:.82rem;margin-bottom:1rem;font-weight:500}}
-</style></head><body>
-<div class="card">
-  <img class="logo" src="https://raw.githubusercontent.com/manuela-sena/ibgp-minhas-tarefas/main/logo.png">
-  <h1>IBGP · Minhas Tarefas</h1>
-  <p class="sub">Acesso restrito à equipe IBGP</p>
-  <a class="btn-ms" href="{ms_url}">
-    <svg width="20" height="20" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
-      <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
-      <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
-      <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
-      <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
-    </svg>
-    Entrar com Microsoft
-  </a>
-  <div class="divider"><span>ou acesso com senha</span></div>
-  {erro_html}
-  <form onsubmit="loginLocal(event)">
-    <div class="field"><label>Usuário</label><input id="lu" type="text" placeholder="Seu usuário" autocomplete="username"></div>
-    <div class="field"><label>Senha</label><input id="lp" type="password" placeholder="Sua senha" autocomplete="current-password"></div>
-    <button class="btn-local" type="submit">Entrar com usuário e senha</button>
-  </form>
-</div>
-<script>
-function loginLocal(e){{
-  e.preventDefault();
-  var u=document.getElementById('lu').value.trim();
-  var p=document.getElementById('lp').value;
-  if(!u||!p){{alert('Preencha usuário e senha.');return;}}
-  window.top.location.href=window.top.location.origin+window.top.location.pathname+'?login_u='+encodeURIComponent(u)+'&login_p='+encodeURIComponent(p);
-}}
-</script></body></html>"""
+        # Botão Microsoft
+        st.link_button("  Entrar com Microsoft", auth_url(), use_container_width=True)
+        st.markdown('<div class="divider"><span>ou acesso com senha</span></div>', unsafe_allow_html=True)
 
-    components.html(html_login, height=600, scrolling=False)
+        with st.form("form_login_local"):
+            u_in = st.text_input("Usuário", placeholder="Seu usuário")
+            p_in = st.text_input("Senha", type="password", placeholder="Sua senha")
+            if st.form_submit_button("Entrar com usuário e senha", use_container_width=True):
+                usuario_encontrado = None
+                for u in USUARIOS:
+                    if not u.get("ativo", True): continue
+                    if u.get("auth_tipo") != "local": continue
+                    nomes = [u.get("nome_interno","").lower()] + [a.lower() for a in u.get("aliases",[])]
+                    if u_in.strip().lower() in nomes:
+                        usuario_encontrado = u; break
+                if not usuario_encontrado:
+                    st.session_state["login_erro"] = "Usuário não encontrado."
+                elif usuario_encontrado.get("primeiro_acesso"):
+                    if verificar_senha(p_in, usuario_encontrado.get("senha_hash","")):
+                        st.session_state["primeiro_acesso_user"] = usuario_encontrado["nome_interno"]
+                        st.session_state["convite_ok"] = True
+                    else:
+                        st.session_state["login_erro"] = "Código de convite incorreto."
+                elif verificar_senha(p_in, usuario_encontrado.get("senha_hash","")):
+                    st.session_state["local_user"] = usuario_encontrado["nome_interno"]
+                else:
+                    st.session_state["login_erro"] = "Senha incorreta."
+                st.rerun()
+
     st.stop()
 
 token = st.session_state.get("access_token", None)
