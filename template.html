@@ -4109,7 +4109,7 @@ function renderIndicadores(){
       if(cnt>=3){ sobreAlert=`<div style="font-size:11px;color:#c0322f;margin-top:6px;font-weight:600">⚠️ ${cnt} tarefas em ${d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}</div>`; break; }
     }
     return `
-<div class="card card-pad" style="border-left:4px solid ${cor}">
+<div class="card card-pad" style="border-left:4px solid ${cor};flex:1;min-width:200px;max-width:280px">
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
     <div style="width:36px;height:36px;border-radius:50%;background:${cor}20;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:${cor}">${p[0]}</div>
     <div>
@@ -4247,7 +4247,7 @@ function renderIndicadores(){
 <!-- 1. EQUIPE -->
 <div style="margin-bottom:4px">
   <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8a9ab5;margin-bottom:12px">👥 Visão da Equipe</div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,280px));gap:14px">
+  <div style="display:flex;flex-wrap:wrap;gap:14px">
     ${cardsPessoa||'<div style="color:#8a9ab5;font-size:13px">Nenhum dado para o filtro selecionado.</div>'}
   </div>
 </div>
