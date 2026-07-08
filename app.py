@@ -502,6 +502,7 @@ dados_iniciais = json.dumps({
     "usuariosMsg"  : usuarios_msg,
     "conviteGerado": convite_gerado,
     "ghToken"      : st.secrets.get("GITHUB_TOKEN","") if is_gestora else "",
+    "appUrl"       : REDIRECT_URI.rstrip('/'),
 })
 
 # ── PÁGINA DE RESULTADOS (fora do template HTML) ─────────────────────
