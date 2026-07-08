@@ -428,7 +428,10 @@ tr:hover td{background:#fafbfc}
 input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font:13px 'Public Sans',system-ui,sans-serif}
 
 /* ── LOADING / EMPTY ────────────────────────── */
-.loading{display:flex;align-items:center;justify-content:center;padding:52px;color:#8a9ab5;font-size:14px;gap:10px;flex-direction:column}
+.drop-item{padding:8px 12px;font-size:12.5px;cursor:pointer;color:#1f2a3d;border-bottom:1px solid #f0f3f7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drop-item:last-child{border-bottom:none}
+.drop-item:hover,.drop-item.selected{background:#f4f6fa}
+.drop-item.active{background:#e9f1fb;color:#1f4e8c;font-weight:600}
 .spinner{width:22px;height:22px;border:2px solid #e2e7ef;border-top-color:#2f6cc4;border-radius:50%;animation:spin .7s linear infinite}
 .empty-state{text-align:center;padding:40px 20px;color:#8a9ab5}
 .empty-icon{font-size:36px;margin-bottom:8px}
@@ -705,19 +708,31 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
             <option>Lorena</option><option>Laryssa</option><option>Natália</option><option>Manuela</option>
           </select>
         </div>
-        <div class="filter-group">
+        <div class="filter-group" style="position:relative">
           <div class="filter-lbl">
             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
             Concurso
           </div>
-          <select class="filter-select" id="sel-concurso" onchange="applyFilters()"><option value="">Todos os concursos</option></select>
+          <div style="position:relative">
+            <input id="inp-concurso" class="filter-select" type="text" placeholder="Buscar concurso..." autocomplete="off"
+              oninput="filtrarDropdown('concurso')" onfocus="abrirDropdown('concurso')" style="padding-right:28px">
+            <svg style="position:absolute;right:8px;top:50%;transform:translateY(-50%);pointer-events:none" width="12" height="12" fill="none" stroke="#9aa6b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div id="drop-concurso" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:500;background:#fff;border:1px solid #e2e7ef;border-radius:9px;box-shadow:0 8px 24px rgba(16,30,54,0.12);max-height:220px;overflow-y:auto;margin-top:2px"></div>
+          <input type="hidden" id="sel-concurso">
         </div>
-        <div class="filter-group">
+        <div class="filter-group" style="position:relative">
           <div class="filter-lbl">
             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-tasks"/></svg>
             Tarefa
           </div>
-          <select class="filter-select" id="sel-tarefa" onchange="applyFilters()"><option value="">Todas as tarefas</option></select>
+          <div style="position:relative">
+            <input id="inp-tarefa" class="filter-select" type="text" placeholder="Buscar tarefa..." autocomplete="off"
+              oninput="filtrarDropdown('tarefa')" onfocus="abrirDropdown('tarefa')" style="padding-right:28px">
+            <svg style="position:absolute;right:8px;top:50%;transform:translateY(-50%);pointer-events:none" width="12" height="12" fill="none" stroke="#9aa6b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div id="drop-tarefa" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:500;background:#fff;border:1px solid #e2e7ef;border-radius:9px;box-shadow:0 8px 24px rgba(16,30,54,0.12);max-height:220px;overflow-y:auto;margin-top:2px"></div>
+          <input type="hidden" id="sel-tarefa">
         </div>
         <div class="filter-actions">
           <button class="btn-clear" onclick="clearFilters()">
@@ -1083,12 +1098,12 @@ function loadTarefas(){
     return a.dias-b.dias;
   });
 
-  // Popular filtros
+  // Popular autocomplete de concursos e tarefas
   const concursos=[...new Set(_allTasks.map(t=>t.municipio))].sort();
   const tarefasUnicas=[...new Set(_allTasks.map(t=>t.tarefa))].sort();
-  const sc=document.getElementById('sel-concurso'), selTarefa=document.getElementById('sel-tarefa');
-  if(sc) sc.innerHTML='<option value="">Todos os concursos</option>'+concursos.map(c=>`<option>${c}</option>`).join('');
-  if(selTarefa) selTarefa.innerHTML='<option value="">Todas as tarefas</option>'+tarefasUnicas.map(t=>`<option>${t}</option>`).join('');
+  // Guardar listas globais para o autocomplete
+  window._listaConcursos = concursos;
+  window._listaTarefas = tarefasUnicas;
 
   if(typeof IS_GESTORA!=='undefined' && IS_GESTORA){
     const w=document.getElementById('filtro-pessoa-wrap');
@@ -1102,11 +1117,15 @@ function loadTarefas(){
 // ── FILTROS ──────────────────────────────────────────────────────────
 function clearFilters(){
   const sp=document.getElementById('sel-pessoa');
-  const sc=document.getElementById('sel-concurso');
-  const selTarefa=document.getElementById('sel-tarefa');
   if(sp) sp.value='';
-  if(sc) sc.value='';
-  if(selTarefa) selTarefa.value='';
+  // Limpar autocomplete concurso
+  const ic=document.getElementById('inp-concurso');
+  const sc=document.getElementById('sel-concurso');
+  if(ic) ic.value=''; if(sc) sc.value='';
+  // Limpar autocomplete tarefa
+  const it=document.getElementById('inp-tarefa');
+  const selTarefa=document.getElementById('sel-tarefa');
+  if(it) it.value=''; if(selTarefa) selTarefa.value='';
   applyFilters();
 }
 
@@ -3827,6 +3846,68 @@ function renderUsuariosMsgInicial(){
 }
 
 function renderCronResult(){ /* reservado para resultados vindos do Python */ }
+
+// ── AUTOCOMPLETE FILTROS ──────────────────────────────────────────────
+function abrirDropdown(tipo){
+  const lista = tipo==='concurso' ? (window._listaConcursos||[]) : (window._listaTarefas||[]);
+  const inp = document.getElementById('inp-'+tipo);
+  const drop = document.getElementById('drop-'+tipo);
+  if(!drop||!lista.length) return;
+  const termo = (inp?.value||'').toLowerCase();
+  renderDropdown(tipo, lista, termo);
+  drop.style.display='block';
+}
+
+function filtrarDropdown(tipo){
+  const lista = tipo==='concurso' ? (window._listaConcursos||[]) : (window._listaTarefas||[]);
+  const inp = document.getElementById('inp-'+tipo);
+  const hidden = document.getElementById('sel-'+tipo);
+  const termo = (inp?.value||'').toLowerCase();
+  // Se campo foi limpo, resetar filtro
+  if(!termo){ if(hidden) hidden.value=''; applyFilters(); }
+  renderDropdown(tipo, lista, termo);
+  document.getElementById('drop-'+tipo).style.display='block';
+}
+
+function renderDropdown(tipo, lista, termo){
+  const drop = document.getElementById('drop-'+tipo);
+  if(!drop) return;
+  const hidden = document.getElementById('sel-'+tipo);
+  const atual = hidden?.value||'';
+  const filtrados = termo ? lista.filter(i=>i.toLowerCase().includes(termo)) : lista;
+  if(!filtrados.length){
+    drop.innerHTML='<div class="drop-item" style="color:#8a9ab5;font-style:italic">Nenhum resultado</div>';
+    return;
+  }
+  drop.innerHTML = '<div class="drop-item" onclick="selecionarDropdown(\''+tipo+'\',\'\',this)" style="color:#8a9ab5">Todos</div>' +
+    filtrados.slice(0,100).map(item=>`
+<div class="drop-item ${item===atual?'active':''}" onclick="selecionarDropdown('${tipo}','${item.replace(/'/g,"\\'")}',this)"
+  title="${item}">${item}</div>`).join('');
+}
+
+function selecionarDropdown(tipo, valor, el){
+  const inp    = document.getElementById('inp-'+tipo);
+  const hidden = document.getElementById('sel-'+tipo);
+  const drop   = document.getElementById('drop-'+tipo);
+  if(inp)    inp.value    = valor;
+  if(hidden) hidden.value = valor;
+  if(drop)   drop.style.display='none';
+  // Destacar item ativo
+  drop?.querySelectorAll('.drop-item').forEach(d=>d.classList.remove('active'));
+  if(valor && el) el.classList.add('active');
+  applyFilters();
+}
+
+// Fechar dropdown ao clicar fora
+document.addEventListener('click', e=>{
+  ['concurso','tarefa'].forEach(tipo=>{
+    const wrap = document.getElementById('inp-'+tipo)?.closest('.filter-group');
+    if(wrap && !wrap.contains(e.target)){
+      const drop = document.getElementById('drop-'+tipo);
+      if(drop) drop.style.display='none';
+    }
+  });
+});
 
 // ── REFRESH ──────────────────────────────────────────────────────────
 async function refreshAll(){
