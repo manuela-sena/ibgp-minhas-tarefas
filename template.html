@@ -866,7 +866,13 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
       </div>
       <div class="card card-pad">
         <label class="form-label">Selecione o concurso</label>
-        <select class="filter-select" id="sel-reaj-concurso" onchange="loadReajusteTarefas()" style="max-width:480px"><option value="">Carregando...</option></select>
+        <div style="position:relative;max-width:480px">
+          <input id="inp-reaj-concurso" class="filter-select" type="text" placeholder="Buscar concurso..." autocomplete="off"
+            oninput="filtrarReajDropdown()" onfocus="filtrarReajDropdown()" style="width:100%;padding-right:28px">
+          <svg style="position:absolute;right:8px;top:50%;transform:translateY(-50%);pointer-events:none" width="12" height="12" fill="none" stroke="#9aa6b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          <div id="drop-reaj-concurso" style="display:none;position:absolute;left:0;right:0;z-index:500;background:#fff;border:1px solid #e2e7ef;border-radius:9px;box-shadow:0 8px 24px rgba(16,30,54,0.12);max-height:220px;overflow-y:auto;margin-top:2px"></div>
+          <input type="hidden" id="sel-reaj-concurso">
+        </div>
       </div>
       <div id="reajuste-tarefas"></div>
     </div>
@@ -1494,9 +1500,40 @@ function renderDashboard(){
 // ── REAJUSTE ─────────────────────────────────────────────────────────
 async function loadReajusteConcursos(){
   await getBuckets();
-  const sel=document.getElementById('sel-reaj-concurso');
-  const opts=Object.entries(_buckets).sort((a,b)=>a[1].localeCompare(b[1])).map(([id,nome])=>`<option value="${id}">${nome}</option>`).join('');
-  if(sel) sel.innerHTML='<option value="">Selecione um concurso...</option>'+opts;
+  window._reajBuckets = Object.entries(_buckets).sort((a,b)=>a[1].localeCompare(b[1]));
+  const inp = document.getElementById('inp-reaj-concurso');
+  if(inp) inp.placeholder = `Buscar entre ${window._reajBuckets.length} concursos...`;
+}
+
+function filtrarReajDropdown(){
+  const lista = window._reajBuckets||[];
+  const inp   = document.getElementById('inp-reaj-concurso');
+  const drop  = document.getElementById('drop-reaj-concurso');
+  if(!drop) return;
+  const termo = (inp?.value||'').toLowerCase();
+  const filtrados = termo ? lista.filter(([,n])=>n.toLowerCase().includes(termo)) : lista;
+  if(!filtrados.length){
+    drop.innerHTML='<div class="drop-item" style="color:#8a9ab5;font-style:italic">Nenhum resultado</div>';
+    drop.style.display='block'; return;
+  }
+  const hidden = document.getElementById('sel-reaj-concurso');
+  const atual  = hidden?.value||'';
+  drop.innerHTML = filtrados.slice(0,100).map(([id,nome])=>`
+<div class="drop-item ${id===atual?'active':''}" onclick="selecionarReajDropdown('${id}','${nome.replace(/'/g,"\\'")}',this)"
+  title="${nome}">${nome}</div>`).join('');
+  drop.style.display='block';
+}
+
+function selecionarReajDropdown(id, nome, el){
+  const inp    = document.getElementById('inp-reaj-concurso');
+  const hidden = document.getElementById('sel-reaj-concurso');
+  const drop   = document.getElementById('drop-reaj-concurso');
+  if(inp)    inp.value    = nome;
+  if(hidden) hidden.value = id;
+  if(drop)   drop.style.display='none';
+  drop?.querySelectorAll('.drop-item').forEach(d=>d.classList.remove('active'));
+  if(el) el.classList.add('active');
+  loadReajusteTarefas();
 }
 async function loadReajusteTarefas(){
   const bucketId=document.getElementById('sel-reaj-concurso')?.value; if(!bucketId) return;
@@ -3418,9 +3455,13 @@ async function abrirGeracaoRetroativa(){
 
   <div style="margin-bottom:16px">
     <label class="form-label">Concurso (bucket no Planner)</label>
-    <select id="retro-concurso" class="filter-select" onchange="previewRetroativo(this.value)">
-      <option value="">Carregando...</option>
-    </select>
+    <div style="position:relative">
+      <input id="inp-retro-concurso" class="filter-select" type="text" placeholder="Digite para buscar..." autocomplete="off"
+        oninput="filtrarRetroDropdown()" onfocus="filtrarRetroDropdown()" style="padding-right:28px">
+      <svg style="position:absolute;right:8px;top:50%;transform:translateY(-50%);pointer-events:none" width="12" height="12" fill="none" stroke="#9aa6b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div id="drop-retro-concurso" style="display:none;position:absolute;left:28px;right:28px;z-index:600;background:#fff;border:1px solid #e2e7ef;border-radius:9px;box-shadow:0 8px 24px rgba(16,30,54,0.12);max-height:220px;overflow-y:auto;margin-top:2px"></div>
+    <input type="hidden" id="retro-concurso">
   </div>
 
   <div id="retro-preview" style="min-height:60px"></div>
@@ -3440,9 +3481,9 @@ async function abrirGeracaoRetroativa(){
   try {
     await getBuckets();
     const sorted = Object.entries(_buckets).sort((a,b)=>a[1].localeCompare(b[1]));
-    const sel = document.getElementById('retro-concurso');
-    sel.innerHTML = '<option value="">Selecione um concurso...</option>' +
-      sorted.map(([id,nome])=>`<option value="${id}">${nome}</option>`).join('');
+    window._retroBuckets = sorted; // guardar para o autocomplete
+    const inp = document.getElementById('inp-retro-concurso');
+    if(inp) inp.placeholder = `Buscar entre ${sorted.length} concursos...`;
   } catch(e){
     document.getElementById('retro-preview').innerHTML = `<div style="color:#c0322f;font-size:12.5px">Erro ao carregar concursos: ${e.message}</div>`;
   }
@@ -3907,7 +3948,48 @@ document.addEventListener('click', e=>{
       if(drop) drop.style.display='none';
     }
   });
+  // Fechar dropdown retroativo
+  const retroInp = document.getElementById('inp-retro-concurso');
+  const retroDrop = document.getElementById('drop-retro-concurso');
+  if(retroDrop && retroInp && !retroInp.contains(e.target) && !retroDrop.contains(e.target))
+    retroDrop.style.display='none';
+  // Fechar dropdown reajuste
+  const reajInp  = document.getElementById('inp-reaj-concurso');
+  const reajDrop = document.getElementById('drop-reaj-concurso');
+  if(reajDrop && reajInp && !reajInp.closest('div')?.contains(e.target))
+    reajDrop.style.display='none';
 });
+
+function filtrarRetroDropdown(){
+  const lista = window._retroBuckets||[];
+  const inp   = document.getElementById('inp-retro-concurso');
+  const drop  = document.getElementById('drop-retro-concurso');
+  if(!drop) return;
+  const termo = (inp?.value||'').toLowerCase();
+  const filtrados = termo ? lista.filter(([,n])=>n.toLowerCase().includes(termo)) : lista;
+  if(!filtrados.length){
+    drop.innerHTML='<div class="drop-item" style="color:#8a9ab5;font-style:italic">Nenhum resultado</div>';
+    drop.style.display='block'; return;
+  }
+  const hidden = document.getElementById('retro-concurso');
+  const atual  = hidden?.value||'';
+  drop.innerHTML = filtrados.slice(0,100).map(([id,nome])=>`
+<div class="drop-item ${id===atual?'active':''}" onclick="selecionarRetroDropdown('${id}','${nome.replace(/'/g,"\\'")}',this)"
+  title="${nome}">${nome}</div>`).join('');
+  drop.style.display='block';
+}
+
+function selecionarRetroDropdown(id, nome, el){
+  const inp    = document.getElementById('inp-retro-concurso');
+  const hidden = document.getElementById('retro-concurso');
+  const drop   = document.getElementById('drop-retro-concurso');
+  if(inp)    inp.value    = nome;
+  if(hidden) hidden.value = id;
+  if(drop)   drop.style.display='none';
+  drop?.querySelectorAll('.drop-item').forEach(d=>d.classList.remove('active'));
+  if(el) el.classList.add('active');
+  previewRetroativo(id);
+}
 
 // ── REFRESH ──────────────────────────────────────────────────────────
 async function refreshAll(){
