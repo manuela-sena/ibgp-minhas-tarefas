@@ -4784,13 +4784,14 @@ function processarHomologacao(){
   const res=document.getElementById('homol-resultado');
   res.innerHTML='<div class="loading"><div class="spinner"></div>Processando...</div>';
   try{
-    // ── Ler CF: todas as abas, header na linha 2 (range:1) ──────────
+    // ── Ler CF: todas as abas, header na linha 2 ──────────────────
     let cfTodos=[];
     for(const nome of _homolCF.SheetNames){
       const rows=XLSX.utils.sheet_to_json(_homolCF.Sheets[nome],{range:1,defval:''});
-      // Normalizar nomes de colunas
       rows.forEach(r=>{
+        // Limpar chaves com \n e __EMPTY
         Object.keys(r).forEach(k=>{
+          if(k.includes('__EMPTY')){delete r[k];return;}
           const kn=k.replace(/\n/g,' ').trim();
           if(kn!==k){r[kn]=r[k];delete r[k];}
         });
@@ -4798,68 +4799,121 @@ function processarHomologacao(){
       cfTodos=cfTodos.concat(rows);
     }
 
-    // ── Ler Dados: header na linha 2 (range:1) ──────────────────────
+    // ── Ler Dados: header na linha 2 ─────────────────────────────
     let dadosTodos=[];
+    let colunasDados=[];
     for(const nome of _homolDados.SheetNames){
-      const rows=XLSX.utils.sheet_to_json(_homolDados.Sheets[nome],{range:1,defval:''});
+      const ws=_homolDados.Sheets[nome];
+      const rows=XLSX.utils.sheet_to_json(ws,{range:1,defval:''});
+      if(rows.length && !colunasDados.length){
+        colunasDados=Object.keys(rows[0]).filter(k=>!k.includes('__EMPTY'));
+      }
       dadosTodos=dadosTodos.concat(rows);
     }
 
     // Índice por inscrição
     const dadosIdx={};
     dadosTodos.forEach(r=>{
-      const insc=(r['INSCRIÇÃO']||r['INSCRICAO']||'').toString().trim();
+      const insc=(r['INSCRIÇÃO']||'').toString().trim();
       if(insc) dadosIdx[insc]=r;
     });
 
-    // ── Detectar coluna de classificação na CF ───────────────────────
-    const colClassCandidatos = Object.keys(cfTodos[0]||{}).find(k=>
-      k.toUpperCase().includes('CLASS') && k.toUpperCase().includes('AMPLA')
-    ) || 'CLASS.AMPLA';
+    // Detectar coluna de classificação na CF
+    const colClass=Object.keys(cfTodos[0]||{}).find(k=>
+      k.toUpperCase().replace(/\s/g,'').includes('CLASS') &&
+      k.toUpperCase().includes('AMPLA')
+    ) || Object.keys(cfTodos[0]||{}).find(k=>k.toUpperCase().includes('CLASS')) || 'CLASS.AMPLA';
 
-    // ── Montar AMPLA: todos da CF ────────────────────────────────────
+    // ── Montar registros com dados + classificação ─────────────────
     const cfComDados=cfTodos.map(cf=>{
       const insc=(cf['INSCRIÇÃO']||'').toString().trim();
       const dados=dadosIdx[insc]||{};
-      const classNum=parseInt((cf[colClassCandidatos]||'0').toString().replace(/\D/g,''))||9999;
-      const cargo=(cf['CARGO']||dados['CARGO']||'').toString().trim();
-      const cod=(cf['CÓDIGO']||dados['CÓDIGO']||dados['CODIGO']||cargo.split('-')[0]).toString().trim();
+      const classVal=(cf[colClass]||'').toString().trim();
+      const classNum=parseInt(classVal.replace(/\D/g,''))||9999;
+      const cargo=(dados['CARGO']||cf['CARGO']||'').toString().trim();
+      const cod=(dados['CÓDIGO']||dados['CODIGO']||cf['CÓDIGO']||cargo.split('-')[0]).toString().trim();
       const codNum=parseInt(cod)||9999;
-      return {...dados,...cf,
-        'CLASS.':cf[colClassCandidatos],
-        _classNum:classNum, _codNum:codNum,
-        _insc:insc, _cargo:cargo
-      };
+      return {_classNum:classNum,_codNum:codNum,_cargo:cargo,_insc:insc,_classVal:classVal,_dados:dados};
     });
 
-    // ── Função para montar e ordenar uma aba ────────────────────────
-    function montarAba(registros){
+    // ── Função para montar aba com colunas dos dados ───────────────
+    function montarSaida(registros){
       registros.sort((a,b)=>a._codNum-b._codNum||a._classNum-b._classNum);
-      // Renumerar por cargo
       let cargoAtual='',seq=0;
-      registros.forEach(r=>{
+      return registros.map(r=>{
         if(r._cargo!==cargoAtual){cargoAtual=r._cargo;seq=0;}
         seq++;
-        r['CLASS.']=seq;
-      });
-      return registros.map(r=>{
-        const c={...r};
-        delete c._classNum;delete c._codNum;delete c._insc;delete c._cargo;
-        return c;
+        const linha={'CLASS.':seq};
+        // Adicionar só colunas dos dados (exceto CLASS. original)
+        colunasDados.forEach(col=>{
+          if(col==='CLASS.') return;
+          linha[col]=r._dados[col]??'';
+        });
+        return linha;
       });
     }
 
     const wbOut=XLSX.utils.book_new();
     const resumo=[];
+    const colsSaida=['CLASS.',...colunasDados.filter(c=>c!=='CLASS.')];
 
-    // AMPLA
-    const ampla=montarAba([...cfComDados]);
-    if(ampla.length){
-      XLSX.utils.book_append_sheet(wbOut,XLSX.utils.json_to_sheet(ampla),'AMPLA');
-      resumo.push(`AMPLA: ${ampla.length}`);
+    // ── Função para criar aba formatada ───────────────────────────
+    function criarAba(nome,dados){
+      if(!dados.length) return;
+      const ws=XLSX.utils.json_to_sheet(dados,{header:colsSaida});
+
+      // Cabeçalho azul
+      const range=XLSX.utils.decode_range(ws['!ref']);
+      for(let c=range.s.c;c<=range.e.c;c++){
+        const addr=XLSX.utils.encode_cell({r:0,c});
+        if(!ws[addr]) ws[addr]={v:'',t:'s'};
+        ws[addr].s={
+          font:{bold:true,color:{rgb:'FFFFFF'},name:'Arial',sz:9},
+          fill:{fgColor:{rgb:'1F4E8C'},patternType:'solid'},
+          alignment:{horizontal:'center',vertical:'center',wrapText:true},
+          border:{top:{style:'thin',color:{rgb:'000000'}},bottom:{style:'thin',color:{rgb:'000000'}},left:{style:'thin',color:{rgb:'000000'}},right:{style:'thin',color:{rgb:'000000'}}}
+        };
+      }
+
+      // Dados com grade e alternância por cargo
+      const CORES=['DEEAF1','E2EFDA'];
+      let cargoAtual='',corIdx=0;
+      for(let r=1;r<=range.e.r;r++){
+        // Detectar cargo para alternar cor
+        const cargoCell=ws[XLSX.utils.encode_cell({r,c:colsSaida.indexOf('CARGO')})];
+        const cargoVal=cargoCell?cargoCell.v?.toString():'';
+        if(cargoVal&&cargoVal!==cargoAtual){cargoAtual=cargoVal;corIdx=(corIdx+1)%2;}
+        const cor=CORES[corIdx];
+
+        for(let c=range.s.c;c<=range.e.c;c++){
+          const addr=XLSX.utils.encode_cell({r,c});
+          if(!ws[addr]) ws[addr]={v:'',t:'s'};
+          ws[addr].s={
+            font:{name:'Arial',sz:9},
+            fill:{fgColor:{rgb:cor},patternType:'solid'},
+            alignment:{vertical:'center'},
+            border:{top:{style:'thin',color:{rgb:'000000'}},bottom:{style:'thin',color:{rgb:'000000'}},left:{style:'thin',color:{rgb:'000000'}},right:{style:'thin',color:{rgb:'000000'}}}
+          };
+        }
+      }
+
+      // Larguras de coluna
+      const larguras={
+        'CLASS.':8,'INSCRIÇÃO':12,'ID CANDIDATO':12,'CANDIDATO':35,
+        'CPF':15,'RG':12,'CANDIDATO':30,'EMAIL':30,'CARGO':40,'CÓDIGO':8,
+        'DATA NASCIMENTO':14,'CELULAR':14,'TELEFONE':14,'CONCURSO':40
+      };
+      ws['!cols']=colsSaida.map(c=>({wch:larguras[c]||14}));
+      ws['!freeze']={xSplit:0,ySplit:1};
+
+      XLSX.utils.book_append_sheet(wbOut,ws,nome);
+      resumo.push(`${nome}: ${dados.length}`);
     }
 
-    // Reservas baseadas nas colunas dos dados
+    // AMPLA
+    criarAba('AMPLA',montarSaida([...cfComDados]));
+
+    // Reservas
     const RESERVAS=[
       {aba:'PCD',        col:'CONCORRE VAGA DEFICIÊNCIA'},
       {aba:'PNP',        col:'CONCORRE VAGA NEGRO'},
@@ -4869,28 +4923,23 @@ function processarHomologacao(){
     ];
 
     RESERVAS.forEach(({aba,col})=>{
-      const filtrados=cfComDados.filter(r=>{
-        const v=(r[col]||'').toString().toUpperCase().trim();
-        return v==='SIM';
-      });
+      const filtrados=cfComDados.filter(r=>(r._dados[col]||'').toString().toUpperCase().trim()==='SIM');
       if(!filtrados.length) return;
-      const saida=montarAba([...filtrados]);
-      XLSX.utils.book_append_sheet(wbOut,XLSX.utils.json_to_sheet(saida),aba);
-      resumo.push(`${aba}: ${saida.length}`);
+      criarAba(aba,montarSaida([...filtrados]));
     });
 
     if(!wbOut.SheetNames.length){
-      res.innerHTML='<div style="color:#c0322f;padding:12px">Nenhum dado encontrado após o processamento.</div>';
+      res.innerHTML='<div style="color:#c0322f;padding:12px">Nenhum dado encontrado.</div>';
       return;
     }
 
     XLSX.writeFile(wbOut,'HOMOLOGACAO.xlsx');
     res.innerHTML=`<div style="background:#e4f3ea;border:1px solid #a8dbb8;border-radius:9px;padding:12px 16px;font-size:13px;color:#2e7d52;font-weight:600">
-      ✅ Homologação gerada e baixada!<br>
+      ✅ Homologação gerada!<br>
       <span style="font-weight:400;font-size:12px">${resumo.join(' · ')}</span>
     </div>`;
   }catch(e){
-    res.innerHTML=`<div style="color:#c0322f;padding:12px">Erro: ${e.message}<br><small>${e.stack}</small></div>`;
+    res.innerHTML=`<div style="color:#c0322f;padding:12px">Erro: ${e.message}</div>`;
   }
 }
 
