@@ -4817,23 +4817,29 @@ function processarInscricoes(){
           if(cods.length>=2) conjuntos.push(cods);
         });
 
-        const cancelar=new Set();
+        const cancelar=new Set();    // duplicatas no mesmo cargo → muda status para Cancelada
+        const retirar=new Set();     // mesma prova → só sai da alocação, status original mantido
         const groupBy=(arr,fn)=>arr.reduce((g,x)=>{const k=fn(x);(g[k]=g[k]||[]).push(x);return g;},{});
         todos.forEach(r=>{ r._dt=new Date(r['DATA INSCRICAO']||r['DATA INSCRIÇÃO']||0).getTime()||0; });
 
+        // Regra 1: duplicata no mesmo cargo → cancela
         const byCargoCpf=groupBy(todos,r=>`${(r['CPF']||'').replace(/\D/g,'')}__${(r['CÓDIGO']||r['CODIGO']||'').toString().trim()}`);
         Object.values(byCargoCpf).forEach(grp=>{
           const ativos=grp.filter(r=>STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase())).sort((a,b)=>a._dt-b._dt);
           ativos.slice(0,-1).forEach(r=>cancelar.add(r['INSCRIÇÃO']?.toString()));
         });
+
+        // Regra 2: conjuntos de mesma prova → apenas retira da alocação
         conjuntos.forEach(conj=>{
           const sub=todos.filter(r=>conj.includes((r['CÓDIGO']||r['CODIGO']||'').toString().trim()));
           const byCpf=groupBy(sub,r=>(r['CPF']||'').replace(/\D/g,''));
           Object.values(byCpf).forEach(grp=>{
             const ativos=grp.filter(r=>STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase())).sort((a,b)=>a._dt-b._dt);
-            ativos.slice(0,-1).forEach(r=>cancelar.add(r['INSCRIÇÃO']?.toString()));
+            ativos.slice(0,-1).forEach(r=>retirar.add(r['INSCRIÇÃO']?.toString()));
           });
         });
+
+        // Aplicar cancelamentos (só regra 1 muda o status)
         todos.forEach(r=>{if(cancelar.has(r['INSCRIÇÃO']?.toString())) r['STATUS']='Cancelada';});
         todos.sort((a,b)=>(a['CARGO']||'').localeCompare(b['CARGO']||'')||((a['INSCRIÇÃO']||0)-(b['INSCRIÇÃO']||0)));
 
@@ -4981,25 +4987,19 @@ function processarInscricoes(){
 
         // ── PLANILHA ALOCAÇÃO ──────────────────────────────────────────
         const wbAloc=new ExcelJS.Workbook();
-        const aloc=todos.filter(r=>STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase()));
-        // Todas as colunas da planilha original
+        // Alocação: pagos/deferidos, sem cancelados e sem retirados
+        const aloc=todos.filter(r=>
+          STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase()) &&
+          !retirar.has(r['INSCRIÇÃO']?.toString())
+        );
         const todasCols=Object.keys(todos[0]||{}).filter(k=>!k.startsWith('_'));
         await criarAbaAlocacao(wbAloc,'ALOCAÇÃO',todasCols,aloc);
 
-        // Aba RETIRADOS: candidatos removidos pela regra de conjuntos
-        if(conjuntos.length&&cancelar.size){
-          const retiradosRows=[];
-          conjuntos.forEach(conj=>{
-            todos.filter(r=>cancelar.has(r['INSCRIÇÃO']?.toString())&&conj.includes((r['CÓDIGO']||r['CODIGO']||'').toString().trim()))
-              .forEach(r=>{
-                const row={};
-                todasCols.forEach(c=>row[c]=r[c]||'');
-                row['CONJUNTO']=conj.join(', ');
-                retiradosRows.push(row);
-              });
-          });
+        // Aba RETIRADOS: candidatos retirados pela regra de conjuntos (status original mantido)
+        if(conjuntos.length&&retirar.size){
+          const retiradosRows=todos.filter(r=>retirar.has(r['INSCRIÇÃO']?.toString()));
           if(retiradosRows.length){
-            await criarAbaAlocacao(wbAloc,'RETIRADOS',[...todasCols,'CONJUNTO'],retiradosRows);
+            await criarAbaAlocacao(wbAloc,'RETIRADOS',todasCols,retiradosRows);
           }
         }
 
@@ -5023,12 +5023,14 @@ function processarInscricoes(){
         aAloc.click();
 
         const cancelados=todos.filter(r=>r['STATUS']==='Cancelada').length;
+        const retirados=retirar.size;
         document.getElementById('insc-preview-content').innerHTML=`
 <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:12px">
   ${[['Total',todos.length,'#41506b'],
      ['Pagos',todos.filter(r=>(r['STATUS']||'').toLowerCase()==='pago').length,'#2e7d52'],
      ['Deferidos',todos.filter(r=>['deferida','deferido'].includes((r['STATUS']||'').toLowerCase())).length,'#2f6cc4'],
      ['Cancelados',cancelados,'#c0322f'],
+     ['Retirados',retirados,'#a06c12'],
      ['Alocação',aloc.length,'#7b34c1']].map(([l,v,c])=>`
   <div style="text-align:center;background:#f7f9fc;border-radius:8px;padding:10px">
     <div style="font-size:22px;font-weight:800;color:${c}">${v}</div>
