@@ -725,37 +725,14 @@ html = html.replace('action="" target="_top"',
 
 components.html(html, height=900, scrolling=False)
 
-# ── LINKS DE NAVEGAÇÃO (fora do iframe, funcionam na mesma sessão) ────
-st.markdown("""
-<style>
-[data-testid="stChatInput"]{display:none!important}
-[data-testid="stBottom"]{display:none!important}
-.nav-resultados-wrap{
-  position:fixed;bottom:0;left:0;width:240px;
-  background:#1a2540;padding:8px 16px 16px;
-  border-top:1px solid #2a3a5c;z-index:9999
-}
-.nav-resultados-wrap a{
-  display:flex;align-items:center;gap:8px;
-  padding:8px 12px;border-radius:8px;
-  color:#c8d0e0!important;text-decoration:none;
-  font-size:13px;font-weight:500;
-  transition:background .15s
-}
-.nav-resultados-wrap a:hover{background:#2a3a5c;color:#fff!important}
-.nav-resultados-wrap .nav-section-lbl{
-  font-size:10px;font-weight:700;letter-spacing:.1em;
-  text-transform:uppercase;color:#4a5a7c;
-  padding:4px 12px;margin-bottom:2px
-}
-</style>
-<div class="nav-resultados-wrap">
-  <div class="nav-section-lbl">Resultados</div>
-  <a href="?nav=resultados" target="_top">
-    📄 Inscrições
-  </a>
-  <a href="?nav=homologacao" target="_top">
-    ✅ Homologação
-  </a>
-</div>
-""", unsafe_allow_html=True)
+# ── NAVEGAÇÃO RESULTADOS via sidebar nativo Streamlit ─────────────────
+st.markdown("<style>section[data-testid='stSidebar']{top:auto;bottom:0;height:auto;background:#1a2540;padding:8px 0}section[data-testid='stSidebar'] .stButton button{background:transparent;color:#c8d0e0;border:none;text-align:left;width:100%;font-size:13px;padding:8px 16px}section[data-testid='stSidebar'] .stButton button:hover{background:#2a3a5c;color:#fff}[data-testid='stChatInput'],[data-testid='stBottom']{display:none!important}</style>", unsafe_allow_html=True)
+
+with st.sidebar:
+    st.markdown('<div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:#4a5a7c;text-transform:uppercase;padding:4px 16px">Resultados</div>', unsafe_allow_html=True)
+    if st.button("📄 Inscrições", key="nav_inscricoes", use_container_width=True):
+        st.session_state["pagina"] = "resultados"
+        st.rerun()
+    if st.button("✅ Homologação", key="nav_homologacao", use_container_width=True):
+        st.session_state["pagina"] = "homologacao"
+        st.rerun()
