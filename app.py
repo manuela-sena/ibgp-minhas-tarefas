@@ -560,6 +560,10 @@ if _nav == "resultados":
     st.session_state["pagina"] = "resultados"
     st.query_params.clear()
     st.rerun()
+if _nav == "homologacao":
+    st.session_state["pagina"] = "homologacao"
+    st.query_params.clear()
+    st.rerun()
 
 # ── PÁGINA DE RESULTADOS ──────────────────────────────────────────────
 if st.session_state.get("pagina") == "resultados":
@@ -635,6 +639,70 @@ header[data-testid="stHeader"]{display:none}
                         st.dataframe(cancelados, use_container_width=True)
                 except Exception as e:
                     st.error(f"Erro: {e}")
+                    import traceback; st.code(traceback.format_exc())
+    st.stop()
+
+# ── PÁGINA DE HOMOLOGAÇÃO ─────────────────────────────────────────────
+if st.session_state.get("pagina") == "homologacao":
+    import sys
+    sys.path.insert(0, "/mount/src/ibgp-minhas-tarefas")
+    from gerar_homologacao import processar_homologacao
+
+    st.markdown("""
+<style>
+header[data-testid="stHeader"]{display:none}
+[data-testid="stAppViewContainer"]{background:#eef1f6}
+.block-container{padding:1.5rem 2rem!important}
+</style>""", unsafe_allow_html=True)
+
+    col_back, col_title = st.columns([1,8])
+    with col_back:
+        if st.button("← Voltar"):
+            st.session_state.pop("pagina", None)
+            st.rerun()
+    with col_title:
+        st.markdown("## 📋 Resultados · Homologação")
+
+    st.markdown("---")
+    st.markdown("Faça o upload dos dois arquivos para gerar a planilha de homologação automaticamente.")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("**1. Planilha de Classificação Final**")
+        arquivo_cf = st.file_uploader("Classificação Final (.xlsx)", type=["xlsx"], key="cf_upload")
+    with col2:
+        st.markdown("**2. Planilha de Dados Gerais dos Candidatos**")
+        arquivo_dados = st.file_uploader("Dados dos Candidatos (.xlsx)", type=["xlsx"], key="dados_upload")
+
+    if arquivo_cf and arquivo_dados:
+        st.info("✅ Ambos os arquivos carregados. Clique em **Gerar Homologação** para processar.")
+        if st.button("⚙️ Gerar Homologação", type="primary"):
+            with st.spinner("Processando... isso pode levar alguns segundos."):
+                try:
+                    bytes_cf    = arquivo_cf.read()
+                    bytes_dados = arquivo_dados.read()
+                    resultado   = processar_homologacao(bytes_dados, bytes_cf)
+
+                    # Verificar abas geradas
+                    import pandas as pd, io
+                    xl_check = pd.read_excel(io.BytesIO(resultado), sheet_name=None)
+                    resumo_abas = {aba: len(df) for aba, df in xl_check.items()}
+
+                    st.success("✅ Planilha de homologação gerada!")
+                    cols = st.columns(len(resumo_abas))
+                    for i, (aba, qtd) in enumerate(resumo_abas.items()):
+                        cols[i].metric(aba, f"{qtd} candidatos")
+
+                    nome_base = arquivo_cf.name.replace('.xlsx','').replace('CLASSIFICAÇÃO_FINAL','').replace('_BETIM','').strip('_- ')
+                    st.download_button(
+                        "📥 Baixar Planilha de Homologação",
+                        data=resultado,
+                        file_name=f"HOMOLOGACAO_{nome_base}.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        use_container_width=True
+                    )
+                except Exception as e:
+                    st.error(f"Erro ao processar: {e}")
                     import traceback; st.code(traceback.format_exc())
     st.stop()
 
