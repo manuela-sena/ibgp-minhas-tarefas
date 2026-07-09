@@ -5173,92 +5173,128 @@ function processarHomologacao(){
 
     const wbOut=XLSX.utils.book_new();
     const resumo=[];
-    const colsSaida=['CLASS.',...colunasDados.filter(c=>c!=='CLASS.')];
 
-    // Criar aba para cada reserva detectada
-    reservasDetectadas.forEach(({col,aba})=>{
-      // Filtrar candidatos que têm classificação nesta reserva
-      const candidatos=cfComDados.filter(r=>r._classes[aba]!==undefined);
-      if(!candidatos.length) return;
+    // Colunas relevantes para o cliente (ordem e seleção)
+    const COLS_HOMOL=['CLASS.','INSCRIÇÃO','CANDIDATO','CPF','DATA NASCIMENTO','CÓDIGO','CARGO','STATUS'];
+    const LARG_HOMOL={'CLASS.':7,'INSCRIÇÃO':12,'CANDIDATO':38,'CPF':14,'DATA NASCIMENTO':13,'CÓDIGO':8,'CARGO':45,'STATUS':12};
 
-      // Ordenar por cargo + classificação
-      candidatos.sort((a,b)=>a._codNum-b._codNum||(a._classes[aba]||9999)-(b._classes[aba]||9999));
+    // Usar ExcelJS para formatação profissional
+    carregarExcelJS(async()=>{
+      try{
+        const wb=new ExcelJS.Workbook();
+        const FONTE='Times New Roman';
+        const AZUL_ESC='FF1F3A6B';
+        const AZUL_MED='FF2E5BA8';
+        const CINZA_CAB='FFE8E8E8';
+        const BORDA={top:{style:'thin',color:{argb:'FF000000'}},bottom:{style:'thin',color:{argb:'FF000000'}},left:{style:'thin',color:{argb:'FF000000'}},right:{style:'thin',color:{argb:'FF000000'}}};
 
-      // Renumerar por cargo
-      let cargoAtual='',seq=0;
-      const saida=candidatos.map(r=>{
-        if(r._cargo!==cargoAtual){cargoAtual=r._cargo;seq=0;}
-        seq++;
-        const linha={'CLASS.':seq};
-        colunasDados.forEach(c=>{if(c!=='CLASS.') linha[c]=r._dados[c]??'';});
-        return linha;
-      });
+        // Cores alternadas por cargo
+        const COR_A='FFFFFFFF';  // branco
+        const COR_B='FFF0F4FF';  // azul muito claro
 
-      criarAba(aba,saida);
-    });
+        // Criar aba para cada reserva detectada
+        for(const {col,aba} of reservasDetectadas){
+          const candidatos=cfComDados.filter(r=>r._classes[aba]!==undefined);
+          if(!candidatos.length) continue;
 
-    function criarAba(nome,dados){
-      if(!dados.length) return;
-      const ws=XLSX.utils.json_to_sheet(dados,{header:colsSaida});
+          candidatos.sort((a,b)=>a._codNum-b._codNum||(a._classes[aba]||9999)-(b._classes[aba]||9999));
+          let cargoAtual='',seq=0;
+          const saida=candidatos.map(r=>{
+            if(r._cargo!==cargoAtual){cargoAtual=r._cargo;seq=0;}
+            seq++;
+            const d=r._dados;
+            return {
+              'CLASS.':seq,
+              'INSCRIÇÃO':r._insc,
+              'CANDIDATO':d['CANDIDATO']||'',
+              'CPF':d['CPF']||'',
+              'DATA NASCIMENTO':d['DATA NASCIMENTO']||d['DATA DE NASCIMENTO']||'',
+              'CÓDIGO':d['CÓDIGO']||d['CODIGO']||r._cargo.split('-')[0]||'',
+              'CARGO':r._cargo,
+              'STATUS':d['STATUS']||'',
+              '_cargo':r._cargo,
+            };
+          });
 
-      // Cabeçalho azul
-      const range=XLSX.utils.decode_range(ws['!ref']);
-      for(let c=range.s.c;c<=range.e.c;c++){
-        const addr=XLSX.utils.encode_cell({r:0,c});
-        if(!ws[addr]) ws[addr]={v:'',t:'s'};
-        ws[addr].s={
-          font:{bold:true,color:{rgb:'FFFFFF'},name:'Arial',sz:9},
-          fill:{fgColor:{rgb:'1F4E8C'},patternType:'solid'},
-          alignment:{horizontal:'center',vertical:'center',wrapText:true},
-          border:{top:{style:'thin',color:{rgb:'000000'}},bottom:{style:'thin',color:{rgb:'000000'}},left:{style:'thin',color:{rgb:'000000'}},right:{style:'thin',color:{rgb:'000000'}}}
-        };
-      }
+          const ws=wb.addWorksheet(aba);
 
-      // Dados com grade e alternância por cargo
-      const CORES=['DEEAF1','E2EFDA'];
-      let cargoAtual='',corIdx=0;
-      for(let r=1;r<=range.e.r;r++){
-        // Detectar cargo para alternar cor
-        const cargoCell=ws[XLSX.utils.encode_cell({r,c:colsSaida.indexOf('CARGO')})];
-        const cargoVal=cargoCell?cargoCell.v?.toString():'';
-        if(cargoVal&&cargoVal!==cargoAtual){cargoAtual=cargoVal;corIdx=(corIdx+1)%2;}
-        const cor=CORES[corIdx];
+          // Linha 1: título do concurso — azul escuro, branco, mesclado
+          const nomeConcurso=(cfTodos[0]?.['CONCURSO']||dadosTodos[0]?.['CONCURSO']||'CONCURSO').toString().trim();
+          ws.mergeCells(1,1,1,COLS_HOMOL.length);
+          const tCell=ws.getCell(1,1);
+          tCell.value=`${nomeConcurso}\n\nCLASSIFICAÇÃO PRELIMINAR - ${aba}`;
+          tCell.font={bold:true,color:{argb:'FFFFFFFF'},name:FONTE,size:11};
+          tCell.fill={type:'pattern',pattern:'solid',fgColor:{argb:AZUL_ESC}};
+          tCell.alignment={horizontal:'center',vertical:'middle',wrapText:true};
+          tCell.border=BORDA;
+          ws.getRow(1).height=60;
 
-        for(let c=range.s.c;c<=range.e.c;c++){
-          const addr=XLSX.utils.encode_cell({r,c});
-          if(!ws[addr]) ws[addr]={v:'',t:'s'};
-          ws[addr].s={
-            font:{name:'Arial',sz:9},
-            fill:{fgColor:{rgb:cor},patternType:'solid'},
-            alignment:{vertical:'center'},
-            border:{top:{style:'thin',color:{rgb:'000000'}},bottom:{style:'thin',color:{rgb:'000000'}},left:{style:'thin',color:{rgb:'000000'}},right:{style:'thin',color:{rgb:'000000'}}}
-          };
+          // Linha 2: cabeçalho — azul médio, branco
+          COLS_HOMOL.forEach((col,ci)=>{
+            const c=ws.getCell(2,ci+1);
+            c.value=col;
+            c.font={bold:true,color:{argb:'FFFFFFFF'},name:FONTE,size:9};
+            c.fill={type:'pattern',pattern:'solid',fgColor:{argb:AZUL_MED}};
+            c.alignment={horizontal:'center',vertical:'middle',wrapText:true};
+            c.border=BORDA;
+            ws.getColumn(ci+1).width=LARG_HOMOL[col]||14;
+          });
+          ws.getRow(2).height=25;
+
+          // Dados — alternância branco/azul claro por cargo
+          let cargoCorAtual='',corIdx=0;
+          saida.forEach((row,ri)=>{
+            if(row._cargo!==cargoCorAtual){cargoCorAtual=row._cargo;corIdx=(corIdx+1)%2;}
+            const cor=corIdx===0?COR_A:COR_B;
+            COLS_HOMOL.forEach((col,ci)=>{
+              const c=ws.getCell(ri+3,ci+1);
+              let val=row[col];
+              if(val===undefined||val===null||String(val)==='nan') val='';
+              // Formatar data nascimento
+              if(col==='DATA NASCIMENTO'&&val){
+                try{const d=new Date(val);if(!isNaN(d.getTime())) val=`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;}catch(e){}
+              }
+              c.value=col==='CLASS.'?(parseInt(val)||''):String(val);
+              c.font={name:FONTE,size:9};
+              c.fill={type:'pattern',pattern:'solid',fgColor:{argb:cor}};
+              c.alignment={vertical:'middle',horizontal:col==='CLASS.'||col==='CÓDIGO'?'center':'left'};
+              c.border=BORDA;
+            });
+            ws.getRow(ri+3).height=16;
+          });
+
+          // Linha separadora de cargos — bordas mais grossas entre grupos
+          let prev='';
+          saida.forEach((row,ri)=>{
+            if(ri>0&&row._cargo!==prev){
+              COLS_HOMOL.forEach((_,ci)=>{
+                const c=ws.getCell(ri+3,ci+1);
+                c.border={...BORDA,top:{style:'medium',color:{argb:'FF1F3A6B'}}};
+              });
+            }
+            prev=row._cargo;
+          });
+
+          ws.views=[{state:'frozen',xSplit:0,ySplit:2}];
+          resumo.push(`${aba}: ${saida.length}`);
         }
+
+        // Download
+        const bufH=await wb.xlsx.writeBuffer();
+        const blobH=new Blob([bufH],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+        const aH=document.createElement('a');
+        aH.href=URL.createObjectURL(blobH);
+        aH.download='HOMOLOGACAO.xlsx';
+        aH.click();
+
+        res.innerHTML=`<div style="background:#e4f3ea;border:1px solid #a8dbb8;border-radius:9px;padding:12px 16px;font-size:13px;color:#2e7d52;font-weight:600">
+          ✅ Homologação gerada!<br>
+          <span style="font-weight:400;font-size:12px">${resumo.join(' · ')}</span>
+        </div>`;
+      }catch(e){
+        res.innerHTML=`<div style="color:#c0322f;padding:12px">Erro: ${e.message}</div>`;
       }
-
-      // Larguras de coluna
-      const larguras={
-        'CLASS.':8,'INSCRIÇÃO':12,'ID CANDIDATO':12,'CANDIDATO':35,
-        'CPF':15,'RG':12,'CANDIDATO':30,'EMAIL':30,'CARGO':40,'CÓDIGO':8,
-        'DATA NASCIMENTO':14,'CELULAR':14,'TELEFONE':14,'CONCURSO':40
-      };
-      ws['!cols']=colsSaida.map(c=>({wch:larguras[c]||14}));
-      ws['!freeze']={xSplit:0,ySplit:1};
-
-      XLSX.utils.book_append_sheet(wbOut,ws,nome);
-      resumo.push(`${nome}: ${dados.length}`);
-    }
-
-    if(!wbOut.SheetNames.length){
-      res.innerHTML='<div style="color:#c0322f;padding:12px">Nenhum dado encontrado.</div>';
-      return;
-    }
-
-    XLSX.writeFile(wbOut,'HOMOLOGACAO.xlsx');
-    res.innerHTML=`<div style="background:#e4f3ea;border:1px solid #a8dbb8;border-radius:9px;padding:12px 16px;font-size:13px;color:#2e7d52;font-weight:600">
-      ✅ Homologação gerada!<br>
-      <span style="font-weight:400;font-size:12px">${resumo.join(' · ')}</span>
-    </div>`;
+    });
   }catch(e){
     res.innerHTML=`<div style="color:#c0322f;padding:12px">Erro: ${e.message}</div>`;
   }
