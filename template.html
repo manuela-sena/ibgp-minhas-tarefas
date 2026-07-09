@@ -3024,6 +3024,10 @@ function calcularTarefasOperacionais(cronograma, temDiscursiva){
     const A1 = addDiasUteis(fimInscricoes, 1);
     // A2: Receber arquivos → fim insc + 4du
     const A2 = addDiasUteis(fimInscricoes, 4);
+    // T1: Enviar arquivo de provas para impressão → fim insc + 4du (mesmo prazo A2)
+    const T1 = addDiasUteis(fimInscricoes, 4);
+    // L0: Envio de ofícios às escolas → início das inscrições
+    const L0 = new Date(fimInscricoes); // será substituído pela data de início
     // L1: Levantamento escolas → fim insc + 2du
     const L1 = addDiasUteis(fimInscricoes, 2);
     // L2: Alocação → L1 + 2du
@@ -3049,19 +3053,30 @@ function calcularTarefasOperacionais(cronograma, temDiscursiva){
       });
     }
 
+    // Buscar data de início das inscrições no cronograma
+    let iniInscricoes = null;
+    for(const t of cronograma){
+      if(t.atividade.toUpperCase().includes('PERÍODO DE INSCRIÇÕES')){
+        iniInscricoes = t.data_ini || t.data_fim;
+        break;
+      }
+    }
+
     tarefas.push(
-      {titulo:'SOLICITAR ARQUIVOS DE IMPRESSÃO À BANCA', resp:'Manuela', ini:A1,    fim:A1},
-      {titulo:'RECEBIMENTO DOS ARQUIVOS DE IMPRESSÃO',   resp:'Jordan',  ini:A1,    fim:A2},
-      {titulo:'LEVANTAMENTO DE ESCOLAS PARA APLICAÇÃO',  resp:'Laryssa', ini:proxUtilApos(fimInscricoes), fim:L1},
-      {titulo:'ALOCAÇÃO DE CANDIDATOS POR ESCOLA',       resp:'Laryssa', ini:proxUtilApos(L1),            fim:L2},
-      {titulo:'IMPRESSÃO DAS PROVAS',                    resp:'Jordan',  ini:J1ini,  fim:J1fim},
-      {titulo:'IMPRESSÃO DA PAPELARIA DE APLICAÇÃO',     resp:'Jordan',  ini:J2ini,  fim:J2fim},
-      {titulo:'EMPACOTAMENTO (PROVAS + PAPELARIA)',      resp:'Jordan',  ini:J3ini,  fim:J3fim},
-      {titulo:'MONTAGEM DAS CAIXAS DE MATERIAL POR ESCOLA',resp:'Jordan',ini:J4ini,  fim:J4fim},
-      {titulo:'MONTAGEM DAS PASTAS DO COORDENADOR',      resp:'Jordan',  ini:J4ini,  fim:J4fim},
-      {titulo:'ESCANEAMENTO DAS FOLHAS DE RESPOSTA',     resp:'Jordan',  ini:addDays(dataProva,1), fim:terca},
-      {titulo:'ESCANEAMENTO DAS ATAS DE APLICAÇÃO',      resp:'Jordan',  ini:addDays(dataProva,1), fim:terca},
-      {titulo:'LEITURA DAS FOLHAS E GERAÇÃO DO RESULTADO',resp:'Natália',ini:proxUtilApos(terca),  fim:aposEsc},
+      {titulo:'ENVIO DE OFÍCIOS ÀS ESCOLAS',                resp:'Laryssa', ini:iniInscricoes||fimInscricoes, fim:iniInscricoes||fimInscricoes},
+      {titulo:'SOLICITAR ARQUIVOS DE IMPRESSÃO À BANCA',    resp:'Manuela', ini:A1,    fim:A1},
+      {titulo:'RECEBIMENTO DOS ARQUIVOS DE IMPRESSÃO',       resp:'Jordan',  ini:A1,    fim:A2},
+      {titulo:'ENVIAR ARQUIVO DE PROVAS PARA IMPRESSÃO',    resp:'Tiago',   ini:A1,    fim:T1},
+      {titulo:'LEVANTAMENTO DE ESCOLAS PARA APLICAÇÃO',     resp:'Laryssa', ini:proxUtilApos(fimInscricoes), fim:L1},
+      {titulo:'ALOCAÇÃO DE CANDIDATOS POR ESCOLA',          resp:'Laryssa', ini:proxUtilApos(L1),            fim:L2},
+      {titulo:'IMPRESSÃO DAS PROVAS',                       resp:'Jordan',  ini:J1ini,  fim:J1fim},
+      {titulo:'IMPRESSÃO DA PAPELARIA DE APLICAÇÃO',        resp:'Jordan',  ini:J2ini,  fim:J2fim},
+      {titulo:'EMPACOTAMENTO (PROVAS + PAPELARIA)',         resp:'Jordan',  ini:J3ini,  fim:J3fim},
+      {titulo:'MONTAGEM DAS CAIXAS DE MATERIAL POR ESCOLA', resp:'Jordan',  ini:J4ini,  fim:J4fim},
+      {titulo:'MONTAGEM DAS PASTAS DO COORDENADOR',         resp:'Jordan',  ini:J4ini,  fim:J4fim},
+      {titulo:'ESCANEAMENTO DAS FOLHAS DE RESPOSTA',        resp:'Jordan',  ini:addDays(dataProva,1), fim:terca},
+      {titulo:'ESCANEAMENTO DAS ATAS DE APLICAÇÃO',         resp:'Jordan',  ini:addDays(dataProva,1), fim:terca},
+      {titulo:'LEITURA DAS FOLHAS E GERAÇÃO DO RESULTADO',  resp:'Natália', ini:proxUtilApos(terca),  fim:aposEsc},
     );
   }
 
@@ -3395,8 +3410,10 @@ function exportarPDF(){
 
 // ── PLANEJAMENTOS ─────────────────────────────────────────────────────
 const TAREFAS_OP_TITULOS = [
+  'ENVIO DE OFÍCIOS ÀS ESCOLAS',
   'SOLICITAR ARQUIVOS DE IMPRESSÃO À BANCA',
   'RECEBIMENTO DOS ARQUIVOS DE IMPRESSÃO',
+  'ENVIAR ARQUIVO DE PROVAS PARA IMPRESSÃO',
   'LEVANTAMENTO DE ESCOLAS PARA APLICAÇÃO',
   'ALOCAÇÃO DE CANDIDATOS POR ESCOLA',
   'IMPRESSÃO DAS PROVAS',
@@ -3412,20 +3429,22 @@ const TAREFAS_OP_TITULOS = [
 ];
 
 const TAREFAS_OP_RESP = {
-  'SOLICITAR ARQUIVOS DE IMPRESSÃO À BANCA':    'Manuela',
-  'RECEBIMENTO DOS ARQUIVOS DE IMPRESSÃO':       'Jordan',
-  'LEVANTAMENTO DE ESCOLAS PARA APLICAÇÃO':      'Laryssa',
-  'ALOCAÇÃO DE CANDIDATOS POR ESCOLA':           'Laryssa',
-  'IMPRESSÃO DAS PROVAS':                        'Jordan',
-  'IMPRESSÃO DA PAPELARIA DE APLICAÇÃO':         'Jordan',
-  'EMPACOTAMENTO (PROVAS + PAPELARIA)':          'Jordan',
-  'MONTAGEM DAS CAIXAS DE MATERIAL POR ESCOLA':  'Jordan',
-  'MONTAGEM DAS PASTAS DO COORDENADOR':          'Jordan',
-  'ESCANEAMENTO DAS FOLHAS DE RESPOSTA':         'Jordan',
-  'ESCANEAMENTO DAS ATAS DE APLICAÇÃO':          'Jordan',
-  'LEITURA DAS FOLHAS E GERAÇÃO DO RESULTADO':   'Natália',
-  'SEPARAÇÃO DAS PROVAS DISCURSIVAS PARA CORREÇÃO':'Natália',
-  'ENVIO DAS PROVAS DISCURSIVAS PARA A BANCA':   'Natália',
+  'ENVIO DE OFÍCIOS ÀS ESCOLAS':                  'Laryssa',
+  'SOLICITAR ARQUIVOS DE IMPRESSÃO À BANCA':       'Manuela',
+  'RECEBIMENTO DOS ARQUIVOS DE IMPRESSÃO':          'Jordan',
+  'ENVIAR ARQUIVO DE PROVAS PARA IMPRESSÃO':        'Tiago',
+  'LEVANTAMENTO DE ESCOLAS PARA APLICAÇÃO':         'Laryssa',
+  'ALOCAÇÃO DE CANDIDATOS POR ESCOLA':              'Laryssa',
+  'IMPRESSÃO DAS PROVAS':                           'Jordan',
+  'IMPRESSÃO DA PAPELARIA DE APLICAÇÃO':            'Jordan',
+  'EMPACOTAMENTO (PROVAS + PAPELARIA)':             'Jordan',
+  'MONTAGEM DAS CAIXAS DE MATERIAL POR ESCOLA':     'Jordan',
+  'MONTAGEM DAS PASTAS DO COORDENADOR':             'Jordan',
+  'ESCANEAMENTO DAS FOLHAS DE RESPOSTA':            'Jordan',
+  'ESCANEAMENTO DAS ATAS DE APLICAÇÃO':             'Jordan',
+  'LEITURA DAS FOLHAS E GERAÇÃO DO RESULTADO':      'Natália',
+  'SEPARAÇÃO DAS PROVAS DISCURSIVAS PARA CORREÇÃO': 'Natália',
+  'ENVIO DAS PROVAS DISCURSIVAS PARA A BANCA':      'Natália',
 };
 
 const RESP_COLORS = {
