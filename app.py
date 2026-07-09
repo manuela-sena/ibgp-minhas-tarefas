@@ -726,6 +726,7 @@ header[data-testid="stHeader"]{display:none}
     st.stop()
 
 
+# v2026.07.09-inscricoes
 # ── LER E INJETAR TEMPLATE ────────────────────────────────────────────
 with open("/mount/src/ibgp-minhas-tarefas/template.html", "r", encoding="utf-8") as f:
     html = f.read()
