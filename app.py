@@ -569,7 +569,7 @@ if _nav == "homologacao":
 if st.session_state.get("pagina") == "resultados":
     import sys
     sys.path.insert(0, "/mount/src/ibgp-minhas-tarefas")
-    from processar_inscricoes import processar, df_para_xlsx
+    from processar_inscricoes import processar
 
     st.markdown("""
 <style>
@@ -590,9 +590,22 @@ header[data-testid="stHeader"]{display:none}
     arquivo = st.file_uploader("Selecione o relatório geral (.xlsx)", type=["xlsx"])
 
     if arquivo:
-        st.markdown("### Cargos com mesma prova *(opcional)*")
-        st.caption("Configure conjuntos de cargos cujos candidatos farão a mesma prova. Ex: 314 e 315 na mesma linha.")
+        # Detectar processos disponíveis
+        import pandas as pd
+        df_prev = pd.read_excel(arquivo, header=1, dtype=str, nrows=5000)
+        df_prev.columns = [c.strip() for c in df_prev.columns]
+        col_proc = next((c for c in df_prev.columns if any(x in c.upper() for x in ['CONCURSO','EDITAL','PROCESSO'])), None)
+        arquivo.seek(0)
 
+        processo_sel = None
+        if col_proc:
+            processos = sorted(df_prev[col_proc].dropna().str.strip().unique().tolist())
+            processo_sel = st.selectbox("Selecione o processo", [''] + processos, format_func=lambda x: 'Selecione...' if x=='' else x)
+            if not processo_sel:
+                st.warning("Selecione um processo para continuar.")
+                st.stop()
+
+        st.markdown("### Cargos com mesma prova *(opcional)*")
         n_conjuntos = st.number_input("Quantos conjuntos?", min_value=0, max_value=20, value=0, step=1)
         conjuntos = []
         for i in range(int(n_conjuntos)):
@@ -602,41 +615,47 @@ header[data-testid="stHeader"]{display:none}
                 if len(cods) >= 2:
                     conjuntos.append(cods)
 
-        if st.button("⚙️ Processar planilha", type="primary"):
+        if st.button("⚙️ Processar", type="primary"):
             with st.spinner("Processando..."):
                 try:
                     dados = arquivo.read()
-                    df_res, df_aloc, resumo = processar(dados, conjuntos_mesma_prova=conjuntos if conjuntos else None)
+                    buf_res, buf_aloc, resumo = processar(
+                        dados,
+                        conjuntos_mesma_prova=conjuntos if conjuntos else None,
+                        processo=processo_sel or None
+                    )
                     st.success(f"✅ {resumo['total']} inscrições processadas!")
 
-                    c1,c2,c3,c4,c5,c6,c7 = st.columns(7)
-                    c1.metric("Total",         resumo['total'])
-                    c2.metric("Pagos",         resumo['pagos'])
-                    c3.metric("Deferidos",     resumo['deferidos'])
-                    c4.metric("Pendentes",     resumo['pendentes'])
-                    c5.metric("Indeferidos",   resumo['indeferidos'])
-                    c6.metric("Cancelados",    resumo['cancelados'])
-                    c7.metric("Para alocação", resumo['total_alocacao'])
+                    cols = st.columns(7)
+                    for col, (k,l) in zip(cols, [
+                        ('total','Total'),('pagos','Pagos'),('deferidos','Deferidos'),
+                        ('pendentes','Pendentes'),('indeferidos','Indeferidos'),
+                        ('cancelados','Cancelados'),('total_alocacao','Alocação')
+                    ]):
+                        col.metric(l, resumo[k])
 
-                    st.markdown("---")
-                    nome_base = arquivo.name.replace('.xlsx','').replace('.XLSX','')
-                    col_d1, col_d2 = st.columns(2)
-                    with col_d1:
-                        st.download_button("📥 Planilha de Resultado", data=df_para_xlsx(df_res,"Resultado"),
-                            file_name=f"{nome_base}_RESULTADO.xlsx",
-                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                            use_container_width=True)
-                        st.caption(f"{len(df_res)} candidatos · todos os status")
-                    with col_d2:
-                        st.download_button("📥 Planilha de Alocação", data=df_para_xlsx(df_aloc,"Alocação"),
-                            file_name=f"{nome_base}_ALOCACAO.xlsx",
-                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                            use_container_width=True)
-                        st.caption(f"{len(df_aloc)} candidatos · somente Pagos e Deferidos")
+                    st.markdown(f"**Abas geradas:** {', '.join(resumo['abas_resultado'])}")
 
-                    with st.expander("👁 Cancelamentos gerados"):
-                        cancelados = df_res[df_res['STATUS']=='Cancelada'][['INSCRIÇÃO','CPF','CANDIDATO','CÓDIGO','CARGO','STATUS','DATA INSCRIÇÃO']]
-                        st.dataframe(cancelados, use_container_width=True)
+                    nome_base = (processo_sel or 'RESULTADO').replace('/','_').replace(' ','_')[:50]
+                    c1, c2 = st.columns(2)
+                    with c1:
+                        st.download_button(
+                            "📥 Resultado das Inscrições",
+                            data=buf_res,
+                            file_name=f"RESULTADO_{nome_base}.xlsx",
+                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            use_container_width=True
+                        )
+                        st.caption("Abas: AMPLA, PCD, PNP, COND.ESPECIAL")
+                    with c2:
+                        st.download_button(
+                            "📥 Planilha de Alocação",
+                            data=buf_aloc,
+                            file_name=f"ALOCACAO_{nome_base}.xlsx",
+                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            use_container_width=True
+                        )
+                        st.caption("Abas: ALOCAÇÃO" + (" + CANCELADOS CONJUNTO" if conjuntos else ""))
                 except Exception as e:
                     st.error(f"Erro: {e}")
                     import traceback; st.code(traceback.format_exc())
