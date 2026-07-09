@@ -4892,7 +4892,7 @@ function processarInscricoes(){
               const c=ws.getCell(ri+3,ci+1);
               let val=row[col];
               if(val===undefined||val===null||String(val)==='nan') val='';
-              if((col.includes('DATA')||col.includes('NASC'))&&val&&val!=='-') val=fmtData(val);
+              if((col.includes('NASC'))&&val&&val!=='-') val=fmtData(val);
               c.value=String(val);
               c.font={name:FONTE,size:9};
               c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
