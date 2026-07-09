@@ -4856,12 +4856,13 @@ function processarInscricoes(){
           if(!dados.length) return;
           const ws=wb.addWorksheet(nomeAba);
           const bordaThin={top:{style:'thin',color:{argb:'FF000000'}},bottom:{style:'thin',color:{argb:'FF000000'}},left:{style:'thin',color:{argb:'FF000000'}},right:{style:'thin',color:{argb:'FF000000'}}};
+          const FONTE='Times New Roman';
 
           // Linha 1: título — branca, letra preta, negrito, altura 80
           ws.mergeCells(1,1,1,cols.length);
           const tCell=ws.getCell(1,1);
           tCell.value=`${nomeConcurso}\n\nRESULTADO PRELIMINAR DAS INSCRIÇÕES - ${titulo}`;
-          tCell.font={bold:true,color:{argb:'FF000000'},name:'Arial',size:10};
+          tCell.font={bold:true,color:{argb:'FF000000'},name:FONTE,size:10};
           tCell.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
           tCell.alignment={horizontal:'center',vertical:'middle',wrapText:true};
           tCell.border=bordaThin;
@@ -4871,7 +4872,7 @@ function processarInscricoes(){
           cols.forEach((col,ci)=>{
             const c=ws.getCell(2,ci+1);
             c.value=col;
-            c.font={bold:true,color:{argb:'FF000000'},name:'Arial',size:9};
+            c.font={bold:true,color:{argb:'FF000000'},name:FONTE,size:9};
             c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFD9D9D9'}};
             c.alignment={horizontal:'center',vertical:'middle',wrapText:true};
             c.border=bordaThin;
@@ -4887,7 +4888,7 @@ function processarInscricoes(){
               if(val===undefined||val===null||String(val)==='nan') val='';
               if((col.includes('DATA')||col.includes('NASC'))&&val&&val!=='-') val=fmtData(val);
               c.value=String(val);
-              c.font={name:'Arial',size:9};
+              c.font={name:FONTE,size:9};
               c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
               c.alignment={vertical:'middle'};
               c.border=bordaThin;
@@ -4895,6 +4896,42 @@ function processarInscricoes(){
             ws.getRow(ri+3).height=30;
           });
           ws.views=[{state:'frozen',xSplit:0,ySplit:2}];
+        }
+
+        // Aba de alocação: todas as colunas, sem formatação especial (igual planilha geral)
+        async function criarAbaAlocacao(wb, nomeAba, todasCols, dados){
+          if(!dados.length) return;
+          const ws=wb.addWorksheet(nomeAba);
+          const bordaThin={top:{style:'thin',color:{argb:'FF000000'}},bottom:{style:'thin',color:{argb:'FF000000'}},left:{style:'thin',color:{argb:'FF000000'}},right:{style:'thin',color:{argb:'FF000000'}}};
+          const FONTE='Times New Roman';
+
+          // Cabeçalho na linha 1 (sem título)
+          todasCols.forEach((col,ci)=>{
+            const c=ws.getCell(1,ci+1);
+            c.value=col;
+            c.font={bold:true,color:{argb:'FF000000'},name:FONTE,size:9};
+            c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFD9D9D9'}};
+            c.alignment={horizontal:'center',vertical:'middle',wrapText:true};
+            c.border=bordaThin;
+            ws.getColumn(ci+1).width=LARG[col]||14;
+          });
+          ws.getRow(1).height=30;
+
+          // Dados
+          dados.forEach((row,ri)=>{
+            todasCols.forEach((col,ci)=>{
+              const c=ws.getCell(ri+2,ci+1);
+              let val=row[col];
+              if(val===undefined||val===null||String(val)==='nan') val='';
+              c.value=String(val);
+              c.font={name:FONTE,size:9};
+              c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
+              c.alignment={vertical:'middle'};
+              c.border=bordaThin;
+            });
+            ws.getRow(ri+2).height=14;
+          });
+          ws.views=[{state:'frozen',xSplit:0,ySplit:1}];
         }
 
         // ── PLANILHA RESULTADO ─────────────────────────────────────────
@@ -4945,18 +4982,24 @@ function processarInscricoes(){
         // ── PLANILHA ALOCAÇÃO ──────────────────────────────────────────
         const wbAloc=new ExcelJS.Workbook();
         const aloc=todos.filter(r=>STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase()));
-        await criarAbaExcel(wbAloc,'ALOCAÇÃO','ALOCAÇÃO',COLS_AMPLA,aloc.map(r=>mapRow(r,COLS_AMPLA)));
+        // Todas as colunas da planilha original
+        const todasCols=Object.keys(todos[0]||{}).filter(k=>!k.startsWith('_'));
+        await criarAbaAlocacao(wbAloc,'ALOCAÇÃO',todasCols,aloc);
 
-        // Aba cancelados por conjunto
+        // Aba RETIRADOS: candidatos removidos pela regra de conjuntos
         if(conjuntos.length&&cancelar.size){
-          const cancelRows=[];
+          const retiradosRows=[];
           conjuntos.forEach(conj=>{
             todos.filter(r=>cancelar.has(r['INSCRIÇÃO']?.toString())&&conj.includes((r['CÓDIGO']||r['CODIGO']||'').toString().trim()))
-              .forEach(r=>cancelRows.push({...mapRow(r,COLS_AMPLA),'CONJUNTO':conj.join(', ')}));
+              .forEach(r=>{
+                const row={};
+                todasCols.forEach(c=>row[c]=r[c]||'');
+                row['CONJUNTO']=conj.join(', ');
+                retiradosRows.push(row);
+              });
           });
-          if(cancelRows.length){
-            const colsCancel=[...COLS_AMPLA,'CONJUNTO'];
-            await criarAbaExcel(wbAloc,'CANCELADOS CONJUNTO','CANCELADOS - MESMA PROVA',colsCancel,cancelRows);
+          if(retiradosRows.length){
+            await criarAbaAlocacao(wbAloc,'RETIRADOS',[...todasCols,'CONJUNTO'],retiradosRows);
           }
         }
 
