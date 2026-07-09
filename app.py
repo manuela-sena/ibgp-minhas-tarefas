@@ -93,6 +93,14 @@ def aplicar_ferias(atrib):
 
 ATRIBUICOES = aplicar_ferias(ATRIBUICOES)
 
+# Limpar cache de tarefas quando há férias ativas (para refletir imediatamente)
+_ferias_ativas = [f for f in carregar_ferias() if f.get("ativo", True) and f.get("inicio","") <= date.today().isoformat() <= f.get("fim","")]
+if _ferias_ativas and not st.session_state.get("_ferias_cache_cleared"):
+    st.cache_data.clear()
+    st.session_state["_ferias_cache_cleared"] = True
+elif not _ferias_ativas:
+    st.session_state.pop("_ferias_cache_cleared", None)
+
 st.set_page_config(page_title="IBGP · Minhas Tarefas", page_icon="✅", layout="wide")
 
 st.markdown("""<style>
