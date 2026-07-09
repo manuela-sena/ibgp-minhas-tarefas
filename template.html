@@ -4695,7 +4695,7 @@ function carregarArquivoInscricoes(input){
       if(colProcesso){
         const processos=[...new Set(todos.map(r=>(r[colProcesso]||'').toString().trim()).filter(Boolean))].sort();
 
-        // Inserir seletor de processo antes dos conjuntos
+        // Usar o wrap existente no HTML
         let selWrap=document.getElementById('insc-sel-processo-wrap');
         if(!selWrap){
           selWrap=document.createElement('div');
@@ -4704,6 +4704,7 @@ function carregarArquivoInscricoes(input){
           selWrap.style.marginBottom='14px';
           wrapConj.parentElement.insertBefore(selWrap, wrapConj);
         }
+        selWrap.style.display='block';
         selWrap.innerHTML=`
 <div style="font-size:13px;font-weight:600;color:#1f2a3d;margin-bottom:12px">
   Selecione o processo a processar
