@@ -1013,17 +1013,23 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
         <div class="page-title-h1">📄 Resultados · Inscrições</div>
         <div class="page-sub">Processe o relatório geral e gere as planilhas de resultado e alocação.</div>
       </div>
-      <div class="card card-pad" style="text-align:center;padding:48px 24px">
-        <div style="font-size:48px;margin-bottom:16px">📊</div>
-        <div style="font-size:15px;font-weight:700;color:#1f2a3d;margin-bottom:8px">Processamento de Inscrições</div>
-        <div style="font-size:13px;color:#8a9ab5;margin-bottom:24px;max-width:400px;margin-left:auto;margin-right:auto">
-          O processamento de inscrições utiliza Python para gerar planilhas formatadas com todas as abas e formatação padrão IBGP.
+      <div class="card card-pad">
+        <label class="form-label">Relatório Geral (.xlsx)</label>
+        <input type="file" id="insc-file" accept=".xlsx" class="form-input" style="padding:6px"
+          onchange="carregarArquivoInscricoes(this)">
+        <div id="insc-status" style="margin-top:8px;font-size:12.5px;color:#8a9ab5"></div>
+      </div>
+      <div id="insc-sel-processo-wrap" style="display:none" class="card card-pad"></div>
+      <div id="insc-conjuntos-wrap" style="display:none" class="card card-pad">
+        <div style="font-size:13px;font-weight:600;color:#1f2a3d;margin-bottom:12px">Cargos com mesma prova <span style="font-size:11px;color:#8a9ab5;font-weight:400">(opcional)</span></div>
+        <div id="insc-conjuntos-lista"></div>
+        <button class="btn-secondary" style="margin-top:8px" onclick="adicionarConjunto()">+ Adicionar conjunto</button>
+      </div>
+      <div id="insc-preview" style="display:none" class="card card-pad">
+        <div id="insc-preview-content"></div>
+        <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end">
+          <button class="btn-primary" onclick="processarInscricoes()">⚙️ Processar e baixar</button>
         </div>
-        <a href="?nav=resultados" target="_top"
-          style="display:inline-flex;align-items:center;gap:8px;background:#1f4e8c;color:#fff;
-          padding:12px 28px;border-radius:10px;text-decoration:none;font-size:14px;font-weight:600">
-          📄 Abrir Processador de Inscrições
-        </a>
       </div>
     </div>
 
@@ -4765,190 +4771,238 @@ function adicionarConjunto(){
   lista.appendChild(div);
 }
 
+function carregarExcelJS(cb){
+  if(typeof ExcelJS!=='undefined'){cb();return;}
+  const s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js';
+  s.onload=cb; document.head.appendChild(s);
+}
+
 function processarInscricoes(){
   if(!_inscWorkbook){alert('Carregue o arquivo primeiro.');return;}
+  const btn=event?.target;
+  if(btn){btn.disabled=true;btn.textContent='Processando...';}
+
   carregarSheetJS(()=>{
-    try{
-      const STATUS_ATIVOS=['pago','deferida','deferido'];
-      let todos=[];
-      for(const nome of _inscWorkbook.SheetNames){
-        const rows=XLSX.utils.sheet_to_json(_inscWorkbook.Sheets[nome],{defval:'',range:1});
-        todos=todos.concat(rows);
-      }
-      todos=todos.map(r=>{
-        const n={};
-        Object.keys(r).forEach(k=>{n[k.trim()]=typeof r[k]==='string'?r[k].trim():r[k];});
-        return n;
-      });
-      if(!todos.length){alert('Nenhum dado encontrado.');return;}
+    carregarExcelJS(async()=>{
+      try{
+        const STATUS_ATIVOS=['pago','deferida','deferido'];
+        let todos=[];
+        for(const nome of _inscWorkbook.SheetNames){
+          const rows=XLSX.utils.sheet_to_json(_inscWorkbook.Sheets[nome],{defval:'',range:1});
+          todos=todos.concat(rows);
+        }
+        todos=todos.map(r=>{
+          const n={};
+          Object.keys(r).forEach(k=>{n[k.trim()]=typeof r[k]==='string'?r[k].trim():r[k];});
+          return n;
+        });
+        if(!todos.length){alert('Nenhum dado encontrado.');if(btn){btn.disabled=false;btn.textContent='⚙️ Processar e baixar';}return;}
 
-      if(window._inscColProcesso && window._inscProcessoAtual){
-        todos=todos.filter(r=>(r[window._inscColProcesso]||'').toString().trim()===window._inscProcessoAtual.trim());
-        if(!todos.length){alert(`Nenhum registro para "${window._inscProcessoAtual}".`);return;}
-      } else if(window._inscColProcesso && !window._inscProcessoAtual){
-        alert('Selecione um processo antes de processar.');return;
-      }
+        if(window._inscColProcesso && window._inscProcessoAtual){
+          todos=todos.filter(r=>(r[window._inscColProcesso]||'').toString().trim()===window._inscProcessoAtual.trim());
+          if(!todos.length){alert(`Nenhum registro para "${window._inscProcessoAtual}".`);if(btn){btn.disabled=false;btn.textContent='⚙️ Processar e baixar';}return;}
+        } else if(window._inscColProcesso && !window._inscProcessoAtual){
+          alert('Selecione um processo antes de processar.');if(btn){btn.disabled=false;btn.textContent='⚙️ Processar e baixar';}return;
+        }
 
-      const conjuntos=[];
-      document.querySelectorAll('[id^="conj-"]').forEach(inp=>{
-        const cods=inp.value.split(',').map(c=>c.trim()).filter(Boolean);
-        if(cods.length>=2) conjuntos.push(cods);
-      });
+        const conjuntos=[];
+        document.querySelectorAll('[id^="conj-"]').forEach(inp=>{
+          const cods=inp.value.split(',').map(c=>c.trim()).filter(Boolean);
+          if(cods.length>=2) conjuntos.push(cods);
+        });
 
-      const cancelar=new Set();
-      const groupBy=(arr,fn)=>arr.reduce((g,x)=>{const k=fn(x);(g[k]=g[k]||[]).push(x);return g;},{});
-      todos.forEach(r=>{ r._dt=new Date(r['DATA INSCRICAO']||r['DATA INSCRIÇÃO']||0).getTime()||0; });
+        const cancelar=new Set();
+        const groupBy=(arr,fn)=>arr.reduce((g,x)=>{const k=fn(x);(g[k]=g[k]||[]).push(x);return g;},{});
+        todos.forEach(r=>{ r._dt=new Date(r['DATA INSCRICAO']||r['DATA INSCRIÇÃO']||0).getTime()||0; });
 
-      const byCargoCpf=groupBy(todos,r=>`${(r['CPF']||'').replace(/\D/g,'')}__${(r['CÓDIGO']||r['CODIGO']||'').toString().trim()}`);
-      Object.values(byCargoCpf).forEach(grp=>{
-        const ativos=grp.filter(r=>STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase())).sort((a,b)=>a._dt-b._dt);
-        ativos.slice(0,-1).forEach(r=>cancelar.add(r['INSCRIÇÃO']?.toString()));
-      });
-
-      conjuntos.forEach(conj=>{
-        const sub=todos.filter(r=>conj.includes((r['CÓDIGO']||r['CODIGO']||'').toString().trim()));
-        const byCpf=groupBy(sub,r=>(r['CPF']||'').replace(/\D/g,''));
-        Object.values(byCpf).forEach(grp=>{
+        const byCargoCpf=groupBy(todos,r=>`${(r['CPF']||'').replace(/\D/g,'')}__${(r['CÓDIGO']||r['CODIGO']||'').toString().trim()}`);
+        Object.values(byCargoCpf).forEach(grp=>{
           const ativos=grp.filter(r=>STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase())).sort((a,b)=>a._dt-b._dt);
           ativos.slice(0,-1).forEach(r=>cancelar.add(r['INSCRIÇÃO']?.toString()));
         });
-      });
-
-      todos.forEach(r=>{if(cancelar.has(r['INSCRIÇÃO']?.toString())) r['STATUS']='Cancelada';});
-
-      todos.sort((a,b)=>(a['CARGO']||'').localeCompare(b['CARGO']||'')||((a['INSCRIÇÃO']||0)-(b['INSCRIÇÃO']||0)));
-
-      const nomeConcurso=window._inscProcessoAtual||'CONCURSO';
-      const wb=XLSX.utils.book_new();
-
-      function fmtData(v){
-        if(!v||v==='-') return '-';
-        try{const d=new Date(v);if(isNaN(d)) return v.toString();
-          return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;}
-        catch{return v.toString();}
-      }
-
-      function getVal(r,cols){
-        if(!Array.isArray(cols)) cols=[cols];
-        for(const c of cols){if(r[c]!==undefined&&r[c]!=='') return r[c]||'';}
-        return '';
-      }
-
-      function criarAbaInsc(nomeAba,titulo,colsSaida,colsOrigem,dados){
-        if(!dados.length) return;
-        const ws={};
-        const NC=colsSaida.length;
-        // Linha 1: título
-        ws['A1']={v:`${nomeConcurso}\n\nRESULTADO PRELIMINAR DAS INSCRIÇÕES - ${titulo}`,t:'s',
-          s:{font:{bold:true,color:{rgb:'FFFFFF'},name:'Arial',sz:10},
-             fill:{fgColor:{rgb:'1F4E8C'},patternType:'solid'},
-             alignment:{horizontal:'center',vertical:'center',wrapText:true}}};
-        ws['!merges']=[{s:{r:0,c:0},e:{r:0,c:NC-1}}];
-        // Linha 2: header
-        colsSaida.forEach((col,ci)=>{
-          const addr=XLSX.utils.encode_cell({r:1,c:ci});
-          ws[addr]={v:col,t:'s',s:{font:{bold:true,color:{rgb:'FFFFFF'},name:'Arial',sz:9},
-            fill:{fgColor:{rgb:'1F4E8C'},patternType:'solid'},
-            alignment:{horizontal:'center',vertical:'center',wrapText:true},
-            border:{top:{style:'thin',color:{rgb:'000000'}},bottom:{style:'thin',color:{rgb:'000000'}},
-                    left:{style:'thin',color:{rgb:'000000'}},right:{style:'thin',color:{rgb:'000000'}}}}};
-        });
-        // Dados
-        const CORES=['FFFFFF','EBF3FF'];
-        let cargoAtual='',corIdx=0;
-        dados.forEach((row,ri)=>{
-          const cargo=row['CARGO']||'';
-          if(cargo!==cargoAtual){cargoAtual=cargo;corIdx=(corIdx+1)%2;}
-          const cor=CORES[corIdx];
-          colsSaida.forEach((col,ci)=>{
-            const addr=XLSX.utils.encode_cell({r:ri+2,c:ci});
-            const orig=colsOrigem[ci];
-            let val=getVal(row,Array.isArray(orig)?orig:[orig]);
-            if(col.includes('DATA')||col.includes('NASC')) val=fmtData(val);
-            if(val===null||val===undefined||val==='nan') val='';
-            ws[addr]={v:val.toString(),t:'s',s:{font:{name:'Arial',sz:9},
-              fill:{fgColor:{rgb:cor},patternType:'solid'},
-              alignment:{vertical:'center'},
-              border:{top:{style:'thin',color:{rgb:'CCCCCC'}},bottom:{style:'thin',color:{rgb:'CCCCCC'}},
-                      left:{style:'thin',color:{rgb:'CCCCCC'}},right:{style:'thin',color:{rgb:'CCCCCC'}}}}};
+        conjuntos.forEach(conj=>{
+          const sub=todos.filter(r=>conj.includes((r['CÓDIGO']||r['CODIGO']||'').toString().trim()));
+          const byCpf=groupBy(sub,r=>(r['CPF']||'').replace(/\D/g,''));
+          Object.values(byCpf).forEach(grp=>{
+            const ativos=grp.filter(r=>STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase())).sort((a,b)=>a._dt-b._dt);
+            ativos.slice(0,-1).forEach(r=>cancelar.add(r['INSCRIÇÃO']?.toString()));
           });
         });
+        todos.forEach(r=>{if(cancelar.has(r['INSCRIÇÃO']?.toString())) r['STATUS']='Cancelada';});
+        todos.sort((a,b)=>(a['CARGO']||'').localeCompare(b['CARGO']||'')||((a['INSCRIÇÃO']||0)-(b['INSCRIÇÃO']||0)));
+
+        const nomeConcurso=window._inscProcessoAtual||'CONCURSO';
+
+        function fmtData(v){
+          if(!v||v==='-') return '-';
+          try{const d=new Date(v);if(isNaN(d.getTime())) return v.toString();
+            return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;}
+          catch(e){return v.toString();}
+        }
+
         const LARG={'INSCRIÇÃO':12,'CANDIDATO':35,'CPF':14,'DATA DE NASCIMENTO':12,
-          'CARGO':45,'STATUS DE PAGAMENTO':14,'CONCORRE VAGA DEFICIÊNCIA':10,
-          'DEFICIÊNCIA':20,'CONCORRE VAGA NEGRO':10,'PRECISA ATENDIMENTO ESPECIAL':10,
-          'ATENDIMENTO ESPECIAL':25,'DATA REALIZAÇÃO PROVA':18,'RESULTADO':12,
-          'JUSTIFICATIVA':40,'LINK':35};
-        ws['!cols']=colsSaida.map(c=>({wch:LARG[c]||14}));
-        ws['!rows']=[{hpt:45},{hpt:28}];
-        ws['!ref']=XLSX.utils.encode_range({s:{r:0,c:0},e:{r:dados.length+1,c:NC-1}});
-        ws['!freeze']={xSplit:0,ySplit:2};
-        XLSX.utils.book_append_sheet(wb,ws,nomeAba);
-      }
+          'CARGO':45,'STATUS DE PAGAMENTO':16,'CONCORRE VAGA DEFICIÊNCIA':10,
+          'DEFICIÊNCIA':22,'CONCORRE VAGA NEGRO':10,'PRECISA ATENDIMENTO ESPECIAL':10,
+          'ATENDIMENTO ESPECIAL':25,'DATA REALIZAÇÃO PROVA':18,
+          'RESULTADO':12,'JUSTIFICATIVA':40,'LINK':35,'CONJUNTO':20};
 
-      // AMPLA
-      criarAbaInsc('AMPLA','AMPLA',
-        ['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO',
-         'CONCORRE VAGA DEFICIÊNCIA','DEFICIÊNCIA','CONCORRE VAGA NEGRO',
-         'PRECISA ATENDIMENTO ESPECIAL','ATENDIMENTO ESPECIAL','DATA REALIZAÇÃO PROVA'],
-        ['INSCRIÇÃO','CANDIDATO','CPF',['DATA NASCIMENTO','DATA DE NASCIMENTO','DATA DE  NASCIMENTO'],
-         'CARGO','STATUS','CONCORRE VAGA DEFICIÊNCIA','DEFICIÊNCIA','CONCORRE VAGA NEGRO',
-         'PRECISA ATENDIMENTO ESPECIAL','ATENDIMENTO ESPECIAL','DATA REALIZAÇÃO PROVA'],
-        todos);
+        async function criarAbaExcel(wb, nomeAba, titulo, cols, dados){
+          if(!dados.length) return;
+          const ws=wb.addWorksheet(nomeAba);
 
-      // PCD
-      const pcd=todos.filter(r=>(r['CONCORRE VAGA DEFICIÊNCIA']||'').toUpperCase()==='SIM'&&STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase()));
-      criarAbaInsc('PCD','PcD',
-        ['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO',
-         'CONCORRE VAGA DEFICIÊNCIA','DEFICIÊNCIA','RESULTADO','JUSTIFICATIVA','LINK'],
-        ['INSCRIÇÃO','CANDIDATO','CPF',['DATA NASCIMENTO','DATA DE NASCIMENTO','DATA DE  NASCIMENTO'],
-         'CARGO','STATUS','CONCORRE VAGA DEFICIÊNCIA','DEFICIÊNCIA',
-         'RESULTADO PCD','JUSTIFICATIVA PCD','LINK PCD'],
-        pcd);
+          // Linha 1: título mesclado
+          ws.mergeCells(1,1,1,cols.length);
+          const tCell=ws.getCell(1,1);
+          tCell.value=`${nomeConcurso}\n\nRESULTADO PRELIMINAR DAS INSCRIÇÕES - ${titulo}`;
+          tCell.font={bold:true,color:{argb:'FFFFFFFF'},name:'Arial',size:10};
+          tCell.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF1F4E8C'}};
+          tCell.alignment={horizontal:'center',vertical:'middle',wrapText:true};
+          tCell.border={top:{style:'thin'},bottom:{style:'thin'},left:{style:'thin'},right:{style:'thin'}};
+          ws.getRow(1).height=50;
 
-      // PNP
-      const pnp=todos.filter(r=>(r['CONCORRE VAGA NEGRO']||'').toUpperCase()==='SIM'&&STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase()));
-      criarAbaInsc('PNP','PNP',
-        ['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO',
-         'CONCORRE VAGA NEGRO','DATA REALIZAÇÃO PROVA'],
-        ['INSCRIÇÃO','CANDIDATO','CPF',['DATA NASCIMENTO','DATA DE NASCIMENTO','DATA DE  NASCIMENTO'],
-         'CARGO','STATUS','CONCORRE VAGA NEGRO','DATA REALIZAÇÃO PROVA'],
-        pnp);
+          // Linha 2: cabeçalho
+          cols.forEach((col,ci)=>{
+            const c=ws.getCell(2,ci+1);
+            c.value=col;
+            c.font={bold:true,color:{argb:'FFFFFFFF'},name:'Arial',size:9};
+            c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF1F4E8C'}};
+            c.alignment={horizontal:'center',vertical:'middle',wrapText:true};
+            c.border={top:{style:'thin'},bottom:{style:'thin'},left:{style:'thin'},right:{style:'thin'}};
+            ws.getColumn(ci+1).width=LARG[col]||14;
+          });
+          ws.getRow(2).height=28;
 
-      // COND. ESPECIAL
-      const cond=todos.filter(r=>(r['PRECISA ATENDIMENTO ESPECIAL']||'').toUpperCase()==='SIM'&&STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase()));
-      criarAbaInsc('COND.ESPECIAL','CONDIÇÃO ESPECIAL',
-        ['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO',
-         'ATENDIMENTO ESPECIAL','RESULTADO','JUSTIFICATIVA','LINK','DATA REALIZAÇÃO PROVA'],
-        ['INSCRIÇÃO','CANDIDATO','CPF',['DATA NASCIMENTO','DATA DE NASCIMENTO','DATA DE  NASCIMENTO'],
-         'CARGO','STATUS','ATENDIMENTO ESPECIAL',
-         'RESULTADO COND. ESPECIAL','JUSTIFICATIVA COND. ESPECIAL','LINK COND. ESPECIAL','DATA REALIZAÇÃO PROVA'],
-        cond);
+          // Dados
+          const CORES=['FFFFFFFF','FFEBF3FF'];
+          let cargoAtual='',corIdx=0;
+          dados.forEach((row,ri)=>{
+            const cargo=row['CARGO']||'';
+            if(cargo!==cargoAtual){cargoAtual=cargo;corIdx=(corIdx+1)%2;}
+            const cor=CORES[corIdx];
+            cols.forEach((col,ci)=>{
+              const c=ws.getCell(ri+3,ci+1);
+              let val=row[col];
+              if(val===undefined||val===null||String(val)==='nan') val='';
+              if((col.includes('DATA')||col.includes('NASC'))&&val&&val!=='-') val=fmtData(val);
+              c.value=String(val);
+              c.font={name:'Arial',size:9};
+              c.fill={type:'pattern',pattern:'solid',fgColor:{argb:cor}};
+              c.alignment={vertical:'middle'};
+              c.border={top:{style:'thin',color:{argb:'FFCCCCCC'}},bottom:{style:'thin',color:{argb:'FFCCCCCC'}},
+                        left:{style:'thin',color:{argb:'FFCCCCCC'}},right:{style:'thin',color:{argb:'FFCCCCCC'}}};
+            });
+            ws.getRow(ri+3).height=14;
+          });
+          ws.views=[{state:'frozen',xSplit:0,ySplit:2}];
+        }
 
-      if(!wb.SheetNames.length){alert('Nenhuma aba gerada.');return;}
+        // ── PLANILHA RESULTADO ─────────────────────────────────────────
+        const wbRes=new ExcelJS.Workbook();
 
-      const nomeArq=(window._inscProcessoAtual||'RESULTADO').replace(/[\/\\:*?"<>|]/g,'-');
-      XLSX.writeFile(wb,`RESULTADO_PRELIMINAR_${nomeArq}.xlsx`);
+        const COLS_AMPLA=['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO',
+          'STATUS DE PAGAMENTO','CONCORRE VAGA DEFICIÊNCIA','DEFICIÊNCIA',
+          'CONCORRE VAGA NEGRO','PRECISA ATENDIMENTO ESPECIAL','ATENDIMENTO ESPECIAL',
+          'DATA REALIZAÇÃO PROVA'];
 
-      const cancelados=todos.filter(r=>r['STATUS']==='Cancelada').length;
-      document.getElementById('insc-preview-content').innerHTML=`
+        function mapRow(r,cols){
+          const o={};
+          const colMap={
+            'DATA DE NASCIMENTO':['DATA NASCIMENTO','DATA DE NASCIMENTO','DATA DE  NASCIMENTO'],
+            'STATUS DE PAGAMENTO':['STATUS'],
+            'DATA REALIZAÇÃO PROVA':['DATA REALIZAÇÃO PROVA'],
+          };
+          cols.forEach(col=>{
+            const srcs=colMap[col]||[col];
+            o[col]=srcs.map(s=>r[s]||'').find(v=>v!=='')||'';
+          });
+          return o;
+        }
+
+        await criarAbaExcel(wbRes,'AMPLA','AMPLA',COLS_AMPLA,todos.map(r=>mapRow(r,COLS_AMPLA)));
+
+        const pcd=todos.filter(r=>(r['CONCORRE VAGA DEFICIÊNCIA']||'').toUpperCase()==='SIM'&&STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase()));
+        if(pcd.length){
+          const colsPcd=['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO','CONCORRE VAGA DEFICIÊNCIA','DEFICIÊNCIA','RESULTADO','JUSTIFICATIVA','LINK'];
+          await criarAbaExcel(wbRes,'PCD','PcD',colsPcd,pcd.map(r=>mapRow(r,colsPcd)));
+        }
+
+        const pnp=todos.filter(r=>(r['CONCORRE VAGA NEGRO']||'').toUpperCase()==='SIM'&&STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase()));
+        if(pnp.length){
+          const colsPnp=['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO','CONCORRE VAGA NEGRO','DATA REALIZAÇÃO PROVA'];
+          await criarAbaExcel(wbRes,'PNP','PNP',colsPnp,pnp.map(r=>mapRow(r,colsPnp)));
+        }
+
+        const cond=todos.filter(r=>{
+          const v=(r['PRECISA ATENDIMENTO ESPECIAL']||r['ATENDIMENTO ESPECIAL']||'').toUpperCase();
+          return v==='SIM'&&STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase());
+        });
+        if(cond.length){
+          const colsCond=['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO','ATENDIMENTO ESPECIAL','RESULTADO','JUSTIFICATIVA','LINK','DATA REALIZAÇÃO PROVA'];
+          await criarAbaExcel(wbRes,'COND.ESPECIAL','CONDIÇÃO ESPECIAL',colsCond,cond.map(r=>mapRow(r,colsCond)));
+        }
+
+        // ── PLANILHA ALOCAÇÃO ──────────────────────────────────────────
+        const wbAloc=new ExcelJS.Workbook();
+        const aloc=todos.filter(r=>STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase()));
+        await criarAbaExcel(wbAloc,'ALOCAÇÃO','ALOCAÇÃO',COLS_AMPLA,aloc.map(r=>mapRow(r,COLS_AMPLA)));
+
+        // Aba cancelados por conjunto
+        if(conjuntos.length&&cancelar.size){
+          const cancelRows=[];
+          conjuntos.forEach(conj=>{
+            todos.filter(r=>cancelar.has(r['INSCRIÇÃO']?.toString())&&conj.includes((r['CÓDIGO']||r['CODIGO']||'').toString().trim()))
+              .forEach(r=>cancelRows.push({...mapRow(r,COLS_AMPLA),'CONJUNTO':conj.join(', ')}));
+          });
+          if(cancelRows.length){
+            const colsCancel=[...COLS_AMPLA,'CONJUNTO'];
+            await criarAbaExcel(wbAloc,'CANCELADOS CONJUNTO','CANCELADOS - MESMA PROVA',colsCancel,cancelRows);
+          }
+        }
+
+        // Download
+        const nomeArq=(window._inscProcessoAtual||'RESULTADO').replace(/[/\\:*?"<>|]/g,'-').substring(0,50);
+
+        const bufRes=await wbRes.xlsx.writeBuffer();
+        const blobRes=new Blob([bufRes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+        const aRes=document.createElement('a');
+        aRes.href=URL.createObjectURL(blobRes);
+        aRes.download=`RESULTADO_${nomeArq}.xlsx`;
+        aRes.click();
+
+        await new Promise(r=>setTimeout(r,800));
+
+        const bufAloc=await wbAloc.xlsx.writeBuffer();
+        const blobAloc=new Blob([bufAloc],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+        const aAloc=document.createElement('a');
+        aAloc.href=URL.createObjectURL(blobAloc);
+        aAloc.download=`ALOCACAO_${nomeArq}.xlsx`;
+        aAloc.click();
+
+        const cancelados=todos.filter(r=>r['STATUS']==='Cancelada').length;
+        document.getElementById('insc-preview-content').innerHTML=`
 <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:12px">
   ${[['Total',todos.length,'#41506b'],
      ['Pagos',todos.filter(r=>(r['STATUS']||'').toLowerCase()==='pago').length,'#2e7d52'],
-     ['Deferidos',todos.filter(r=>(r['STATUS']||'').toLowerCase()==='deferida').length,'#2f6cc4'],
+     ['Deferidos',todos.filter(r=>['deferida','deferido'].includes((r['STATUS']||'').toLowerCase())).length,'#2f6cc4'],
      ['Cancelados',cancelados,'#c0322f'],
-     ['PCD',pcd.length,'#7b34c1']].map(([l,v,c])=>`
+     ['Alocação',aloc.length,'#7b34c1']].map(([l,v,c])=>`
   <div style="text-align:center;background:#f7f9fc;border-radius:8px;padding:10px">
     <div style="font-size:22px;font-weight:800;color:${c}">${v}</div>
     <div style="font-size:11px;color:#8a9ab5;font-weight:600">${l}</div>
   </div>`).join('')}
 </div>
-<div style="font-size:13px;color:#2e7d52;font-weight:600">✅ Planilha gerada! Abas: ${wb.SheetNames.join(', ')}</div>`;
+<div style="font-size:13px;color:#2e7d52;font-weight:600">✅ Planilhas geradas e baixadas!</div>`;
 
-    }catch(e){
-      document.getElementById('insc-preview-content').innerHTML=`<div style="color:#c0322f">Erro: ${e.message}</div>`;
-      console.error(e);
-    }
+      }catch(e){
+        document.getElementById('insc-preview-content').innerHTML=`<div style="color:#c0322f">Erro: ${e.message}</div>`;
+        console.error(e);
+      }
+      if(btn){btn.disabled=false;btn.textContent='⚙️ Processar e baixar';}
+    });
   });
+}
+
 }
 
 
