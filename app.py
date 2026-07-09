@@ -725,14 +725,37 @@ html = html.replace('action="" target="_top"',
 
 components.html(html, height=900, scrolling=False)
 
-# Esconder o chat_input de navegação
-st.markdown("""<style>
+# ── LINKS DE NAVEGAÇÃO (fora do iframe, funcionam na mesma sessão) ────
+st.markdown("""
+<style>
 [data-testid="stChatInput"]{display:none!important}
 [data-testid="stBottom"]{display:none!important}
-</style>""", unsafe_allow_html=True)
-
-# Capturar navegação via sendPrompt
-_nav_input = st.chat_input("nav", key="nav_input")
-if _nav_input == "__GOTO_RESULTADOS__":
-    st.session_state["pagina"] = "resultados"
-    st.rerun()
+.nav-resultados-wrap{
+  position:fixed;bottom:0;left:0;width:240px;
+  background:#1a2540;padding:8px 16px 16px;
+  border-top:1px solid #2a3a5c;z-index:9999
+}
+.nav-resultados-wrap a{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 12px;border-radius:8px;
+  color:#c8d0e0!important;text-decoration:none;
+  font-size:13px;font-weight:500;
+  transition:background .15s
+}
+.nav-resultados-wrap a:hover{background:#2a3a5c;color:#fff!important}
+.nav-resultados-wrap .nav-section-lbl{
+  font-size:10px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:#4a5a7c;
+  padding:4px 12px;margin-bottom:2px
+}
+</style>
+<div class="nav-resultados-wrap">
+  <div class="nav-section-lbl">Resultados</div>
+  <a href="?nav=resultados" target="_top">
+    📄 Inscrições
+  </a>
+  <a href="?nav=homologacao" target="_top">
+    ✅ Homologação
+  </a>
+</div>
+""", unsafe_allow_html=True)
