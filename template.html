@@ -4666,19 +4666,18 @@ function carregarArquivoInscricoes(input){
     reader.onload=e=>{
       _inscWorkbook=XLSX.read(e.target.result,{type:'binary',cellDates:true});
 
-      // Detectar processos disponíveis (coluna EDITAL ou CONCURSO ou MUNICÍPIO)
+      // Ler todas as abas com header na linha 2 (range:1)
       let todos=[];
       for(const nome of _inscWorkbook.SheetNames){
         const rows=XLSX.utils.sheet_to_json(_inscWorkbook.Sheets[nome],{defval:'',range:1});
         todos=todos.concat(rows);
       }
-      if(!todos.length){
-        // Tentar sem range
-        for(const nome of _inscWorkbook.SheetNames){
-          const rows=XLSX.utils.sheet_to_json(_inscWorkbook.Sheets[nome],{defval:''});
-          todos=todos.concat(rows);
-        }
-      }
+      // Normalizar chaves (remover espaços extras)
+      todos=todos.map(r=>{
+        const n={};
+        Object.keys(r).forEach(k=>{ n[k.trim()]=typeof r[k]==='string'?r[k].trim():r[k]; });
+        return n;
+      });
 
       // Detectar coluna de processo/edital
       const primeiraLinha=todos[0]||{};
@@ -4778,14 +4777,20 @@ function processarInscricoes(){
       const STATUS_ATIVOS=['pago','deferida'];
       let todos=[];
       for(const nome of _inscWorkbook.SheetNames){
-        const rows=XLSX.utils.sheet_to_json(_inscWorkbook.Sheets[nome],{defval:''});
+        const rows=XLSX.utils.sheet_to_json(_inscWorkbook.Sheets[nome],{defval:'',range:1});
         todos=todos.concat(rows);
       }
+      // Normalizar chaves e valores string
+      todos=todos.map(r=>{
+        const n={};
+        Object.keys(r).forEach(k=>{ n[k.trim()]=typeof r[k]==='string'?r[k].trim():r[k]; });
+        return n;
+      });
       if(!todos.length){alert('Nenhum dado encontrado.');return;}
 
       // Filtrar por processo selecionado
       if(window._inscColProcesso && window._inscProcessoAtual){
-        todos=todos.filter(r=>(r[window._inscColProcesso]||'').toString().trim()===window._inscProcessoAtual);
+        todos=todos.filter(r=>(r[window._inscColProcesso]||'').toString().trim()===window._inscProcessoAtual.trim());
         if(!todos.length){alert(`Nenhum registro encontrado para "${window._inscProcessoAtual}".`);return;}
       } else if(window._inscColProcesso && !window._inscProcessoAtual){
         alert('Selecione um processo antes de processar.');return;
