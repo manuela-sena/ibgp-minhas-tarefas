@@ -563,6 +563,10 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
       <button class="nav-btn" data-page="usuarios" onclick="goPage('usuarios')">
         <svg width="16" height="16"><use href="#ico-users"/></svg>Usuários
       </button>
+      <button class="nav-btn" data-page="ferias" onclick="goPage('ferias')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M17 14l-4 4-2-2"/></svg>
+        Férias
+      </button>
       <button class="nav-btn" data-page="equipes" onclick="goPage('equipes')">
         <svg width="16" height="16"><use href="#ico-plan"/></svg>Equipes
       </button>
@@ -999,6 +1003,68 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
     <div id="page-equipes" class="page"><div class="card card-pad"><div class="empty-state"><div class="empty-icon">🏢</div><div class="empty-title">Em breve</div><div class="empty-desc">Gerenciamento de equipes em desenvolvimento.</div></div></div></div>
     <div id="page-config" class="page"><div class="card card-pad"><div class="empty-state"><div class="empty-icon">⚙️</div><div class="empty-title">Em breve</div><div class="empty-desc">Configurações em desenvolvimento.</div></div></div></div>
 
+    <!-- PÁGINA FÉRIAS -->
+    <div id="page-ferias" class="page">
+      <div class="page-header">
+        <div class="page-title-h1">
+          <svg width="21" height="21" fill="none" stroke="#1f4e8c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 11l-4 4-2-2"/></svg>
+          Férias e Ausências
+        </div>
+        <div class="page-sub">Migre tarefas temporariamente durante férias ou ausências.</div>
+      </div>
+
+      <div id="ferias-msg-wrap" style="display:none;margin-bottom:12px"></div>
+
+      <!-- Formulário nova férias -->
+      <div class="card card-pad" style="margin-bottom:16px">
+        <div style="font-size:13.5px;font-weight:700;color:#1f2a3d;margin-bottom:16px">➕ Registrar período de férias</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;align-items:end">
+          <div>
+            <label class="form-label">Quem vai sair</label>
+            <select id="fer-de" class="filter-select">
+              <option value="">Selecione...</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Substituto(a)</label>
+            <select id="fer-para" class="filter-select">
+              <option value="">Selecione...</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Início das férias</label>
+            <input id="fer-ini" type="date" class="form-input">
+          </div>
+          <div>
+            <label class="form-label">Fim das férias</label>
+            <input id="fer-fim" type="date" class="form-input">
+          </div>
+        </div>
+
+        <!-- Preview de tarefas afetadas -->
+        <div id="fer-preview" style="margin-top:16px"></div>
+
+        <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end">
+          <button class="btn-secondary" onclick="previewFerias()">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Ver tarefas afetadas
+          </button>
+          <button class="btn-primary" onclick="salvarFerias()">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Confirmar férias
+          </button>
+        </div>
+      </div>
+
+      <!-- Férias ativas -->
+      <div class="card" style="overflow:hidden">
+        <div style="padding:14px 18px;font-size:13px;font-weight:700;color:#1f2a3d;border-bottom:1px solid #eef1f6">Férias registradas</div>
+        <div id="ferias-lista" style="padding:14px 18px">
+          <div style="color:#8a9ab5;font-size:13px">Nenhuma férias registrada.</div>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /content -->
 </div><!-- /main -->
 </div><!-- /app -->
@@ -1037,6 +1103,7 @@ function goPage(id) {
   // Lazy loads
   if(id==='reajustar' && !_bucketsLoaded) { loadReajusteConcursos(); _bucketsLoaded=true; }
   if(id==='usuarios') renderUsuarios();
+  if(id==='ferias'){ initFerias(); }
   if(id==='planejamentos') carregarPlanejamentos();
   if(id==='indicadores') renderIndicadores();
 }
@@ -4342,6 +4409,169 @@ ${conteudo}
 </body></html>`);
   win.document.close();
   win.onload = ()=>{ setTimeout(()=>win.print(), 400); };
+}
+
+// ── FÉRIAS E AUSÊNCIAS ────────────────────────────────────────────────
+let _ferias = [];
+
+function initFerias(){
+  _ferias = (typeof DADOS_INICIAIS!=='undefined' && DADOS_INICIAIS.ferias) ? DADOS_INICIAIS.ferias : [];
+
+  // Popular selects com usuários ativos
+  const pessoas = (_usuarios||[]).filter(u=>u.ativo).map(u=>u.nome_interno);
+  ['fer-de','fer-para'].forEach(id=>{
+    const sel = document.getElementById(id);
+    if(!sel) return;
+    sel.innerHTML = '<option value="">Selecione...</option>' +
+      pessoas.map(p=>`<option value="${p}">${p}</option>`).join('');
+  });
+
+  renderFeriasMsgInicial();
+  renderFeriasLista();
+}
+
+function renderFeriasMsgInicial(){
+  const msg = DADOS_INICIAIS?.feriasMsg;
+  if(!msg) return;
+  const el = document.getElementById('ferias-msg-wrap');
+  if(!el) return;
+  el.style.display='block';
+  const isOk = msg.startsWith('✅');
+  el.innerHTML = `<div style="padding:10px 14px;border-radius:9px;font-size:13px;font-weight:600;border:1px solid;${isOk?'background:#e4f3ea;border-color:#a8dbb8;color:#2e7d52':'background:#fdeceb;border-color:#f3cfcd;color:#c0322f'}">${msg}</div>`;
+  setTimeout(()=>{ el.style.display='none'; }, 5000);
+}
+
+function renderFeriasLista(){
+  const el = document.getElementById('ferias-lista');
+  if(!el) return;
+  if(!_ferias.length){
+    el.innerHTML = '<div style="color:#8a9ab5;font-size:13px;padding:8px 0">Nenhuma férias registrada.</div>';
+    return;
+  }
+  const hoje = new Date().toISOString().split('T')[0];
+  el.innerHTML = _ferias.map((f,i) => {
+    const ativa = f.ativo !== false && f.inicio <= hoje && hoje <= f.fim;
+    const futura = f.inicio > hoje;
+    const expirada = f.fim < hoje;
+    const status = ativa ? '🟢 Ativa agora' : futura ? '🔵 Agendada' : '⚫ Encerrada';
+    const bg = ativa ? '#e4f3ea' : futura ? '#e9f1fb' : '#f7f7f7';
+    const cor = ativa ? '#2e7d52' : futura ? '#1f4e8c' : '#8a9ab5';
+    return `
+<div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid #eef1f6">
+  <div style="flex:1">
+    <div style="font-size:13px;font-weight:600;color:#1f2a3d">
+      ${f.de} → ${f.para}
+    </div>
+    <div style="font-size:12px;color:#8a9ab5;margin-top:2px">
+      ${fmtBRfromISO(f.inicio)} a ${fmtBRfromISO(f.fim)}
+    </div>
+  </div>
+  <span style="background:${bg};color:${cor};padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700">${status}</span>
+  <button class="btn-secondary" style="height:28px;padding:0 10px;font-size:11.5px;color:#c0322f;border-color:#f3cfcd"
+    onclick="cancelarFerias(${i})">Cancelar</button>
+</div>`;
+  }).join('');
+}
+
+function fmtBRfromISO(s){
+  if(!s) return '—';
+  const [y,m,d] = s.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function previewFerias(){
+  const de  = document.getElementById('fer-de')?.value;
+  const ini = document.getElementById('fer-ini')?.value;
+  const fim = document.getElementById('fer-fim')?.value;
+  const prev = document.getElementById('fer-preview');
+  if(!de||!ini||!fim){ if(prev) prev.innerHTML='<div style="color:#c0322f;font-size:12.5px">Preencha todos os campos.</div>'; return; }
+
+  // Filtrar tarefas que vencem no período
+  const iniDate = new Date(ini+'T12:00:00');
+  const fimDate = new Date(fim+'T12:00:00');
+  const afetadas = _allTasks.filter(t => {
+    if(t.responsavel !== de) return false;
+    if(!t.due) return false;
+    const d = parseISO(t.due);
+    return d >= iniDate && d <= fimDate;
+  });
+
+  if(!afetadas.length){
+    prev.innerHTML = `<div style="background:#e4f3ea;border:1px solid #a8dbb8;border-radius:8px;padding:10px 14px;font-size:12.5px;color:#2e7d52">
+      ✅ Nenhuma tarefa de <strong>${de}</strong> vence entre ${fmtBRfromISO(ini)} e ${fmtBRfromISO(fim)}.
+    </div>`;
+    return;
+  }
+
+  prev.innerHTML = `
+<div style="background:#e9f1fb;border:1px solid #b8d0ef;border-radius:8px;padding:12px 14px">
+  <div style="font-size:12px;font-weight:700;color:#1f4e8c;margin-bottom:8px">
+    📋 ${afetadas.length} tarefa(s) de <strong>${de}</strong> serão visíveis para o(a) substituto(a):
+  </div>
+  ${afetadas.slice(0,10).map(t=>`
+  <div style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid #d0e0f5">
+    <div style="flex:1;font-size:12px;color:#1f2a3d;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.tarefa}</div>
+    <div style="font-size:11px;color:#8a9ab5;flex:none">${t.municipio.substring(0,25)}</div>
+    <div style="font-size:11px;color:#2f6cc4;flex:none;font-weight:600">${t.data}</div>
+  </div>`).join('')}
+  ${afetadas.length>10?`<div style="font-size:11.5px;color:#8a9ab5;margin-top:6px">+ ${afetadas.length-10} outras tarefas</div>`:''}
+</div>`;
+}
+
+async function salvarFerias(){
+  const de   = document.getElementById('fer-de')?.value;
+  const para = document.getElementById('fer-para')?.value;
+  const ini  = document.getElementById('fer-ini')?.value;
+  const fim  = document.getElementById('fer-fim')?.value;
+
+  if(!de||!para||!ini||!fim){ alert('Preencha todos os campos.'); return; }
+  if(de===para){ alert('A pessoa e o substituto não podem ser a mesma.'); return; }
+  if(ini>fim){ alert('A data de início deve ser anterior ao fim.'); return; }
+
+  const nova = {de, para, inicio:ini, fim, ativo:true, criadaEm: new Date().toISOString()};
+  _ferias.push(nova);
+
+  await _salvarFeriasGitHub(_ferias);
+}
+
+async function cancelarFerias(idx){
+  if(!confirm('Cancelar este período de férias? As tarefas voltarão para o responsável original.')) return;
+  _ferias.splice(idx, 1);
+  await _salvarFeriasGitHub(_ferias);
+}
+
+async function _salvarFeriasGitHub(ferias){
+  const ghToken = DADOS_INICIAIS?.ghToken||'';
+  if(!ghToken){ alert('Token GitHub não disponível.'); return; }
+
+  const msg = document.getElementById('ferias-msg-wrap');
+  if(msg){ msg.style.display='block'; msg.innerHTML='<div style="padding:10px 14px;border-radius:9px;background:#e9f1fb;border:1px solid #b8d0ef;font-size:13px;color:#1f4e8c;font-weight:600"><div class="spinner" style="display:inline-block;width:14px;height:14px;border-width:2px;vertical-align:middle;margin-right:8px"></div> Salvando...</div>'; }
+
+  try {
+    const r1 = await fetch('https://api.github.com/repos/manuela-sena/ibgp-minhas-tarefas/contents/ferias.json',
+      {headers:{'Authorization':'Bearer '+ghToken}});
+    const f1 = await r1.json();
+    const conteudo = btoa(unescape(encodeURIComponent(JSON.stringify({ferias}, null, 2))));
+    const payload = {message:'chore: atualizar férias', content:conteudo};
+    if(f1.sha) payload.sha = f1.sha;
+    const r2 = await fetch('https://api.github.com/repos/manuela-sena/ibgp-minhas-tarefas/contents/ferias.json',
+      {method:'PUT', headers:{'Authorization':'Bearer '+ghToken,'Content-Type':'application/json'},
+       body:JSON.stringify(payload)});
+    const d2 = await r2.json();
+    if(d2.commit){
+      if(msg){ msg.innerHTML='<div style="padding:10px 14px;border-radius:9px;background:#e4f3ea;border:1px solid #a8dbb8;font-size:13px;color:#2e7d52;font-weight:600">✅ Férias salvas! Recarregue para ver o efeito.</div>'; }
+      renderFeriasLista();
+      // Limpar formulário
+      ['fer-de','fer-para'].forEach(id=>{ const s=document.getElementById(id); if(s) s.value=''; });
+      ['fer-ini','fer-fim'].forEach(id=>{ const s=document.getElementById(id); if(s) s.value=''; });
+      document.getElementById('fer-preview').innerHTML='';
+      setTimeout(()=>{ if(msg) msg.style.display='none'; }, 5000);
+    } else {
+      throw new Error(d2.message||'Erro');
+    }
+  } catch(e){
+    if(msg){ msg.innerHTML=`<div style="padding:10px 14px;border-radius:9px;background:#fdeceb;border:1px solid #f3cfcd;font-size:13px;color:#c0322f;font-weight:600">⚠️ Erro: ${e.message}</div>`; }
+  }
 }
 
 // ── REFRESH ──────────────────────────────────────────────────────────
