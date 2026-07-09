@@ -743,36 +743,6 @@ html = html.replace("// PLACEHOLDER_ATRIB",
     f"const ATRIBUICOES_JS = {json.dumps(ATRIBUICOES)};")
 
 # ── BOTÕES DE NAVEGAÇÃO PARA RESULTADOS (fora do iframe) ─────────────
-st.markdown("""
-<style>
-[data-testid='stChatInput'],[data-testid='stBottom']{display:none!important}
-[data-testid='stSidebar']{display:none!important}
-.nav-resultados{position:fixed;bottom:0;left:0;width:256px;z-index:99999;
-  padding:8px 12px 16px;background:#111827;border-top:1px solid #1e293b}
-.nav-resultados .lbl{font-size:10px;font-weight:700;letter-spacing:.1em;
-  color:#4a5a7c;text-transform:uppercase;padding:4px 4px 6px;display:block}
-.nav-resultados a{display:flex;align-items:center;gap:8px;padding:7px 10px;
-  border-radius:7px;color:#c8d0e0;text-decoration:none;font-size:13px;
-  font-weight:500;margin-bottom:2px;cursor:pointer}
-.nav-resultados a:hover{background:#1e293b;color:#fff}
-</style>
-<div class="nav-resultados">
-  <span class="lbl">Resultados</span>
-  <a href="javascript:void(0)" onclick="navInscricoes()">📄 Inscrições</a>
-  <a href="javascript:void(0)" onclick="navHomologacao()">✅ Homologação</a>
-</div>
-<script>
-function navInscricoes(){
-  fetch('/healthz').then(()=>{
-    window.location.href = window.location.pathname + '?nav=resultados';
-  }).catch(()=>{
-    window.location.href = '?nav=resultados';
-  });
-}
-function navHomologacao(){
-  window.location.href = window.location.pathname + '?nav=homologacao';
-}
-</script>
-""", unsafe_allow_html=True)
+st.markdown("<style>[data-testid='stChatInput'],[data-testid='stBottom']{display:none!important}</style>", unsafe_allow_html=True)
 
 components.html(html, height=900, scrolling=False)
