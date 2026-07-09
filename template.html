@@ -4784,14 +4784,24 @@ function processarHomologacao(){
   const res=document.getElementById('homol-resultado');
   res.innerHTML='<div class="loading"><div class="spinner"></div>Processando...</div>';
   try{
-    // Ler CF (header na linha 2 = index 1)
-    const wsCF=_homolCF.Sheets[_homolCF.SheetNames[0]];
-    const cfRows=XLSX.utils.sheet_to_json(wsCF,{range:1,defval:''});
+    // ── Ler CF: todas as abas, header na linha 2 (range:1) ──────────
+    let cfTodos=[];
+    for(const nome of _homolCF.SheetNames){
+      const rows=XLSX.utils.sheet_to_json(_homolCF.Sheets[nome],{range:1,defval:''});
+      // Normalizar nomes de colunas
+      rows.forEach(r=>{
+        Object.keys(r).forEach(k=>{
+          const kn=k.replace(/\n/g,' ').trim();
+          if(kn!==k){r[kn]=r[k];delete r[k];}
+        });
+      });
+      cfTodos=cfTodos.concat(rows);
+    }
 
-    // Ler dados (todas as abas)
+    // ── Ler Dados: header na linha 2 (range:1) ──────────────────────
     let dadosTodos=[];
     for(const nome of _homolDados.SheetNames){
-      const rows=XLSX.utils.sheet_to_json(_homolDados.Sheets[nome],{defval:''});
+      const rows=XLSX.utils.sheet_to_json(_homolDados.Sheets[nome],{range:1,defval:''});
       dadosTodos=dadosTodos.concat(rows);
     }
 
@@ -4802,55 +4812,75 @@ function processarHomologacao(){
       if(insc) dadosIdx[insc]=r;
     });
 
-    // Reservas mapeadas
-    const RESERVAS=[
-      {aba:'AMPLA',      colClass:'CLASS. CARGO AMPLA'},
-      {aba:'PCD',        colClass:'CLASS. CARGO PcD'},
-      {aba:'PNP',        colClass:'CLASS. CARGO PNP'},
-      {aba:'INDIGENA',   colClass:'CLASS. INDIGENA'},
-      {aba:'QUILOMBOLA', colClass:'CLASS. QUILOMBOLA'},
-    ];
+    // ── Detectar coluna de classificação na CF ───────────────────────
+    const colClassCandidatos = Object.keys(cfTodos[0]||{}).find(k=>
+      k.toUpperCase().includes('CLASS') && k.toUpperCase().includes('AMPLA')
+    ) || 'CLASS.AMPLA';
+
+    // ── Montar AMPLA: todos da CF ────────────────────────────────────
+    const cfComDados=cfTodos.map(cf=>{
+      const insc=(cf['INSCRIÇÃO']||'').toString().trim();
+      const dados=dadosIdx[insc]||{};
+      const classNum=parseInt((cf[colClassCandidatos]||'0').toString().replace(/\D/g,''))||9999;
+      const cargo=(cf['CARGO']||dados['CARGO']||'').toString().trim();
+      const cod=(cf['CÓDIGO']||dados['CÓDIGO']||dados['CODIGO']||cargo.split('-')[0]).toString().trim();
+      const codNum=parseInt(cod)||9999;
+      return {...dados,...cf,
+        'CLASS.':cf[colClassCandidatos],
+        _classNum:classNum, _codNum:codNum,
+        _insc:insc, _cargo:cargo
+      };
+    });
+
+    // ── Função para montar e ordenar uma aba ────────────────────────
+    function montarAba(registros){
+      registros.sort((a,b)=>a._codNum-b._codNum||a._classNum-b._classNum);
+      // Renumerar por cargo
+      let cargoAtual='',seq=0;
+      registros.forEach(r=>{
+        if(r._cargo!==cargoAtual){cargoAtual=r._cargo;seq=0;}
+        seq++;
+        r['CLASS.']=seq;
+      });
+      return registros.map(r=>{
+        const c={...r};
+        delete c._classNum;delete c._codNum;delete c._insc;delete c._cargo;
+        return c;
+      });
+    }
 
     const wbOut=XLSX.utils.book_new();
     const resumo=[];
 
-    RESERVAS.forEach(({aba,colClass})=>{
-      // Filtrar candidatos com classificação nesta reserva
-      const comClass=cfRows.filter(r=>{
-        const v=(r[colClass]||'').toString().trim();
-        return v&&v!=='-'&&v!=='NaN'&&v!=='';
+    // AMPLA
+    const ampla=montarAba([...cfComDados]);
+    if(ampla.length){
+      XLSX.utils.book_append_sheet(wbOut,XLSX.utils.json_to_sheet(ampla),'AMPLA');
+      resumo.push(`AMPLA: ${ampla.length}`);
+    }
+
+    // Reservas baseadas nas colunas dos dados
+    const RESERVAS=[
+      {aba:'PCD',        col:'CONCORRE VAGA DEFICIÊNCIA'},
+      {aba:'PNP',        col:'CONCORRE VAGA NEGRO'},
+      {aba:'INDIGENA',   col:'CONCORRE VAGA INDÍGENA'},
+      {aba:'QUILOMBOLA', col:'CONCORRE VAGA QUILOMBOLA'},
+      {aba:'TRANS',      col:'CONCORRE VAGA TRANS'},
+    ];
+
+    RESERVAS.forEach(({aba,col})=>{
+      const filtrados=cfComDados.filter(r=>{
+        const v=(r[col]||'').toString().toUpperCase().trim();
+        return v==='SIM';
       });
-      if(!comClass.length) return;
-
-      // Juntar com dados e ordenar por cargo + classificação
-      const merged=comClass.map(cf=>{
-        const insc=(cf['INSCRIÇÃO']||'').toString().trim();
-        const dados=dadosIdx[insc]||{};
-        const classNum=parseInt((cf[colClass]||'0').replace(/\D/g,''))||9999;
-        const codNum=parseInt((cf['CÓDIGO']||cf['CARGO']||'0').toString())||9999;
-        return {...dados,...cf, 'CLASS.':cf[colClass], _classNum:classNum, _codNum:codNum};
-      });
-
-      merged.sort((a,b)=>a._codNum-b._codNum||a._classNum-b._classNum);
-
-      // Renumerar por cargo
-      let cargoAtual='', seq=0;
-      merged.forEach(r=>{
-        const cargo=r['CÓDIGO']||r['CARGO']||'';
-        if(cargo!==cargoAtual){cargoAtual=cargo;seq=0;}
-        seq++;
-        r['CLASS.']=seq;
-      });
-
-      // Remover campos internos
-      const saida=merged.map(r=>{const c={...r};delete c._classNum;delete c._codNum;return c;});
-      const ws=XLSX.utils.json_to_sheet(saida);
-      XLSX.utils.book_append_sheet(wbOut,ws,aba);
+      if(!filtrados.length) return;
+      const saida=montarAba([...filtrados]);
+      XLSX.utils.book_append_sheet(wbOut,XLSX.utils.json_to_sheet(saida),aba);
       resumo.push(`${aba}: ${saida.length}`);
     });
 
     if(!wbOut.SheetNames.length){
-      res.innerHTML='<div style="color:#c0322f">Nenhum dado encontrado. Verifique se os arquivos são do mesmo concurso.</div>';
+      res.innerHTML='<div style="color:#c0322f;padding:12px">Nenhum dado encontrado após o processamento.</div>';
       return;
     }
 
@@ -4860,7 +4890,7 @@ function processarHomologacao(){
       <span style="font-weight:400;font-size:12px">${resumo.join(' · ')}</span>
     </div>`;
   }catch(e){
-    res.innerHTML=`<div style="color:#c0322f">Erro: ${e.message}</div>`;
+    res.innerHTML=`<div style="color:#c0322f;padding:12px">Erro: ${e.message}<br><small>${e.stack}</small></div>`;
   }
 }
 
