@@ -4896,6 +4896,8 @@ function processarHomologacao(){
 
       criarAba(aba,saida);
     });
+
+    function criarAba(nome,dados){
       if(!dados.length) return;
       const ws=XLSX.utils.json_to_sheet(dados,{header:colsSaida});
 
