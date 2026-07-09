@@ -4688,6 +4688,10 @@ function carregarArquivoInscricoes(input){
 
       status.innerHTML=`✅ <strong>${file.name}</strong> carregado — ${todos.length} registros`;
 
+      // Debug: mostrar colunas detectadas
+      const colsDetectadas=Object.keys(todos[0]||{}).slice(0,8).join(', ');
+      status.innerHTML+=`<br><small style="color:#8a9ab5">Colunas: ${colsDetectadas}...</small>`;
+
       // Mostrar seletor de processo se tiver coluna identificadora
       const wrapConj=document.getElementById('insc-conjuntos-wrap');
       const wrapPreview=document.getElementById('insc-preview');
