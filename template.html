@@ -552,11 +552,11 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
 
     <div class="nav-section" style="margin-top:4px">Resultados</div>
     <nav>
-      <button class="nav-btn" onclick="document.getElementById('form-nav-resultados').submit()">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      <button class="nav-btn" data-page="inscricoes" onclick="goPage('inscricoes')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         Inscrições
       </button>
-      <button class="nav-btn" onclick="document.getElementById('form-nav-homologacao').submit()">
+      <button class="nav-btn" data-page="homologacao" onclick="goPage('homologacao')">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
         Homologação
       </button>
@@ -1006,6 +1006,56 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
     </div>
     <div id="page-equipes" class="page"><div class="card card-pad"><div class="empty-state"><div class="empty-icon">🏢</div><div class="empty-title">Em breve</div><div class="empty-desc">Gerenciamento de equipes em desenvolvimento.</div></div></div></div>
     <div id="page-config" class="page"><div class="card card-pad"><div class="empty-state"><div class="empty-icon">⚙️</div><div class="empty-title">Em breve</div><div class="empty-desc">Configurações em desenvolvimento.</div></div></div></div>
+
+    <!-- PÁGINA INSCRIÇÕES -->
+    <div id="page-inscricoes" class="page">
+      <div class="page-header">
+        <div class="page-title-h1">📄 Resultados · Inscrições</div>
+        <div class="page-sub">Processe o relatório geral e gere as planilhas de resultado e alocação.</div>
+      </div>
+      <div class="card card-pad">
+        <label class="form-label">Relatório Geral (.xlsx)</label>
+        <input type="file" id="insc-file" accept=".xlsx" class="form-input" style="padding:6px"
+          onchange="carregarArquivoInscricoes(this)">
+        <div id="insc-status" style="margin-top:8px;font-size:12.5px;color:#8a9ab5"></div>
+      </div>
+      <div id="insc-conjuntos-wrap" style="display:none" class="card card-pad">
+        <div style="font-size:13px;font-weight:600;color:#1f2a3d;margin-bottom:12px">Cargos com mesma prova <span style="font-size:11px;color:#8a9ab5;font-weight:400">(opcional)</span></div>
+        <div id="insc-conjuntos-lista"></div>
+        <button class="btn-secondary" style="margin-top:8px" onclick="adicionarConjunto()">+ Adicionar conjunto</button>
+      </div>
+      <div id="insc-preview" style="display:none" class="card card-pad">
+        <div id="insc-preview-content"></div>
+        <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end">
+          <button class="btn-primary" onclick="processarInscricoes()">⚙️ Processar e baixar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PÁGINA HOMOLOGAÇÃO -->
+    <div id="page-homologacao" class="page">
+      <div class="page-header">
+        <div class="page-title-h1">✅ Resultados · Homologação</div>
+        <div class="page-sub">Gere a planilha de homologação unindo classificação final com dados dos candidatos.</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="card card-pad">
+          <label class="form-label">1. Classificação Final (.xlsx)</label>
+          <input type="file" id="homol-cf" accept=".xlsx" class="form-input" style="padding:6px"
+            onchange="verificarHomologacao()">
+        </div>
+        <div class="card card-pad">
+          <label class="form-label">2. Dados dos Candidatos (.xlsx)</label>
+          <input type="file" id="homol-dados" accept=".xlsx" class="form-input" style="padding:6px"
+            onchange="verificarHomologacao()">
+        </div>
+      </div>
+      <div id="homol-status" style="margin-top:12px;font-size:12.5px;color:#8a9ab5"></div>
+      <div id="homol-btn-wrap" style="display:none;margin-top:12px">
+        <button class="btn-primary" onclick="processarHomologacao()">⚙️ Gerar Homologação</button>
+      </div>
+      <div id="homol-resultado" style="margin-top:12px"></div>
+    </div>
 
     <!-- PÁGINA FÉRIAS -->
     <div id="page-ferias" class="page">
@@ -4575,6 +4625,242 @@ async function _salvarFeriasGitHub(ferias){
     }
   } catch(e){
     if(msg){ msg.innerHTML=`<div style="padding:10px 14px;border-radius:9px;background:#fdeceb;border:1px solid #f3cfcd;font-size:13px;color:#c0322f;font-weight:600">⚠️ Erro: ${e.message}</div>`; }
+  }
+}
+
+// ── RESULTADOS: INSCRIÇÕES ────────────────────────────────────────────
+let _inscWorkbook = null;
+
+function carregarSheetJS(cb){
+  if(typeof XLSX!=='undefined'){cb();return;}
+  const s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+  s.onload=cb; document.head.appendChild(s);
+}
+
+function carregarArquivoInscricoes(input){
+  const file=input.files[0]; if(!file) return;
+  const status=document.getElementById('insc-status');
+  status.textContent='Lendo arquivo...';
+  carregarSheetJS(()=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      _inscWorkbook=XLSX.read(e.target.result,{type:'binary',cellDates:true});
+      const nomes=_inscWorkbook.SheetNames;
+      status.innerHTML=`✅ Arquivo carregado: <strong>${file.name}</strong> (${nomes.length} aba${nomes.length>1?'s':''}: ${nomes.join(', ')})`;
+      document.getElementById('insc-conjuntos-wrap').style.display='block';
+      document.getElementById('insc-preview').style.display='block';
+      document.getElementById('insc-preview-content').innerHTML=`<div style="font-size:13px;color:#41506b">Arquivo pronto para processar. Configure os conjuntos de cargos se necessário e clique em <strong>Processar e baixar</strong>.</div>`;
+    };
+    reader.readAsBinaryString(file);
+  });
+}
+
+let _conjuntoCount=0;
+function adicionarConjunto(){
+  _conjuntoCount++;
+  const lista=document.getElementById('insc-conjuntos-lista');
+  const div=document.createElement('div');
+  div.style.cssText='display:flex;align-items:center;gap:8px;margin-bottom:8px';
+  div.innerHTML=`<input id="conj-${_conjuntoCount}" class="form-input" style="flex:1" placeholder="Ex: 314, 315" type="text">
+    <button class="btn-secondary" style="height:34px;padding:0 10px" onclick="this.parentElement.remove()">✕</button>`;
+  lista.appendChild(div);
+}
+
+function processarInscricoes(){
+  if(!_inscWorkbook){alert('Carregue o arquivo primeiro.');return;}
+  carregarSheetJS(()=>{
+    try{
+      // Ler todas as abas e concatenar
+      const STATUS_ATIVOS=['pago','deferida'];
+      let todos=[];
+      for(const nome of _inscWorkbook.SheetNames){
+        const rows=XLSX.utils.sheet_to_json(_inscWorkbook.Sheets[nome],{defval:''});
+        todos=todos.concat(rows);
+      }
+      if(!todos.length){alert('Nenhum dado encontrado.');return;}
+
+      // Normalizar
+      todos.forEach(r=>{
+        r._cpf=(r['CPF']||'').toString().replace(/\D/g,'');
+        r._cod=(r['CÓDIGO']||r['CODIGO']||'').toString().trim();
+        r._status=(r['STATUS']||'').toString().trim().toLowerCase();
+        r._dt=new Date(r['DATA INSCRIÇÃO']||r['DATA_INSCRICAO']||0).getTime()||0;
+      });
+
+      // Coletar conjuntos
+      const conjuntos=[];
+      document.querySelectorAll('[id^="conj-"]').forEach(inp=>{
+        const cods=inp.value.split(',').map(c=>c.trim()).filter(Boolean);
+        if(cods.length>=2) conjuntos.push(cods);
+      });
+
+      // Regra 1: duplicata no mesmo cargo (só pagos/deferidos)
+      const cancelar=new Set();
+      const groupBy=(arr,fn)=>arr.reduce((g,x)=>{const k=fn(x);(g[k]=g[k]||[]).push(x);return g;},{});
+      const byCargosCpf=groupBy(todos,r=>`${r._cpf}__${r._cod}`);
+      Object.values(byCargosCpf).forEach(grp=>{
+        const ativos=grp.filter(r=>STATUS_ATIVOS.includes(r._status)).sort((a,b)=>a._dt-b._dt);
+        ativos.slice(0,-1).forEach(r=>cancelar.add(r['INSCRIÇÃO']?.toString()));
+      });
+
+      // Regra 2: conjuntos de mesma prova
+      conjuntos.forEach(conj=>{
+        const sub=todos.filter(r=>conj.includes(r._cod));
+        const byCpf=groupBy(sub,r=>r._cpf);
+        Object.values(byCpf).forEach(grp=>{
+          const ativos=grp.filter(r=>STATUS_ATIVOS.includes(r._status)).sort((a,b)=>a._dt-b._dt);
+          ativos.slice(0,-1).forEach(r=>cancelar.add(r['INSCRIÇÃO']?.toString()));
+        });
+      });
+
+      // Aplicar cancelamentos
+      todos.forEach(r=>{if(cancelar.has(r['INSCRIÇÃO']?.toString())) r['STATUS']='Cancelada';});
+
+      // Planilha de resultado
+      const wbRes=XLSX.utils.book_new();
+      const wsRes=XLSX.utils.json_to_sheet(todos.map(r=>{const c={...r};delete c._cpf;delete c._cod;delete c._status;delete c._dt;return c;}));
+      XLSX.utils.book_append_sheet(wbRes,wsRes,'RESULTADO');
+
+      // Planilha de alocação (só pagos e deferidos)
+      const aloc=todos.filter(r=>STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase()));
+      const wbAloc=XLSX.utils.book_new();
+      const wsAloc=XLSX.utils.json_to_sheet(aloc.map(r=>{const c={...r};delete c._cpf;delete c._cod;delete c._status;delete c._dt;return c;}));
+      XLSX.utils.book_append_sheet(wbAloc,wsAloc,'ALOCACAO');
+
+      // Resumo
+      const cancelados=todos.filter(r=>r['STATUS']==='Cancelada').length;
+      const pagos=todos.filter(r=>(r['STATUS']||'').toLowerCase()==='pago').length;
+      const deferidos=todos.filter(r=>(r['STATUS']||'').toLowerCase()==='deferida').length;
+      document.getElementById('insc-preview-content').innerHTML=`
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px">
+  ${[['Total',todos.length,'#41506b'],['Pagos',pagos,'#2e7d52'],['Deferidos',deferidos,'#2f6cc4'],['Cancelados',cancelados,'#c0322f']].map(([l,v,c])=>`
+  <div style="text-align:center;background:#f7f9fc;border-radius:8px;padding:10px">
+    <div style="font-size:22px;font-weight:800;color:${c}">${v}</div>
+    <div style="font-size:11px;color:#8a9ab5;font-weight:600">${l}</div>
+  </div>`).join('')}
+</div>
+<div style="font-size:13px;color:#2e7d52;font-weight:600">✅ Processado! Baixe as planilhas abaixo.</div>`;
+
+      // Downloads
+      XLSX.writeFile(wbRes,'RESULTADO.xlsx');
+      setTimeout(()=>XLSX.writeFile(wbAloc,'ALOCACAO.xlsx'),500);
+
+    }catch(e){alert('Erro: '+e.message);}
+  });
+}
+
+// ── RESULTADOS: HOMOLOGAÇÃO ───────────────────────────────────────────
+let _homolCF=null, _homolDados=null;
+
+function lerExcel(file,cb){
+  carregarSheetJS(()=>{
+    const reader=new FileReader();
+    reader.onload=e=>cb(XLSX.read(e.target.result,{type:'binary',cellDates:true}));
+    reader.readAsBinaryString(file);
+  });
+}
+
+function verificarHomologacao(){
+  const cf=document.getElementById('homol-cf').files[0];
+  const dados=document.getElementById('homol-dados').files[0];
+  const status=document.getElementById('homol-status');
+  const btnWrap=document.getElementById('homol-btn-wrap');
+  if(cf&&dados){
+    status.innerHTML=`✅ <strong>${cf.name}</strong> + <strong>${dados.name}</strong> — clique em Gerar Homologação.`;
+    status.style.color='#2e7d52';
+    btnWrap.style.display='block';
+    lerExcel(cf,wb=>_homolCF=wb);
+    lerExcel(dados,wb=>_homolDados=wb);
+  } else {
+    status.textContent='Carregue os dois arquivos.';
+    status.style.color='#8a9ab5';
+    btnWrap.style.display='none';
+  }
+}
+
+function processarHomologacao(){
+  if(!_homolCF||!_homolDados){alert('Carregue os dois arquivos.');return;}
+  const res=document.getElementById('homol-resultado');
+  res.innerHTML='<div class="loading"><div class="spinner"></div>Processando...</div>';
+  try{
+    // Ler CF (header na linha 2 = index 1)
+    const wsCF=_homolCF.Sheets[_homolCF.SheetNames[0]];
+    const cfRows=XLSX.utils.sheet_to_json(wsCF,{range:1,defval:''});
+
+    // Ler dados (todas as abas)
+    let dadosTodos=[];
+    for(const nome of _homolDados.SheetNames){
+      const rows=XLSX.utils.sheet_to_json(_homolDados.Sheets[nome],{defval:''});
+      dadosTodos=dadosTodos.concat(rows);
+    }
+
+    // Índice por inscrição
+    const dadosIdx={};
+    dadosTodos.forEach(r=>{
+      const insc=(r['INSCRIÇÃO']||r['INSCRICAO']||'').toString().trim();
+      if(insc) dadosIdx[insc]=r;
+    });
+
+    // Reservas mapeadas
+    const RESERVAS=[
+      {aba:'AMPLA',      colClass:'CLASS. CARGO AMPLA'},
+      {aba:'PCD',        colClass:'CLASS. CARGO PcD'},
+      {aba:'PNP',        colClass:'CLASS. CARGO PNP'},
+      {aba:'INDIGENA',   colClass:'CLASS. INDIGENA'},
+      {aba:'QUILOMBOLA', colClass:'CLASS. QUILOMBOLA'},
+    ];
+
+    const wbOut=XLSX.utils.book_new();
+    const resumo=[];
+
+    RESERVAS.forEach(({aba,colClass})=>{
+      // Filtrar candidatos com classificação nesta reserva
+      const comClass=cfRows.filter(r=>{
+        const v=(r[colClass]||'').toString().trim();
+        return v&&v!=='-'&&v!=='NaN'&&v!=='';
+      });
+      if(!comClass.length) return;
+
+      // Juntar com dados e ordenar por cargo + classificação
+      const merged=comClass.map(cf=>{
+        const insc=(cf['INSCRIÇÃO']||'').toString().trim();
+        const dados=dadosIdx[insc]||{};
+        const classNum=parseInt((cf[colClass]||'0').replace(/\D/g,''))||9999;
+        const codNum=parseInt((cf['CÓDIGO']||cf['CARGO']||'0').toString())||9999;
+        return {...dados,...cf, 'CLASS.':cf[colClass], _classNum:classNum, _codNum:codNum};
+      });
+
+      merged.sort((a,b)=>a._codNum-b._codNum||a._classNum-b._classNum);
+
+      // Renumerar por cargo
+      let cargoAtual='', seq=0;
+      merged.forEach(r=>{
+        const cargo=r['CÓDIGO']||r['CARGO']||'';
+        if(cargo!==cargoAtual){cargoAtual=cargo;seq=0;}
+        seq++;
+        r['CLASS.']=seq;
+      });
+
+      // Remover campos internos
+      const saida=merged.map(r=>{const c={...r};delete c._classNum;delete c._codNum;return c;});
+      const ws=XLSX.utils.json_to_sheet(saida);
+      XLSX.utils.book_append_sheet(wbOut,ws,aba);
+      resumo.push(`${aba}: ${saida.length}`);
+    });
+
+    if(!wbOut.SheetNames.length){
+      res.innerHTML='<div style="color:#c0322f">Nenhum dado encontrado. Verifique se os arquivos são do mesmo concurso.</div>';
+      return;
+    }
+
+    XLSX.writeFile(wbOut,'HOMOLOGACAO.xlsx');
+    res.innerHTML=`<div style="background:#e4f3ea;border:1px solid #a8dbb8;border-radius:9px;padding:12px 16px;font-size:13px;color:#2e7d52;font-weight:600">
+      ✅ Homologação gerada e baixada!<br>
+      <span style="font-weight:400;font-size:12px">${resumo.join(' · ')}</span>
+    </div>`;
+  }catch(e){
+    res.innerHTML=`<div style="color:#c0322f">Erro: ${e.message}</div>`;
   }
 }
 
