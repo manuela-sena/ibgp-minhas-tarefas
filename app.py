@@ -65,41 +65,12 @@ OPERACIONAIS  = usuarios_com_perfil(USUARIOS, "operacional")
 _atrib_raw = open("/mount/src/ibgp-minhas-tarefas/atribuicoes.js").read()
 ATRIBUICOES = {k: v for k, v in re.findall(r'"([^"]+)":\s*"([^"]+)"', _atrib_raw)}
 
-# ── APLICAR FÉRIAS ATIVAS ─────────────────────────────────────────────
 def carregar_ferias():
     try:
         with open("/mount/src/ibgp-minhas-tarefas/ferias.json", "r", encoding="utf-8") as f:
             return json.load(f).get("ferias", [])
     except Exception:
         return []
-
-def aplicar_ferias(atrib):
-    """Substitui responsáveis temporariamente durante férias ativas."""
-    hoje = date.today().isoformat()
-    ferias = carregar_ferias()
-    atrib_mod = dict(atrib)
-    for f in ferias:
-        if not f.get("ativo", True): continue
-        ini = f.get("inicio", "9999")
-        fim = f.get("fim",    "0000")
-        if ini <= hoje <= fim:
-            de  = f.get("de", "")
-            para = f.get("para", "")
-            if de and para:
-                for k, v in atrib_mod.items():
-                    if v == de:
-                        atrib_mod[k] = para
-    return atrib_mod
-
-ATRIBUICOES = aplicar_ferias(ATRIBUICOES)
-
-# Limpar cache de tarefas quando há férias ativas (para refletir imediatamente)
-_ferias_ativas = [f for f in carregar_ferias() if f.get("ativo", True) and f.get("inicio","") <= date.today().isoformat() <= f.get("fim","")]
-if _ferias_ativas and not st.session_state.get("_ferias_cache_cleared"):
-    st.cache_data.clear()
-    st.session_state["_ferias_cache_cleared"] = True
-elif not _ferias_ativas:
-    st.session_state.pop("_ferias_cache_cleared", None)
 
 st.set_page_config(page_title="IBGP · Minhas Tarefas", page_icon="✅", layout="wide")
 
@@ -484,9 +455,10 @@ def g_all(url, tok=None):
     return res
 
 @st.cache_data(ttl=180, show_spinner=False)
-def buscar_tarefas(token):
+def buscar_tarefas(token, ferias_json="[]"):
     # Usuário local sem token Microsoft — retorna vazio
     if not token: return [], [], {}, None
+    _ferias_registradas = json.loads(ferias_json)
     from datetime import timezone, timedelta
     def _g(url): return g(url, token)
     def _g_all(url): return g_all(url, token)
@@ -507,9 +479,23 @@ def buscar_tarefas(token):
     limite_48h = datetime.utcnow().replace(tzinfo=timezone.utc) - timedelta(hours=48)
     for t in _g_all(f"https://graph.microsoft.com/v1.0/planner/plans/{plano_id}/tasks"):
         nome = (t.get("title") or "").strip()
-        resp = ATRIBUICOES.get(nome)
-        if not resp: continue
+        resp_original = ATRIBUICOES.get(nome)
+        if not resp_original: continue
         due = t.get("dueDateTime") or ""
+        due_date = due[:10] if due else ""
+
+        # Verificar se há férias que cobrem esta tarefa
+        resp = resp_original
+        hoje = date.today().isoformat()
+        for f in _ferias_registradas:
+            if not f.get("ativo", True): continue
+            if f.get("de","") != resp_original: continue
+            if hoje > f.get("fim","0000"): continue  # já terminou
+            # Tarefa vence no período das férias
+            if due_date and f.get("inicio","") <= due_date <= f.get("fim","9999"):
+                resp = f.get("para", resp_original)
+                break
+
         item = {
             "id": t["id"],
             "municipio": buckets.get(t.get("bucketId",""),"—"),
@@ -535,7 +521,8 @@ def buscar_tarefas(token):
     return tarefas, concluidas[:30], buckets, plano_id
 
 with st.spinner("Carregando tarefas..."):
-    tarefas, concluidas, buckets, plano_id = buscar_tarefas(token or "")
+    _ferias_json = json.dumps(carregar_ferias())
+    tarefas, concluidas, buckets, plano_id = buscar_tarefas(token or "", _ferias_json)
 
 # ── MONTAR DADOS_INICIAIS ─────────────────────────────────────────────
 cron_result  = st.session_state.pop(CRON_RESULT_KEY, None)
