@@ -4818,47 +4818,84 @@ function processarHomologacao(){
       if(insc) dadosIdx[insc]=r;
     });
 
-    // Detectar coluna de classificação na CF
-    const colClass=Object.keys(cfTodos[0]||{}).find(k=>
-      k.toUpperCase().replace(/\s/g,'').includes('CLASS') &&
-      k.toUpperCase().includes('AMPLA')
-    ) || Object.keys(cfTodos[0]||{}).find(k=>k.toUpperCase().includes('CLASS')) || 'CLASS.AMPLA';
+    // Detectar colunas de classificação na CF — cada coluna CLASS.* vira uma aba
+    const primeiraLinha=cfTodos[0]||{};
+    const MAPA_RESERVAS=[
+      {col:'CLASS.AMPLA',        aba:'AMPLA'},
+      {col:'CLASS. CARGO AMPLA', aba:'AMPLA'},
+      {col:'CLASS.CARGO AMPLA',  aba:'AMPLA'},
+      {col:'CLASS. CARGO PcD',   aba:'PCD'},
+      {col:'CLASS.PCD',          aba:'PCD'},
+      {col:'CLASS. CARGO PNP',   aba:'PNP'},
+      {col:'CLASS.PNP',          aba:'PNP'},
+      {col:'CLASS. INDIGENA',    aba:'INDIGENA'},
+      {col:'CLASS.INDIGENA',     aba:'INDIGENA'},
+      {col:'CLASS. QUILOMBOLA',  aba:'QUILOMBOLA'},
+      {col:'CLASS.QUILOMBOLA',   aba:'QUILOMBOLA'},
+      {col:'CLASS. TRANS',       aba:'TRANS'},
+    ];
 
-    // ── Montar registros com dados + classificação ─────────────────
+    // Encontrar quais colunas existem na CF
+    const reservasDetectadas=[];
+    const abasJaAdicionadas=new Set();
+    MAPA_RESERVAS.forEach(({col,aba})=>{
+      if(primeiraLinha.hasOwnProperty(col) && !abasJaAdicionadas.has(aba)){
+        reservasDetectadas.push({col,aba});
+        abasJaAdicionadas.add(aba);
+      }
+    });
+
+    // Se não encontrou nenhuma mapeada, pegar qualquer coluna CLASS.*
+    if(!reservasDetectadas.length){
+      Object.keys(primeiraLinha).forEach(k=>{
+        if(k.toUpperCase().startsWith('CLASS') && !abasJaAdicionadas.has('AMPLA')){
+          reservasDetectadas.push({col:k,aba:'AMPLA'});
+          abasJaAdicionadas.add('AMPLA');
+        }
+      });
+    }
+
+    // ── Montar registros ──────────────────────────────────────────
     const cfComDados=cfTodos.map(cf=>{
       const insc=(cf['INSCRIÇÃO']||'').toString().trim();
       const dados=dadosIdx[insc]||{};
-      const classVal=(cf[colClass]||'').toString().trim();
-      const classNum=parseInt(classVal.replace(/\D/g,''))||9999;
       const cargo=(dados['CARGO']||cf['CARGO']||'').toString().trim();
       const cod=(dados['CÓDIGO']||dados['CODIGO']||cf['CÓDIGO']||cargo.split('-')[0]).toString().trim();
       const codNum=parseInt(cod)||9999;
-      return {_classNum:classNum,_codNum:codNum,_cargo:cargo,_insc:insc,_classVal:classVal,_dados:dados};
-    });
-
-    // ── Função para montar aba com colunas dos dados ───────────────
-    function montarSaida(registros){
-      registros.sort((a,b)=>a._codNum-b._codNum||a._classNum-b._classNum);
-      let cargoAtual='',seq=0;
-      return registros.map(r=>{
-        if(r._cargo!==cargoAtual){cargoAtual=r._cargo;seq=0;}
-        seq++;
-        const linha={'CLASS.':seq};
-        // Adicionar só colunas dos dados (exceto CLASS. original)
-        colunasDados.forEach(col=>{
-          if(col==='CLASS.') return;
-          linha[col]=r._dados[col]??'';
-        });
-        return linha;
+      // Guardar classificação por reserva
+      const classes={};
+      reservasDetectadas.forEach(({col,aba})=>{
+        const v=(cf[col]||'').toString().trim();
+        if(v&&v!=='-'&&v!=='nan') classes[aba]=parseInt(v.replace(/\D/g,''))||9999;
       });
-    }
+      return {_classes:classes,_codNum:codNum,_cargo:cargo,_insc:insc,_dados:dados};
+    });
 
     const wbOut=XLSX.utils.book_new();
     const resumo=[];
     const colsSaida=['CLASS.',...colunasDados.filter(c=>c!=='CLASS.')];
 
-    // ── Função para criar aba formatada ───────────────────────────
-    function criarAba(nome,dados){
+    // Criar aba para cada reserva detectada
+    reservasDetectadas.forEach(({col,aba})=>{
+      // Filtrar candidatos que têm classificação nesta reserva
+      const candidatos=cfComDados.filter(r=>r._classes[aba]!==undefined);
+      if(!candidatos.length) return;
+
+      // Ordenar por cargo + classificação
+      candidatos.sort((a,b)=>a._codNum-b._codNum||(a._classes[aba]||9999)-(b._classes[aba]||9999));
+
+      // Renumerar por cargo
+      let cargoAtual='',seq=0;
+      const saida=candidatos.map(r=>{
+        if(r._cargo!==cargoAtual){cargoAtual=r._cargo;seq=0;}
+        seq++;
+        const linha={'CLASS.':seq};
+        colunasDados.forEach(c=>{if(c!=='CLASS.') linha[c]=r._dados[c]??'';});
+        return linha;
+      });
+
+      criarAba(aba,saida);
+    });
       if(!dados.length) return;
       const ws=XLSX.utils.json_to_sheet(dados,{header:colsSaida});
 
@@ -4909,24 +4946,6 @@ function processarHomologacao(){
       XLSX.utils.book_append_sheet(wbOut,ws,nome);
       resumo.push(`${nome}: ${dados.length}`);
     }
-
-    // AMPLA
-    criarAba('AMPLA',montarSaida([...cfComDados]));
-
-    // Reservas
-    const RESERVAS=[
-      {aba:'PCD',        col:'CONCORRE VAGA DEFICIÊNCIA'},
-      {aba:'PNP',        col:'CONCORRE VAGA NEGRO'},
-      {aba:'INDIGENA',   col:'CONCORRE VAGA INDÍGENA'},
-      {aba:'QUILOMBOLA', col:'CONCORRE VAGA QUILOMBOLA'},
-      {aba:'TRANS',      col:'CONCORRE VAGA TRANS'},
-    ];
-
-    RESERVAS.forEach(({aba,col})=>{
-      const filtrados=cfComDados.filter(r=>(r._dados[col]||'').toString().toUpperCase().trim()==='SIM');
-      if(!filtrados.length) return;
-      criarAba(aba,montarSaida([...filtrados]));
-    });
 
     if(!wbOut.SheetNames.length){
       res.innerHTML='<div style="color:#c0322f;padding:12px">Nenhum dado encontrado.</div>';
