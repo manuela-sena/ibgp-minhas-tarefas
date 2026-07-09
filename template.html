@@ -4774,97 +4774,188 @@ function processarInscricoes(){
   if(!_inscWorkbook){alert('Carregue o arquivo primeiro.');return;}
   carregarSheetJS(()=>{
     try{
-      const STATUS_ATIVOS=['pago','deferida'];
+      const STATUS_ATIVOS=['pago','deferida','deferido'];
       let todos=[];
       for(const nome of _inscWorkbook.SheetNames){
         const rows=XLSX.utils.sheet_to_json(_inscWorkbook.Sheets[nome],{defval:'',range:1});
         todos=todos.concat(rows);
       }
-      // Normalizar chaves e valores string
       todos=todos.map(r=>{
         const n={};
-        Object.keys(r).forEach(k=>{ n[k.trim()]=typeof r[k]==='string'?r[k].trim():r[k]; });
+        Object.keys(r).forEach(k=>{n[k.trim()]=typeof r[k]==='string'?r[k].trim():r[k];});
         return n;
       });
       if(!todos.length){alert('Nenhum dado encontrado.');return;}
 
-      // Filtrar por processo selecionado
       if(window._inscColProcesso && window._inscProcessoAtual){
         todos=todos.filter(r=>(r[window._inscColProcesso]||'').toString().trim()===window._inscProcessoAtual.trim());
-        if(!todos.length){alert(`Nenhum registro encontrado para "${window._inscProcessoAtual}".`);return;}
+        if(!todos.length){alert(`Nenhum registro para "${window._inscProcessoAtual}".`);return;}
       } else if(window._inscColProcesso && !window._inscProcessoAtual){
         alert('Selecione um processo antes de processar.');return;
       }
 
-      // Normalizar
-      todos.forEach(r=>{
-        r._cpf=(r['CPF']||'').toString().replace(/\D/g,'');
-        r._cod=(r['CÓDIGO']||r['CODIGO']||'').toString().trim();
-        r._status=(r['STATUS']||'').toString().trim().toLowerCase();
-        r._dt=new Date(r['DATA INSCRIÇÃO']||r['DATA_INSCRICAO']||0).getTime()||0;
-      });
-
-      // Coletar conjuntos
       const conjuntos=[];
       document.querySelectorAll('[id^="conj-"]').forEach(inp=>{
         const cods=inp.value.split(',').map(c=>c.trim()).filter(Boolean);
         if(cods.length>=2) conjuntos.push(cods);
       });
 
-      // Regra 1: duplicata no mesmo cargo (só pagos/deferidos)
       const cancelar=new Set();
       const groupBy=(arr,fn)=>arr.reduce((g,x)=>{const k=fn(x);(g[k]=g[k]||[]).push(x);return g;},{});
-      const byCargosCpf=groupBy(todos,r=>`${r._cpf}__${r._cod}`);
-      Object.values(byCargosCpf).forEach(grp=>{
-        const ativos=grp.filter(r=>STATUS_ATIVOS.includes(r._status)).sort((a,b)=>a._dt-b._dt);
+      todos.forEach(r=>{ r._dt=new Date(r['DATA INSCRICAO']||r['DATA INSCRIÇÃO']||0).getTime()||0; });
+
+      const byCargoCpf=groupBy(todos,r=>`${(r['CPF']||'').replace(/\D/g,'')}__${(r['CÓDIGO']||r['CODIGO']||'').toString().trim()}`);
+      Object.values(byCargoCpf).forEach(grp=>{
+        const ativos=grp.filter(r=>STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase())).sort((a,b)=>a._dt-b._dt);
         ativos.slice(0,-1).forEach(r=>cancelar.add(r['INSCRIÇÃO']?.toString()));
       });
 
-      // Regra 2: conjuntos de mesma prova
       conjuntos.forEach(conj=>{
-        const sub=todos.filter(r=>conj.includes(r._cod));
-        const byCpf=groupBy(sub,r=>r._cpf);
+        const sub=todos.filter(r=>conj.includes((r['CÓDIGO']||r['CODIGO']||'').toString().trim()));
+        const byCpf=groupBy(sub,r=>(r['CPF']||'').replace(/\D/g,''));
         Object.values(byCpf).forEach(grp=>{
-          const ativos=grp.filter(r=>STATUS_ATIVOS.includes(r._status)).sort((a,b)=>a._dt-b._dt);
+          const ativos=grp.filter(r=>STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase())).sort((a,b)=>a._dt-b._dt);
           ativos.slice(0,-1).forEach(r=>cancelar.add(r['INSCRIÇÃO']?.toString()));
         });
       });
 
-      // Aplicar cancelamentos
       todos.forEach(r=>{if(cancelar.has(r['INSCRIÇÃO']?.toString())) r['STATUS']='Cancelada';});
 
-      // Planilha de resultado
-      const wbRes=XLSX.utils.book_new();
-      const wsRes=XLSX.utils.json_to_sheet(todos.map(r=>{const c={...r};delete c._cpf;delete c._cod;delete c._status;delete c._dt;return c;}));
-      XLSX.utils.book_append_sheet(wbRes,wsRes,'RESULTADO');
+      todos.sort((a,b)=>(a['CARGO']||'').localeCompare(b['CARGO']||'')||((a['INSCRIÇÃO']||0)-(b['INSCRIÇÃO']||0)));
 
-      // Planilha de alocação (só pagos e deferidos)
-      const aloc=todos.filter(r=>STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase()));
-      const wbAloc=XLSX.utils.book_new();
-      const wsAloc=XLSX.utils.json_to_sheet(aloc.map(r=>{const c={...r};delete c._cpf;delete c._cod;delete c._status;delete c._dt;return c;}));
-      XLSX.utils.book_append_sheet(wbAloc,wsAloc,'ALOCACAO');
+      const nomeConcurso=window._inscProcessoAtual||'CONCURSO';
+      const wb=XLSX.utils.book_new();
 
-      // Resumo
+      function fmtData(v){
+        if(!v||v==='-') return '-';
+        try{const d=new Date(v);if(isNaN(d)) return v.toString();
+          return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;}
+        catch{return v.toString();}
+      }
+
+      function getVal(r,cols){
+        if(!Array.isArray(cols)) cols=[cols];
+        for(const c of cols){if(r[c]!==undefined&&r[c]!=='') return r[c]||'';}
+        return '';
+      }
+
+      function criarAbaInsc(nomeAba,titulo,colsSaida,colsOrigem,dados){
+        if(!dados.length) return;
+        const ws={};
+        const NC=colsSaida.length;
+        // Linha 1: título
+        ws['A1']={v:`${nomeConcurso}\n\nRESULTADO PRELIMINAR DAS INSCRIÇÕES - ${titulo}`,t:'s',
+          s:{font:{bold:true,color:{rgb:'FFFFFF'},name:'Arial',sz:10},
+             fill:{fgColor:{rgb:'1F4E8C'},patternType:'solid'},
+             alignment:{horizontal:'center',vertical:'center',wrapText:true}}};
+        ws['!merges']=[{s:{r:0,c:0},e:{r:0,c:NC-1}}];
+        // Linha 2: header
+        colsSaida.forEach((col,ci)=>{
+          const addr=XLSX.utils.encode_cell({r:1,c:ci});
+          ws[addr]={v:col,t:'s',s:{font:{bold:true,color:{rgb:'FFFFFF'},name:'Arial',sz:9},
+            fill:{fgColor:{rgb:'1F4E8C'},patternType:'solid'},
+            alignment:{horizontal:'center',vertical:'center',wrapText:true},
+            border:{top:{style:'thin',color:{rgb:'000000'}},bottom:{style:'thin',color:{rgb:'000000'}},
+                    left:{style:'thin',color:{rgb:'000000'}},right:{style:'thin',color:{rgb:'000000'}}}}};
+        });
+        // Dados
+        const CORES=['FFFFFF','EBF3FF'];
+        let cargoAtual='',corIdx=0;
+        dados.forEach((row,ri)=>{
+          const cargo=row['CARGO']||'';
+          if(cargo!==cargoAtual){cargoAtual=cargo;corIdx=(corIdx+1)%2;}
+          const cor=CORES[corIdx];
+          colsSaida.forEach((col,ci)=>{
+            const addr=XLSX.utils.encode_cell({r:ri+2,c:ci});
+            const orig=colsOrigem[ci];
+            let val=getVal(row,Array.isArray(orig)?orig:[orig]);
+            if(col.includes('DATA')||col.includes('NASC')) val=fmtData(val);
+            if(val===null||val===undefined||val==='nan') val='';
+            ws[addr]={v:val.toString(),t:'s',s:{font:{name:'Arial',sz:9},
+              fill:{fgColor:{rgb:cor},patternType:'solid'},
+              alignment:{vertical:'center'},
+              border:{top:{style:'thin',color:{rgb:'CCCCCC'}},bottom:{style:'thin',color:{rgb:'CCCCCC'}},
+                      left:{style:'thin',color:{rgb:'CCCCCC'}},right:{style:'thin',color:{rgb:'CCCCCC'}}}}};
+          });
+        });
+        const LARG={'INSCRIÇÃO':12,'CANDIDATO':35,'CPF':14,'DATA DE NASCIMENTO':12,
+          'CARGO':45,'STATUS DE PAGAMENTO':14,'CONCORRE VAGA DEFICIÊNCIA':10,
+          'DEFICIÊNCIA':20,'CONCORRE VAGA NEGRO':10,'PRECISA ATENDIMENTO ESPECIAL':10,
+          'ATENDIMENTO ESPECIAL':25,'DATA REALIZAÇÃO PROVA':18,'RESULTADO':12,
+          'JUSTIFICATIVA':40,'LINK':35};
+        ws['!cols']=colsSaida.map(c=>({wch:LARG[c]||14}));
+        ws['!rows']=[{hpt:45},{hpt:28}];
+        ws['!ref']=XLSX.utils.encode_range({s:{r:0,c:0},e:{r:dados.length+1,c:NC-1}});
+        ws['!freeze']={xSplit:0,ySplit:2};
+        XLSX.utils.book_append_sheet(wb,ws,nomeAba);
+      }
+
+      // AMPLA
+      criarAbaInsc('AMPLA','AMPLA',
+        ['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO',
+         'CONCORRE VAGA DEFICIÊNCIA','DEFICIÊNCIA','CONCORRE VAGA NEGRO',
+         'PRECISA ATENDIMENTO ESPECIAL','ATENDIMENTO ESPECIAL','DATA REALIZAÇÃO PROVA'],
+        ['INSCRIÇÃO','CANDIDATO','CPF',['DATA NASCIMENTO','DATA DE NASCIMENTO','DATA DE  NASCIMENTO'],
+         'CARGO','STATUS','CONCORRE VAGA DEFICIÊNCIA','DEFICIÊNCIA','CONCORRE VAGA NEGRO',
+         'PRECISA ATENDIMENTO ESPECIAL','ATENDIMENTO ESPECIAL','DATA REALIZAÇÃO PROVA'],
+        todos);
+
+      // PCD
+      const pcd=todos.filter(r=>(r['CONCORRE VAGA DEFICIÊNCIA']||'').toUpperCase()==='SIM'&&STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase()));
+      criarAbaInsc('PCD','PcD',
+        ['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO',
+         'CONCORRE VAGA DEFICIÊNCIA','DEFICIÊNCIA','RESULTADO','JUSTIFICATIVA','LINK'],
+        ['INSCRIÇÃO','CANDIDATO','CPF',['DATA NASCIMENTO','DATA DE NASCIMENTO','DATA DE  NASCIMENTO'],
+         'CARGO','STATUS','CONCORRE VAGA DEFICIÊNCIA','DEFICIÊNCIA',
+         'RESULTADO PCD','JUSTIFICATIVA PCD','LINK PCD'],
+        pcd);
+
+      // PNP
+      const pnp=todos.filter(r=>(r['CONCORRE VAGA NEGRO']||'').toUpperCase()==='SIM'&&STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase()));
+      criarAbaInsc('PNP','PNP',
+        ['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO',
+         'CONCORRE VAGA NEGRO','DATA REALIZAÇÃO PROVA'],
+        ['INSCRIÇÃO','CANDIDATO','CPF',['DATA NASCIMENTO','DATA DE NASCIMENTO','DATA DE  NASCIMENTO'],
+         'CARGO','STATUS','CONCORRE VAGA NEGRO','DATA REALIZAÇÃO PROVA'],
+        pnp);
+
+      // COND. ESPECIAL
+      const cond=todos.filter(r=>(r['PRECISA ATENDIMENTO ESPECIAL']||'').toUpperCase()==='SIM'&&STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase()));
+      criarAbaInsc('COND.ESPECIAL','CONDIÇÃO ESPECIAL',
+        ['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO',
+         'ATENDIMENTO ESPECIAL','RESULTADO','JUSTIFICATIVA','LINK','DATA REALIZAÇÃO PROVA'],
+        ['INSCRIÇÃO','CANDIDATO','CPF',['DATA NASCIMENTO','DATA DE NASCIMENTO','DATA DE  NASCIMENTO'],
+         'CARGO','STATUS','ATENDIMENTO ESPECIAL',
+         'RESULTADO COND. ESPECIAL','JUSTIFICATIVA COND. ESPECIAL','LINK COND. ESPECIAL','DATA REALIZAÇÃO PROVA'],
+        cond);
+
+      if(!wb.SheetNames.length){alert('Nenhuma aba gerada.');return;}
+
+      const nomeArq=(window._inscProcessoAtual||'RESULTADO').replace(/[\/\\:*?"<>|]/g,'-');
+      XLSX.writeFile(wb,`RESULTADO_PRELIMINAR_${nomeArq}.xlsx`);
+
       const cancelados=todos.filter(r=>r['STATUS']==='Cancelada').length;
-      const pagos=todos.filter(r=>(r['STATUS']||'').toLowerCase()==='pago').length;
-      const deferidos=todos.filter(r=>(r['STATUS']||'').toLowerCase()==='deferida').length;
       document.getElementById('insc-preview-content').innerHTML=`
-<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px">
-  ${[['Total',todos.length,'#41506b'],['Pagos',pagos,'#2e7d52'],['Deferidos',deferidos,'#2f6cc4'],['Cancelados',cancelados,'#c0322f']].map(([l,v,c])=>`
+<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:12px">
+  ${[['Total',todos.length,'#41506b'],
+     ['Pagos',todos.filter(r=>(r['STATUS']||'').toLowerCase()==='pago').length,'#2e7d52'],
+     ['Deferidos',todos.filter(r=>(r['STATUS']||'').toLowerCase()==='deferida').length,'#2f6cc4'],
+     ['Cancelados',cancelados,'#c0322f'],
+     ['PCD',pcd.length,'#7b34c1']].map(([l,v,c])=>`
   <div style="text-align:center;background:#f7f9fc;border-radius:8px;padding:10px">
     <div style="font-size:22px;font-weight:800;color:${c}">${v}</div>
     <div style="font-size:11px;color:#8a9ab5;font-weight:600">${l}</div>
   </div>`).join('')}
 </div>
-<div style="font-size:13px;color:#2e7d52;font-weight:600">✅ Processado! Baixe as planilhas abaixo.</div>`;
+<div style="font-size:13px;color:#2e7d52;font-weight:600">✅ Planilha gerada! Abas: ${wb.SheetNames.join(', ')}</div>`;
 
-      // Downloads
-      XLSX.writeFile(wbRes,'RESULTADO.xlsx');
-      setTimeout(()=>XLSX.writeFile(wbAloc,'ALOCACAO.xlsx'),500);
-
-    }catch(e){alert('Erro: '+e.message);}
+    }catch(e){
+      document.getElementById('insc-preview-content').innerHTML=`<div style="color:#c0322f">Erro: ${e.message}</div>`;
+      console.error(e);
+    }
   });
 }
+
 
 // ── RESULTADOS: HOMOLOGAÇÃO ───────────────────────────────────────────
 let _homolCF=null, _homolDados=null;
