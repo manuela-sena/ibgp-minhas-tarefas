@@ -1,12 +1,3 @@
 {
-  "ferias": [
-    {
-      "de": "Manuela",
-      "para": "Natália",
-      "inicio": "2026-07-09",
-      "fim": "2026-07-14",
-      "ativo": true,
-      "criadaEm": "2026-07-09T13:09:43.806Z"
-    }
-  ]
+  "ferias": []
 }
