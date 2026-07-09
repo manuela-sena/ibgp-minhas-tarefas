@@ -706,14 +706,6 @@ header[data-testid="stHeader"]{display:none}
                     import traceback; st.code(traceback.format_exc())
     st.stop()
 
-with st.sidebar:
-    st.markdown('<div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:#4a5a7c;text-transform:uppercase;padding:4px 8px;margin-top:8px">RESULTADOS</div>', unsafe_allow_html=True)
-    if st.button("📄 Inscrições", key="nav_inscricoes", use_container_width=True):
-        st.session_state["pagina"] = "resultados"
-        st.rerun()
-    if st.button("✅ Homologação", key="nav_homologacao", use_container_width=True):
-        st.session_state["pagina"] = "homologacao"
-        st.rerun()
 
 # ── LER E INJETAR TEMPLATE ────────────────────────────────────────────
 with open("/mount/src/ibgp-minhas-tarefas/template.html", "r", encoding="utf-8") as f:
@@ -729,9 +721,7 @@ const NOME_USUARIO  = {json.dumps(nome_interno)};
 const DADOS_INICIAIS = {dados_iniciais};""")
 html = html.replace("// PLACEHOLDER_ATRIB",
     f"const ATRIBUICOES_JS = {json.dumps(ATRIBUICOES)};")
-html = html.replace('action="" target="_top"',
-    f'action="{REDIRECT_URI.rstrip("/")}" target="_top"')
 
-st.markdown("<style>[data-testid='stChatInput'],[data-testid='stBottom']{display:none!important}section[data-testid='stSidebar']{z-index:999999!important}iframe{z-index:1!important}</style>", unsafe_allow_html=True)
+st.markdown("<style>[data-testid='stChatInput'],[data-testid='stBottom']{display:none!important}</style>", unsafe_allow_html=True)
 
 components.html(html, height=900, scrolling=False)
