@@ -4855,36 +4855,32 @@ function processarInscricoes(){
         async function criarAbaExcel(wb, nomeAba, titulo, cols, dados){
           if(!dados.length) return;
           const ws=wb.addWorksheet(nomeAba);
+          const bordaThin={top:{style:'thin',color:{argb:'FF000000'}},bottom:{style:'thin',color:{argb:'FF000000'}},left:{style:'thin',color:{argb:'FF000000'}},right:{style:'thin',color:{argb:'FF000000'}}};
 
-          // Linha 1: título mesclado
+          // Linha 1: título — branca, letra preta, negrito, altura 80
           ws.mergeCells(1,1,1,cols.length);
           const tCell=ws.getCell(1,1);
           tCell.value=`${nomeConcurso}\n\nRESULTADO PRELIMINAR DAS INSCRIÇÕES - ${titulo}`;
-          tCell.font={bold:true,color:{argb:'FFFFFFFF'},name:'Arial',size:10};
-          tCell.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF1F4E8C'}};
+          tCell.font={bold:true,color:{argb:'FF000000'},name:'Arial',size:10};
+          tCell.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
           tCell.alignment={horizontal:'center',vertical:'middle',wrapText:true};
-          tCell.border={top:{style:'thin'},bottom:{style:'thin'},left:{style:'thin'},right:{style:'thin'}};
-          ws.getRow(1).height=50;
+          tCell.border=bordaThin;
+          ws.getRow(1).height=80;
 
-          // Linha 2: cabeçalho
+          // Linha 2: cabeçalho — cinza claro, letra preta, altura 30
           cols.forEach((col,ci)=>{
             const c=ws.getCell(2,ci+1);
             c.value=col;
-            c.font={bold:true,color:{argb:'FFFFFFFF'},name:'Arial',size:9};
-            c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF1F4E8C'}};
+            c.font={bold:true,color:{argb:'FF000000'},name:'Arial',size:9};
+            c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFD9D9D9'}};
             c.alignment={horizontal:'center',vertical:'middle',wrapText:true};
-            c.border={top:{style:'thin'},bottom:{style:'thin'},left:{style:'thin'},right:{style:'thin'}};
+            c.border=bordaThin;
             ws.getColumn(ci+1).width=LARG[col]||14;
           });
-          ws.getRow(2).height=28;
+          ws.getRow(2).height=30;
 
-          // Dados
-          const CORES=['FFFFFFFF','FFEBF3FF'];
-          let cargoAtual='',corIdx=0;
+          // Dados — branco, grade preta, altura 30
           dados.forEach((row,ri)=>{
-            const cargo=row['CARGO']||'';
-            if(cargo!==cargoAtual){cargoAtual=cargo;corIdx=(corIdx+1)%2;}
-            const cor=CORES[corIdx];
             cols.forEach((col,ci)=>{
               const c=ws.getCell(ri+3,ci+1);
               let val=row[col];
@@ -4892,12 +4888,11 @@ function processarInscricoes(){
               if((col.includes('DATA')||col.includes('NASC'))&&val&&val!=='-') val=fmtData(val);
               c.value=String(val);
               c.font={name:'Arial',size:9};
-              c.fill={type:'pattern',pattern:'solid',fgColor:{argb:cor}};
+              c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
               c.alignment={vertical:'middle'};
-              c.border={top:{style:'thin',color:{argb:'FFCCCCCC'}},bottom:{style:'thin',color:{argb:'FFCCCCCC'}},
-                        left:{style:'thin',color:{argb:'FFCCCCCC'}},right:{style:'thin',color:{argb:'FFCCCCCC'}}};
+              c.border=bordaThin;
             });
-            ws.getRow(ri+3).height=14;
+            ws.getRow(ri+3).height=30;
           });
           ws.views=[{state:'frozen',xSplit:0,ySplit:2}];
         }
