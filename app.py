@@ -65,6 +65,34 @@ OPERACIONAIS  = usuarios_com_perfil(USUARIOS, "operacional")
 _atrib_raw = open("/mount/src/ibgp-minhas-tarefas/atribuicoes.js").read()
 ATRIBUICOES = {k: v for k, v in re.findall(r'"([^"]+)":\s*"([^"]+)"', _atrib_raw)}
 
+# ── APLICAR FÉRIAS ATIVAS ─────────────────────────────────────────────
+def carregar_ferias():
+    try:
+        with open("/mount/src/ibgp-minhas-tarefas/ferias.json", "r", encoding="utf-8") as f:
+            return json.load(f).get("ferias", [])
+    except Exception:
+        return []
+
+def aplicar_ferias(atrib):
+    """Substitui responsáveis temporariamente durante férias ativas."""
+    hoje = date.today().isoformat()
+    ferias = carregar_ferias()
+    atrib_mod = dict(atrib)
+    for f in ferias:
+        if not f.get("ativo", True): continue
+        ini = f.get("inicio", "9999")
+        fim = f.get("fim",    "0000")
+        if ini <= hoje <= fim:
+            de  = f.get("de", "")
+            para = f.get("para", "")
+            if de and para:
+                for k, v in atrib_mod.items():
+                    if v == de:
+                        atrib_mod[k] = para
+    return atrib_mod
+
+ATRIBUICOES = aplicar_ferias(ATRIBUICOES)
+
 st.set_page_config(page_title="IBGP · Minhas Tarefas", page_icon="✅", layout="wide")
 
 st.markdown("""<style>
@@ -247,7 +275,29 @@ if "gerar_convite" in st.query_params and is_gestora:
     st.query_params.clear()
     st.rerun()
 
-# ── SALVAR USUÁRIOS (acionado via query param, só gestoras) ──────────
+# ── SALVAR FÉRIAS ─────────────────────────────────────────────────────
+if "salvar_ferias" in st.query_params and is_gestora:
+    try:
+        novas_ferias = json.loads(st.query_params["salvar_ferias"])
+        GH_TOKEN = st.secrets.get("GITHUB_TOKEN","")
+        import base64 as _b64
+        REPO = "manuela-sena/ibgp-minhas-tarefas"
+        r_sha = requests.get(f"https://api.github.com/repos/{REPO}/contents/ferias.json",
+            headers={"Authorization": f"Bearer {GH_TOKEN}"})
+        sha_f = r_sha.json().get("sha","") if r_sha.status_code==200 else ""
+        conteudo = json.dumps({"ferias": novas_ferias}, ensure_ascii=False, indent=2)
+        payload = {"message":"chore: atualizar férias","content":_b64.b64encode(conteudo.encode()).decode()}
+        if sha_f: payload["sha"] = sha_f
+        requests.put(f"https://api.github.com/repos/{REPO}/contents/ferias.json",
+            headers={"Authorization": f"Bearer {GH_TOKEN}", "Content-Type":"application/json"},
+            json=payload)
+        st.session_state["ferias_msg"] = "✅ Férias salvas com sucesso!"
+    except Exception as e:
+        st.session_state["ferias_msg"] = f"⚠️ Erro: {e}"
+    st.query_params.clear()
+    st.rerun()
+
+
 if "salvar_usuarios" in st.query_params:
     if is_gestora:
         try:
@@ -489,6 +539,8 @@ usuarios_msg = st.session_state.pop("usuarios_msg", None)
 
 convite_gerado = st.session_state.pop("convite_gerado", None)
 
+ferias_msg    = st.session_state.pop("ferias_msg", None)
+
 dados_iniciais = json.dumps({
     "tarefas"      : tarefas,
     "concluidas"   : concluidas,
@@ -503,6 +555,8 @@ dados_iniciais = json.dumps({
     "conviteGerado": convite_gerado,
     "ghToken"      : st.secrets.get("GITHUB_TOKEN","") if is_gestora else "",
     "appUrl"       : REDIRECT_URI.rstrip('/'),
+    "ferias"       : carregar_ferias(),
+    "feriasMsg"    : ferias_msg,
 })
 
 # ── NAVEGAÇÃO INTERNA (via sendPrompt do template) ───────────────────
