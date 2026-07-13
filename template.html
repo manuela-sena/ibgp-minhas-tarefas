@@ -5339,17 +5339,22 @@ function processarHomologacao(){
 // ── AGENDA ───────────────────────────────────────────────────────────
 const TAREFAS_PROVA = [
   'PROVA OBJETIVA',
-  'PROVA OBJETIVA E PROVA DISCURSIVA',
-  'PROVA OBJETIVA E DISCURSIVA',
+  'REALIZAÇÃO DA PROVA OBJETIVA',
   'APLICAÇÃO DA PROVA OBJETIVA',
 ];
 const TAREFAS_HOMOL = [
   'HOMOLOGAÇÃO',
   'HOMOLOGAÇÃO FINAL',
-  'HOMOLOGAÇÃO (EXCETO CARGOS DA PROVA PRÁTICA)',
-  'HOMOLOGAÇÃO FINAL (EXCETO CARGOS DA PROVA PRÁTICA)',
-  'HOMOLOGAÇÃO FINAL -(APENAS PARA OS CARGOS DA PROVA PRÁTICA)',
+  'HOMOLOGAÇÃO (EXCETO',
+  'HOMOLOGAÇÃO FINAL (EXCETO',
+  'HOMOLOGAÇÃO (APENAS',
+  'HOMOLOGAÇÃO FINAL (APENAS',
+  'HOMOLOGAÇÃO FINAL -',
 ];
+
+// Usar includes para cobrir variações
+function _isProva(t){ return TAREFAS_PROVA.some(p => t.tarefa.toUpperCase().startsWith(p)); }
+function _isHomol(t){ return TAREFAS_HOMOL.some(p => t.tarefa.toUpperCase().startsWith(p)); }
 
 function initAgenda(){
   // Definir datas padrão: hoje até fim do ano
@@ -5382,8 +5387,8 @@ function renderAgenda(){
   const fimDate = new Date(fim + 'T23:59:59');
 
   // Filtrar tarefas do período e tipo
-  const isProva = t => TAREFAS_PROVA.some(p => t.tarefa.toUpperCase().includes(p));
-  const isHomol = t => TAREFAS_HOMOL.some(p => t.tarefa.toUpperCase().includes(p));
+  const isProva = t => _isProva(t);
+  const isHomol = t => _isHomol(t);
 
   let tarefas = _allTasks.filter(t => {
     if(!t.due) return false;
