@@ -3044,7 +3044,7 @@ function calcularTarefasOperacionais(cronograma, temDiscursiva, modo='padrao'){
   for(const t of cronograma){
     const a=t.atividade.toUpperCase();
     if(a.includes('PERÍODO DE INSCRIÇÕES')&&!fimInscricoes) fimInscricoes=t.data_fim;
-    if((a==='PROVA OBJETIVA'||a.startsWith('PROVA OBJETIVA E'))&&!dataProva) dataProva=t.data_fim;
+    if((a==='PROVA OBJETIVA'||a.startsWith('PROVA OBJETIVA E')||a.startsWith('REALIZAÇÃO DA PROVA OBJETIVA')||a.startsWith('APLICAÇÃO DA PROVA OBJETIVA'))&&!dataProva) dataProva=t.data_fim;
     if(a.includes('RESULTADO PRELIMINAR DA TOTALIZAÇÃO')&&!resultPrelObjetiva) resultPrelObjetiva=t.data_fim;
   }
 
@@ -3862,7 +3862,9 @@ async function previewRetroativo(bucketId){
         titulo === 'PROVA OBJETIVA' ||
         titulo.startsWith('PROVA OBJETIVA E') ||
         titulo.startsWith('PROVA OBJETIVA -') ||
-        titulo === 'PROVA OBJETIVA E PROVA DISCURSIVA'
+        titulo === 'PROVA OBJETIVA E PROVA DISCURSIVA' ||
+        titulo.startsWith('REALIZAÇÃO DA PROVA OBJETIVA') ||
+        titulo.startsWith('APLICAÇÃO DA PROVA OBJETIVA')
       )) dataProva = due;
 
       // Resultado preliminar da totalização
