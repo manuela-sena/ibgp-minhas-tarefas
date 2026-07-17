@@ -3035,7 +3035,7 @@ function ignorarAlerta(btn){
 }
 
 // ── MOTOR DE PLANEJAMENTO OPERACIONAL ────────────────────────────────
-function calcularTarefasOperacionais(cronograma, temDiscursiva){
+function calcularTarefasOperacionais(cronograma, temDiscursiva, modo='padrao'){
   const tarefas = [];
   const alertas = [];
 
@@ -3127,11 +3127,49 @@ function calcularTarefasOperacionais(cronograma, temDiscursiva){
       {titulo:'EMPACOTAMENTO (PROVAS + PAPELARIA)',         resp:'Jordan',  ini:J3ini,  fim:J3fim},
       {titulo:'MONTAGEM DAS CAIXAS DE MATERIAL POR ESCOLA', resp:'Jordan',  ini:J4ini,  fim:J4fim},
       {titulo:'MONTAGEM DAS PASTAS DO COORDENADOR',         resp:'Jordan',  ini:J4ini,  fim:J4fim},
-      {titulo:'ESCANEAMENTO DAS FOLHAS DE RESPOSTA',                resp:'Jordan',  ini:segunda, fim:quarta},
-      {titulo:'ESCANEAMENTO DAS ATAS DE APLICAÇÃO',                 resp:'Jordan',  ini:segunda, fim:quarta},
-      {titulo:'LIBERAÇÃO DAS ATAS PARA OS COORDENADORES',           resp:'Laryssa', ini:quinta,  fim:quinta},
-      {titulo:'RECEBIMENTO DOS RELATÓRIOS DE APLICAÇÃO',            resp:'Laryssa', ini:quinta,  fim:addDiasUteis(quinta, 3)},
-      {titulo:'LEITURA DAS FOLHAS DE RESPOSTA',                     resp:'Natália', ini:proxUtilApos(quarta), fim:aposEsc},
+      {titulo:'ESCANEAMENTO DAS FOLHAS DE RESPOSTA',        resp:'Jordan',  ini:segunda, fim:quarta},
+      {titulo:'ESCANEAMENTO DAS ATAS DE APLICAÇÃO',         resp:'Jordan',  ini:segunda, fim:quarta},
+      {titulo:'LIBERAÇÃO DAS ATAS PARA OS COORDENADORES',   resp:'Laryssa', ini:quinta,  fim:quinta},
+      {titulo:'RECEBIMENTO DOS RELATÓRIOS DE APLICAÇÃO',    resp:'Laryssa', ini:quinta,  fim:addDiasUteis(quinta, 3)},
+      {titulo:'LEITURA DAS FOLHAS DE RESPOSTA',             resp:'Natália', ini:proxUtilApos(quarta), fim:aposEsc},
+    );
+  }
+
+  // ── MODO URGENTE: tudo calculado de trás para frente a partir da quinta ──
+  if(modo === 'urgente' && dataProva){
+    // Datas fixas regressivas a partir da quinta anterior à prova
+    const U_quinta  = diasUteisAntes(dataProva, 4); // quinta = caixas e pastas prontas
+    const U_quarta  = diasUteisAntes(dataProva, 5); // quarta = empacotamento
+    const U_terca   = diasUteisAntes(dataProva, 6); // terça  = impressão
+    const U_segunda = diasUteisAntes(dataProva, 7); // segunda = alocação
+    const U_sexta   = diasUteisAntes(dataProva, 8); // sexta anterior = levantamento + recebimento
+
+    // Pós-prova (iguais ao modo padrão)
+    const segunda_pos = addDays(dataProva, 1);
+    const quarta_pos  = addDays(dataProva, 3);
+    const quinta_pos  = addDays(dataProva, 4);
+    const aposEsc_u   = addDiasUteis(quarta_pos, 2);
+
+    alertas.push({
+      tipo:'risco',
+      msg:`⚡ Modo Urgente: prova recebida na semana da prova. Todas as datas calculadas de trás para frente a partir da quinta ${fmtBR(U_quinta)}.`
+    });
+
+    tarefas.push(
+      {titulo:'RECEBIMENTO DOS ARQUIVOS DE IMPRESSÃO',       resp:'Jordan',  ini:U_sexta,   fim:U_sexta},
+      {titulo:'ENVIAR ARQUIVO DE PROVAS PARA IMPRESSÃO',    resp:'Tiago',   ini:U_sexta,   fim:U_sexta},
+      {titulo:'LEVANTAMENTO DE ESCOLAS PARA APLICAÇÃO',     resp:'Laryssa', ini:U_sexta,   fim:U_sexta},
+      {titulo:'ALOCAÇÃO DE CANDIDATOS POR ESCOLA',          resp:'Laryssa', ini:U_segunda, fim:U_segunda},
+      {titulo:'IMPRESSÃO DAS PROVAS',                       resp:'Jordan',  ini:U_terca,   fim:U_terca},
+      {titulo:'IMPRESSÃO DA PAPELARIA DE APLICAÇÃO',        resp:'Jordan',  ini:U_terca,   fim:U_terca},
+      {titulo:'EMPACOTAMENTO (PROVAS + PAPELARIA)',         resp:'Jordan',  ini:U_quarta,  fim:U_quarta},
+      {titulo:'MONTAGEM DAS CAIXAS DE MATERIAL POR ESCOLA', resp:'Jordan',  ini:U_quinta,  fim:U_quinta},
+      {titulo:'MONTAGEM DAS PASTAS DO COORDENADOR',         resp:'Jordan',  ini:U_quinta,  fim:U_quinta},
+      {titulo:'ESCANEAMENTO DAS FOLHAS DE RESPOSTA',        resp:'Jordan',  ini:segunda_pos, fim:quarta_pos},
+      {titulo:'ESCANEAMENTO DAS ATAS DE APLICAÇÃO',         resp:'Jordan',  ini:segunda_pos, fim:quarta_pos},
+      {titulo:'LIBERAÇÃO DAS ATAS PARA OS COORDENADORES',   resp:'Laryssa', ini:quinta_pos,  fim:quinta_pos},
+      {titulo:'RECEBIMENTO DOS RELATÓRIOS DE APLICAÇÃO',    resp:'Laryssa', ini:quinta_pos,  fim:addDiasUteis(quinta_pos, 3)},
+      {titulo:'LEITURA DAS FOLHAS DE RESPOSTA',             resp:'Natália', ini:proxUtilApos(quarta_pos), fim:aposEsc_u},
     );
   }
 
@@ -3717,6 +3755,26 @@ async function abrirGeracaoRetroativa(){
     <input type="hidden" id="retro-concurso">
   </div>
 
+  <div style="margin-bottom:16px">
+    <label class="form-label">Modo de planejamento</label>
+    <div style="display:flex;gap:10px">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px 16px;border:1.5px solid #e2e7ef;border-radius:9px;flex:1;transition:border-color .15s" id="modo-padrao-label">
+        <input type="radio" name="retro-modo" id="retro-modo-padrao" value="padrao" checked onchange="atualizarModoLabel()">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:#1f2a3d">📅 Modo Padrão</div>
+          <div style="font-size:11px;color:#8a9ab5">Prova liberada com antecedência — fluxo a partir do fim das inscrições</div>
+        </div>
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px 16px;border:1.5px solid #e2e7ef;border-radius:9px;flex:1;transition:border-color .15s" id="modo-urgente-label">
+        <input type="radio" name="retro-modo" id="retro-modo-urgente" value="urgente" onchange="atualizarModoLabel()">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:#c0322f">⚡ Modo Urgente</div>
+          <div style="font-size:11px;color:#8a9ab5">Prova recebida na semana — tudo calculado de trás para frente até a quinta</div>
+        </div>
+      </label>
+    </div>
+  </div>
+
   <div id="retro-preview" style="min-height:60px"></div>
 
   <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:22px">
@@ -3743,6 +3801,17 @@ async function abrirGeracaoRetroativa(){
 }
 
 let _retroTarefas = [], _retroBucketId = '', _retroNome = '';
+
+function atualizarModoLabel(){
+  const padrao  = document.getElementById('retro-modo-padrao')?.checked;
+  const lPadrao = document.getElementById('modo-padrao-label');
+  const lUrg    = document.getElementById('modo-urgente-label');
+  if(lPadrao) lPadrao.style.borderColor = padrao ? '#1f4e8c' : '#e2e7ef';
+  if(lUrg)    lUrg.style.borderColor    = !padrao ? '#c0322f' : '#e2e7ef';
+  // Reatualizar preview com o novo modo
+  const bucketId = document.getElementById('retro-concurso')?.value;
+  if(bucketId) previewRetroativo(bucketId);
+}
 
 async function previewRetroativo(bucketId){
   const preview = document.getElementById('retro-preview');
@@ -3818,7 +3887,8 @@ async function previewRetroativo(bucketId){
     cronFake.push({atividade:'PROVA OBJETIVA', data_fim:dataProva});
     if(resultPrelObjetiva) cronFake.push({atividade:'RESULTADO PRELIMINAR DA TOTALIZAÇÃO DA PROVA OBJETIVA', data_fim:resultPrelObjetiva});
 
-    const {tarefas: todasOp, alertas} = calcularTarefasOperacionais(cronFake, temDisc);
+    const modoAtual = document.getElementById('retro-modo-urgente')?.checked ? 'urgente' : 'padrao';
+    const {tarefas: todasOp, alertas} = calcularTarefasOperacionais(cronFake, temDisc, modoAtual);
     const novas = todasOp.filter(t => !jaExistem.has(t.titulo.toUpperCase()));
     _retroTarefas = novas;
 
