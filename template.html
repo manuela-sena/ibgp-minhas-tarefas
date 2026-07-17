@@ -3072,7 +3072,7 @@ function calcularTarefasOperacionais(cronograma, temDiscursiva, modo='padrao'){
   const quinta      = addDays(dataProva, 4);         // quinta pós-prova
   const aposEsc     = addDiasUteis(quarta, 2);       // N1: quarta + 2du
 
-  if(fimInscricoes){
+  if(modo === 'padrao' && fimInscricoes){
     // A1: Solicitar arquivos à banca → fim insc + 1du
     const A1 = addDiasUteis(fimInscricoes, 1);
     // A2: Receber arquivos → fim insc + 4du
