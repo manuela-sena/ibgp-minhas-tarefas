@@ -3735,9 +3735,9 @@ async function abrirGeracaoRetroativa(){
   document.getElementById('modal-retroativo')?.remove();
   const modal = document.createElement('div');
   modal.id = 'modal-retroativo';
-  modal.style.cssText = 'position:fixed;inset:0;background:rgba(16,30,54,0.4);z-index:9999;display:flex;align-items:center;justify-content:center';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(16,30,54,0.4);z-index:9999;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto';
   modal.innerHTML = `
-<div style="background:#fff;border-radius:16px;padding:28px;width:520px;max-width:95vw;box-shadow:0 16px 48px rgba(16,30,54,0.18)">
+<div style="background:#fff;border-radius:16px;padding:28px;width:520px;max-width:95vw;box-shadow:0 16px 48px rgba(16,30,54,0.18);margin:auto">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
     <div style="font-size:16px;font-weight:800;color:#1f2a3d">Adicionar concurso existente</div>
     <button onclick="document.getElementById('modal-retroativo').remove()" style="background:none;border:none;font-size:20px;color:#8a9ab5;cursor:pointer">×</button>
@@ -3775,7 +3775,7 @@ async function abrirGeracaoRetroativa(){
     </div>
   </div>
 
-  <div id="retro-preview" style="min-height:60px"></div>
+  <div id="retro-preview" style="min-height:60px;max-height:320px;overflow-y:auto"></div>
 
   <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:22px">
     <button class="btn-secondary" onclick="document.getElementById('modal-retroativo').remove()">Cancelar</button>
