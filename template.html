@@ -3135,41 +3135,57 @@ function calcularTarefasOperacionais(cronograma, temDiscursiva, modo='padrao'){
     );
   }
 
-  // ── MODO URGENTE: tudo calculado de trás para frente a partir da quinta ──
+  // ── MODO URGENTE: recebemos a prova na segunda, tudo de trás para frente até quinta ──
   if(modo === 'urgente' && dataProva){
-    // Datas fixas regressivas a partir da quinta anterior à prova
     const U_quinta  = diasUteisAntes(dataProva, 4); // quinta = caixas e pastas prontas
     const U_quarta  = diasUteisAntes(dataProva, 5); // quarta = empacotamento
     const U_terca   = diasUteisAntes(dataProva, 6); // terça  = impressão
-    const U_segunda = diasUteisAntes(dataProva, 7); // segunda = alocação
-    const U_sexta   = diasUteisAntes(dataProva, 8); // sexta anterior = levantamento + recebimento
-
-    // Pós-prova (iguais ao modo padrão)
-    const segunda_pos = addDays(dataProva, 1);
-    const quarta_pos  = addDays(dataProva, 3);
-    const quinta_pos  = addDays(dataProva, 4);
-    const aposEsc_u   = addDiasUteis(quarta_pos, 2);
+    const U_segunda = diasUteisAntes(dataProva, 7); // segunda = recebimento arquivos
 
     alertas.push({
       tipo:'risco',
-      msg:`⚡ Modo Urgente: prova recebida na semana da prova. Todas as datas calculadas de trás para frente a partir da quinta ${fmtBR(U_quinta)}.`
+      msg:`⚡ Modo Urgente: prova recebida na segunda ${fmtBR(U_segunda)}. Caixas prontas até a quinta ${fmtBR(U_quinta)}.`
     });
 
+    // Parte do fluxo que usa fim das inscrições (igual ao padrão)
+    if(fimInscricoes){
+      const L1 = addDiasUteis(fimInscricoes, 2);
+      const L2 = addDiasUteis(L1, 2);
+      let iniInscricoes = null;
+      for(const t of cronograma){
+        if(t.atividade.toUpperCase().includes('PERÍODO DE INSCRIÇÕES')){
+          iniInscricoes = t.data_ini || t.data_fim; break;
+        }
+      }
+      tarefas.push(
+        {titulo:'ENVIO DE OFÍCIOS ÀS ESCOLAS',             resp:'Laryssa', ini:iniInscricoes||fimInscricoes, fim:iniInscricoes||fimInscricoes},
+        {titulo:'SOLICITAR ARQUIVOS DE IMPRESSÃO À BANCA', resp:'Manuela', ini:addDiasUteis(fimInscricoes,1), fim:addDiasUteis(fimInscricoes,1)},
+        {titulo:'LEVANTAMENTO DE ESCOLAS PARA APLICAÇÃO',  resp:'Laryssa', ini:proxUtilApos(fimInscricoes), fim:L1},
+        {titulo:'ALOCAÇÃO DE CANDIDATOS POR ESCOLA',       resp:'Laryssa', ini:proxUtilApos(L1), fim:L2},
+      );
+    }
+
+    // Bloco urgente: impressão em diante a partir da segunda
     tarefas.push(
-      {titulo:'RECEBIMENTO DOS ARQUIVOS DE IMPRESSÃO',       resp:'Jordan',  ini:U_sexta,   fim:U_sexta},
-      {titulo:'ENVIAR ARQUIVO DE PROVAS PARA IMPRESSÃO',    resp:'Tiago',   ini:U_sexta,   fim:U_sexta},
-      {titulo:'LEVANTAMENTO DE ESCOLAS PARA APLICAÇÃO',     resp:'Laryssa', ini:U_sexta,   fim:U_sexta},
-      {titulo:'ALOCAÇÃO DE CANDIDATOS POR ESCOLA',          resp:'Laryssa', ini:U_segunda, fim:U_segunda},
-      {titulo:'IMPRESSÃO DAS PROVAS',                       resp:'Jordan',  ini:U_terca,   fim:U_terca},
-      {titulo:'IMPRESSÃO DA PAPELARIA DE APLICAÇÃO',        resp:'Jordan',  ini:U_terca,   fim:U_terca},
-      {titulo:'EMPACOTAMENTO (PROVAS + PAPELARIA)',         resp:'Jordan',  ini:U_quarta,  fim:U_quarta},
-      {titulo:'MONTAGEM DAS CAIXAS DE MATERIAL POR ESCOLA', resp:'Jordan',  ini:U_quinta,  fim:U_quinta},
-      {titulo:'MONTAGEM DAS PASTAS DO COORDENADOR',         resp:'Jordan',  ini:U_quinta,  fim:U_quinta},
-      {titulo:'ESCANEAMENTO DAS FOLHAS DE RESPOSTA',        resp:'Jordan',  ini:segunda_pos, fim:quarta_pos},
-      {titulo:'ESCANEAMENTO DAS ATAS DE APLICAÇÃO',         resp:'Jordan',  ini:segunda_pos, fim:quarta_pos},
-      {titulo:'LIBERAÇÃO DAS ATAS PARA OS COORDENADORES',   resp:'Laryssa', ini:quinta_pos,  fim:quinta_pos},
-      {titulo:'RECEBIMENTO DOS RELATÓRIOS DE APLICAÇÃO',    resp:'Laryssa', ini:quinta_pos,  fim:addDiasUteis(quinta_pos, 3)},
-      {titulo:'LEITURA DAS FOLHAS DE RESPOSTA',             resp:'Natália', ini:proxUtilApos(quarta_pos), fim:aposEsc_u},
+      {titulo:'RECEBIMENTO DOS ARQUIVOS DE IMPRESSÃO',      resp:'Jordan', ini:U_segunda, fim:U_segunda},
+      {titulo:'ENVIAR ARQUIVO DE PROVAS PARA IMPRESSÃO',   resp:'Tiago',  ini:U_segunda, fim:U_segunda},
+      {titulo:'IMPRESSÃO DAS PROVAS',                      resp:'Jordan', ini:U_terca,   fim:U_terca},
+      {titulo:'IMPRESSÃO DA PAPELARIA DE APLICAÇÃO',       resp:'Jordan', ini:U_terca,   fim:U_terca},
+      {titulo:'EMPACOTAMENTO (PROVAS + PAPELARIA)',        resp:'Jordan', ini:U_quarta,  fim:U_quarta},
+      {titulo:'MONTAGEM DAS CAIXAS DE MATERIAL POR ESCOLA',resp:'Jordan', ini:U_quinta,  fim:U_quinta},
+      {titulo:'MONTAGEM DAS PASTAS DO COORDENADOR',        resp:'Jordan', ini:U_quinta,  fim:U_quinta},
+    );
+
+    // Pós-prova igual ao padrão
+    const segunda_pos = addDays(dataProva, 1);
+    const quarta_pos  = addDays(dataProva, 3);
+    const quinta_pos  = addDays(dataProva, 4);
+    tarefas.push(
+      {titulo:'ESCANEAMENTO DAS FOLHAS DE RESPOSTA',       resp:'Jordan',  ini:segunda_pos, fim:quarta_pos},
+      {titulo:'ESCANEAMENTO DAS ATAS DE APLICAÇÃO',        resp:'Jordan',  ini:segunda_pos, fim:quarta_pos},
+      {titulo:'LIBERAÇÃO DAS ATAS PARA OS COORDENADORES',  resp:'Laryssa', ini:quinta_pos,  fim:quinta_pos},
+      {titulo:'RECEBIMENTO DOS RELATÓRIOS DE APLICAÇÃO',   resp:'Laryssa', ini:quinta_pos,  fim:addDiasUteis(quinta_pos, 3)},
+      {titulo:'LEITURA DAS FOLHAS DE RESPOSTA',            resp:'Natália', ini:proxUtilApos(quarta_pos), fim:addDiasUteis(quarta_pos, 2)},
     );
   }
 
