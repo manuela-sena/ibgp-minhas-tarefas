@@ -3137,10 +3137,11 @@ function calcularTarefasOperacionais(cronograma, temDiscursiva, modo='padrao'){
 
   // ── MODO URGENTE: recebemos a prova na segunda, tudo de trás para frente até quinta ──
   if(modo === 'urgente' && dataProva){
-    const U_quinta  = diasUteisAntes(dataProva, 4); // quinta = caixas e pastas prontas
-    const U_quarta  = diasUteisAntes(dataProva, 5); // quarta = empacotamento
-    const U_terca   = diasUteisAntes(dataProva, 6); // terça  = impressão
-    const U_segunda = diasUteisAntes(dataProva, 7); // segunda = recebimento arquivos
+    // Prova é sempre domingo → semana da prova:
+    const U_segunda = addDays(dataProva, -6); // segunda = 6 dias antes do domingo
+    const U_terca   = addDays(dataProva, -5); // terça
+    const U_quarta  = addDays(dataProva, -4); // quarta
+    const U_quinta  = addDays(dataProva, -3); // quinta = caixas prontas
 
     alertas.push({
       tipo:'risco',
