@@ -457,7 +457,7 @@ def g_all(url, tok=None):
 @st.cache_data(ttl=180, show_spinner=False)
 def buscar_tarefas(token, ferias_json="[]"):
     # Usuário local sem token Microsoft — retorna vazio
-    if not token: return [], [], {}, None
+    if not token: return [], [], [], {}, None
     _ferias_registradas = json.loads(ferias_json)
     from datetime import timezone, timedelta
     def _g(url): return g(url, token)
@@ -472,10 +472,10 @@ def buscar_tarefas(token, ferias_json="[]"):
                     plano_id = p["id"]; break
         except Exception: pass
         if plano_id: break
-    if not plano_id: return [], [], {}, None
+    if not plano_id: return [], [], [], {}, None
     buckets = {b["id"]:b["name"]
                for b in _g(f"https://graph.microsoft.com/v1.0/planner/plans/{plano_id}/buckets").get("value",[])}
-    tarefas, concluidas = [], []
+    tarefas, concluidas, concluidas_todas = [], [], []
     limite_48h = datetime.utcnow().replace(tzinfo=timezone.utc) - timedelta(hours=48)
     for t in _g_all(f"https://graph.microsoft.com/v1.0/planner/plans/{plano_id}/tasks"):
         nome = (t.get("title") or "").strip()
@@ -505,24 +505,27 @@ def buscar_tarefas(token, ferias_json="[]"):
             "hasNota": bool(t.get("hasDescription", False)),
         }
         if t.get("percentComplete",0) == 100:
-            # Só inclui concluídas das últimas 48h
             completed_at = t.get("completedDateTime","")
+            item_concl = {**item, "completedAt": completed_at, "concluida": True}
+            # Histórico completo (usado na Agenda, sem limite de tempo)
+            concluidas_todas.append(item_concl)
+            # Só inclui no painel de sessão as concluídas das últimas 48h
             if completed_at:
                 try:
                     dt = datetime.fromisoformat(completed_at.replace("Z","+00:00"))
                     if dt >= limite_48h:
-                        item["completedAt"] = completed_at
-                        concluidas.append(item)
+                        concluidas.append(item_concl)
                 except Exception: pass
         else:
             tarefas.append(item)
     # Ordenar concluídas da mais recente para a mais antiga
     concluidas.sort(key=lambda x: x.get("completedAt",""), reverse=True)
-    return tarefas, concluidas[:30], buckets, plano_id
+    concluidas_todas.sort(key=lambda x: x.get("completedAt",""), reverse=True)
+    return tarefas, concluidas[:30], concluidas_todas, buckets, plano_id
 
 with st.spinner("Carregando tarefas..."):
     _ferias_json = json.dumps(carregar_ferias())
-    tarefas, concluidas, buckets, plano_id = buscar_tarefas(token or "", _ferias_json)
+    tarefas, concluidas, concluidas_todas, buckets, plano_id = buscar_tarefas(token or "", _ferias_json)
 
 # ── MONTAR DADOS_INICIAIS ─────────────────────────────────────────────
 cron_result  = st.session_state.pop(CRON_RESULT_KEY, None)
@@ -539,6 +542,7 @@ ferias_msg    = st.session_state.pop("ferias_msg", None)
 dados_iniciais = json.dumps({
     "tarefas"      : tarefas,
     "concluidas"   : concluidas,
+    "concluidasTodas" : concluidas_todas,
     "buckets"      : buckets,
     "planoId"      : plano_id,
     "cronResult"   : cron_result,

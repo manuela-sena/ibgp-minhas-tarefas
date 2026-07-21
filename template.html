@@ -1308,6 +1308,10 @@ function loadTarefas(){
         fromPlanner: true,
       }));
     }
+    // Carregar histórico completo de concluídas (usado na Agenda)
+    if(!_concluidasTodas.length){
+      _concluidasTodas = (DADOS_INICIAIS.concluidasTodas||[]).map(t=>({...t, concluida:true}));
+    }
   }
   _allTasks = raw.map(t=>{
     const due=parseISO(t.due);
