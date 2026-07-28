@@ -130,6 +130,7 @@ nav{display:flex;flex-direction:column;gap:1px}
 
 /* ── CARDS BASE ─────────────────────────────── */
 .card{background:#fff;border:1px solid #e2e7ef;border-radius:14px;box-shadow:0 1px 4px rgba(16,30,54,0.05);overflow:hidden}
+.card-overflow{background:#fff;border:1px solid #e2e7ef;border-radius:14px;box-shadow:0 1px 4px rgba(16,30,54,0.05);overflow:visible}
 .card-pad{padding:18px 20px}
 
 /* ── KPIs ──────────────────────────────────── */
@@ -738,7 +739,7 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
               oninput="filtrarDropdown('concurso')" onfocus="abrirDropdown('concurso')" style="padding-right:28px">
             <svg style="position:absolute;right:8px;top:50%;transform:translateY(-50%);pointer-events:none" width="12" height="12" fill="none" stroke="#9aa6b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
-          <div id="drop-concurso" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:500;background:#fff;border:1px solid #e2e7ef;border-radius:9px;box-shadow:0 8px 24px rgba(16,30,54,0.12);max-height:220px;overflow-y:auto;margin-top:2px"></div>
+          <div id="drop-concurso" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:9999;background:#fff;border:1px solid #e2e7ef;border-radius:9px;box-shadow:0 8px 24px rgba(16,30,54,0.18);max-height:220px;overflow-y:auto;margin-top:2px"></div>
           <input type="hidden" id="sel-concurso">
         </div>
         <div class="filter-group" style="position:relative">
@@ -751,7 +752,7 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
               oninput="filtrarDropdown('tarefa')" onfocus="abrirDropdown('tarefa')" style="padding-right:28px">
             <svg style="position:absolute;right:8px;top:50%;transform:translateY(-50%);pointer-events:none" width="12" height="12" fill="none" stroke="#9aa6b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
-          <div id="drop-tarefa" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:500;background:#fff;border:1px solid #e2e7ef;border-radius:9px;box-shadow:0 8px 24px rgba(16,30,54,0.12);max-height:220px;overflow-y:auto;margin-top:2px"></div>
+          <div id="drop-tarefa" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:9999;background:#fff;border:1px solid #e2e7ef;border-radius:9px;box-shadow:0 8px 24px rgba(16,30,54,0.18);max-height:220px;overflow-y:auto;margin-top:2px"></div>
           <input type="hidden" id="sel-tarefa">
         </div>
         <div class="filter-actions">
@@ -884,13 +885,13 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
         <div class="page-title-h1"><svg width="21" height="21" fill="none" stroke="#1f4e8c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-reaj"/></svg>Reajustar Cronograma</div>
         <div class="page-sub">Selecione um concurso e ajuste as datas das tarefas já cadastradas no Planner.</div>
       </div>
-      <div class="card card-pad">
+      <div class="card card-pad" style="overflow:visible">
         <label class="form-label">Selecione o concurso</label>
         <div style="position:relative;max-width:480px">
           <input id="inp-reaj-concurso" class="filter-select" type="text" placeholder="Buscar concurso..." autocomplete="off"
             oninput="filtrarReajDropdown()" onfocus="filtrarReajDropdown()" style="width:100%;padding-right:28px">
           <svg style="position:absolute;right:8px;top:50%;transform:translateY(-50%);pointer-events:none" width="12" height="12" fill="none" stroke="#9aa6b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          <div id="drop-reaj-concurso" style="display:none;position:absolute;left:0;right:0;z-index:500;background:#fff;border:1px solid #e2e7ef;border-radius:9px;box-shadow:0 8px 24px rgba(16,30,54,0.12);max-height:220px;overflow-y:auto;margin-top:2px"></div>
+          <div id="drop-reaj-concurso" style="display:none;position:absolute;left:0;right:0;z-index:9999;background:#fff;border:1px solid #e2e7ef;border-radius:9px;box-shadow:0 8px 24px rgba(16,30,54,0.18);max-height:260px;overflow-y:auto;margin-top:2px"></div>
           <input type="hidden" id="sel-reaj-concurso">
         </div>
       </div>
@@ -922,7 +923,7 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
                 oninput="filtrarIndConcurso()" onfocus="filtrarIndConcurso()" style="height:36px;padding-right:24px">
               <svg style="position:absolute;right:6px;top:50%;transform:translateY(-50%);pointer-events:none" width="11" height="11" fill="none" stroke="#9aa6b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
-            <div id="drop-ind-concurso" style="display:none;position:absolute;left:0;right:0;z-index:500;background:#fff;border:1px solid #e2e7ef;border-radius:9px;box-shadow:0 8px 24px rgba(16,30,54,0.12);max-height:200px;overflow-y:auto;margin-top:2px"></div>
+            <div id="drop-ind-concurso" style="display:none;position:absolute;left:0;right:0;z-index:9999;background:#fff;border:1px solid #e2e7ef;border-radius:9px;box-shadow:0 8px 24px rgba(16,30,54,0.18);max-height:200px;overflow-y:auto;margin-top:2px"></div>
             <input type="hidden" id="ind-fil-concurso">
           </div>
           <button class="btn-secondary" onclick="renderIndicadores()" style="height:36px;padding:0 12px;font-size:12px;margin-bottom:1px">
