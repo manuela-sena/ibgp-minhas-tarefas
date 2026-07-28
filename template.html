@@ -5777,7 +5777,7 @@ function renderEscolas(escolas, concursoNome){
     </thead>
     <tbody>
       ${escolas.length ? escolas.map((e,i)=>{
-        const enviado  = e._status?.enviado||e.enviadoEm;
+        const enviado  = e._status?.enviado || e._status?.enviadoEm || e.enviadoEm;
         const acessos  = e._status?.acessos||0;
         const ultimoAc = e._status?.ultimoAcesso ? new Date(e._status.ultimoAcesso).toLocaleString('pt-BR') : '—';
         const badge    = enviado 
