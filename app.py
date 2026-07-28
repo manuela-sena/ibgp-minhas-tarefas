@@ -349,7 +349,7 @@ with st.spinner("Carregando tarefas..."):
     tarefas, concluidas, concluidas_todas, buckets, plano_id = buscar_tarefas(token or "", _ferias_json)
 
 # ── MONTAR DADOS_INICIAIS ─────────────────────────────────────────────
-cron_result  = st.session_state.pop(CRON_RESULT_KEY, None)
+cron_result  = st.session_state.pop("cron_result", None)
 cron_nome    = st.session_state.get("cron_nome","")
 planner_ok   = st.session_state.pop("planner_ok", None)
 planner_err  = st.session_state.pop("planner_err", None)
