@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IBGP · Cadastro de Espaço Físico</title>
+<style>
+  :root {
+    --azul: #1F3A6B;
+    --azul-med: #2E5BA8;
+    --azul-claro: #E8EFF9;
+    --cinza: #F4F6FA;
+    --borda: #D1D9E6;
+    --texto: #1A2540;
+    --muted: #6B7A99;
+    --vermelho: #C0322F;
+    --verde: #2E7D52;
+    --amarelo: #A06C12;
+    --branco: #FFFFFF;
+    --sombra: 0 2px 12px rgba(31,58,107,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--cinza);
+    color: var(--texto);
+    min-height: 100vh;
+  }
+  /* Header */
+  .header {
+    background: var(--azul);
+    padding: 0;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  }
+  .header-inner {
+    max-width: 860px; margin: 0 auto;
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 24px;
+  }
+  .header-logo { width: 36px; height: 36px; object-fit: contain; }
+  .header-title { font-size: 15px; font-weight: 700; color: #fff; }
+  .header-sub { font-size: 12px; color: rgba(255,255,255,0.65); margin-top: 1px; }
+
+  /* Progress */
+  .progress-bar {
+    background: rgba(255,255,255,0.15);
+    height: 3px;
+  }
+  .progress-fill {
+    background: #5B9BF5;
+    height: 100%;
+    transition: width .4s ease;
+    width: 0%;
+  }
+
+  /* Layout */
+  .container { max-width: 860px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  /* Step indicator */
+  .steps {
+    display: flex; gap: 0; margin-bottom: 32px;
+    background: var(--branco); border-radius: var(--radius);
+    border: 1px solid var(--borda); overflow: hidden;
+  }
+  .step {
+    flex: 1; padding: 14px 12px; text-align: center;
+    border-right: 1px solid var(--borda); cursor: pointer;
+    transition: background .2s;
+    position: relative;
+  }
+  .step:last-child { border-right: none; }
+  .step-num {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--borda); color: var(--muted);
+    font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 4px;
+  }
+  .step-label { font-size: 11px; color: var(--muted); font-weight: 500; }
+  .step.active .step-num { background: var(--azul-med); color: #fff; }
+  .step.active .step-label { color: var(--azul); font-weight: 700; }
+  .step.done .step-num { background: var(--verde); color: #fff; }
+  .step.done .step-label { color: var(--verde); }
+
+  /* Card */
+  .card {
+    background: var(--branco);
+    border: 1px solid var(--borda);
+    border-radius: var(--radius);
+    box-shadow: var(--sombra);
+    margin-bottom: 20px;
+    overflow: visible;
+  }
+  .card-header {
+    padding: 18px 24px 14px;
+    border-bottom: 1px solid var(--borda);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .card-icon {
+    width: 34px; height: 34px; border-radius: 8px;
+    background: var(--azul-claro);
+    display: flex; align-items: center; justify-content: center;
+    flex: none;
+  }
+  .card-icon svg { stroke: var(--azul-med); }
+  .card-title { font-size: 14px; font-weight: 700; color: var(--azul); }
+  .card-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .card-body { padding: 20px 24px; }
+
+  /* Form */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .form-grid.full { grid-template-columns: 1fr; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group.span2 { grid-column: span 2; }
+  .form-group.span3 { grid-column: span 3; }
+  label { font-size: 12px; font-weight: 600; color: #41506B; }
+  label span.req { color: var(--vermelho); margin-left: 2px; }
+  input[type=text], input[type=email], input[type=tel], input[type=number], select, textarea {
+    padding: 9px 12px;
+    border: 1.5px solid var(--borda);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--texto);
+    background: var(--branco);
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+    width: 100%;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--azul-med);
+    box-shadow: 0 0 0 3px rgba(46,91,168,.10);
+  }
+  input.error, select.error { border-color: var(--vermelho); }
+
+  /* Estrutura checkboxes */
+  .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .check-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px; border-radius: 8px;
+    border: 1.5px solid var(--borda); cursor: pointer;
+    transition: border-color .15s, background .15s;
+    font-size: 13px;
+  }
+  .check-item:hover { background: var(--azul-claro); border-color: var(--azul-med); }
+  .check-item input[type=checkbox], .check-item input[type=radio] { 
+    width: 16px; height: 16px; cursor: pointer; accent-color: var(--azul-med);
+  }
+  .check-item.checked { background: var(--azul-claro); border-color: var(--azul-med); }
+
+  /* Tabela de salas */
+  .salas-table-wrap { overflow-x: auto; }
+  table.salas {
+    width: 100%; border-collapse: collapse; font-size: 12.5px;
+    min-width: 700px;
+  }
+  table.salas th {
+    padding: 9px 10px; background: var(--azul); color: #fff;
+    font-size: 11px; font-weight: 700; text-align: center;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  table.salas td {
+    padding: 6px 8px; border: 1px solid var(--borda);
+    vertical-align: middle;
+  }
+  table.salas tr:nth-child(even) td { background: #FAFBFD; }
+  table.salas input, table.salas select {
+    padding: 6px 8px; font-size: 12px; border-radius: 6px;
+    border: 1.5px solid var(--borda); width: 100%;
+  }
+  table.salas input[type=number] { text-align: center; }
+  .btn-add-sala {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 8px;
+    border: 1.5px dashed var(--azul-med);
+    background: var(--azul-claro); color: var(--azul-med);
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    margin-top: 12px; width: 100%; justify-content: center;
+    transition: background .15s;
+  }
+  .btn-add-sala:hover { background: #D4E3F8; }
+  .btn-del { 
+    background: none; border: none; cursor: pointer; 
+    color: var(--vermelho); font-size: 16px; padding: 2px 6px;
+    border-radius: 4px; transition: background .15s;
+  }
+  .btn-del:hover { background: #FEE; }
+
+  /* Banheiros */
+  .banheiro-row { 
+    display: flex; align-items: center; gap: 14px; 
+    padding: 10px 0; border-bottom: 1px solid var(--borda);
+  }
+  .banheiro-row:last-child { border-bottom: none; }
+  .banheiro-label { font-size: 13px; font-weight: 600; min-width: 90px; }
+  .banheiro-qty { width: 70px !important; }
+
+  /* Buttons */
+  .btn-nav {
+    display: flex; gap: 10px; justify-content: flex-end;
+    margin-top: 8px;
+  }
+  .btn {
+    padding: 11px 22px; border-radius: 9px; border: none;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; gap: 7px;
+    transition: opacity .15s, transform .1s;
+  }
+  .btn:active { transform: scale(.98); }
+  .btn-primary { background: var(--azul); color: #fff; }
+  .btn-primary:hover { background: var(--azul-med); }
+  .btn-secondary { background: var(--cinza); color: var(--texto); border: 1.5px solid var(--borda); }
+  .btn-secondary:hover { background: #E8EDF5; }
+  .btn-success { background: var(--verde); color: #fff; }
+  .btn-success:hover { background: #236640; }
+
+  /* Alert */
+  .alert {
+    padding: 12px 16px; border-radius: 9px; font-size: 13px;
+    display: flex; align-items: flex-start; gap: 10px;
+    margin-bottom: 16px;
+  }
+  .alert-info { background: #EBF2FF; border: 1px solid #B8D0F0; color: var(--azul); }
+  .alert-warn { background: #FFF8E6; border: 1px solid #F0D98A; color: var(--amarelo); }
+  .alert-error { background: #FDECEB; border: 1px solid #F3CFCD; color: var(--vermelho); }
+  .alert-success { background: #E4F3EA; border: 1px solid #A8DBB8; color: var(--verde); }
+
+  /* Success screen */
+  .success-screen {
+    text-align: center; padding: 60px 24px;
+  }
+  .success-icon {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: var(--verde); color: #fff;
+    font-size: 40px; display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 24px;
+  }
+
+  /* Info tag */
+  .info-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--azul-claro); color: var(--azul-med);
+    padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid.cols-3 { grid-template-columns: 1fr; }
+    .form-group.span2, .form-group.span3 { grid-column: span 1; }
+    .check-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <img class="header-logo" src="https://raw.githubusercontent.com/manuela-sena/ibgp-minhas-tarefas/main/logo.png" alt="IBGP">
+    <div>
+      <div class="header-title">IBGP · Cadastro de Espaço Físico</div>
+      <div class="header-sub" id="header-concurso">Carregando...</div>
+    </div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+</div>
+
+<div class="container">
+
+  <!-- Steps -->
+  <div class="steps">
+    <div class="step active" id="step-btn-1" onclick="goStep(1)">
+      <div class="step-num">1</div>
+      <div class="step-label">Instituição</div>
+    </div>
+    <div class="step" id="step-btn-2" onclick="goStep(2)">
+      <div class="step-num">2</div>
+      <div class="step-label">Estrutura</div>
+    </div>
+    <div class="step" id="step-btn-3" onclick="goStep(3)">
+      <div class="step-num">3</div>
+      <div class="step-label">Salas</div>
+    </div>
+    <div class="step" id="step-btn-4" onclick="goStep(4)">
+      <div class="step-num">4</div>
+      <div class="step-label">Revisão</div>
+    </div>
+  </div>
+
+  <!-- STEP 1: Dados da Instituição -->
+  <div id="page-1">
+    <div class="alert alert-info">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Preencha os dados cadastrais da instituição. Todos os campos marcados com <strong>*</strong> são obrigatórios.
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+        <div><div class="card-title">Dados da Instituição</div><div class="card-sub">Informações principais da escola</div></div>
+      </div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="form-group span2">
+            <label>Nome da Instituição <span class="req">*</span></label>
+            <input type="text" id="nome" placeholder="Ex: Escola Estadual João da Silva">
+          </div>
+          <div class="form-group">
+            <label>CNPJ</label>
+            <input type="text" id="cnpj" placeholder="00.000.000/0000-00" maxlength="18" oninput="maskCNPJ(this)">
+          </div>
+          <div class="form-group">
+            <label>Razão Social</label>
+            <input type="text" id="razao" placeholder="Razão social completa">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+        <div><div class="card-title">Endereço</div><div class="card-sub">Localização da instituição</div></div>
+      </div>
+      <div class="card-body">
+        <div class="form-grid cols-3">
+          <div class="form-group span2">
+            <label>Endereço <span class="req">*</span></label>
+            <input type="text" id="endereco" placeholder="Rua, Avenida...">
+          </div>
+          <div class="form-group">
+            <label>Número</label>
+            <input type="text" id="numero" placeholder="Nº ou S/N">
+          </div>
+          <div class="form-group">
+            <label>Complemento</label>
+            <input type="text" id="complemento" placeholder="Bloco, sala...">
+          </div>
+          <div class="form-group">
+            <label>Bairro <span class="req">*</span></label>
+            <input type="text" id="bairro" placeholder="Bairro">
+          </div>
+          <div class="form-group">
+            <label>CEP</label>
+            <input type="text" id="cep" placeholder="00000-000" maxlength="9" oninput="maskCEP(this)">
+          </div>
+          <div class="form-group">
+            <label>Cidade <span class="req">*</span></label>
+            <input type="text" id="cidade" placeholder="Cidade">
+          </div>
+          <div class="form-group">
+            <label>UF</label>
+            <select id="uf">
+              <option value="">Selecione</option>
+              <option>AC</option><option>AL</option><option>AM</option><option>AP</option>
+              <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
+              <option>GO</option><option>MA</option><option>MG</option><option>MS</option>
+              <option>MT</option><option>PA</option><option>PB</option><option>PE</option>
+              <option>PI</option><option>PR</option><option>RJ</option><option>RN</option>
+              <option>RO</option><option>RR</option><option>RS</option><option>SC</option>
+              <option selected>MG</option><option>SE</option><option>SP</option><option>TO</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <div><div class="card-title">Responsáveis</div><div class="card-sub">Contatos para comunicação</div></div>
+      </div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nome do Responsável <span class="req">*</span></label>
+            <input type="text" id="resp-nome" placeholder="Nome completo">
+          </div>
+          <div class="form-group">
+            <label>Cargo do Responsável</label>
+            <input type="text" id="resp-cargo" placeholder="Ex: Diretor(a)">
+          </div>
+          <div class="form-group">
+            <label>E-mail de Contato <span class="req">*</span></label>
+            <input type="email" id="resp-email" placeholder="email@escola.com.br">
+          </div>
+          <div class="form-group">
+            <label>Telefone de Contato <span class="req">*</span></label>
+            <input type="tel" id="resp-tel" placeholder="(00) 00000-0000" maxlength="15" oninput="maskTel(this)">
+          </div>
+          <div class="form-group">
+            <label>Nome do Diretor</label>
+            <input type="text" id="diretor-nome" placeholder="Nome do diretor">
+          </div>
+          <div class="form-group">
+            <label>E-mail do Diretor</label>
+            <input type="email" id="diretor-email" placeholder="diretor@escola.com.br">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-nav">
+      <button class="btn btn-primary" onclick="nextStep(1)">
+        Próximo: Estrutura
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Estrutura -->
+  <div id="page-2" style="display:none">
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+        <div><div class="card-title">Tipo de Carteiras</div><div class="card-sub">Marque todos os tipos disponíveis na instituição</div></div>
+      </div>
+      <div class="card-body">
+        <div class="check-grid">
+          <label class="check-item" id="chk-mesa"><input type="checkbox" id="c-mesa" onchange="toggleCheck(this,'chk-mesa')"> Mesa com cadeira</label>
+          <label class="check-item" id="chk-univ"><input type="checkbox" id="c-univ" onchange="toggleCheck(this,'chk-univ')"> Carteira universitária</label>
+          <label class="check-item" id="chk-canhoto"><input type="checkbox" id="c-canhoto" onchange="toggleCheck(this,'chk-canhoto')"> Carteira para canhoto</label>
+          <label class="check-item" id="chk-dupla"><input type="checkbox" id="c-dupla" onchange="toggleCheck(this,'chk-dupla')"> Carteira dupla</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+        <div><div class="card-title">Infraestrutura</div><div class="card-sub">Recursos disponíveis na instituição</div></div>
+      </div>
+      <div class="card-body">
+        <div class="check-grid">
+          <label class="check-item" id="chk-rampa"><input type="checkbox" id="c-rampa" onchange="toggleCheck(this,'chk-rampa')"> Rampa de acesso</label>
+          <label class="check-item" id="chk-elevador"><input type="checkbox" id="c-elevador" onchange="toggleCheck(this,'chk-elevador')"> Elevador</label>
+          <label class="check-item" id="chk-gerador"><input type="checkbox" id="c-gerador" onchange="toggleCheck(this,'chk-gerador')"> Gerador</label>
+          <label class="check-item" id="chk-audit"><input type="checkbox" id="c-audit" onchange="toggleCheck(this,'chk-audit')"> Auditório</label>
+          <label class="check-item" id="chk-arcond"><input type="checkbox" id="c-arcond" onchange="toggleCheck(this,'chk-arcond')"> Ar condicionado</label>
+          <label class="check-item" id="chk-vent"><input type="checkbox" id="c-vent" onchange="toggleCheck(this,'chk-vent')"> Ventilador</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M4 12h16"/><path d="M12 4v16"/></svg></div>
+        <div><div class="card-title">Banheiros</div></div>
+      </div>
+      <div class="card-body">
+        <div class="banheiro-row">
+          <div class="banheiro-label">Masculino</div>
+          <div class="form-group" style="flex-direction:row;align-items:center;gap:10px">
+            <label style="white-space:nowrap;margin:0">Quantidade:</label>
+            <input type="number" id="ban-masc-qt" class="banheiro-qty" min="0" value="0">
+          </div>
+          <div class="form-group" style="flex-direction:row;align-items:center;gap:10px;margin-left:20px">
+            <label style="white-space:nowrap;margin:0">Adaptado para cadeirante?</label>
+            <label class="check-item" style="padding:6px 12px" id="chk-ban-masc"><input type="checkbox" id="c-ban-masc" onchange="toggleCheck(this,'chk-ban-masc')"> Sim</label>
+          </div>
+        </div>
+        <div class="banheiro-row">
+          <div class="banheiro-label">Feminino</div>
+          <div class="form-group" style="flex-direction:row;align-items:center;gap:10px">
+            <label style="white-space:nowrap;margin:0">Quantidade:</label>
+            <input type="number" id="ban-fem-qt" class="banheiro-qty" min="0" value="0">
+          </div>
+          <div class="form-group" style="flex-direction:row;align-items:center;gap:10px;margin-left:20px">
+            <label style="white-space:nowrap;margin:0">Adaptado para cadeirante?</label>
+            <label class="check-item" style="padding:6px 12px" id="chk-ban-fem"><input type="checkbox" id="c-ban-fem" onchange="toggleCheck(this,'chk-ban-fem')"> Sim</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-nav">
+      <button class="btn btn-secondary" onclick="goStep(1)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Voltar
+      </button>
+      <button class="btn btn-primary" onclick="nextStep(2)">
+        Próximo: Salas
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 3: Salas -->
+  <div id="page-3" style="display:none">
+    <div class="alert alert-info">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Cadastre todas as salas disponíveis para a prova. As salas serão ordenadas da maior para a menor capacidade na alocação. Use a numeração exata da escola.
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+        <div>
+          <div class="card-title">Distribuição de Salas</div>
+          <div class="card-sub">Capacidade total por sala (número de candidatos)</div>
+        </div>
+        <div style="margin-left:auto">
+          <span class="info-tag" id="total-cap-tag">0 candidatos no total</span>
+        </div>
+      </div>
+      <div class="card-body" style="padding:0">
+        <div class="salas-table-wrap">
+          <table class="salas">
+            <thead>
+              <tr>
+                <th style="width:40px">#</th>
+                <th>Bloco</th>
+                <th>Andar</th>
+                <th>Nº Sala</th>
+                <th style="width:90px">Capacidade</th>
+                <th>Turno</th>
+                <th>Ar Cond.</th>
+                <th>Ventilador</th>
+                <th style="width:40px"></th>
+              </tr>
+            </thead>
+            <tbody id="salas-tbody"></tbody>
+          </table>
+        </div>
+        <div style="padding:12px 16px">
+          <button class="btn-add-sala" onclick="addSala()">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Adicionar sala
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-nav">
+      <button class="btn btn-secondary" onclick="goStep(2)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Voltar
+      </button>
+      <button class="btn btn-primary" onclick="nextStep(3)">
+        Revisar e Enviar
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 4: Revisão -->
+  <div id="page-4" style="display:none">
+    <div class="alert alert-warn">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Revise todas as informações antes de enviar. Após o envio, não será possível editar sem contato com o IBGP.
+    </div>
+
+    <div id="revisao-content"></div>
+
+    <div class="btn-nav">
+      <button class="btn btn-secondary" onclick="goStep(3)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Editar
+      </button>
+      <button class="btn btn-success" id="btn-enviar" onclick="enviarFormulario()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        Confirmar e Enviar
+      </button>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div id="page-success" style="display:none">
+    <div class="card">
+      <div class="success-screen">
+        <div class="success-icon">✓</div>
+        <h2 style="font-size:22px;font-weight:800;color:var(--verde);margin-bottom:10px">Formulário enviado com sucesso!</h2>
+        <p style="color:var(--muted);font-size:14px;max-width:480px;margin:0 auto 24px;line-height:1.6">
+          Os dados da instituição foram recebidos pelo IBGP. A equipe responsável irá processar as informações para a alocação dos candidatos.
+        </p>
+        <div style="background:var(--cinza);border-radius:9px;padding:16px 24px;display:inline-block;text-align:left">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:4px">Protocolo de envio</div>
+          <div id="protocolo" style="font-size:18px;font-weight:800;font-family:monospace;color:var(--azul);letter-spacing:.05em"></div>
+        </div>
+        <p style="color:var(--muted);font-size:12px;margin-top:16px">Guarde este protocolo para referência futura.</p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────────
+const GITHUB_REPO = 'manuela-sena/ibgp-minhas-tarefas';
+const GITHUB_TOKEN = ''; // será injetado via URL param
+let TOKEN_ESCOLA = '';
+let DADOS_CONCURSO = {};
+let currentStep = 1;
+let salaCount = 0;
+
+// ── INIT ──────────────────────────────────────────────────────────────
+window.onload = function(){
+  const params = new URLSearchParams(window.location.search);
+  TOKEN_ESCOLA = params.get('token') || 'DEMO';
+  
+  // Simular dados do concurso pelo token (em produção viria do GitHub)
+  carregarDadosConcurso(TOKEN_ESCOLA);
+  
+  // Adicionar 3 salas iniciais
+  addSala(); addSala(); addSala();
+};
+
+async function carregarDadosConcurso(token){
+  // Em produção: buscar do GitHub o JSON com dados do token
+  // Por enquanto simula
+  DADOS_CONCURSO = {
+    concurso: 'CONCURSO PÚBLICO DO MUNICÍPIO DE CARANDAÍ/MG - EDITAL Nº 01/2026',
+    municipio: 'Carandaí/MG',
+    dataProva: '26/07/2026',
+    escola: 'Escola a preencher',
+    idEscola: token
+  };
+  document.getElementById('header-concurso').textContent = 
+    DADOS_CONCURSO.municipio + ' · Prova: ' + DADOS_CONCURSO.dataProva;
+}
+
+// ── STEPS ─────────────────────────────────────────────────────────────
+function goStep(n){
+  if(n > currentStep) return; // só volta, não avança sem validação
+  showStep(n);
+}
+
+function nextStep(from){
+  if(!validateStep(from)) return;
+  markDone(from);
+  showStep(from + 1);
+}
+
+function showStep(n){
+  for(let i=1;i<=4;i++){
+    const p = document.getElementById('page-'+i);
+    if(p) p.style.display = i===n ? 'block' : 'none';
+  }
+  currentStep = n;
+  updateStepBtns();
+  updateProgress();
+  if(n===4) buildRevisao();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function updateStepBtns(){
+  for(let i=1;i<=4;i++){
+    const b = document.getElementById('step-btn-'+i);
+    b.classList.remove('active');
+    if(i===currentStep) b.classList.add('active');
+  }
+}
+
+function markDone(n){
+  const b = document.getElementById('step-btn-'+n);
+  b.classList.remove('active');
+  b.classList.add('done');
+  b.querySelector('.step-num').textContent = '✓';
+}
+
+function updateProgress(){
+  document.getElementById('progress').style.width = ((currentStep-1)/3*100) + '%';
+}
+
+// ── VALIDAÇÃO ─────────────────────────────────────────────────────────
+function validateStep(n){
+  const erros = [];
+  if(n===1){
+    if(!v('nome')) erros.push('Nome da Institui\u00e7\u00e3o');
+    if(!v('endereco')) erros.push('Endere\u00e7o');
+    if(!v('bairro')) erros.push('Bairro');
+    if(!v('cidade')) erros.push('Cidade');
+    if(!v('resp-nome')) erros.push('Nome do Respons\u00e1vel');
+    if(!v('resp-email')) erros.push('E-mail de Contato');
+    if(!v('resp-tel')) erros.push('Telefone de Contato');
+  }
+  if(n===3){
+    const rows = document.querySelectorAll('#salas-tbody tr');
+    if(!rows.length){ erros.push('Adicione pelo menos uma sala'); }
+    else {
+      rows.forEach((r,i)=>{
+        const sala = r.querySelector('[data-f="sala"]')?.value?.trim();
+        const cap  = parseInt(r.querySelector('[data-f="cap"]')?.value)||0;
+        if(!sala) erros.push(`Sala ${i+1}: n\u00famero da sala obrigat\u00f3rio`);
+        if(cap<=0) erros.push(`Sala ${i+1}: capacidade deve ser maior que zero`);
+      });
+    }
+  }
+  if(erros.length){ showErros(n,erros); return false; }
+  hideErros(); return true;
+}
+
+function showErros(step, lista){
+  document.querySelectorAll('.alert-erros').forEach(e=>e.remove());
+  const el = document.createElement('div');
+  el.className = 'alert alert-error alert-erros';
+  el.style.marginTop = '12px';
+  el.innerHTML = '<strong>Preencha os campos obrigat\u00f3rios:</strong><ul style="margin-top:4px;padding-left:16px">' + lista.map(e=>`<li>${e}</li>`).join('') + '</ul>';
+  const page = document.getElementById('page-'+step);
+  const btnNav = page ? page.querySelector('.btn-nav') : null;
+  if(btnNav) page.insertBefore(el, btnNav);
+  else if(page) page.appendChild(el);
+  setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+}
+
+function hideErros(){
+  document.querySelectorAll('.alert-erros').forEach(e=>e.remove());
+}
+
+function v(id){ return document.getElementById(id)?.value?.trim(); }
+
+function showErros(lista){
+  let el = document.getElementById('alert-erros');
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'alert-erros';
+    el.className = 'alert alert-error';
+    document.querySelector('#page-'+currentStep+' .btn-nav').before(el);
+  }
+  el.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> <div><strong>Corrija os campos:</strong><ul style="margin-top:4px;padding-left:16px">' + lista.map(e=>`<li>${e}</li>`).join('') + '</ul></div>';
+  el.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function hideErros(){
+  document.getElementById('alert-erros')?.remove();
+}
+
+// ── SALAS ─────────────────────────────────────────────────────────────
+function addSala(){
+  salaCount++;
+  const tbody = document.getElementById('salas-tbody');
+  const tr = document.createElement('tr');
+  tr.id = 'sala-row-'+salaCount;
+  tr.innerHTML = `
+<td style="text-align:center;color:var(--muted);font-size:12px;font-weight:700">${tbody.children.length+1}</td>
+<td><input type="text" data-f="bloco" placeholder="Ex: A, B" style="min-width:70px"></td>
+<td><input type="text" data-f="andar" placeholder="1º Andar" style="min-width:90px"></td>
+<td><input type="text" data-f="sala" placeholder="Ex: 101" style="min-width:70px"></td>
+<td><input type="number" data-f="cap" min="1" max="100" placeholder="0" oninput="atualizarCapTotal()"></td>
+<td>
+  <select data-f="turno">
+    <option value="AMBOS">Manhã e Tarde</option>
+    <option value="MANHA">Somente Manhã</option>
+    <option value="TARDE">Somente Tarde</option>
+  </select>
+</td>
+<td style="text-align:center"><input type="checkbox" data-f="arcond" style="width:16px;height:16px;accent-color:var(--azul-med)"></td>
+<td style="text-align:center"><input type="checkbox" data-f="vent" style="width:16px;height:16px;accent-color:var(--azul-med)"></td>
+<td><button class="btn-del" onclick="delSala('sala-row-${salaCount}')" title="Remover">×</button></td>`;
+  tbody.appendChild(tr);
+  renumSalas();
+}
+
+function delSala(id){
+  document.getElementById(id)?.remove();
+  renumSalas();
+  atualizarCapTotal();
+}
+
+function renumSalas(){
+  document.querySelectorAll('#salas-tbody tr').forEach((r,i)=>{
+    r.querySelector('td:first-child').textContent = i+1;
+  });
+}
+
+function atualizarCapTotal(){
+  let total = 0;
+  document.querySelectorAll('[data-f="cap"]').forEach(i=>{ total += parseInt(i.value)||0; });
+  document.getElementById('total-cap-tag').textContent = total + ' candidatos no total';
+}
+
+// ── REVISÃO ───────────────────────────────────────────────────────────
+function buildRevisao(){
+  const salas = getSalas();
+  const html = `
+<div class="card" style="margin-bottom:16px">
+  <div class="card-header">
+    <div class="card-title">📋 Dados da Instituição</div>
+    <button class="btn btn-secondary" style="margin-left:auto;padding:6px 12px;font-size:12px" onclick="goStep(1)">Editar</button>
+  </div>
+  <div class="card-body">
+    <div class="form-grid">
+      ${rv('Nome', v('nome'))} ${rv('CNPJ', v('cnpj'))}
+      ${rv('Endereço', [v('endereco'),v('numero'),v('bairro'),v('cidade'),v('uf')].filter(Boolean).join(', '))}
+      ${rv('Responsável', v('resp-nome'))} ${rv('Telefone', v('resp-tel'))}
+      ${rv('E-mail', v('resp-email'))}
+    </div>
+  </div>
+</div>
+<div class="card" style="margin-bottom:16px">
+  <div class="card-header">
+    <div class="card-title">🏫 Salas cadastradas — ${salas.length} sala(s)</div>
+    <button class="btn btn-secondary" style="margin-left:auto;padding:6px 12px;font-size:12px" onclick="goStep(3)">Editar</button>
+  </div>
+  <div class="card-body" style="padding:0">
+    <div class="salas-table-wrap">
+      <table class="salas">
+        <thead><tr><th>#</th><th>Bloco</th><th>Andar</th><th>Sala</th><th>Capacidade</th><th>Turno</th><th>Ar</th><th>Vent.</th></tr></thead>
+        <tbody>${salas.map((s,i)=>`<tr>
+          <td style="text-align:center">${i+1}</td>
+          <td>${s.bloco||'—'}</td><td>${s.andar||'—'}</td><td><strong>${s.sala}</strong></td>
+          <td style="text-align:center"><strong>${s.capacidade}</strong></td>
+          <td>${s.turno==='AMBOS'?'Manhã e Tarde':s.turno==='MANHA'?'Manhã':'Tarde'}</td>
+          <td style="text-align:center">${s.arcond?'✅':'—'}</td>
+          <td style="text-align:center">${s.ventilador?'✅':'—'}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>
+  </div>
+</div>`;
+  document.getElementById('revisao-content').innerHTML = html;
+}
+
+function rv(label, val){
+  return `<div class="form-group"><label style="font-weight:600">${label}</label><div style="font-size:13px;padding:8px 12px;background:var(--cinza);border-radius:7px">${val||'—'}</div></div>`;
+}
+
+function getSalas(){
+  const rows = document.querySelectorAll('#salas-tbody tr');
+  return Array.from(rows).map(r=>({
+    bloco:   r.querySelector('[data-f="bloco"]').value.trim(),
+    andar:   r.querySelector('[data-f="andar"]').value.trim(),
+    sala:    r.querySelector('[data-f="sala"]').value.trim(),
+    capacidade: parseInt(r.querySelector('[data-f="cap"]').value)||0,
+    turno:   r.querySelector('[data-f="turno"]').value,
+    arcond:  r.querySelector('[data-f="arcond"]').checked,
+    ventilador: r.querySelector('[data-f="vent"]').checked,
+  }));
+}
+
+// ── ENVIO ─────────────────────────────────────────────────────────────
+async function enviarFormulario(){
+  const btn = document.getElementById('btn-enviar');
+  btn.disabled = true;
+  btn.innerHTML = '<div style="width:16px;height:16px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .6s linear infinite"></div> Enviando...';
+
+  const dados = {
+    token: TOKEN_ESCOLA,
+    enviadoEm: new Date().toISOString(),
+    protocolo: TOKEN_ESCOLA + '_' + Date.now(),
+    concurso: DADOS_CONCURSO,
+    instituicao: {
+      nome: v('nome'), cnpj: v('cnpj'), razao: v('razao'),
+      endereco: v('endereco'), numero: v('numero'), complemento: v('complemento'),
+      bairro: v('bairro'), cidade: v('cidade'), uf: v('uf'), cep: v('cep'),
+      responsavel: { nome: v('resp-nome'), cargo: v('resp-cargo'), email: v('resp-email'), tel: v('resp-tel') },
+      diretor: { nome: v('diretor-nome'), email: v('diretor-email') },
+    },
+    estrutura: {
+      carteiras: {
+        mesa: document.getElementById('c-mesa').checked,
+        universitaria: document.getElementById('c-univ').checked,
+        canhoto: document.getElementById('c-canhoto').checked,
+        dupla: document.getElementById('c-dupla').checked,
+      },
+      infraestrutura: {
+        rampa: document.getElementById('c-rampa').checked,
+        elevador: document.getElementById('c-elevador').checked,
+        gerador: document.getElementById('c-gerador').checked,
+        auditorio: document.getElementById('c-audit').checked,
+        arcond: document.getElementById('c-arcond').checked,
+        ventilador: document.getElementById('c-vent').checked,
+      },
+      banheiros: {
+        masc: { qtd: document.getElementById('ban-masc-qt').value, adaptado: document.getElementById('c-ban-masc').checked },
+        fem:  { qtd: document.getElementById('ban-fem-qt').value,  adaptado: document.getElementById('c-ban-fem').checked },
+      }
+    },
+    salas: getSalas()
+  };
+
+  try {
+    // Salvar no GitHub como JSON
+    await salvarNoGitHub(dados);
+    document.getElementById('protocolo').textContent = dados.protocolo;
+    for(let i=1;i<=4;i++) document.getElementById('page-'+i).style.display='none';
+    document.getElementById('page-success').style.display='block';
+    document.getElementById('progress').style.width='100%';
+    window.scrollTo({top:0,behavior:'smooth'});
+  } catch(e) {
+    btn.disabled = false;
+    btn.innerHTML = '✓ Confirmar e Enviar';
+    alert('Erro ao enviar: ' + e.message + '\nTente novamente.');
+  }
+}
+
+async function salvarNoGitHub(dados){
+  // Buscar token do GitHub dos dados do concurso (injetado via DADOS_INICIAIS em produção)
+  // Por enquanto apenas simula sucesso
+  // Em produção: POST para endpoint do app IBGP que salva no GitHub
+  await new Promise(r=>setTimeout(r,1200)); // simular delay
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────
+function toggleCheck(cb, id){
+  document.getElementById(id).classList.toggle('checked', cb.checked);
+}
+
+function maskCNPJ(i){
+  let v = i.value.replace(/\D/g,'');
+  v = v.replace(/^(\d{2})(\d)/,'$1.$2');
+  v = v.replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3');
+  v = v.replace(/\.(\d{3})(\d)/,'.$1/$2');
+  v = v.replace(/(\d{4})(\d)/,'$1-$2');
+  i.value = v.substring(0,18);
+}
+
+function maskCEP(i){
+  let v = i.value.replace(/\D/g,'');
+  v = v.replace(/(\d{5})(\d)/,'$1-$2');
+  i.value = v.substring(0,9);
+}
+
+function maskTel(i){
+  let v = i.value.replace(/\D/g,'');
+  if(v.length<=10) v = v.replace(/(\d{2})(\d{4})(\d{0,4})/,'($1) $2-$3');
+  else v = v.replace(/(\d{2})(\d{5})(\d{0,4})/,'($1) $2-$3');
+  i.value = v.substring(0,15);
+}
+</script>
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</body>
+</html>
