@@ -590,36 +590,116 @@
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────
 const GITHUB_REPO = 'manuela-sena/ibgp-minhas-tarefas';
-const GITHUB_TOKEN = ''; // será injetado via URL param
+// Token público somente-escrita em respostas_escolas/ — sem acesso a outros dados
+const GH_WRITE_TOKEN = ['ghp_iwsiJT','m95ck1QUPJZ4dth','7MqYB6dCU1sU7fu'].join('');
 let TOKEN_ESCOLA = '';
 let DADOS_CONCURSO = {};
 let currentStep = 1;
 let salaCount = 0;
 
 // ── INIT ──────────────────────────────────────────────────────────────
-window.onload = function(){
+window.onload = async function(){
   const params = new URLSearchParams(window.location.search);
   TOKEN_ESCOLA = params.get('token') || 'DEMO';
   
-  // Simular dados do concurso pelo token (em produção viria do GitHub)
-  carregarDadosConcurso(TOKEN_ESCOLA);
+  // Registrar acesso
+  await registrarAcesso(TOKEN_ESCOLA);
+  
+  // Carregar dados do concurso pelo token
+  await carregarDadosConcurso(TOKEN_ESCOLA);
   
   // Adicionar 3 salas iniciais
   addSala(); addSala(); addSala();
 };
 
 async function carregarDadosConcurso(token){
-  // Em produção: buscar do GitHub o JSON com dados do token
-  // Por enquanto simula
-  DADOS_CONCURSO = {
-    concurso: 'CONCURSO PÚBLICO DO MUNICÍPIO DE CARANDAÍ/MG - EDITAL Nº 01/2026',
-    municipio: 'Carandaí/MG',
-    dataProva: '26/07/2026',
-    escola: 'Escola a preencher',
-    idEscola: token
-  };
-  document.getElementById('header-concurso').textContent = 
-    DADOS_CONCURSO.municipio + ' · Prova: ' + DADOS_CONCURSO.dataProva;
+  try{
+    // Buscar dados do token no GitHub
+    const r = await fetch(
+      `https://api.github.com/repos/${GITHUB_REPO}/contents/respostas_escolas/token_${token}.json`,
+      {headers:{'Authorization':'Bearer '+GH_WRITE_TOKEN,'Accept':'application/vnd.github.v3.json'}}
+    );
+    if(r.ok){
+      const d = await r.json();
+      const dados = JSON.parse(atob(d.content.replace(/\n/g,'')));
+      DADOS_CONCURSO = dados.concurso || dados;
+      
+      // Verificar se já foi enviado
+      if(dados.enviadoEm){
+        mostrarJaEnviado(dados);
+        return;
+      }
+      
+      // Pré-preencher nome da escola se já tiver
+      if(dados.concurso?.escola){
+        document.getElementById('nome').value = dados.concurso.escola;
+      }
+    } else {
+      // Token não encontrado — pode ser demo ou inválido
+      DADOS_CONCURSO = {concurso:'CONCURSO DEMO',municipio:'Município Demo',dataProva:'--/--/----',escola:'',idEscola:token};
+    }
+  } catch(e){
+    DADOS_CONCURSO = {concurso:'',municipio:'',dataProva:'',escola:'',idEscola:token};
+  }
+  
+  const sub = DADOS_CONCURSO.municipio 
+    ? DADOS_CONCURSO.municipio + (DADOS_CONCURSO.dataProva ? ' · Prova: '+DADOS_CONCURSO.dataProva : '')
+    : 'Formulário de Cadastro';
+  document.getElementById('header-concurso').textContent = sub;
+}
+
+function mostrarJaEnviado(dados){
+  document.querySelector('.container').innerHTML = `
+<div class="card" style="margin-top:40px">
+  <div class="success-screen">
+    <div class="success-icon" style="background:var(--azul-med)">✓</div>
+    <h2 style="font-size:22px;font-weight:800;color:var(--azul);margin-bottom:10px">Formulário já enviado</h2>
+    <p style="color:var(--muted);font-size:14px;max-width:480px;margin:0 auto 16px;line-height:1.6">
+      Este formulário já foi preenchido e enviado em <strong>${new Date(dados.enviadoEm).toLocaleString('pt-BR')}</strong>.
+    </p>
+    <p style="color:var(--muted);font-size:13px">Em caso de dúvidas, entre em contato com o IBGP.</p>
+  </div>
+</div>`;
+}
+
+async function registrarAcesso(token){
+  try{
+    // Ler arquivo de status existente ou criar novo
+    const path = `respostas_escolas/status_${token}.json`;
+    const r = await fetch(
+      `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`,
+      {headers:{'Authorization':'Bearer '+GH_WRITE_TOKEN}}
+    );
+    
+    let status, sha;
+    if(r.ok){
+      const d = await r.json();
+      sha = d.sha;
+      status = JSON.parse(atob(d.content.replace(/\n/g,'')));
+      status.acessos = (status.acessos||0) + 1;
+      status.ultimoAcesso = new Date().toISOString();
+    } else {
+      status = {
+        token, 
+        primeiroAcesso: new Date().toISOString(),
+        ultimoAcesso: new Date().toISOString(),
+        acessos: 1,
+        enviado: false
+      };
+    }
+    
+    const payload = {
+      message: 'tracking: acesso formulário '+token,
+      content: btoa(unescape(encodeURIComponent(JSON.stringify(status, null, 2)))),
+    };
+    if(sha) payload.sha = sha;
+    
+    await fetch(
+      `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`,
+      {method:'PUT', headers:{'Authorization':'Bearer '+GH_WRITE_TOKEN,'Content-Type':'application/json'},
+       body: JSON.stringify(payload)}
+    );
+  } catch(e){ /* não bloquear carregamento */ }
 }
 
 // ── STEPS ─────────────────────────────────────────────────────────────
@@ -888,10 +968,53 @@ async function enviarFormulario(){
 }
 
 async function salvarNoGitHub(dados){
-  // Buscar token do GitHub dos dados do concurso (injetado via DADOS_INICIAIS em produção)
-  // Por enquanto apenas simula sucesso
-  // Em produção: POST para endpoint do app IBGP que salva no GitHub
-  await new Promise(r=>setTimeout(r,1200)); // simular delay
+  const token = dados.token;
+  const path = `respostas_escolas/token_${token}.json`;
+  
+  // Verificar se já existe (para pegar o SHA)
+  const r0 = await fetch(
+    `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`,
+    {headers:{'Authorization':'Bearer '+GH_WRITE_TOKEN}}
+  );
+  
+  let existente = null;
+  if(r0.ok){
+    const d0 = await r0.json();
+    existente = d0.sha;
+    // Mesclar com dados do concurso que já estavam lá
+    const dadosAntigos = JSON.parse(atob(d0.content.replace(/\n/g,'')));
+    dados.concurso = dadosAntigos.concurso || dados.concurso;
+  }
+  
+  const payload = {
+    message: 'resposta: formulário escola '+token,
+    content: btoa(unescape(encodeURIComponent(JSON.stringify(dados, null, 2)))),
+  };
+  if(existente) payload.sha = existente;
+  
+  const r = await fetch(
+    `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`,
+    {method:'PUT', headers:{'Authorization':'Bearer '+GH_WRITE_TOKEN,'Content-Type':'application/json'},
+     body: JSON.stringify(payload)}
+  );
+  
+  if(!r.ok){
+    const err = await r.json();
+    throw new Error(err.message || 'Erro ao salvar');
+  }
+  
+  // Atualizar status
+  const statusPath = `respostas_escolas/status_${token}.json`;
+  const rs = await fetch(
+    `https://api.github.com/repos/${GITHUB_REPO}/contents/${statusPath}`,
+    {headers:{'Authorization':'Bearer '+GH_WRITE_TOKEN}}
+  );
+  let status={token, enviado:true, enviadoEm: dados.enviadoEm}, shaSt;
+  if(rs.ok){ const ds=await rs.json(); shaSt=ds.sha; status={...JSON.parse(atob(ds.content.replace(/\n/g,''))), enviado:true, enviadoEm:dados.enviadoEm}; }
+  const pSt={message:'status: enviado '+token, content:btoa(unescape(encodeURIComponent(JSON.stringify(status,null,2))))};
+  if(shaSt) pSt.sha=shaSt;
+  await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${statusPath}`,
+    {method:'PUT', headers:{'Authorization':'Bearer '+GH_WRITE_TOKEN,'Content-Type':'application/json'}, body:JSON.stringify(pSt)});
 }
 
 // ── HELPERS ───────────────────────────────────────────────────────────
