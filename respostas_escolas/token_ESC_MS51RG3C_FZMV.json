@@ -1,89 +1,89 @@
 {
-  "token": "ESC_MS51RG3C_FZMV",
-  "enviadoEm": "2026-07-28T19:29:25.682Z",
-  "protocolo": "ESC_MS51RG3C_FZMV_1785266965682",
-  "concurso": {
-    "concurso": "ALTO RIO DOCE - EDITAL NÂº 01/2026 - CONCURSO PÃBLICO",
-    "municipio": "ALTO RIO DOCE",
-    "dataProva": "02/08/2026",
-    "escola": "ESCOLA MUNICIPAL TESTE",
-    "idEscola": "ESC_MS51RG3C_FZMV"
-  },
-  "instituicao": {
-    "nome": "ESCOLA MUNICIPAL TESTE",
-    "cnpj": "15.135.131/3434-34",
-    "razao": "1364654",
-    "endereco": "av do contorno",
-    "numero": "1480",
-    "complemento": "-",
-    "bairro": "floresta",
-    "cidade": "bh",
-    "uf": "MG",
-    "cep": "30110-008",
-    "responsavel": {
-      "nome": "Laryssa",
-      "cargo": "Empresaria",
-      "email": "contato@ibgp.org.br",
-      "tel": "(31) 99377-2496"
+    "token": "ESC_MS51RG3C_FZMV",
+    "enviadoEm": "2026-07-28T19:29:25.682Z",
+    "protocolo": "ESC_MS51RG3C_FZMV_1785266965682",
+    "concurso": {
+          "concurso": "ALTO RIO DOCE - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+          "municipio": "ALTO RIO DOCE",
+          "dataProva": "02/08/2026",
+          "escola": "ESCOLA MUNICIPAL TESTE",
+          "idEscola": "ESC_MS51RG3C_FZMV"
     },
-    "diretor": {
-      "nome": "LAryssa",
-      "email": "contato@ibgp.org.br"
-    }
-  },
-  "estrutura": {
-    "carteiras": {
-      "mesa": true,
-      "universitaria": false,
-      "canhoto": true,
-      "dupla": false
+    "instituicao": {
+          "nome": "ESCOLA MUNICIPAL TESTE",
+          "cnpj": "15.135.131/3434-34",
+          "razao": "1364654",
+          "endereco": "av do contorno",
+          "numero": "1480",
+          "complemento": "-",
+          "bairro": "floresta",
+          "cidade": "bh",
+          "uf": "MG",
+          "cep": "30110-008",
+          "responsavel": {
+                  "nome": "Laryssa",
+                  "cargo": "Empresaria",
+                  "email": "contato@ibgp.org.br",
+                  "tel": "(31) 99377-2496"
+          },
+          "diretor": {
+                  "nome": "LAryssa",
+                  "email": "contato@ibgp.org.br"
+          }
     },
-    "infraestrutura": {
-      "rampa": true,
-      "elevador": false,
-      "gerador": false,
-      "auditorio": true,
-      "arcond": false,
-      "ventilador": false
+    "estrutura": {
+          "carteiras": {
+                  "mesa": true,
+                  "universitaria": false,
+                  "canhoto": true,
+                  "dupla": false
+          },
+          "infraestrutura": {
+                  "rampa": true,
+                  "elevador": false,
+                  "gerador": false,
+                  "auditorio": true,
+                  "arcond": false,
+                  "ventilador": false
+          },
+          "banheiros": {
+                  "masc": {
+                            "qtd": "3",
+                            "adaptado": false
+                  },
+                  "fem": {
+                            "qtd": "4",
+                            "adaptado": false
+                  }
+          }
     },
-    "banheiros": {
-      "masc": {
-        "qtd": "3",
-        "adaptado": false
-      },
-      "fem": {
-        "qtd": "4",
-        "adaptado": false
-      }
-    }
-  },
-  "salas": [
-    {
-      "bloco": "UNICO",
-      "andar": "1º ANDAR",
-      "sala": "SALA 1",
-      "capacidade": 30,
-      "turno": "AMBOS",
-      "arcond": false,
-      "ventilador": false
-    },
-    {
-      "bloco": "UNICO",
-      "andar": "1º ANDAR",
-      "sala": "SALA 02",
-      "capacidade": 20,
-      "turno": "AMBOS",
-      "arcond": false,
-      "ventilador": false
-    },
-    {
-      "bloco": "UNICO",
-      "andar": "1º ANDAR",
-      "sala": "SALA 03",
-      "capacidade": 30,
-      "turno": "AMBOS",
-      "arcond": false,
-      "ventilador": false
-    }
-  ]
+    "salas": [
+          {
+                  "bloco": "UNICO",
+                  "andar": "1º ANDAR",
+                  "sala": "SALA 1",
+                  "capacidade": 30,
+                  "turno": "AMBOS",
+                  "arcond": false,
+                  "ventilador": false
+          },
+          {
+                  "bloco": "UNICO",
+                  "andar": "1º ANDAR",
+                  "sala": "SALA 02",
+                  "capacidade": 20,
+                  "turno": "AMBOS",
+                  "arcond": false,
+                  "ventilador": false
+          },
+          {
+                  "bloco": "UNICO",
+                  "andar": "1º ANDAR",
+                  "sala": "SALA 03",
+                  "capacidade": 30,
+                  "turno": "AMBOS",
+                  "arcond": false,
+                  "ventilador": false
+          }
+    ]
 }
