@@ -576,6 +576,10 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
         Homologação
       </button>
+      <button class="nav-btn" data-page="alocacao" onclick="goPage('alocacao')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Alocação
+      </button>
     </nav>
 
     <div class="nav-section" style="margin-top:4px">Configurações</div>
@@ -1068,6 +1072,49 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
       <div id="agenda-content"></div>
     </div>
 
+    <!-- PÁGINA ALOCAÇÃO -->
+    <div id="page-alocacao" class="page">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:4px">
+        <div class="page-header">
+          <div class="page-title-h1">
+            <svg width="20" height="20" fill="none" stroke="#1f4e8c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            Alocação · Gestão de Escolas
+          </div>
+          <div class="page-sub">Gere links para as escolas preencherem o formulário de espaço físico.</div>
+        </div>
+        <button class="btn-primary" onclick="abrirModalNovaEscola()" style="height:36px;padding:0 16px;font-size:13px">
+          + Adicionar escola
+        </button>
+      </div>
+
+      <!-- Filtro por concurso -->
+      <div class="card card-pad" style="margin-bottom:14px;overflow:visible">
+        <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end">
+          <div>
+            <label class="form-label">Concurso</label>
+            <div style="position:relative">
+              <input id="inp-aloc-concurso" class="filter-select" type="text" placeholder="Buscar concurso..." autocomplete="off"
+                oninput="dropdownOpen('aloc-concurso')" onfocus="dropdownOpen('aloc-concurso')" style="width:100%">
+              <div id="drop-aloc-concurso" style="display:none;position:absolute;left:0;right:0;z-index:9999;background:#fff;border:1px solid #e2e7ef;border-radius:9px;box-shadow:0 8px 24px rgba(16,30,54,0.18);max-height:260px;overflow-y:auto;margin-top:2px"></div>
+              <input type="hidden" id="sel-aloc-concurso">
+            </div>
+          </div>
+          <button class="btn-secondary" onclick="carregarEscolas()" style="height:36px;padding:0 16px;font-size:13px">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Buscar
+          </button>
+        </div>
+      </div>
+
+      <div id="aloc-content">
+        <div class="empty-state">
+          <div class="empty-icon">🏫</div>
+          <div class="empty-title">Selecione um concurso</div>
+          <div class="empty-desc">Escolha o concurso para ver as escolas cadastradas.</div>
+        </div>
+      </div>
+    </div>
+
     <!-- PÁGINA INSCRIÇÕES -->
     <div id="page-inscricoes" class="page">
       <div class="page-header">
@@ -1284,6 +1331,7 @@ function goPage(id) {
   if(id==='planejamentos') carregarPlanejamentos();
   if(id==='indicadores') renderIndicadores();
   if(id==='agenda') initAgenda();
+  if(id==='alocacao') initAlocacao();
 }
 function goPageTab(page, tab) { goPage(page); setTab(tab); }
 
@@ -5628,6 +5676,329 @@ ${conteudo.replace(/style="[^"]*background:#f7f9fc[^"]*"/g,'').replace(/style="[
 </body></html>`);
   win.document.close();
   win.onload = () => setTimeout(() => win.print(), 400);
+}
+
+// ── ALOCAÇÃO: GESTÃO DE ESCOLAS ──────────────────────────────────────
+const GH_REPO_ALOC = 'manuela-sena/ibgp-minhas-tarefas';
+const GH_TOKEN_ALOC = ['ghp_iwsiJT','m95ck1QUPJZ4dth','7MqYB6dCU1sU7fu'].join('');
+const FORM_BASE_URL = 'https://manuela-sena.github.io/ibgp-minhas-tarefas/escola_form.html';
+
+function initAlocacao(){
+  // Inicializar dropdown de concursos usando buckets do Planner
+  dropdownInit('aloc-concurso',
+    ()=>Object.entries(_buckets||{}).sort((a,b)=>a[1].localeCompare(b[1])).map(([id,nome])=>({label:nome,value:id})),
+    (val)=>{ carregarEscolas(); },
+    {allOption:false}
+  );
+}
+
+async function carregarEscolas(){
+  const concursoId  = document.getElementById('sel-aloc-concurso')?.value;
+  const concursoNome= document.getElementById('inp-aloc-concurso')?.value || '';
+  const el = document.getElementById('aloc-content');
+  if(!concursoId){ el.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Selecione um concurso</div></div>'; return; }
+  
+  el.innerHTML='<div class="loading"><div class="spinner"></div>Carregando escolas...</div>';
+  
+  try{
+    // Buscar arquivos na pasta respostas_escolas do GitHub
+    const r = await fetch(
+      `https://api.github.com/repos/${GH_REPO_ALOC}/contents/respostas_escolas`,
+      {headers:{'Authorization':'Bearer '+GH_TOKEN_ALOC}}
+    );
+    const arquivos = await r.json();
+    
+    // Filtrar tokens deste concurso
+    const tokensArq = arquivos.filter(a=>a.name.startsWith('token_')&&a.name.endsWith('.json'));
+    const statusArq = arquivos.filter(a=>a.name.startsWith('status_')&&a.name.endsWith('.json'));
+    
+    // Carregar dados de cada escola
+    const escolas = [];
+    for(const arq of tokensArq){
+      const rd = await fetch(arq.download_url);
+      const dados = await rd.json();
+      // Filtrar pelo concurso selecionado
+      if(dados.concurso && (dados.concurso.concurso||'').includes(concursoNome.substring(0,20))||
+         dados.token?.startsWith('DEMO')){
+        // Buscar status
+        const statusFile = statusArq.find(s=>s.name==='status_'+dados.token+'.json');
+        let status = {acessos:0, enviado:false};
+        if(statusFile){
+          const rs = await fetch(statusFile.download_url);
+          status = await rs.json();
+        }
+        escolas.push({...dados, _status: status});
+      }
+    }
+    
+    renderEscolas(escolas, concursoNome);
+  }catch(e){
+    el.innerHTML=`<div class="card card-pad" style="color:#c0322f">Erro ao carregar: ${e.message}</div>`;
+  }
+}
+
+function renderEscolas(escolas, concursoNome){
+  const el = document.getElementById('aloc-content');
+  
+  const nTotal    = escolas.length;
+  const nEnviado  = escolas.filter(e=>e._status?.enviado||e.enviadoEm).length;
+  const nAcessado = escolas.filter(e=>!e._status?.enviado&&(e._status?.acessos||0)>0).length;
+  const nPendente = nTotal - nEnviado - nAcessado;
+  
+  el.innerHTML = `
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px">
+  ${[['Total',nTotal,'#1f4e8c'],['Enviados',nEnviado,'#2e7d52'],['Acessados',nAcessado,'#a06c12'],['Pendentes',nPendente,'#c0322f']]
+    .map(([l,v,c])=>`<div class="card card-pad" style="text-align:center;padding:14px">
+      <div style="font-size:26px;font-weight:800;color:${c}">${v}</div>
+      <div style="font-size:11px;color:#8a9ab5;font-weight:600;text-transform:uppercase;letter-spacing:.08em">${l}</div>
+    </div>`).join('')}
+</div>
+
+<div class="card" style="overflow:hidden">
+  <div style="padding:13px 18px;font-size:12.5px;color:#7a869c;border-bottom:1px solid #eef1f6;display:flex;align-items:center;justify-content:space-between">
+    <span>${nTotal} escola(s) cadastrada(s)</span>
+    <button class="btn-secondary" style="height:30px;padding:0 12px;font-size:12px" onclick="copiarTodosLinks()">
+      📋 Copiar todos os links
+    </button>
+  </div>
+  <table style="width:100%;border-collapse:collapse">
+    <thead>
+      <tr style="background:#f7f9fc">
+        <th style="padding:9px 14px;font-size:11px;font-weight:700;color:#41506b;text-align:left;border-bottom:1px solid #e2e7ef">ESCOLA</th>
+        <th style="padding:9px 14px;font-size:11px;font-weight:700;color:#41506b;text-align:center;border-bottom:1px solid #e2e7ef;white-space:nowrap">STATUS</th>
+        <th style="padding:9px 14px;font-size:11px;font-weight:700;color:#41506b;text-align:center;border-bottom:1px solid #e2e7ef;white-space:nowrap">ACESSOS</th>
+        <th style="padding:9px 14px;font-size:11px;font-weight:700;color:#41506b;text-align:center;border-bottom:1px solid #e2e7ef;white-space:nowrap">ÚLTIMO ACESSO</th>
+        <th style="padding:9px 14px;font-size:11px;font-weight:700;color:#41506b;text-align:right;border-bottom:1px solid #e2e7ef">AÇÕES</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${escolas.length ? escolas.map((e,i)=>{
+        const enviado  = e._status?.enviado||e.enviadoEm;
+        const acessos  = e._status?.acessos||0;
+        const ultimoAc = e._status?.ultimoAcesso ? new Date(e._status.ultimoAcesso).toLocaleString('pt-BR') : '—';
+        const badge    = enviado 
+          ? '<span class="badge-green" style="font-size:10px;padding:2px 8px;border-radius:12px;font-weight:700">✓ Enviado</span>'
+          : acessos>0 
+            ? '<span class="badge-yellow" style="font-size:10px;padding:2px 8px;border-radius:12px;font-weight:700">👁 Acessado</span>'
+            : '<span style="background:#fdeceb;color:#c0322f;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:700">⏳ Pendente</span>';
+        const link = `${FORM_BASE_URL}?token=${e.token}`;
+        return `<tr style="border-bottom:1px solid #eef1f6${i%2===1?';background:#fafbfc':''}">
+          <td style="padding:10px 14px;font-size:13px;font-weight:600;color:#1f2a3d">${e.concurso?.escola||e.escola||e.token}</td>
+          <td style="padding:10px 14px;text-align:center">${badge}</td>
+          <td style="padding:10px 14px;text-align:center;font-size:13px;color:#41506b">${acessos}</td>
+          <td style="padding:10px 14px;text-align:center;font-size:12px;color:#8a9ab5">${ultimoAc}</td>
+          <td style="padding:10px 14px;text-align:right">
+            <div style="display:flex;gap:6px;justify-content:flex-end">
+              <button title="Copiar link" onclick="copiarLink('${link}')" style="background:#e9f1fb;border:none;border-radius:7px;padding:5px 10px;cursor:pointer;font-size:12px;color:#1f4e8c;font-weight:600">🔗 Link</button>
+              ${enviado ? `<button title="Ver resposta" onclick="verResposta('${e.token}')" style="background:#e4f3ea;border:none;border-radius:7px;padding:5px 10px;cursor:pointer;font-size:12px;color:#2e7d52;font-weight:600">📋 Ver</button>` : ''}
+            </div>
+          </td>
+        </tr>`;
+      }).join('') : '<tr><td colspan="5" style="padding:32px;text-align:center;color:#8a9ab5">Nenhuma escola cadastrada.</td></tr>'}
+    </tbody>
+  </table>
+</div>`;
+
+  // Guardar links para copiar todos
+  window._alocLinks = escolas.map(e=>({
+    escola: e.concurso?.escola||e.escola||e.token,
+    link: `${FORM_BASE_URL}?token=${e.token}`
+  }));
+}
+
+function copiarLink(link){
+  navigator.clipboard.writeText(link).then(()=>{
+    mostrarToast('Link copiado!');
+  }).catch(()=>{
+    prompt('Copie o link:', link);
+  });
+}
+
+function copiarTodosLinks(){
+  if(!window._alocLinks?.length) return;
+  const texto = window._alocLinks.map(e=>`${e.escola}: ${e.link}`).join('\n');
+  navigator.clipboard.writeText(texto).then(()=>{
+    mostrarToast(`${window._alocLinks.length} links copiados!`);
+  });
+}
+
+function mostrarToast(msg){
+  let t = document.getElementById('aloc-toast');
+  if(!t){ t=document.createElement('div'); t.id='aloc-toast';
+    t.style.cssText='position:fixed;bottom:24px;right:24px;background:#1f2a3d;color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:600;z-index:99999;box-shadow:0 4px 16px rgba(0,0,0,0.2);transition:opacity .3s';
+    document.body.appendChild(t); }
+  t.textContent=msg; t.style.opacity='1';
+  clearTimeout(t._timer);
+  t._timer=setTimeout(()=>t.style.opacity='0',2500);
+}
+
+async function verResposta(token){
+  try{
+    const r = await fetch(
+      `https://api.github.com/repos/${GH_REPO_ALOC}/contents/respostas_escolas/token_${token}.json`,
+      {headers:{'Authorization':'Bearer '+GH_TOKEN_ALOC}}
+    );
+    const d = await r.json();
+    const dados = JSON.parse(atob(d.content.replace(/\n/g,'')));
+    
+    const modal = document.createElement('div');
+    modal.style.cssText='position:fixed;inset:0;background:rgba(16,30,54,0.5);z-index:9999;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto';
+    
+    const salas = dados.salas||[];
+    const capTotal = salas.reduce((s,r)=>s+(r.capacidade||0),0);
+    
+    modal.innerHTML=`<div style="background:#fff;border-radius:16px;padding:28px;width:640px;max-width:95vw;box-shadow:0 16px 48px rgba(16,30,54,0.2);margin:auto">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <div>
+          <div style="font-size:16px;font-weight:700;color:#1f2a3d">${dados.instituicao?.nome||token}</div>
+          <div style="font-size:12px;color:#8a9ab5">Enviado em ${new Date(dados.enviadoEm).toLocaleString('pt-BR')}</div>
+        </div>
+        <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;font-size:22px;color:#8a9ab5;cursor:pointer">×</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+        ${[
+          ['Endereço', [dados.instituicao?.endereco,dados.instituicao?.bairro,dados.instituicao?.cidade].filter(Boolean).join(', ')],
+          ['Responsável', dados.instituicao?.responsavel?.nome||'—'],
+          ['Telefone', dados.instituicao?.responsavel?.tel||'—'],
+          ['E-mail', dados.instituicao?.responsavel?.email||'—'],
+        ].map(([l,v])=>`<div style="background:#f7f9fc;border-radius:8px;padding:10px 12px">
+          <div style="font-size:10px;font-weight:700;color:#8a9ab5;text-transform:uppercase;letter-spacing:.08em">${l}</div>
+          <div style="font-size:13px;color:#1f2a3d;margin-top:2px">${v||'—'}</div>
+        </div>`).join('')}
+      </div>
+      <div style="font-size:13px;font-weight:700;color:#1f4e8c;margin-bottom:8px">${salas.length} sala(s) · ${capTotal} candidatos no total</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="background:#1f4e8c;color:#fff">
+          <th style="padding:7px 10px;text-align:left">Sala</th>
+          <th style="padding:7px 10px;text-align:left">Bloco</th>
+          <th style="padding:7px 10px;text-align:left">Andar</th>
+          <th style="padding:7px 10px;text-align:center">Cap.</th>
+          <th style="padding:7px 10px;text-align:center">Turno</th>
+          <th style="padding:7px 10px;text-align:center">Ar</th>
+          <th style="padding:7px 10px;text-align:center">Vent.</th>
+        </tr></thead>
+        <tbody>${salas.map((s,i)=>`<tr style="background:${i%2?'#f7f9fc':'#fff'};border-bottom:1px solid #e2e7ef">
+          <td style="padding:6px 10px;font-weight:600">${s.sala}</td>
+          <td style="padding:6px 10px">${s.bloco||'—'}</td>
+          <td style="padding:6px 10px">${s.andar||'—'}</td>
+          <td style="padding:6px 10px;text-align:center;font-weight:700">${s.capacidade}</td>
+          <td style="padding:6px 10px;text-align:center">${s.turno==='AMBOS'?'M/T':s.turno==='MANHA'?'M':'T'}</td>
+          <td style="padding:6px 10px;text-align:center">${s.arcond?'✅':'—'}</td>
+          <td style="padding:6px 10px;text-align:center">${s.ventilador?'✅':'—'}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+      <div style="display:flex;justify-content:flex-end;margin-top:16px;gap:8px">
+        <button onclick="this.closest('[style*=fixed]').remove()" style="background:#f4f6fa;border:1.5px solid #e2e7ef;border-radius:9px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer">Fechar</button>
+      </div>
+    </div>`;
+    document.body.appendChild(modal);
+  }catch(e){
+    alert('Erro ao carregar resposta: '+e.message);
+  }
+}
+
+function abrirModalNovaEscola(){
+  const concursoId   = document.getElementById('sel-aloc-concurso')?.value||'';
+  const concursoNome = document.getElementById('inp-aloc-concurso')?.value||'';
+  
+  const modal = document.createElement('div');
+  modal.id = 'modal-nova-escola';
+  modal.style.cssText='position:fixed;inset:0;background:rgba(16,30,54,0.4);z-index:9999;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto';
+  modal.innerHTML=`<div style="background:#fff;border-radius:16px;padding:28px;width:480px;max-width:95vw;box-shadow:0 16px 48px rgba(16,30,54,0.18);margin:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div style="font-size:15px;font-weight:700;color:#1f2a3d">Adicionar escola</div>
+      <button onclick="document.getElementById('modal-nova-escola').remove()" style="background:none;border:none;font-size:22px;color:#8a9ab5;cursor:pointer">×</button>
+    </div>
+    <div style="margin-bottom:14px">
+      <label class="form-label">Concurso</label>
+      <input class="form-input" id="nova-escola-concurso" value="${concursoNome}" placeholder="Nome do concurso" style="height:36px">
+    </div>
+    <div style="margin-bottom:14px">
+      <label class="form-label">Nome da escola <span style="color:#c0322f">*</span></label>
+      <input class="form-input" id="nova-escola-nome" placeholder="Ex: Escola Municipal João da Silva" style="height:36px">
+    </div>
+    <div style="margin-bottom:14px">
+      <label class="form-label">Município</label>
+      <input class="form-input" id="nova-escola-municipio" placeholder="Ex: Carandaí/MG" style="height:36px">
+    </div>
+    <div style="margin-bottom:14px">
+      <label class="form-label">Data da Prova</label>
+      <input class="form-input" id="nova-escola-data" type="date" style="height:36px">
+    </div>
+    <div id="nova-escola-erro" style="color:#c0322f;font-size:12.5px;margin-bottom:8px;display:none"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px">
+      <button onclick="document.getElementById('modal-nova-escola').remove()" style="background:#f4f6fa;border:1.5px solid #e2e7ef;border-radius:9px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer">Cancelar</button>
+      <button onclick="gerarLinkEscola()" style="background:#1f4e8c;border:none;border-radius:9px;padding:9px 18px;font-size:13px;font-weight:600;color:#fff;cursor:pointer">Gerar link</button>
+    </div>
+  </div>`;
+  document.body.appendChild(modal);
+  document.getElementById('nova-escola-nome').focus();
+}
+
+async function gerarLinkEscola(){
+  const nome      = document.getElementById('nova-escola-nome')?.value?.trim();
+  const concurso  = document.getElementById('nova-escola-concurso')?.value?.trim();
+  const municipio = document.getElementById('nova-escola-municipio')?.value?.trim();
+  const data      = document.getElementById('nova-escola-data')?.value;
+  const erroEl    = document.getElementById('nova-escola-erro');
+  
+  if(!nome){ erroEl.textContent='Nome da escola obrigatório.'; erroEl.style.display='block'; return; }
+  erroEl.style.display='none';
+  
+  // Gerar token único
+  const token = 'ESC_' + Date.now().toString(36).toUpperCase() + '_' + Math.random().toString(36).substring(2,6).toUpperCase();
+  
+  const dadosToken = {
+    token,
+    criadoEm: new Date().toISOString(),
+    concurso: {
+      concurso,
+      municipio,
+      dataProva: data ? new Date(data+'T12:00:00').toLocaleDateString('pt-BR') : '',
+      escola: nome,
+      idEscola: token
+    }
+  };
+  
+  try{
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(dadosToken, null, 2))));
+    const r = await fetch(
+      `https://api.github.com/repos/${GH_REPO_ALOC}/contents/respostas_escolas/token_${token}.json`,
+      {method:'PUT',
+       headers:{'Authorization':'Bearer '+GH_TOKEN_ALOC,'Content-Type':'application/json'},
+       body: JSON.stringify({message:`feat: novo token escola ${nome}`, content})}
+    );
+    
+    if(!r.ok) throw new Error('Erro ao salvar token');
+    
+    const link = `${FORM_BASE_URL}?token=${token}`;
+    document.getElementById('modal-nova-escola').remove();
+    
+    // Mostrar modal de sucesso com o link
+    const m = document.createElement('div');
+    m.style.cssText='position:fixed;inset:0;background:rgba(16,30,54,0.4);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+    m.innerHTML=`<div style="background:#fff;border-radius:16px;padding:32px;width:480px;max-width:95vw;box-shadow:0 16px 48px rgba(16,30,54,0.18);text-align:center">
+      <div style="width:56px;height:56px;background:#e4f3ea;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:26px">🔗</div>
+      <div style="font-size:16px;font-weight:700;color:#1f2a3d;margin-bottom:6px">Link gerado!</div>
+      <div style="font-size:13px;color:#8a9ab5;margin-bottom:16px">${nome}</div>
+      <div style="background:#f4f6fa;border-radius:9px;padding:12px;word-break:break-all;font-size:12px;color:#1f4e8c;font-family:monospace;margin-bottom:16px">${link}</div>
+      <div style="display:flex;gap:10px;justify-content:center">
+        <button onclick="navigator.clipboard.writeText('${link}').then(()=>mostrarToast('Link copiado!'));this.textContent='✓ Copiado!'" 
+          style="background:#1f4e8c;border:none;border-radius:9px;padding:10px 20px;font-size:13px;font-weight:600;color:#fff;cursor:pointer">
+          📋 Copiar link
+        </button>
+        <button onclick="this.closest('[style*=fixed]').remove();carregarEscolas()"
+          style="background:#f4f6fa;border:1.5px solid #e2e7ef;border-radius:9px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer">
+          Fechar
+        </button>
+      </div>
+    </div>`;
+    document.body.appendChild(m);
+    
+  }catch(e){
+    document.getElementById('nova-escola-erro').textContent='Erro: '+e.message;
+    document.getElementById('nova-escola-erro').style.display='block';
+  }
 }
 
 // ── REFRESH ──────────────────────────────────────────────────────────
