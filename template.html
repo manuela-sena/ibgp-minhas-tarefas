@@ -5250,7 +5250,10 @@ function processarHomologacao(){
 
     // Detectar colunas de classificação na CF por padrão flexível
     const primeiraLinha=cfTodos[0]||{};
-    const todasCols=Object.keys(primeiraLinha);
+    // Varrer TODAS as linhas para detectar colunas — abas diferentes podem ter colunas diferentes
+    const todasColsSet=new Set();
+    cfTodos.forEach(r=>Object.keys(r).forEach(k=>todasColsSet.add(k)));
+    const todasCols=Array.from(todasColsSet);
 
     // Função para detectar reserva pelo nome da coluna
     function detectarReserva(col){
