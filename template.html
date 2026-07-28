@@ -5718,8 +5718,12 @@ async function carregarEscolas(){
       const rd = await fetch(arq.download_url);
       const dados = await rd.json();
       // Filtrar pelo concurso selecionado
-      if(dados.concurso && (dados.concurso.concurso||'').includes(concursoNome.substring(0,20))||
-         dados.token?.startsWith('DEMO')){
+      const nomeConcurso = (dados.concurso?.concurso||dados.concurso||'').toString();
+      const nomeEscola   = (dados.concurso?.escola||dados.escola||'').toString();
+      const matchConcurso = !concursoNome || 
+        nomeConcurso.toLowerCase().includes(concursoNome.toLowerCase().substring(0,15)) ||
+        dados.token?.startsWith('DEMO');
+      if(matchConcurso){
         // Buscar status
         const statusFile = statusArq.find(s=>s.name==='status_'+dados.token+'.json');
         let status = {acessos:0, enviado:false};
