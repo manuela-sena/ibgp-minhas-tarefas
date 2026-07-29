@@ -5694,7 +5694,7 @@ function initAlocacao(){
 
 async function carregarEscolas(){
   const concursoId  = document.getElementById('sel-aloc-concurso')?.value;
-  const concursoNome= document.getElementById('inp-aloc-concurso')?.value || '';
+  const concursoNome= (document.getElementById('inp-aloc-concurso')?.value || '').trim();
   const el = document.getElementById('aloc-content');
   if(!concursoId){ el.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Selecione um concurso</div></div>'; return; }
   
@@ -5721,7 +5721,7 @@ async function carregarEscolas(){
       const nomeConcurso = (dados.concurso?.concurso||dados.concurso||'').toString();
       const nomeEscola   = (dados.concurso?.escola||dados.escola||'').toString();
       const matchConcurso = !concursoNome || 
-        nomeConcurso.toLowerCase().includes(concursoNome.toLowerCase().substring(0,15)) ||
+        nomeConcurso.toLowerCase().trim().includes(concursoNome.toLowerCase().trim().substring(0,15)) ||
         dados.token?.startsWith('DEMO');
       if(matchConcurso){
         // Buscar status
