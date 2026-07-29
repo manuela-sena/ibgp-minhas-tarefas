@@ -6180,6 +6180,7 @@ function salaEhTerrea(andarRaw){
   andar = andar.replace(/°/g,'º').trim();
   if(andar==='0') return true;
   if(andar.includes('TERREO')) return true;
+  if(andar.includes('UNICO')) return true; // prédio de andar único (ex: escola de 1 pavimento só)
   if(/^1\s*[ºO]?\s*ANDAR$/.test(andar)) return true;
   return false;
 }
