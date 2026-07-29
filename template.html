@@ -6174,6 +6174,16 @@ function carregarSheetJSAloc(cb){
   s.onload=cb; document.head.appendChild(s);
 }
 
+function salaEhTerrea(andarRaw){
+  let andar = String(andarRaw==null?'':andarRaw).toUpperCase();
+  andar = andar.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  andar = andar.replace(/°/g,'º').trim();
+  if(andar==='0') return true;
+  if(andar.includes('TERREO')) return true;
+  if(/^1\s*[ºO]?\s*ANDAR$/.test(andar)) return true;
+  return false;
+}
+
 function executarMotorAlocacao(candidatos, escolas){
   // ── 1. Montar pool de salas de todas as escolas, ordenado por capacidade desc ──
   let salasPool = [];
@@ -6181,7 +6191,7 @@ function executarMotorAlocacao(candidatos, escolas){
     const nomeEsc = esc.instituicao?.nome || esc.concurso?.escola || esc.token;
     (esc.salas||[]).forEach(s=>{
       salasPool.push({
-        escola: nomeEsc, bloco: s.bloco||'', andar: s.andar||'',
+        escola: nomeEsc, bloco: s.bloco||'', andar: (s.andar===undefined||s.andar===null) ? '' : String(s.andar),
         salaBase: s.sala||'', capacidadeOriginal: parseInt(s.capacidade)||0,
         capacidadeDisponivel: parseInt(s.capacidade)||0,
         turno: s.turno||'AMBOS', ocupantes: []
@@ -6230,13 +6240,11 @@ function executarMotorAlocacao(candidatos, escolas){
   individuais.forEach(c=>{
     // Buscar sala livre (preferência: térrea se necessário)
     let salaEscolhida = null;
-    for(const sala of salasPool){
-      const keyIndiv = sala.escola+'|'+sala.salaBase+'|IND'+salasIndividuaisUsadas.size;
-      if(c._terreo && !sala.andar.toUpperCase().includes('TÉRREO') && !sala.andar.toUpperCase().includes('TERREO') && sala.andar !== '0' && sala.andar !== '1º Andar') continue;
-      if(sala.capacidadeDisponivel >= 1){
-        salaEscolhida = sala;
-        break;
-      }
+    // Preferir sala dedicada (capacidade original = 1) quando exigido atendimento individual
+    salaEscolhida = salasPool.find(s => s.capacidadeOriginal === 1 && s.capacidadeDisponivel >= 1 && (!c._terreo || salaEhTerrea(s.andar)));
+    // Fallback: sem sala dedicada disponível, usa qualquer sala com vaga (respeitando térreo)
+    if(!salaEscolhida){
+      salaEscolhida = salasPool.find(s => s.capacidadeDisponivel >= 1 && (!c._terreo || salaEhTerrea(s.andar)));
     }
     if(salaEscolhida){
       salaEscolhida.capacidadeDisponivel -= 1;
@@ -6260,8 +6268,7 @@ function executarMotorAlocacao(candidatos, escolas){
     // Se precisa térreo, buscar entre as com capacidade
     if(c._terreo){
       salaEscolhida = salasPool.find(s=>
-        s.capacidadeDisponivel > 0 &&
-        (s.andar.toUpperCase().includes('TÉRREO')||s.andar.toUpperCase().includes('TERREO')||s.andar==='0'||s.andar==='1º Andar')
+        s.capacidadeDisponivel > 0 && salaEhTerrea(s.andar)
       );
     }
     if(!salaEscolhida){
