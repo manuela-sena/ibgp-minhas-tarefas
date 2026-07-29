@@ -5847,7 +5847,7 @@ async function verResposta(token){
       {headers:{'Authorization':'Bearer '+GH_TOKEN_ALOC}}
     );
     const d = await r.json();
-    const dados = JSON.parse(atob(d.content.replace(/\n/g,'')));
+    const dados = JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))));
     
     const modal = document.createElement('div');
     modal.style.cssText='position:fixed;inset:0;background:rgba(16,30,54,0.5);z-index:9999;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto';
