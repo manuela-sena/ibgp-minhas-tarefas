@@ -1113,6 +1113,30 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
           <div class="empty-desc">Escolha o concurso para ver as escolas cadastradas.</div>
         </div>
       </div>
+
+      <!-- Ações de geração -->
+      <div class="card card-pad" style="margin-top:20px;display:none" id="aloc-acoes-wrap">
+        <div style="font-size:14px;font-weight:700;color:#1f2a3d;margin-bottom:4px">⚙️ Gerar Documentos</div>
+        <div style="font-size:12.5px;color:#8a9ab5;margin-bottom:16px">Baixe o mapa de salas das escolas ou gere a alocação completa dos candidatos.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div style="border:1.5px solid #e2e7ef;border-radius:10px;padding:16px">
+            <div style="font-size:13px;font-weight:700;color:#1f2a3d;margin-bottom:4px">📋 Mapa de Salas</div>
+            <div style="font-size:12px;color:#8a9ab5;margin-bottom:12px">Planilha com todas as salas informadas pelas escolas (bloco, andar, capacidade, turno).</div>
+            <button class="btn-secondary" style="width:100%" onclick="baixarMapaSalas()">
+              📥 Baixar Mapa de Salas
+            </button>
+          </div>
+          <div style="border:1.5px solid #e2e7ef;border-radius:10px;padding:16px">
+            <div style="font-size:13px;font-weight:700;color:#1f2a3d;margin-bottom:4px">🎯 Gerar Alocação</div>
+            <div style="font-size:12px;color:#8a9ab5;margin-bottom:12px">Envie a planilha de candidatos para distribuir automaticamente nas salas.</div>
+            <input type="file" id="aloc-file-candidatos" accept=".xlsx" style="display:none" onchange="processarAlocacao(this)">
+            <button class="btn-primary" style="width:100%" onclick="document.getElementById('aloc-file-candidatos').click()">
+              ⚙️ Processar Alocação
+            </button>
+          </div>
+        </div>
+        <div id="aloc-processamento-status" style="margin-top:14px"></div>
+      </div>
     </div>
 
     <!-- PÁGINA INSCRIÇÕES -->
@@ -5747,6 +5771,11 @@ async function carregarEscolas(){
 
 function renderEscolas(escolas, concursoNome){
   const el = document.getElementById('aloc-content');
+  window._alocEscolas = escolas;
+
+  // Mostrar área de ações se tiver escolas
+  const acoesWrap = document.getElementById('aloc-acoes-wrap');
+  if(acoesWrap) acoesWrap.style.display = escolas.length ? 'block' : 'none';
   
   const nTotal    = escolas.length;
   const nEnviado  = escolas.filter(e=>e._status?.enviado||e.enviadoEm).length;
@@ -6007,6 +6036,320 @@ async function gerarLinkEscola(){
     document.getElementById('nova-escola-erro').textContent='Erro: '+e.message;
     document.getElementById('nova-escola-erro').style.display='block';
   }
+}
+
+async function baixarMapaSalas(){
+  if(!window._alocEscolas?.length){ alert('Nenhuma escola carregada. Clique em Buscar primeiro.'); return; }
+  const enviadas = window._alocEscolas.filter(e=>e._status?.enviado);
+  if(!enviadas.length){ alert('Nenhuma escola enviou o formulário ainda.'); return; }
+
+  carregarExcelJSAloc(async ()=>{
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet('MAPA DE SALAS');
+    const FONTE='Times New Roman';
+    const BORDA={top:{style:'thin',color:{argb:'FF000000'}},bottom:{style:'thin',color:{argb:'FF000000'}},left:{style:'thin',color:{argb:'FF000000'}},right:{style:'thin',color:{argb:'FF000000'}}};
+
+    const cols = ['ESCOLA','BLOCO','ANDAR','Nº SALA','CAPACIDADE','TURNO','AR COND.','VENTILADOR'];
+    const LARG = {'ESCOLA':40,'BLOCO':10,'ANDAR':14,'Nº SALA':10,'CAPACIDADE':12,'TURNO':16,'AR COND.':10,'VENTILADOR':11};
+
+    cols.forEach((c,ci)=>{
+      const cell = ws.getCell(1,ci+1);
+      cell.value = c;
+      cell.font = {bold:true,color:{argb:'FFFFFFFF'},name:FONTE,size:10};
+      cell.fill = {type:'pattern',pattern:'solid',fgColor:{argb:'FF1F4E8C'}};
+      cell.alignment = {horizontal:'center',vertical:'middle'};
+      cell.border = BORDA;
+      ws.getColumn(ci+1).width = LARG[c]||14;
+    });
+    ws.getRow(1).height = 24;
+
+    let ri = 2;
+    let corIdx = 0;
+    enviadas.forEach(esc=>{
+      const nomeEsc = esc.instituicao?.nome || esc.concurso?.escola || esc.token;
+      const salas = (esc.salas||[]).slice().sort((a,b)=>(b.capacidade||0)-(a.capacidade||0));
+      corIdx = (corIdx+1)%2;
+      const cor = corIdx===0 ? 'FFFFFFFF' : 'FFF0F4FF';
+      salas.forEach(s=>{
+        const vals = [nomeEsc, s.bloco||'', s.andar||'', s.sala||'', s.capacidade||0,
+          s.turno==='AMBOS'?'Manhã e Tarde':s.turno==='MANHA'?'Manhã':'Tarde',
+          s.arcond?'Sim':'Não', s.ventilador?'Sim':'Não'];
+        vals.forEach((v,ci)=>{
+          const cell = ws.getCell(ri,ci+1);
+          cell.value = v;
+          cell.font = {name:FONTE,size:9};
+          cell.fill = {type:'pattern',pattern:'solid',fgColor:{argb:cor}};
+          cell.alignment = {vertical:'middle',horizontal:ci>=4?'center':'left'};
+          cell.border = BORDA;
+        });
+        ri++;
+      });
+    });
+    ws.views = [{state:'frozen',xSplit:0,ySplit:1}];
+
+    const buf = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'MAPA_DE_SALAS.xlsx';
+    a.click();
+  });
+}
+
+function carregarExcelJSAloc(cb){
+  if(typeof ExcelJS!=='undefined'){cb();return;}
+  const s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js';
+  s.onload=cb; document.head.appendChild(s);
+}
+
+// ── MOTOR DE ALOCAÇÃO ─────────────────────────────────────────────────
+const SALA_INDIVIDUAL = ['LEDOR','TRANSCRITOR','SOFTWARE','SALA INDIVIDUAL','LIBRAS'];
+const MESMA_SALA_GRUPO = ['PROVA AMPLIADA','SALA AMAMENTAÇÃO','TEMPO ADICIONAL','APÓS AS 18H','APÓS 18H'];
+const SEM_RESTRICAO = ['CADEIRA SEPARADA','CADEIRA CANHOTO','APOIO DE PÉ','PRÓTESE AUDITIVA','BOMBA DE INSULINA'];
+
+function abreviarAtendimento(nome){
+  const map = {
+    'LEDOR':'ledor','TRANSCRITOR':'transc','SOFTWARE':'software','SALA INDIVIDUAL':'individual','LIBRAS':'libras',
+    'PROVA AMPLIADA':'ampliada','SALA AMAMENTAÇÃO':'amamentação','TEMPO ADICIONAL':'15min','APÓS AS 18H':'18h','APÓS 18H':'18h',
+    'CADEIRA SEPARADA':'cad.sep','CADEIRA CANHOTO':'canhoto','APOIO DE PÉ':'apoio pé','PRÓTESE AUDITIVA':'prótese aud','BOMBA DE INSULINA':'insulina'
+  };
+  return map[nome.toUpperCase()] || nome.toLowerCase();
+}
+
+async function processarAlocacao(input){
+  const file = input.files[0];
+  if(!file) return;
+  const statusEl = document.getElementById('aloc-processamento-status');
+  statusEl.innerHTML = '<div class="loading"><div class="spinner"></div>Processando alocação...</div>';
+
+  const enviadas = (window._alocEscolas||[]).filter(e=>e._status?.enviado);
+  if(!enviadas.length){
+    statusEl.innerHTML = '<div style="color:#c0322f;padding:10px">Nenhuma escola com formulário enviado. Impossível gerar alocação.</div>';
+    return;
+  }
+
+  carregarSheetJSAloc(()=>{
+    carregarExcelJSAloc(async ()=>{
+      try{
+        const reader = new FileReader();
+        reader.onload = async (e)=>{
+          const wb = XLSX.read(e.target.result, {type:'binary', cellDates:true});
+          let candidatos = [];
+          for(const nome of wb.SheetNames){
+            const rows = XLSX.utils.sheet_to_json(wb.Sheets[nome], {defval:'', range:1});
+            candidatos = candidatos.concat(rows);
+          }
+          candidatos = candidatos.map(r=>{
+            const n={};
+            Object.keys(r).forEach(k=>{ n[k.trim()]=typeof r[k]==='string'?r[k].trim():r[k]; });
+            return n;
+          });
+
+          if(!candidatos.length){
+            statusEl.innerHTML = '<div style="color:#c0322f;padding:10px">Nenhum candidato encontrado na planilha.</div>';
+            return;
+          }
+
+          const resultado = executarMotorAlocacao(candidatos, enviadas);
+          await gerarPlanilhaAlocacao(resultado);
+
+          statusEl.innerHTML = `<div style="background:#e4f3ea;border:1px solid #a8dbb8;border-radius:9px;padding:12px 16px;font-size:13px;color:#2e7d52;font-weight:600">
+            ✅ Alocação gerada! ${resultado.alocados.length} candidatos alocados
+            ${resultado.naoAlocados.length ? ` · ⚠️ ${resultado.naoAlocados.length} não alocados (capacidade insuficiente)` : ''}
+          </div>`;
+        };
+        reader.readAsBinaryString(file);
+      }catch(err){
+        statusEl.innerHTML = `<div style="color:#c0322f;padding:10px">Erro: ${err.message}</div>`;
+      }
+    });
+  });
+}
+
+function carregarSheetJSAloc(cb){
+  if(typeof XLSX!=='undefined'){cb();return;}
+  const s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+  s.onload=cb; document.head.appendChild(s);
+}
+
+function executarMotorAlocacao(candidatos, escolas){
+  // ── 1. Montar pool de salas de todas as escolas, ordenado por capacidade desc ──
+  let salasPool = [];
+  escolas.forEach(esc=>{
+    const nomeEsc = esc.instituicao?.nome || esc.concurso?.escola || esc.token;
+    (esc.salas||[]).forEach(s=>{
+      salasPool.push({
+        escola: nomeEsc, bloco: s.bloco||'', andar: s.andar||'',
+        salaBase: s.sala||'', capacidadeOriginal: parseInt(s.capacidade)||0,
+        capacidadeDisponivel: parseInt(s.capacidade)||0,
+        turno: s.turno||'AMBOS', ocupantes: []
+      });
+    });
+  });
+  // Ordenar por capacidade desc (maior primeiro)
+  salasPool.sort((a,b)=>b.capacidadeOriginal - a.capacidadeOriginal);
+
+  // ── 2. Identificar atendimento especial de cada candidato ──
+  function getAtendimentos(c){
+    const campo = (c['ATENDIMENTO ESPECIAL']||c['CONDIÇÃO ESPECIAL']||c['ATENDIMENTOS']||'').toString().toUpperCase();
+    if(!campo || campo==='NÃO'||campo==='NAO'||campo==='-') return [];
+    return campo.split(/[,;]/).map(s=>s.trim()).filter(Boolean);
+  }
+  function precisaSalaIndividual(atendimentos){
+    return atendimentos.some(a=>SALA_INDIVIDUAL.some(k=>a.toUpperCase().includes(k)));
+  }
+  function precisaTerreo(c){
+    const t = (c['SALA TÉRREA']||c['TERREO']||'').toString().toUpperCase();
+    return t==='SIM'||t==='S';
+  }
+
+  // ── 3. Ordenar candidatos: maior código cargo → CPF → alfabético ──
+  candidatos.forEach(c=>{
+    c._codNum = parseInt((c['CÓDIGO']||c['CODIGO']||'0').toString().replace(/\D/g,'')) || 0;
+    c._cpf = (c['CPF']||'').toString().replace(/\D/g,'');
+    c._atendimentos = getAtendimentos(c);
+    c._individual = precisaSalaIndividual(c._atendimentos);
+    c._terreo = precisaTerreo(c);
+  });
+  candidatos.sort((a,b)=>
+    b._codNum - a._codNum ||
+    a._cpf.localeCompare(b._cpf) ||
+    (a['CANDIDATO']||'').localeCompare(b['CANDIDATO']||'')
+  );
+
+  const alocados = [];
+  const naoAlocados = [];
+  const salasIndividuaisUsadas = new Set();
+
+  // ── 4. Alocar candidatos de sala individual primeiro ──
+  const individuais = candidatos.filter(c=>c._individual);
+  const demais = candidatos.filter(c=>!c._individual);
+
+  individuais.forEach(c=>{
+    // Buscar sala livre (preferência: térrea se necessário)
+    let salaEscolhida = null;
+    for(const sala of salasPool){
+      const keyIndiv = sala.escola+'|'+sala.salaBase+'|IND'+salasIndividuaisUsadas.size;
+      if(c._terreo && !sala.andar.toUpperCase().includes('TÉRREO') && !sala.andar.toUpperCase().includes('TERREO') && sala.andar !== '0' && sala.andar !== '1º Andar') continue;
+      if(sala.capacidadeDisponivel >= 1){
+        salaEscolhida = sala;
+        break;
+      }
+    }
+    if(salaEscolhida){
+      salaEscolhida.capacidadeDisponivel -= 1;
+      const abrevs = c._atendimentos.filter(a=>SALA_INDIVIDUAL.some(k=>a.toUpperCase().includes(k))).map(abreviarAtendimento);
+      const nomeSalaFinal = `${salaEscolhida.salaBase} ${abrevs.join(', ')}`;
+      alocados.push({
+        ...mapCandidato(c),
+        SALA: nomeSalaFinal, ANDAR: salaEscolhida.andar, BLOCO: salaEscolhida.bloco, ESCOLA: salaEscolhida.escola,
+        _tipoSala: 'individual'
+      });
+      salaEscolhida.ocupantes.push(c);
+    } else {
+      naoAlocados.push(mapCandidato(c));
+    }
+  });
+
+  // ── 5. Alocar demais candidatos em ordem, preenchendo salas de maior p/ menor ──
+  let salaAtualIdx = 0;
+  demais.forEach(c=>{
+    let salaEscolhida = null;
+    // Se precisa térreo, buscar entre as com capacidade
+    if(c._terreo){
+      salaEscolhida = salasPool.find(s=>
+        s.capacidadeDisponivel > 0 &&
+        (s.andar.toUpperCase().includes('TÉRREO')||s.andar.toUpperCase().includes('TERREO')||s.andar==='0'||s.andar==='1º Andar')
+      );
+    }
+    if(!salaEscolhida){
+      // Pegar a sala atual com espaço (segue ordem, maior capacidade primeiro)
+      while(salaAtualIdx < salasPool.length && salasPool[salaAtualIdx].capacidadeDisponivel <= 0){
+        salaAtualIdx++;
+      }
+      if(salaAtualIdx < salasPool.length) salaEscolhida = salasPool[salaAtualIdx];
+    }
+
+    if(salaEscolhida){
+      salaEscolhida.capacidadeDisponivel -= 1;
+      let nomeSalaFinal = salaEscolhida.salaBase;
+      // Se tem atendimento "mesma sala do grupo", adicionar abreviação
+      const abrevsGrupo = c._atendimentos.filter(a=>MESMA_SALA_GRUPO.some(k=>a.toUpperCase().includes(k))).map(abreviarAtendimento);
+      if(abrevsGrupo.length) nomeSalaFinal = `${salaEscolhida.salaBase} ${abrevsGrupo.join(', ')}`;
+      alocados.push({
+        ...mapCandidato(c),
+        SALA: nomeSalaFinal, ANDAR: salaEscolhida.andar, BLOCO: salaEscolhida.bloco, ESCOLA: salaEscolhida.escola,
+        _tipoSala: 'grupo'
+      });
+      salaEscolhida.ocupantes.push(c);
+    } else {
+      naoAlocados.push(mapCandidato(c));
+    }
+  });
+
+  return {alocados, naoAlocados, salasPool};
+}
+
+function mapCandidato(c){
+  return {
+    INSCRIÇÃO: c['INSCRIÇÃO']||'', CANDIDATO: c['CANDIDATO']||'', CPF: c['CPF']||'',
+    CONCURSO: c['CONCURSO']||'', CÓDIGO: c['CÓDIGO']||c['CODIGO']||'', CARGO: c['CARGO']||'',
+    'DATA PROVA': c['DATA REALIZAÇÃO PROVA']||c['DATA PROVA']||'', TURNO: c['TURNO']||''
+  };
+}
+
+async function gerarPlanilhaAlocacao(resultado){
+  const wb = new ExcelJS.Workbook();
+  const FONTE='Times New Roman';
+  const BORDA={top:{style:'thin',color:{argb:'FF000000'}},bottom:{style:'thin',color:{argb:'FF000000'}},left:{style:'thin',color:{argb:'FF000000'}},right:{style:'thin',color:{argb:'FF000000'}}};
+
+  function criarAba(nome, dados, cols){
+    if(!dados.length) return;
+    const ws = wb.addWorksheet(nome);
+    const LARG = {'INSCRIÇÃO':12,'CANDIDATO':32,'CPF':14,'CONCURSO':40,'CÓDIGO':8,'CARGO':40,
+      'DATA PROVA':16,'TURNO':10,'SALA':16,'ANDAR':12,'BLOCO':10,'ESCOLA':32};
+    cols.forEach((c,ci)=>{
+      const cell = ws.getCell(1,ci+1);
+      cell.value = c;
+      cell.font = {bold:true,color:{argb:'FFFFFFFF'},name:FONTE,size:9};
+      cell.fill = {type:'pattern',pattern:'solid',fgColor:{argb:'FF1F4E8C'}};
+      cell.alignment = {horizontal:'center',vertical:'middle'};
+      cell.border = BORDA;
+      ws.getColumn(ci+1).width = LARG[c]||14;
+    });
+    ws.getRow(1).height = 22;
+    let corIdx=0, escolaAtual='';
+    dados.forEach((row,ri)=>{
+      if(row.ESCOLA !== escolaAtual){ escolaAtual = row.ESCOLA; corIdx=(corIdx+1)%2; }
+      const cor = corIdx===0?'FFFFFFFF':'FFF0F4FF';
+      cols.forEach((c,ci)=>{
+        const cell = ws.getCell(ri+2,ci+1);
+        cell.value = String(row[c]??'');
+        cell.font = {name:FONTE,size:9};
+        cell.fill = {type:'pattern',pattern:'solid',fgColor:{argb:cor}};
+        cell.alignment = {vertical:'middle'};
+        cell.border = BORDA;
+      });
+    });
+    ws.views = [{state:'frozen',xSplit:0,ySplit:1}];
+  }
+
+  const colsAlocados = ['INSCRIÇÃO','CANDIDATO','CPF','CONCURSO','CÓDIGO','CARGO','DATA PROVA','TURNO','SALA','ANDAR','BLOCO','ESCOLA'];
+  criarAba('ALOCAÇÃO', resultado.alocados, colsAlocados);
+
+  if(resultado.naoAlocados.length){
+    const colsNaoAloc = ['INSCRIÇÃO','CANDIDATO','CPF','CONCURSO','CÓDIGO','CARGO','DATA PROVA','TURNO'];
+    criarAba('NÃO ALOCADOS', resultado.naoAlocados, colsNaoAloc);
+  }
+
+  const buf = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'ALOCACAO_CANDIDATOS.xlsx';
+  a.click();
 }
 
 // ── REFRESH ──────────────────────────────────────────────────────────
