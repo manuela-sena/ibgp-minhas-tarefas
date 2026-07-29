@@ -621,7 +621,7 @@ async function carregarDadosConcurso(token){
     );
     if(r.ok){
       const d = await r.json();
-      const dados = JSON.parse(atob(d.content.replace(/\n/g,'')));
+      const dados = JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))));
       DADOS_CONCURSO = dados.concurso || dados;
       
       // Verificar se já foi enviado
@@ -675,7 +675,7 @@ async function registrarAcesso(token){
     if(r.ok){
       const d = await r.json();
       sha = d.sha;
-      status = JSON.parse(atob(d.content.replace(/\n/g,'')));
+      status = JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))));
       status.acessos = (status.acessos||0) + 1;
       status.ultimoAcesso = new Date().toISOString();
     } else {
@@ -982,7 +982,7 @@ async function salvarNoGitHub(dados){
     const d0 = await r0.json();
     existente = d0.sha;
     // Mesclar com dados do concurso que já estavam lá
-    const dadosAntigos = JSON.parse(atob(d0.content.replace(/\n/g,'')));
+    const dadosAntigos = JSON.parse(decodeURIComponent(escape(atob(d0.content.replace(/\n/g,'')))));
     dados.concurso = dadosAntigos.concurso || dados.concurso;
   }
   
@@ -1010,7 +1010,7 @@ async function salvarNoGitHub(dados){
     {headers:{'Authorization':'Bearer '+GH_WRITE_TOKEN}}
   );
   let status={token, enviado:true, enviadoEm: dados.enviadoEm}, shaSt;
-  if(rs.ok){ const ds=await rs.json(); shaSt=ds.sha; status={...JSON.parse(atob(ds.content.replace(/\n/g,''))), enviado:true, enviadoEm:dados.enviadoEm}; }
+  if(rs.ok){ const ds=await rs.json(); shaSt=ds.sha; status={...JSON.parse(decodeURIComponent(escape(atob(ds.content.replace(/\n/g,''))))), enviado:true, enviadoEm:dados.enviadoEm}; }
   const pSt={message:'status: enviado '+token, content:btoa(unescape(encodeURIComponent(JSON.stringify(status,null,2))))};
   if(shaSt) pSt.sha=shaSt;
   await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${statusPath}`,
