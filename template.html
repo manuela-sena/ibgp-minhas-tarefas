@@ -6291,7 +6291,7 @@ function executarMotorAlocacao(candidatos, escolas){
     return campo.split(/[,;]/).map(s=>s.trim()).filter(Boolean);
   }
   function precisaSalaIndividual(atendimentos){
- �  return atendimentos.some(a=>SALA_INDIVIDUAL.some(k=>a.toUpperCase().includes(k)));
+    return atendimentos.some(a=>SALA_INDIVIDUAL.some(k=>a.toUpperCase().includes(k)));
   }
   function precisaTerreo(c){
     const t = (c['SALA TÉRREA']||c['TERREO']||'').toString().toUpperCase();
