@@ -1,33 +1,57 @@
-t-size:13px;font-weight:700;color:#1f2a3d;margin-bottom:4px">📋 Mapa de Salas</div>
-            <div style="font-size:12px;color:#8a9ab5;margin-bottom:12px">Planilha com todas as salas informadas pelas escolas (bloco, andar, capacidade, turno).</div>
-            <button class="btn-secondary" style="width:100%" onclick="baixarMapaSalas()">
-              📥 Baixar Mapa de Salas
-            </button>
-          </div>
-          <div style="border:1.5px solid #e2e7ef;border-radius:10px;padding:16px">
-            <div style="font-size:13px;font-weight:700;color:#1f2a3d;margin-bottom:4px">🎯 Gerar Alocação</div>
-            <div style="font-size:12px;color:#8a9ab5;margin-bottom:12px">Envie a planilha de candidatos para distribuir automaticamente nas salas.</div>
-            <input type="file" id="aloc-file-candidatos" accept=".xlsx" style="display:none" onchange="processarAlocacao(this)">
-            <button class="btn-primary" style="width:100%" onclick="document.getElementById('aloc-file-candidatos').click()">
-              ⚙️ Processar Alocação
-            </button>
-          </div>
-        </div>
-        <div id="aloc-processamento-status" style="margin-top:14px"></div>
-      </div>
-    </div>
+function baixarMapaSalas(){
+  if(!window._alocEscolas?.length){ alert('Nenhuma escola carregada. Clique em Buscar primeiro.'); return; }
+  const enviadas = window._alocEscolas.filter(e=>e._status?.enviado);
+  if(!enviadas.length){ alert('Nenhuma escola enviou o formulário ainda.'); return; }
 
-    <!-- PÁGINA INSCRIÇÕES -->
-    <div id="page-inscricoes" class="page">
-      <div class="page-header">
-        <div class="page-title-h1">📄 Resultados · Inscrições</div>
-        <div class="page-sub">Processe o relatório geral e gere as planilhas de resultado e alocação.</div>
-      </div>
-      <div class="card card-pad">
-        <label class="form-label">Relatório Geral (.xlsx)</label>
-        <input type="file" id="insc-file" accept=".xlsx" class="form-input" style="padding:6px"
-          onchange="carregarArquivoInscricoes(this)">
-        <div id="insc-status" style="margin-top:8px;font-size:12.5px;color:#8a9ab5"></div>
-      </div>
-      <div id="insc-sel-processo-wrap" style="display:none" class="card card-pad"></div>
-      <div id="insc-conjuntos-wrap" style="display
+  carregarExcelJSAloc(async ()=>{
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet('MAPA DE SALAS');
+    const FONTE='Times New Roman';
+    const BORDA={top:{style:'thin',color:{argb:'FF000000'}},bottom:{style:'thin',color:{argb:'FF000000'}},left:{style:'thin',color:{argb:'FF000000'}},right:{style:'thin',color:{argb:'FF000000'}}};
+
+    const cols = ['ESCOLA','BLOCO','ANDAR','Nº SALA','CAPACIDADE','TURNO','AR COND.','VENTILADOR'];
+    const LARG = {'ESCOLA':40,'BLOCO':10,'ANDAR':14,'Nº SALA':10,'CAPACIDADE':12,'TURNO':16,'AR COND.':10,'VENTILADOR':11};
+
+    cols.forEach((c,ci)=>{
+      const cell = ws.getCell(1,ci+1);
+      cell.value = c;
+      cell.font = {bold:true,color:{argb:'FFFFFFFF'},name:FONTE,size:10};
+      cell.fill = {type:'pattern',pattern:'solid',fgColor:{argb:'FF1F4E8C'}};
+      cell.alignment = {horizontal:'center',vertical:'middle'};
+      cell.border = BORDA;
+      ws.getColumn(ci+1).width = LARG[c]||14;
+    });
+    ws.getRow(1).height = 24;
+
+    let ri = 2;
+    let corIdx = 0;
+    enviadas.forEach(esc=>{
+      const nomeEsc = esc.instituicao?.nome || esc.concurso?.escola || esc.token;
+      const salas = (esc.salas||[]).slice().sort((a,b)=>(b.capacidade||0)-(a.capacidade||0));
+      corIdx = (corIdx+1)%2;
+      const cor = corIdx===0 ? 'FFFFFFFF' : 'FFF0F4FF';
+      salas.forEach(s=>{
+        const vals = [nomeEsc, s.bloco||'', s.andar||'', s.sala||'', s.capacidade||0,
+          s.turno==='AMBOS'?'Manhã e Tarde':s.turno==='MANHA'?'Manhã':'Tarde',
+          s.arcond?'Sim':'Não', s.ventilador?'Sim':'Não'];
+        vals.forEach((v,ci)=>{
+          const cell = ws.getCell(ri,ci+1);
+          cell.value = v;
+          cell.font = {name:FONTE,size:9};
+          cell.fill = {type:'pattern',pattern:'solid',fgColor:{argb:cor}};
+          cell.alignment = {vertical:'middle',horizontal:ci>=4?'center':'left'};
+          cell.border = BORDA;
+        });
+        ri++;
+      });
+    });
+    ws.views = [{state:'frozen',xSplit:0,ySplit:1}];
+
+    const buf = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'MAPA_DE_SALAS.xlsx';
+    a.click();
+  });
+}
