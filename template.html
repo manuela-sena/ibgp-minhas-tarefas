@@ -1129,8 +1129,11 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
           <div style="border:1.5px solid #e2e7ef;border-radius:10px;padding:16px">
             <div style="font-size:13px;font-weight:700;color:#1f2a3d;margin-bottom:4px">🎯 Gerar Alocação</div>
             <div style="font-size:12px;color:#8a9ab5;margin-bottom:12px">Envie a planilha de candidatos para distribuir automaticamente nas salas.</div>
-            <input type="file" id="aloc-file-candidatos" accept=".xlsx" style="display:none" onchange="processarAlocacao(this)">
-            <button class="btn-primary" style="width:100%" onclick="document.getElementById('aloc-file-candidatos').click()">
+            <div style="font-size:11.5px;color:#8a9ab5;margin-bottom:6px">1. Planilha de candidatos (ALOCAÇÃO)</div>
+            <input type="file" id="aloc-file-candidatos" accept=".xlsx" class="form-input" style="padding:6px;margin-bottom:10px;width:100%;box-sizing:border-box">
+            <div style="font-size:11.5px;color:#8a9ab5;margin-bottom:6px">2. Planilha de Condição Especial (aba COND ESPECIAL) — opcional, mas sem ela ninguém recebe atendimento especial</div>
+            <input type="file" id="aloc-file-condespecial" accept=".xlsx" class="form-input" style="padding:6px;margin-bottom:12px;width:100%;box-sizing:border-box">
+            <button class="btn-primary" style="width:100%" onclick="processarAlocacao()">
               ⚙️ Processar Alocação
             </button>
           </div>
@@ -6117,10 +6120,16 @@ function abreviarAtendimento(nome){
   return map[nome.toUpperCase()] || nome.toLowerCase();
 }
 
-async function processarAlocacao(input){
-  const file = input.files[0];
-  if(!file) return;
+async function processarAlocacao(){
+  const fileCand = document.getElementById('aloc-file-candidatos').files[0];
+  const fileCond = document.getElementById('aloc-file-condespecial').files[0];
   const statusEl = document.getElementById('aloc-processamento-status');
+
+  if(!fileCand){
+    statusEl.innerHTML = '<div style="color:#c0322f;padding:10px">Selecione a planilha de candidatos (ALOCAÇÃO).</div>';
+    return;
+  }
+
   statusEl.innerHTML = '<div class="loading"><div class="spinner"></div>Processando alocação...</div>';
 
   const enviadas = (window._alocEscolas||[]).filter(e=>e._status?.enviado);
@@ -6132,39 +6141,112 @@ async function processarAlocacao(input){
   carregarSheetJSAloc(()=>{
     carregarExcelJSAloc(async ()=>{
       try{
-        const reader = new FileReader();
-        reader.onload = async (e)=>{
-          const wb = XLSX.read(e.target.result, {type:'binary', cellDates:true});
-          let candidatos = [];
-          for(const nome of wb.SheetNames){
-            const rows = XLSX.utils.sheet_to_json(wb.Sheets[nome], {defval:'', range:1});
-            candidatos = candidatos.concat(rows);
-          }
-          candidatos = candidatos.map(r=>{
-            const n={};
-            Object.keys(r).forEach(k=>{ n[k.trim()]=typeof r[k]==='string'?r[k].trim():r[k]; });
-            return n;
+        // ── Ler planilha de candidatos (ALOCAÇÃO) ──
+        const bufCand = await fileCand.arrayBuffer();
+        const wbCand = XLSX.read(bufCand, {type:'array', cellDates:true});
+        let candidatos = [];
+        for(const nome of wbCand.SheetNames){
+          const rows = XLSX.utils.sheet_to_json(wbCand.Sheets[nome], {defval:''});
+          candidatos = candidatos.concat(rows);
+        }
+        candidatos = candidatos.map(r=>{
+          const n={};
+          Object.keys(r).forEach(k=>{ n[k.trim()]=typeof r[k]==='string'?r[k].trim():r[k]; });
+          return n;
+        }).filter(c=>c['INSCRIÇÃO']);
+
+        if(!candidatos.length){
+          statusEl.innerHTML = '<div style="color:#c0322f;padding:10px">Nenhum candidato encontrado na planilha.</div>';
+          return;
+        }
+
+        // ── DATA PROVA / TURNO sempre vêm da própria planilha de candidatos
+        //    (coluna "DATA REALIZAÇÃO PROVA"), nunca do cadastro da escola ──
+        candidatos.forEach(c=>{
+          const parsed = parseDataRealizacaoProva(c['DATA REALIZAÇÃO PROVA']);
+          c['DATA PROVA'] = parsed.data;
+          c['TURNO'] = parsed.turno;
+        });
+
+        // ── Ler planilha de Condição Especial (aba COND ESPECIAL) — só DEFERIDA ──
+        let deferidos = {};
+        let totalSolicitantes = 0;
+        if(fileCond){
+          const bufCond = await fileCond.arrayBuffer();
+          const wbCond = XLSX.read(bufCond, {type:'array', cellDates:true});
+          const nomeAba = wbCond.SheetNames.find(n=>{
+            const u = n.toUpperCase();
+            return u.includes('COND') && u.includes('ESPECIAL');
+          }) || wbCond.SheetNames[0];
+          // a aba tem uma linha de título antes do cabeçalho (range:1 pula essa linha)
+          const condRows = XLSX.utils.sheet_to_json(wbCond.Sheets[nomeAba], {defval:'', range:1});
+          condRows.forEach(r=>{
+            const insc = String(r['INSCRIÇÃO']||'').trim();
+            if(!insc) return;
+            totalSolicitantes++;
+            const resultado = String(r['RESULTADO']||'').trim().toUpperCase();
+            if(resultado==='DEFERIDA'){
+              deferidos[insc] = {
+                atendimento: String(r['ATENDIMENTO ESPECIAL']||'').trim(),
+                justificativa: String(r['JUSTIFICATIVA']||'').trim(),
+              };
+            }
           });
+        }
 
-          if(!candidatos.length){
-            statusEl.innerHTML = '<div style="color:#c0322f;padding:10px">Nenhum candidato encontrado na planilha.</div>';
-            return;
-          }
+        // ── Mesclar: só quem está DEFERIDA recebe atendimento especial.
+        //    Qualquer valor autodeclarado na planilha de candidatos é ignorado. ──
+        candidatos.forEach(c=>{
+          const insc = String(c['INSCRIÇÃO']||'').trim();
+          const def = deferidos[insc];
+          c['ATENDIMENTO ESPECIAL'] = def ? def.atendimento : '';
+          c['_justificativaEspecial'] = def ? def.justificativa : '';
+        });
 
-          const resultado = executarMotorAlocacao(candidatos, enviadas);
-          await gerarPlanilhaAlocacao(resultado);
+        const resultado = executarMotorAlocacao(candidatos, enviadas);
+        await gerarPlanilhaAlocacao(resultado);
 
-          statusEl.innerHTML = `<div style="background:#e4f3ea;border:1px solid #a8dbb8;border-radius:9px;padding:12px 16px;font-size:13px;color:#2e7d52;font-weight:600">
-            ✅ Alocação gerada! ${resultado.alocados.length} candidatos alocados
-            ${resultado.naoAlocados.length ? ` · ⚠️ ${resultado.naoAlocados.length} não alocados (capacidade insuficiente)` : ''}
-          </div>`;
-        };
-        reader.readAsBinaryString(file);
+        const avisoCondEspecial = fileCond
+          ? ` · 🧩 ${Object.keys(deferidos).length} de ${totalSolicitantes} condições especiais deferidas aplicadas`
+          : ' · ⚠️ nenhuma planilha de Condição Especial enviada — ninguém foi marcado com atendimento especial';
+
+        statusEl.innerHTML = `<div style="background:#e4f3ea;border:1px solid #a8dbb8;border-radius:9px;padding:12px 16px;font-size:13px;color:#2e7d52;font-weight:600">
+          ✅ Alocação gerada! ${resultado.alocados.length} candidatos alocados
+          ${resultado.naoAlocados.length ? ` · ⚠️ ${resultado.naoAlocados.length} não alocados (capacidade insuficiente)` : ''}
+          ${avisoCondEspecial}
+        </div>`;
       }catch(err){
         statusEl.innerHTML = `<div style="color:#c0322f;padding:10px">Erro: ${err.message}</div>`;
       }
     });
   });
+}
+
+function parseDataRealizacaoProva(valor){
+  // Aceita objeto Date (quando o Excel guarda como data real) ou texto no formato
+  // Date.toString() do JS ("Sun Jul 26 2026 09:15:28 GMT-0300 (Horário Padrão de Brasília)"),
+  // que é como esse campo normalmente vem salvo (como texto) na planilha de candidatos.
+  if(!valor) return {data:'', turno:''};
+  let dt = null;
+  if(valor instanceof Date){
+    dt = valor;
+  } else {
+    const s = String(valor).trim();
+    const MESES = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+    const m = s.match(/^\w{3}\s+(\w{3})\s+(\d{1,2})\s+(\d{4})\s+(\d{2}):(\d{2}):(\d{2})/);
+    if(m && MESES[m[1]]!==undefined){
+      dt = new Date(Number(m[3]), MESES[m[1]], Number(m[2]), Number(m[4]), Number(m[5]), Number(m[6]));
+    } else {
+      const tentativa = new Date(s);
+      if(!isNaN(tentativa.getTime())) dt = tentativa;
+    }
+  }
+  if(!dt || isNaN(dt.getTime())) return {data:'', turno:''};
+  const dd = String(dt.getDate()).padStart(2,'0');
+  const mm = String(dt.getMonth()+1).padStart(2,'0');
+  const yyyy = dt.getFullYear();
+  const turno = dt.getHours() < 12 ? 'MANHÃ' : 'TARDE';
+  return {data: `${dd}/${mm}/${yyyy}`, turno};
 }
 
 function carregarSheetJSAloc(cb){
@@ -6176,7 +6258,7 @@ function carregarSheetJSAloc(cb){
 
 function salaEhTerrea(andarRaw){
   let andar = String(andarRaw==null?'':andarRaw).toUpperCase();
-  andar = andar.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  andar = andar.normalize('NFD').replace(/[̀-ͯ]/g,'');
   andar = andar.replace(/°/g,'º').trim();
   if(andar==='0') return true;
   if(andar.includes('TERREO')) return true;
@@ -6209,11 +6291,15 @@ function executarMotorAlocacao(candidatos, escolas){
     return campo.split(/[,;]/).map(s=>s.trim()).filter(Boolean);
   }
   function precisaSalaIndividual(atendimentos){
-    return atendimentos.some(a=>SALA_INDIVIDUAL.some(k=>a.toUpperCase().includes(k)));
+ �  return atendimentos.some(a=>SALA_INDIVIDUAL.some(k=>a.toUpperCase().includes(k)));
   }
   function precisaTerreo(c){
     const t = (c['SALA TÉRREA']||c['TERREO']||'').toString().toUpperCase();
-    return t==='SIM'||t==='S';
+    if(t==='SIM'||t==='S') return true;
+    return (c._atendimentosRaw||[]).some(a=>{
+      const semAcento = a.normalize('NFD').replace(/[̀-ͯ]/g,'');
+      return semAcento.includes('TERREA') || semAcento.includes('TERREO');
+    });
   }
 
   // ── 3. Ordenar candidatos: maior código cargo → CPF → alfabético ──
@@ -6221,6 +6307,7 @@ function executarMotorAlocacao(candidatos, escolas){
     c._codNum = parseInt((c['CÓDIGO']||c['CODIGO']||'0').toString().replace(/\D/g,'')) || 0;
     c._cpf = (c['CPF']||'').toString().replace(/\D/g,'');
     c._atendimentos = getAtendimentos(c);
+    c._atendimentosRaw = c._atendimentos;
     c._individual = precisaSalaIndividual(c._atendimentos);
     c._terreo = precisaTerreo(c);
   });
@@ -6304,7 +6391,10 @@ function mapCandidato(c){
   return {
     INSCRIÇÃO: c['INSCRIÇÃO']||'', CANDIDATO: c['CANDIDATO']||'', CPF: c['CPF']||'',
     CONCURSO: c['CONCURSO']||'', CÓDIGO: c['CÓDIGO']||c['CODIGO']||'', CARGO: c['CARGO']||'',
-    'DATA PROVA': c['DATA REALIZAÇÃO PROVA']||c['DATA PROVA']||'', TURNO: c['TURNO']||''
+    'DATA PROVA': c['DATA PROVA']||'', TURNO: c['TURNO']||'',
+    'DATA NASCIMENTO': c['DATA NASCIMENTO']||'', CIDADE: c['CIDADE']||'', STATUS: c['STATUS']||'',
+    'ATENDIMENTO ESPECIAL': (c._atendimentos && c._atendimentos.length) ? c._atendimentos.join(', ') : '-',
+    JUSTIFICATIVA: c['_justificativaEspecial']||'',
   };
 }
 
@@ -6312,12 +6402,14 @@ async function gerarPlanilhaAlocacao(resultado){
   const wb = new ExcelJS.Workbook();
   const FONTE='Times New Roman';
   const BORDA={top:{style:'thin',color:{argb:'FF000000'}},bottom:{style:'thin',color:{argb:'FF000000'}},left:{style:'thin',color:{argb:'FF000000'}},right:{style:'thin',color:{argb:'FF000000'}}};
+  const LARG = {'Índice':8,'INSCRIÇÃO':12,'CANDIDATO':32,'CPF':14,'DATA NASCIMENTO':14,'CONCURSO':40,'CÓDIGO':8,'CARGO':40,
+    'DATA PROVA':13,'TURNO':10,'SALA':16,'ANDAR':12,'BLOCO':10,'ESCOLA':32,'CIDADE':20,'ATENDIMENTO ESPECIAL':26,
+    'Nome da Instituição':32,'Capacidade':12,'Nº sala':10,'CAP':10,'QTD DE CANDIDATOS':16,'JUSTIFICATIVA':30,
+    'STATUS DE PAGAMENTO':16,'RESULTADO':12,'DATA DE NASCIMENTO':14};
 
   function criarAba(nome, dados, cols){
-    if(!dados.length) return;
+    if(!dados.length) return null;
     const ws = wb.addWorksheet(nome);
-    const LARG = {'INSCRIÇÃO':12,'CANDIDATO':32,'CPF':14,'CONCURSO':40,'CÓDIGO':8,'CARGO':40,
-      'DATA PROVA':16,'TURNO':10,'SALA':16,'ANDAR':12,'BLOCO':10,'ESCOLA':32};
     cols.forEach((c,ci)=>{
       const cell = ws.getCell(1,ci+1);
       cell.value = c;
@@ -6328,13 +6420,14 @@ async function gerarPlanilhaAlocacao(resultado){
       ws.getColumn(ci+1).width = LARG[c]||14;
     });
     ws.getRow(1).height = 22;
-    let corIdx=0, escolaAtual='';
+    let corIdx=0, chaveAtual='';
     dados.forEach((row,ri)=>{
-      if(row.ESCOLA !== escolaAtual){ escolaAtual = row.ESCOLA; corIdx=(corIdx+1)%2; }
+      const chave = (row.ESCOLA||'')+'|'+(row.SALA||'');
+      if(chave !== chaveAtual){ chaveAtual = chave; corIdx=(corIdx+1)%2; }
       const cor = corIdx===0?'FFFFFFFF':'FFF0F4FF';
       cols.forEach((c,ci)=>{
         const cell = ws.getCell(ri+2,ci+1);
-        cell.value = String(row[c]??'');
+        cell.value = row[c]===undefined||row[c]===null ? '' : row[c];
         cell.font = {name:FONTE,size:9};
         cell.fill = {type:'pattern',pattern:'solid',fgColor:{argb:cor}};
         cell.alignment = {vertical:'middle'};
@@ -6342,15 +6435,104 @@ async function gerarPlanilhaAlocacao(resultado){
       });
     });
     ws.views = [{state:'frozen',xSplit:0,ySplit:1}];
+    return ws;
   }
 
-  const colsAlocados = ['INSCRIÇÃO','CANDIDATO','CPF','CONCURSO','CÓDIGO','CARGO','DATA PROVA','TURNO','SALA','ANDAR','BLOCO','ESCOLA'];
-  criarAba('ALOCAÇÃO', resultado.alocados, colsAlocados);
+  // ── DADOS ALOCAÇÃO ──
+  const dadosAlocacao = resultado.alocados.map((a,i)=>({
+    'Índice': i+1, 'INSCRIÇÃO': a['INSCRIÇÃO'], 'CANDIDATO': a['CANDIDATO'], 'CPF': a['CPF'],
+    'DATA NASCIMENTO': a['DATA NASCIMENTO'], 'CONCURSO': a['CONCURSO'], 'CÓDIGO': a['CÓDIGO'], 'CARGO': a['CARGO'],
+    'DATA PROVA': a['DATA PROVA'], 'TURNO': a['TURNO'], 'SALA': a['SALA'], 'ANDAR': a['ANDAR'], 'BLOCO': a['BLOCO'],
+    'ESCOLA': a['ESCOLA'], 'CIDADE': a['CIDADE'], 'ATENDIMENTO ESPECIAL': a['ATENDIMENTO ESPECIAL'],
+  }));
+  criarAba('DADOS ALOCAÇÃO', dadosAlocacao,
+    ['Índice','INSCRIÇÃO','CANDIDATO','CPF','DATA NASCIMENTO','CONCURSO','CÓDIGO','CARGO','DATA PROVA','TURNO','SALA','ANDAR','BLOCO','ESCOLA','CIDADE','ATENDIMENTO ESPECIAL']);
 
+  // ── NÃO ALOCADOS ──
   if(resultado.naoAlocados.length){
-    const colsNaoAloc = ['INSCRIÇÃO','CANDIDATO','CPF','CONCURSO','CÓDIGO','CARGO','DATA PROVA','TURNO'];
-    criarAba('NÃO ALOCADOS', resultado.naoAlocados, colsNaoAloc);
+    criarAba('NÃO ALOCADOS', resultado.naoAlocados,
+      ['INSCRIÇÃO','CANDIDATO','CPF','CONCURSO','CÓDIGO','CARGO','DATA PROVA','TURNO']);
   }
+
+  // ── ESCOLAS (mapa de salas usado nessa alocação) ──
+  const escolasRows = [];
+  let acumulado = 0;
+  resultado.salasPool.slice().sort((x,y)=>y.capacidadeOriginal-x.capacidadeOriginal).forEach((s,i)=>{
+    acumulado += s.capacidadeOriginal;
+    escolasRows.push({'Índice':i+1, 'Nome da Instituição': s.escola, 'Bloco': s.bloco, 'Andar': s.andar,
+      'Nº sala': 'SALA '+s.salaBase, 'Capacidade': s.capacidadeOriginal, 'TURNO': s.turno, 'CAP': acumulado, 'Coluna1': i+1});
+  });
+  criarAba('ESCOLAS', escolasRows, ['Índice','Nome da Instituição','Bloco','Andar','Nº sala','Capacidade','TURNO','CAP','Coluna1']);
+
+  // ── AT ESPECIAL (só quem tem atendimento especial deferido) ──
+  const especiais = resultado.alocados.filter(a=>a['ATENDIMENTO ESPECIAL'] && a['ATENDIMENTO ESPECIAL']!=='-');
+  const atEspecialRows = especiais.map(a=>({
+    'INSCRIÇÃO': a['INSCRIÇÃO'], 'CANDIDATO': a['CANDIDATO'], 'DATA DE NASCIMENTO': a['DATA NASCIMENTO'],
+    'CARGO': a['CARGO'], 'STATUS DE PAGAMENTO': a['STATUS'], 'ATENDIMENTO ESPECIAL': a['ATENDIMENTO ESPECIAL'],
+    'RESULTADO': 'DEFERIDA', 'JUSTIFICATIVA': a['JUSTIFICATIVA'],
+  }));
+  criarAba('AT ESPECIAL', atEspecialRows,
+    ['INSCRIÇÃO','CANDIDATO','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO','ATENDIMENTO ESPECIAL','RESULTADO','JUSTIFICATIVA']);
+
+  // ── ATA DE SALA (resumo por sala) ──
+  const porSala = {};
+  resultado.alocados.forEach(a=>{
+    const chave = a.ESCOLA+'|'+a.SALA+'|'+a.ANDAR+'|'+a.BLOCO;
+    (porSala[chave] = porSala[chave]||[]).push(a);
+  });
+  const ataRows = Object.keys(porSala).map(chave=>{
+    const itens = porSala[chave];
+    const partes = chave.split('|');
+    const escola = partes[0], sala = partes[1], andar = partes[2], bloco = partes[3];
+    const cargos = [...new Set(itens.map(x=>x.CARGO))].slice(0,5);
+    const row = {'CONCURSO': itens[0].CONCURSO, 'DATA PROVA': itens[0]['DATA PROVA'], 'TURNO': itens[0].TURNO,
+      'ESCOLA': escola, 'SALA': `${andar} - ${bloco} - ${sala}`, 'QTD DE CANDIDATOS': itens.length};
+    cargos.forEach((c,i)=>{ row['CARGO.'+(i+1)] = c; });
+    return row;
+  });
+  criarAba('ATA DE SALA', ataRows,
+    ['CONCURSO','DATA PROVA','TURNO','ESCOLA','SALA','QTD DE CANDIDATOS','CARGO.1','CARGO.2','CARGO.3','CARGO.4','CARGO.5']);
+
+  // ── ALOCAÇÃO POR SALA (resumo — não é uma tabela dinâmica real do Excel;
+  //    se precisar filtrar por outros campos, monte uma Tabela Dinâmica a partir de DADOS ALOCAÇÃO) ──
+  const wsResumo = wb.addWorksheet('ALOCAÇÃO POR SALA');
+  wsResumo.getCell(1,1).value = 'Resumo estático — para outras quebras (ex: por CARGO), crie uma Tabela Dinâmica a partir da aba DADOS ALOCAÇÃO.';
+  wsResumo.getCell(1,1).font = {italic:true, size:9, color:{argb:'FF8A9AB5'}};
+  let rr = 3;
+  wsResumo.getCell(rr,1).value = 'Rótulos de Linha';
+  wsResumo.getCell(rr,2).value = 'Contagem de CANDIDATO';
+  wsResumo.getCell(rr,1).font = {bold:true};
+  wsResumo.getCell(rr,2).font = {bold:true};
+  rr++;
+  const porData = {};
+  resultado.alocados.forEach(a=>{ (porData[a['DATA PROVA']] = porData[a['DATA PROVA']]||[]).push(a); });
+  Object.keys(porData).forEach(data=>{
+    const itensData = porData[data];
+    wsResumo.getCell(rr,1).value = data; wsResumo.getCell(rr,2).value = itensData.length; rr++;
+    const porEscola = {};
+    itensData.forEach(a=>{ (porEscola[a.ESCOLA] = porEscola[a.ESCOLA]||[]).push(a); });
+    Object.keys(porEscola).forEach(esc=>{
+      const itensEsc = porEscola[esc];
+      wsResumo.getCell(rr,1).value = '  '+esc; wsResumo.getCell(rr,2).value = itensEsc.length; rr++;
+      const porAndar = {};
+      itensEsc.forEach(a=>{ (porAndar[a.ANDAR] = porAndar[a.ANDAR]||[]).push(a); });
+      Object.keys(porAndar).forEach(andar=>{
+        const itensAndar = porAndar[andar];
+        wsResumo.getCell(rr,1).value = '    '+andar; wsResumo.getCell(rr,2).value = itensAndar.length; rr++;
+        const porSalaResumo = {};
+        itensAndar.forEach(a=>{ (porSalaResumo[a.SALA] = porSalaResumo[a.SALA]||[]).push(a); });
+        Object.keys(porSalaResumo).forEach(sala=>{
+          wsResumo.getCell(rr,1).value = '      '+sala; wsResumo.getCell(rr,2).value = porSalaResumo[sala].length; rr++;
+        });
+      });
+    });
+  });
+  wsResumo.getCell(rr,1).value = 'Total Geral';
+  wsResumo.getCell(rr,2).value = resultado.alocados.length;
+  wsResumo.getCell(rr,1).font = {bold:true};
+  wsResumo.getCell(rr,2).font = {bold:true};
+  wsResumo.getColumn(1).width = 42;
+  wsResumo.getColumn(2).width = 22;
 
   const buf = await wb.xlsx.writeBuffer();
   const blob = new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
