@@ -1,11 +1,116 @@
 {
   "token": "ESC_MS68K18Y_99BO",
-  "criadoEm": "2026-07-29T15:24:44.242Z",
+  "enviadoEm": "2026-07-29T15:28:26.967Z",
+  "protocolo": "ESC_MS68K18Y_99BO_1785338906967",
   "concurso": {
-    "concurso": "CÂMARA DE SANTANA DA VARGEM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+    "concurso": "CÃMARA DE SANTANA DA VARGEM - EDITAL NÂº 01/2026 - CONCURSO PÃBLICO",
     "municipio": "SANTANA DA VARGEM/MG",
     "dataProva": "02/08/2026",
-    "escola": "EE. PADRE JOÃO NEIVA",
+    "escola": "EE. PADRE JOÃO NEIVA",
     "idEscola": "ESC_MS68K18Y_99BO"
-  }
+  },
+  "instituicao": {
+    "nome": "EE. PADRE JOÃO NEIVA",
+    "cnpj": "",
+    "razao": "",
+    "endereco": "R. Pio XII",
+    "numero": "77",
+    "complemento": "",
+    "bairro": "Centro",
+    "cidade": "Santana da Vargem",
+    "uf": "MG",
+    "cep": "37195-000",
+    "responsavel": {
+      "nome": "XXX",
+      "cargo": "",
+      "email": "santanadavargem@gmail.com",
+      "tel": "(31) 99222-1465"
+    },
+    "diretor": {
+      "nome": "",
+      "email": ""
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "1",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "1",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "ÚNICO",
+      "andar": "ÚNICO",
+      "sala": "01",
+      "capacidade": 34,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "bloco": "ÚNICO",
+      "andar": "ÚNICO",
+      "sala": "02",
+      "capacidade": 34,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "bloco": "ÚNICO",
+      "andar": "ÚNICO",
+      "sala": "03",
+      "capacidade": 34,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "bloco": "ÚNICO",
+      "andar": "ÚNICO",
+      "sala": "04",
+      "capacidade": 34,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "bloco": "ÚNICO",
+      "andar": "ÚNICO",
+      "sala": "05",
+      "capacidade": 34,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "bloco": "ÚNICO",
+      "andar": "ÚNICO",
+      "sala": "06",
+      "capacidade": 34,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true
+    }
+  ]
 }
