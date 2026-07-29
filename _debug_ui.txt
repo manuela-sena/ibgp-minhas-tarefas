@@ -1,0 +1,33 @@
+t-size:13px;font-weight:700;color:#1f2a3d;margin-bottom:4px">📋 Mapa de Salas</div>
+            <div style="font-size:12px;color:#8a9ab5;margin-bottom:12px">Planilha com todas as salas informadas pelas escolas (bloco, andar, capacidade, turno).</div>
+            <button class="btn-secondary" style="width:100%" onclick="baixarMapaSalas()">
+              📥 Baixar Mapa de Salas
+            </button>
+          </div>
+          <div style="border:1.5px solid #e2e7ef;border-radius:10px;padding:16px">
+            <div style="font-size:13px;font-weight:700;color:#1f2a3d;margin-bottom:4px">🎯 Gerar Alocação</div>
+            <div style="font-size:12px;color:#8a9ab5;margin-bottom:12px">Envie a planilha de candidatos para distribuir automaticamente nas salas.</div>
+            <input type="file" id="aloc-file-candidatos" accept=".xlsx" style="display:none" onchange="processarAlocacao(this)">
+            <button class="btn-primary" style="width:100%" onclick="document.getElementById('aloc-file-candidatos').click()">
+              ⚙️ Processar Alocação
+            </button>
+          </div>
+        </div>
+        <div id="aloc-processamento-status" style="margin-top:14px"></div>
+      </div>
+    </div>
+
+    <!-- PÁGINA INSCRIÇÕES -->
+    <div id="page-inscricoes" class="page">
+      <div class="page-header">
+        <div class="page-title-h1">📄 Resultados · Inscrições</div>
+        <div class="page-sub">Processe o relatório geral e gere as planilhas de resultado e alocação.</div>
+      </div>
+      <div class="card card-pad">
+        <label class="form-label">Relatório Geral (.xlsx)</label>
+        <input type="file" id="insc-file" accept=".xlsx" class="form-input" style="padding:6px"
+          onchange="carregarArquivoInscricoes(this)">
+        <div id="insc-status" style="margin-top:8px;font-size:12.5px;color:#8a9ab5"></div>
+      </div>
+      <div id="insc-sel-processo-wrap" style="display:none" class="card card-pad"></div>
+      <div id="insc-conjuntos-wrap" style="display
