@@ -1,0 +1,23 @@
+a
+    def _g(url): return g(url, token)
+    def _g_all(url): return g_all(url, token)
+    plano_id = None
+    for grp in _g_all("https://graph.microsoft.com/v1.0/me/memberOf"):
+        gid = grp.get("id")
+        if not gid: continue
+        try:
+            for p in _g(f"https://graph.microsoft.com/v1.0/groups/{gid}/planner/plans").get("value",[]):
+                if NOME_PLANO.upper() in p.get("title","").upper():
+                    plano_id = p["id"]; break
+        except Exception: pass
+        if plano_id: break
+    if not plano_id: return [], [], [], {}, None
+    buckets = {b["id"]:b["name"]
+               for b in _g(f"https://graph.microsoft.com/v1.0/planner/plans/{plano_id}/buckets").get("value",[])}
+    tarefas, concluidas, concluidas_todas = [], [], []
+    limite_48h = datetime.utcnow().replace(tzinfo=timezone.utc) - timedelta(hours=48)
+    for t in _g_all(f"https://graph.microsoft.com/v1.0/planner/plans/{plano_id}/tasks"):
+        nome = (t.get("title") or "").strip()
+        resp_original = ATRIBUICOES.get(nome)
+        if not resp_original: continue
+        due = t.get
