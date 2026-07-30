@@ -1,0 +1,49 @@
+function gerarPlanilhaAlocacao(resultado){
+  const wb = new ExcelJS.Workbook();
+  const FONTE='Times New Roman';
+  const BORDA={top:{style:'thin',color:{argb:'FF000000'}},bottom:{style:'thin',color:{argb:'FF000000'}},left:{style:'thin',color:{argb:'FF000000'}},right:{style:'thin',color:{argb:'FF000000'}}};
+  const LARG = {'Índice':8,'INSCRIÇÃO':12,'CANDIDATO':32,'CPF':14,'DATA NASCIMENTO':14,'CONCURSO':40,'CÓDIGO':8,'CARGO':40,
+    'DATA PROVA':13,'TURNO':10,'SALA':16,'ANDAR':12,'BLOCO':10,'ESCOLA':32,'CIDADE':20,'ATENDIMENTO ESPECIAL':26,
+    'Nome da Instituição':32,'Capacidade':12,'Nº sala':10,'CAP':10,'QTD DE CANDIDATOS':16,'JUSTIFICATIVA':30,
+    'STATUS DE PAGAMENTO':16,'RESULTADO':12,'DATA DE NASCIMENTO':14};
+
+  function criarAba(nome, dados, cols){
+    if(!dados.length) return null;
+    const ws = wb.addWorksheet(nome);
+    cols.forEach((c,ci)=>{
+      const cell = ws.getCell(1,ci+1);
+      cell.value = c;
+      cell.font = {bold:true,color:{argb:'FFFFFFFF'},name:FONTE,size:9};
+      cell.fill = {type:'pattern',pattern:'solid',fgColor:{argb:'FF1F4E8C'}};
+      cell.alignment = {horizontal:'center',vertical:'middle'};
+      cell.border = BORDA;
+      ws.getColumn(ci+1).width = LARG[c]||14;
+    });
+    ws.getRow(1).height = 22;
+    let corIdx=0, chaveAtual='';
+    dados.forEach((row,ri)=>{
+      const chave = (row.ESCOLA||'')+'|'+(row.SALA||'');
+      if(chave !== chaveAtual){ chaveAtual = chave; corIdx=(corIdx+1)%2; }
+      const cor = corIdx===0?'FFFFFFFF':'FFF0F4FF';
+      cols.forEach((c,ci)=>{
+        const cell = ws.getCell(ri+2,ci+1);
+        cell.value = row[c]===undefined||row[c]===null ? '' : row[c];
+        cell.font = {name:FONTE,size:9};
+        cell.fill = {type:'pattern',pattern:'solid',fgColor:{argb:cor}};
+        cell.alignment = {vertical:'middle'};
+        cell.border = BORDA;
+      });
+    });
+    ws.views = [{state:'frozen',xSplit:0,ySplit:1}];
+    return ws;
+  }
+
+  // ── DADOS ALOCAÇÃO ──
+  const dadosAlocacao = resultado.alocados.map((a,i)=>({
+    'Índice': i+1, 'INSCRIÇÃO': a['INSCRIÇÃO'], 'CANDIDATO': a['CANDIDATO'], 'CPF': a['CPF'],
+    'DATA NASCIMENTO': a['DATA NASCIMENTO'], 'CONCURSO': a['CONCURSO'], 'CÓDIGO': a['CÓDIGO'], 'CARGO': a['CARGO'],
+    'DATA PROVA': a['DATA PROVA'], 'TURNO': a['TURNO'], 'SALA': a['SALA'], 'ANDAR': a['ANDAR'], 'BLOCO': a['BLOCO'],
+    'ESCOLA': a['ESCOLA'], 'CIDADE': a['CIDADE'], 'ATENDIMENTO ESPECIAL': a['ATENDIMENTO ESPECIAL'],
+  }));
+  criarAba('DADOS ALOCAÇÃO', dadosAlocacao,
+    ['Índice',
