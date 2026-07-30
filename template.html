@@ -5780,6 +5780,11 @@ async function carregarEscolas(){
 function renderEscolas(escolas, concursoNome){
   const el = document.getElementById('aloc-content');
   window._alocEscolas = escolas;
+  window._alocSelecionadas = window._alocSelecionadas || new Set();
+  escolas.forEach(e=>{
+    const enviadoInit = e._status?.enviado===true||e._status?.enviado==='true';
+    if(enviadoInit && !window._alocSelecionadas.has(e.token)) window._alocSelecionadas.add(e.token);
+  });
 
   // Mostrar área de ações se tiver escolas
   const acoesWrap = document.getElementById('aloc-acoes-wrap');
@@ -5809,6 +5814,7 @@ function renderEscolas(escolas, concursoNome){
   <table style="width:100%;border-collapse:collapse">
     <thead>
       <tr style="background:#f7f9fc">
+        <th style="padding:9px 14px;font-size:11px;font-weight:700;color:#41506b;text-align:center;border-bottom:1px solid #e2e7ef;width:34px"><input type="checkbox" id="chk-aloc-all" title="Selecionar/desmarcar todas para a alocação" onchange="toggleTodasEscolas(this.checked)"></th>
         <th style="padding:9px 14px;font-size:11px;font-weight:700;color:#41506b;text-align:left;border-bottom:1px solid #e2e7ef">ESCOLA</th>
         <th style="padding:9px 14px;font-size:11px;font-weight:700;color:#41506b;text-align:center;border-bottom:1px solid #e2e7ef;white-space:nowrap">STATUS</th>
         <th style="padding:9px 14px;font-size:11px;font-weight:700;color:#41506b;text-align:center;border-bottom:1px solid #e2e7ef;white-space:nowrap">ACESSOS</th>
@@ -5828,6 +5834,7 @@ function renderEscolas(escolas, concursoNome){
             : '<span style="background:#fdeceb;color:#c0322f;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:700">⏳ Pendente</span>';
         const link = `${FORM_BASE_URL}?token=${e.token}`;
         return `<tr style="border-bottom:1px solid #eef1f6${i%2===1?';background:#fafbfc':''}">
+          <td style="padding:10px 14px;text-align:center">${enviado ? `<input type="checkbox" class="chk-aloc-escola" data-token="${e.token}" ${window._alocSelecionadas.has(e.token)?'checked':''} onchange="toggleEscolaSelecionada('${e.token}', this.checked)">` : '<span style="color:#c7cedb">—</span>'}</td>
           <td style="padding:10px 14px;font-size:13px;font-weight:600;color:#1f2a3d">${e.concurso?.escola||e.escola||e.token}</td>
           <td style="padding:10px 14px;text-align:center">${badge}</td>
           <td style="padding:10px 14px;text-align:center;font-size:13px;color:#41506b">${acessos}</td>
@@ -5836,6 +5843,7 @@ function renderEscolas(escolas, concursoNome){
             <div style="display:flex;gap:6px;justify-content:flex-end">
               <button title="Copiar link" onclick="copiarLink('${link}')" style="background:#e9f1fb;border:none;border-radius:7px;padding:5px 10px;cursor:pointer;font-size:12px;color:#1f4e8c;font-weight:600">🔗 Link</button>
               ${enviado ? `<button title="Ver resposta" onclick="verResposta('${e.token}')" style="background:#e4f3ea;border:none;border-radius:7px;padding:5px 10px;cursor:pointer;font-size:12px;color:#2e7d52;font-weight:600">📋 Ver</button>` : ''}
+              <button title="Excluir escola" onclick="excluirEscola('${e.token}', '${(e.concurso?.escola||e.escola||e.token).toString().replace(/'/g, "\\'")}')" style="background:#fdeceb;border:none;border-radius:7px;padding:5px 10px;cursor:pointer;font-size:12px;color:#c0322f;font-weight:600">🗑️ Excluir</button>
             </div>
           </td>
         </tr>`;
@@ -6125,6 +6133,52 @@ function abreviarAtendimento(nome){
   return map[nome.toUpperCase()] || nome.toLowerCase();
 }
 
+function toggleTodasEscolas(checked){
+  const escolas = window._alocEscolas||[];
+  window._alocSelecionadas = window._alocSelecionadas || new Set();
+  escolas.forEach(e=>{
+    const enviado = e._status?.enviado===true||e._status?.enviado==='true';
+    if(!enviado) return;
+    if(checked) window._alocSelecionadas.add(e.token);
+    else window._alocSelecionadas.delete(e.token);
+  });
+  document.querySelectorAll('.chk-aloc-escola').forEach(chk=>{ chk.checked = checked; });
+}
+
+function toggleEscolaSelecionada(token, checked){
+  window._alocSelecionadas = window._alocSelecionadas || new Set();
+  if(checked) window._alocSelecionadas.add(token);
+  else window._alocSelecionadas.delete(token);
+  const all = document.querySelectorAll('.chk-aloc-escola');
+  const allChecked = all.length>0 && Array.from(all).every(c=>c.checked);
+  const chkAll = document.getElementById('chk-aloc-all');
+  if(chkAll) chkAll.checked = allChecked;
+}
+
+async function excluirEscola(token, nomeEscola){
+  if(!confirm('Excluir definitivamente a escola "'+nomeEscola+'"?\n\nIsso apaga o formulário e os dados enviados por ela. Não tem como desfazer — ela precisaria preencher tudo de novo se for incluída depois.')) return;
+  try{
+    const headers = {'Authorization':'Bearer '+GH_TOKEN_ALOC};
+    for(const prefixo of ['token_','status_']){
+      const path = 'respostas_escolas/'+prefixo+token+'.json';
+      const r = await fetch('https://api.github.com/repos/'+GH_REPO_ALOC+'/contents/'+path, {headers});
+      if(r.status===200){
+        const info = await r.json();
+        await fetch('https://api.github.com/repos/'+GH_REPO_ALOC+'/contents/'+path, {
+          method:'DELETE', headers,
+          body: JSON.stringify({message:'Excluir escola '+nomeEscola, sha: info.sha, branch:'main'})
+        });
+      }
+    }
+    window._alocEscolas = (window._alocEscolas||[]).filter(e=>e.token!==token);
+    if(window._alocSelecionadas) window._alocSelecionadas.delete(token);
+    const concursoNome = (document.getElementById('inp-aloc-concurso')?.value || '').trim();
+    renderEscolas(window._alocEscolas, concursoNome);
+  }catch(e){
+    alert('Erro ao excluir: '+e.message);
+  }
+}
+
 async function processarAlocacao(){
   const fileCand = document.getElementById('aloc-file-candidatos').files[0];
   const fileCond = document.getElementById('aloc-file-condespecial').files[0];
@@ -6137,9 +6191,14 @@ async function processarAlocacao(){
 
   statusEl.innerHTML = '<div class="loading"><div class="spinner"></div>Processando alocação...</div>';
 
-  const enviadas = (window._alocEscolas||[]).filter(e=>e._status?.enviado);
-  if(!enviadas.length){
+  const todasEnviadas = (window._alocEscolas||[]).filter(e=>e._status?.enviado);
+  const enviadas = todasEnviadas.filter(e=>!window._alocSelecionadas || window._alocSelecionadas.has(e.token));
+  if(!todasEnviadas.length){
     statusEl.innerHTML = '<div style="color:#c0322f;padding:10px">Nenhuma escola com formulário enviado. Impossível gerar alocação.</div>';
+    return;
+  }
+  if(!enviadas.length){
+    statusEl.innerHTML = '<div style="color:#c0322f;padding:10px">Nenhuma escola selecionada. Marque ao menos uma escola na lista acima para gerar a alocação.</div>';
     return;
   }
 
