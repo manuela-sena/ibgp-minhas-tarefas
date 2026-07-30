@@ -1,0 +1,35 @@
+       <!-- Header da tabela -->
+        <div id="task-table-header" style="display:grid;grid-template-columns:180px 1fr 120px 140px 68px;gap:0;padding:8px 18px;background:#f7f9fc;border-bottom:1px solid #e2e7ef;border-radius:14px 14px 0 0">
+          <div style="font-size:10.5px;font-weight:700;color:#8a9ab5;letter-spacing:.07em;text-transform:uppercase">Concurso</div>
+          <div style="font-size:10.5px;font-weight:700;color:#8a9ab5;letter-spacing:.07em;text-transform:uppercase">Tarefa</div>
+          <div style="font-size:10.5px;font-weight:700;color:#8a9ab5;letter-spacing:.07em;text-transform:uppercase">Responsável</div>
+          <div style="font-size:10.5px;font-weight:700;color:#8a9ab5;letter-spacing:.07em;text-transform:uppercase;text-align:right">Vencimento</div>
+          <div style="font-size:10.5px;font-weight:700;color:#8a9ab5;letter-spacing:.07em;text-transform:uppercase;text-align:right">Ações</div>
+        </div>
+    
+=====ROW=====
+nter;gap:6px;flex-wrap:wrap">
+      <span class="t-desc">${t.tarefa}</span>
+    </div>
+    ${temNota?`<div style="display:flex;align-items:center;gap:6px;margin-top:3px"><span class="chip-nota" id="nota-preview-${t.id}">📝 ${notaPreview.length>40?notaPreview.substring(0,40)+'…':notaPreview}</span></div>`:''}
+  </div>
+  <div>${t.responsavel?chipP(t.responsavel):''}</div>
+  <div style="display:flex;justify-content:flex-end">${chipD(t.dias,t.data)}</div>
+  <div class="act-wrap">
+    <button class="act-quick" onclick="concluir('${t.id}')" title="Concluir tarefa" style="width:30px;height:30px;border-radius:8px;border:1px solid #cfe8d9;background:#e4f3ea;color:#2e7d52;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;transition:background .14s">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 8.5 7 11.5 12 4.5"/></svg>
+    </button>
+    <button class="act-trigger" onclick="toggleMenu('${t.id}',this)" title="Ações">···</button>
+    <div class="act-menu" id="menu-${t.id}">
+      <button class="act-item" onclick="openNota('${t.id}');closeMenu('${t.id}')">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-edit"/></svg>
+        Editar observação
+      </button>
+      <button class="act-item" onclick="concluir('${t.id}');closeMenu('${t.id}')">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-check"/></svg>
+        Concluir tarefa
+      </button>
+      ${typeof IS_GESTORA!=='undefined'&&IS_GESTORA?`
+      <div class="act-sep"></div>
+      <button class="act-item" onclick="alterarResponsavel('${t.id}');closeMenu('${t.id}')">
+        <svg width="14" he
