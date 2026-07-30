@@ -1,0 +1,145 @@
+ue)),
+        fromPlanner: true,
+      }));
+    }
+    // Carregar histórico completo de concluídas (usado na Agenda)
+    if(!_concluidasTodas.length){
+      _concluidasTodas = (DADOS_INICIAIS.concluidasTodas||[]).map(t=>({...t, concluida:true}));
+    }
+  }
+  _allTasks = raw.map(t=>{
+    const due=parseISO(t.due);
+    return {...t, due, data:fmtDate(due), dias:diffDays(due)};
+  }).sort((a,b)=>{
+    if(a.dias===null&&b.dias===null) return 0;
+    if(a.dias===null) return 1; if(b.dias===null) return -1;
+    if(a.dias<0&&b.dias<0) return a.dias-b.dias;
+    if(a.dias<0) return -1; if(b.dias<0) return 1;
+    return a.dias-b.dias;
+  });
+
+  // Popular autocomplete de concursos e tarefas
+  const concursos=[...new Set(_allTasks.map(t=>t.municipio))].sort();
+  const tarefasUnicas=[...new Set(_allTasks.map(t=>t.tarefa))].sort();
+  window._listaConcursos = concursos;
+  window._listaTarefas   = tarefasUnicas;
+  initDropdownsFiltros();
+
+  if(typeof IS_GESTORA!=='undefined' && IS_GESTORA){
+    const w=document.getElementById('filtro-pessoa-wrap');
+    if(w) w.style.display='flex';
+  }
+
+  applyFilters();
+  renderDashboard();
+}
+
+// ── FILTROS ──────────────────────────────────────────────────────────
+function clearFilters(){
+  const sp=document.getElementById('sel-pessoa');
+  if(sp) sp.value='';
+  // Limpar autocomplete concurso
+  const ic=document.getElementById('inp-concurso');
+  const sc=document.getElementById('sel-concurso');
+  if(ic) ic.value=''; if(sc) sc.value='';
+  // Limpar autocomplete tarefa
+  const it=document.getElementById('inp-tarefa');
+  const selTarefa=document.getElementById('sel-tarefa');
+  if(it) it.value=''; if(selTarefa) selTarefa.value='';
+  applyFilters();
+}
+
+let _filtered=[];
+function applyFilters(){
+  let tasks=[..._allTasks];
+  const isG = typeof IS_GESTORA!=='undefined'&&IS_GESTORA;
+  const nome = typeof NOME_USUARIO!=='undefined'?NOME_USUARIO:'';
+  if(isG){
+    const p=document.getElementById('sel-pessoa')?.value;
+    if(p) tasks=tasks.filter(t=>t.responsavel===p);
+  } else {
+    tasks=tasks.filter(t=>t.responsavel===nome);
+  }
+  const c=document.getElementById('sel-concurso')?.value;
+  const tf=document.getElementById('sel-tarefa')?.value;
+  if(c) tasks=tasks.filter(t=>t.municipio===c);
+  if(tf) tasks=tasks.filter(t=>t.tarefa===tf);
+  _filtered=tasks;
+  updateKPIs(tasks);
+  renderVisibleGroup();
+}
+
+function updateKPIs(tasks){
+  const venc=tasks.filter(t=>t.dias!==null&&t.dias<0);
+  const hoje=tasks.filter(t=>t.dias===0);
+  const sem=tasks.filter(t=>t.dias!==null&&t.dias>=1&&t.dias<=7);
+  const fut=tasks.filter(t=>t.dias===null||t.dias>7);
+  ['total','venc','hoje','7d'].forEach(k=>{
+    const v=k==='total'?tasks.length:k==='venc'?venc.length:k==='hoje'?hoje.length:sem.length;
+    const el=document.getElementById('kpi-'+k);
+    if(el) el.textContent=v;
+  });
+  // Tabs badges
+  ['vencidas','hoje','7d','futuras'].forEach(tab=>{
+    const cnt=tab==='vencidas'?venc.length:tab==='hoje'?hoje.length:tab==='7d'?sem.length:fut.length;
+    const el=document.getElementById('tb-'+(tab==='vencidas'?'venc':tab==='futuras'?'fut':tab));
+    if(el) el.textContent=cnt;
+  });
+  // Sidebar badge
+  const sb=document.getElementById('badge-venc');
+  if(sb){ sb.textContent=venc.length; sb.style.display=venc.length>0?'inline-flex':'none'; }
+}
+
+// ── RENDER GRUPO POR TAB ─────────────────────────────────────────────
+function renderVisibleGroup(){
+  const tasks=_filtered;
+  const isG=typeof IS_GESTORA!=='undefined'&&IS_GESTORA;
+  const showP=isG&&!(document.getElementById('sel-pessoa')?.value);
+  const venc=tasks.filter(t=>t.dias!==null&&t.dias<0);
+  const hoje=tasks.filter(t=>t.dias===0);
+  const sem=tasks.filter(t=>t.dias!==null&&t.dias>=1&&t.dias<=7);
+  const fut=tasks.filter(t=>t.dias===null||t.dias>7);
+  const groups={vencidas:venc,hoje,['7d']:sem,futuras:fut};
+  const cur=groups[_currentTab]||[];
+  const el=document.getElementById('task-list');
+  if(!el) return;
+  if(!cur.length){
+    el.innerHTML='<div class="empty-state"><div class="empty-icon">🎉</div><div class="empty-title">Nenhuma tarefa aqui</div><div class="empty-desc">Tudo certo nesta categoria.</div></div>';
+    return;
+  }
+  el.innerHTML=cur.map(t=>renderTaskRow(t,showP)).join('');
+}
+
+// ── TASK ROW (tabela) ─────────────────────────────────────────────────
+function renderTaskRow(t, showP){
+  const nota=_notas[t.id];
+  const temNota = nota!==undefined ? !!nota : !!t.hasNota;
+  const notaPreview = nota || (t.hasNota ? 'Carregando observação…' : '');
+  return `
+<div>
+<div class="t-row" style="display:grid;grid-template-columns:180px 1fr 120px 140px 76px;gap:0;align-items:center">
+  <div style="min-width:0;padding-right:8px">
+    <div class="t-mun" style="font-size:11px;font-weight:700;color:#8a9ab5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${t.municipio}">${t.municipio}</div>
+  </div>
+  <div class="t-info" style="padding-right:10px">
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+      <span class="t-desc">${t.tarefa}</span>
+    </div>
+    ${temNota?`<div style="display:flex;align-items:center;gap:6px;margin-top:3px"><span class="chip-nota" id="nota-preview-${t.id}">📝 ${notaPreview.length>40?notaPreview.substring(0,40)+'…':notaPreview}</span></div>`:''}
+  </div>
+  <div>${t.responsavel?chipP(t.responsavel):''}</div>
+  <div>${chipD(t.dias,t.data)}</div>
+  <div class="act-wrap">
+    <button class="act-trigger" onclick="toggleMenu('${t.id}',this)" title="Ações">···</button>
+    <div class="act-menu" id="menu-${t.id}">
+      <button class="act-item" onclick="openNota('${t.id}');closeMenu('${t.id}')">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-edit"/></svg>
+        Editar observação
+      </button>
+      <button class="act-item" onclick="concluir('${t.id}');closeMenu('${t.id}')">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-check"/></svg>
+        Concluir tarefa
+      </button>
+      ${typeof IS_GESTORA!=='undefined'&&IS_GESTORA?`
+      <div class="act-sep"></div>
+      <button class
