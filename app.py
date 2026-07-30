@@ -98,6 +98,23 @@ def trocar_codigo(code):
               "redirect_uri":REDIRECT_URI,"scope":SCOPES})
     return r.json()
 
+def obter_token_servico():
+    """Usa um refresh_token de uma conta Microsoft (salvo em st.secrets como
+    SERVICE_REFRESH_TOKEN) para obter um access_token válido. Permite que contas
+    de login local (sem Microsoft), como as de perfil operacional, também
+    consigam ler as tarefas do Planner."""
+    rt = st.secrets.get("SERVICE_REFRESH_TOKEN")
+    if not rt:
+        return None
+    try:
+        r = requests.post(
+            f"https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/token",
+            data={"client_id":CLIENT_ID,"client_secret":st.secrets["CLIENT_SECRET"],
+                  "grant_type":"refresh_token","refresh_token":rt,"scope":SCOPES})
+        return r.json().get("access_token")
+    except Exception:
+        return None
+
 params = st.query_params
 code   = params.get("code")
 
@@ -215,7 +232,7 @@ token = st.session_state.get("access_token", None)
 if logado_local:
     # Login local — nome vem direto da sessão
     nome_interno = st.session_state["local_user"]
-    token = None  # Sem token Microsoft
+    token = obter_token_servico()  # Token de serviço (via refresh token salvo em secrets)
 else:
     # Login Microsoft
     try:
@@ -569,5 +586,15 @@ html = html.replace("// PLACEHOLDER_ATRIB",
 
 # ── BOTÕES DE NAVEGAÇÃO PARA RESULTADOS (fora do iframe) ─────────────
 st.markdown("<style>[data-testid='stChatInput'],[data-testid='stBottom']{display:none!important}</style>", unsafe_allow_html=True)
+
+if logado_microsoft and is_gestora:
+    with st.expander("🔑 Token de serviço para contas locais (avançado)"):
+        rt_atual = st.session_state.get("refresh_token")
+        if rt_atual:
+            st.caption("Copie o valor abaixo e salve em **Manage app → Settings → Secrets** como:")
+            st.code(f'SERVICE_REFRESH_TOKEN = "{rt_atual}"', language="toml")
+            st.caption("Isso permite que contas de login local (como a do Jordan) também vejam as tarefas do Planner. Sem isso configurado, elas continuam sem tarefas. Se parar de funcionar depois de um tempo, basta gerar um novo aqui e atualizar o secret.")
+        else:
+            st.caption("Nenhum refresh token disponível nesta sessão — saia e entre novamente com Microsoft para gerar um novo.")
 
 components.html(html, height=900, scrolling=False)
