@@ -1897,6 +1897,7 @@ async function loadReajusteTarefas(){
   document.getElementById('reajuste-tarefas').innerHTML='<div class="loading"><div class="spinner"></div>Carregando tarefas...</div>';
   try{
     const tasks = await apiAll(`https://graph.microsoft.com/v1.0/planner/buckets/${bucketId}/tasks`);
+    const abertas = tasks.filter(t=>t.percentComplete!==100);
     if(!abertas.length){ document.getElementById('reajuste-tarefas').innerHTML='<div class="loading">Nenhuma tarefa em aberto.</div>'; return; }
     const rows=abertas.map((t,i)=>{
       const dueD=t.dueDateTime?new Date(t.dueDateTime).toLocaleDateString('pt-BR'):'—';
