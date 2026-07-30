@@ -1,0 +1,32 @@
+     "📥 Baixar Planilha de Homologação",
+                        data=resultado,
+                        file_name=f"HOMOLOGACAO_{nome_base}.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        use_container_width=True
+                    )
+                except Exception as e:
+                    st.error(f"Erro ao processar: {e}")
+                    import traceback; st.code(traceback.format_exc())
+    st.stop()
+
+
+# v2026.07.09-inscricoes
+# ── LER E INJETAR TEMPLATE ────────────────────────────────────────────
+with open("/mount/src/ibgp-minhas-tarefas/template.html", "r", encoding="utf-8") as f:
+    html = f.read()
+
+html = html.replace("// PLACEHOLDER_TOKEN",
+    f"const TOKEN = {json.dumps(token or '')};")
+html = html.replace("// PLACEHOLDER_CONFIG",
+    f"""const IS_GESTORA    = {'true' if is_gestora   else 'false'};
+const IS_CRONOGRAMA = {'true' if is_cronograma else 'false'};
+const IS_OPERACIONAL = {'true' if is_operacional else 'false'};
+const NOME_USUARIO  = {json.dumps(nome_interno)};
+const DADOS_INICIAIS = {dados_iniciais};""")
+html = html.replace("// PLACEHOLDER_ATRIB",
+    f"const ATRIBUICOES_JS = {json.dumps(ATRIBUICOES)};")
+
+# ── BOTÕES DE NAVEGAÇÃO PARA RESULTADOS (fora do iframe) ─────────────
+st.markdown("<style>[data-testid='stChatInput'],[data-testid='stBottom']{display:none!important}</style>", unsafe_allow_html=True)
+
+components.html(html, height=900, scrolling=False)
