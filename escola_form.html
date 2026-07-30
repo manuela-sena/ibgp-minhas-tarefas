@@ -519,6 +519,8 @@
                 <th>Turno</th>
                 <th>Ar Cond.</th>
                 <th>Ventilador</th>
+                <th style="width:100px">Atend. Especial</th>
+                <th style="width:170px">Explicação</th>
                 <th style="width:40px"></th>
               </tr>
             </thead>
@@ -829,6 +831,8 @@ function addSala(){
 </td>
 <td style="text-align:center"><input type="checkbox" data-f="arcond" style="width:16px;height:16px;accent-color:var(--azul-med)"></td>
 <td style="text-align:center"><input type="checkbox" data-f="vent" style="width:16px;height:16px;accent-color:var(--azul-med)"></td>
+<td style="text-align:center"><input type="checkbox" data-f="especial" style="width:16px;height:16px;accent-color:var(--azul-med)" onchange="toggleExplicacaoSala(this)" title="Marque se esta sala é usada para atendimento especial (individual ou grupo), ex: biblioteca, laboratório, sala multimídia"></td>
+<td><input type="text" data-f="explicacao" placeholder="Ex: Biblioteca — leitura ampliada" style="min-width:150px" disabled></td>
 <td><button class="btn-del" onclick="delSala('sala-row-${salaCount}')" title="Remover">×</button></td>`;
   tbody.appendChild(tr);
   renumSalas();
@@ -878,7 +882,7 @@ function buildRevisao(){
   <div class="card-body" style="padding:0">
     <div class="salas-table-wrap">
       <table class="salas">
-        <thead><tr><th>#</th><th>Bloco</th><th>Andar</th><th>Sala</th><th>Capacidade</th><th>Turno</th><th>Ar</th><th>Vent.</th></tr></thead>
+        <thead><tr><th>#</th><th>Bloco</th><th>Andar</th><th>Sala</th><th>Capacidade</th><th>Turno</th><th>Ar</th><th>Vent.</th><th>Atend. Especial</th></tr></thead>
         <tbody>${salas.map((s,i)=>`<tr>
           <td style="text-align:center">${i+1}</td>
           <td>${s.bloco||'—'}</td><td>${s.andar||'—'}</td><td><strong>${s.sala}</strong></td>
@@ -886,6 +890,7 @@ function buildRevisao(){
           <td>${s.turno==='AMBOS'?'Manhã e Tarde':s.turno==='MANHA'?'Manhã':'Tarde'}</td>
           <td style="text-align:center">${s.arcond?'✅':'—'}</td>
           <td style="text-align:center">${s.ventilador?'✅':'—'}</td>
+          <td>${s.atendimentoEspecial ? ('⭐'+(s.explicacaoEspecial?' '+s.explicacaoEspecial:'')) : '—'}</td>
         </tr>`).join('')}</tbody>
       </table>
     </div>
@@ -898,6 +903,14 @@ function rv(label, val){
   return `<div class="form-group"><label style="font-weight:600">${label}</label><div style="font-size:13px;padding:8px 12px;background:var(--cinza);border-radius:7px">${val||'—'}</div></div>`;
 }
 
+function toggleExplicacaoSala(chk){
+  const tr = chk.closest('tr');
+  const inpExp = tr?.querySelector('[data-f="explicacao"]');
+  if(!inpExp) return;
+  inpExp.disabled = !chk.checked;
+  if(!chk.checked) inpExp.value = '';
+}
+
 function getSalas(){
   const rows = document.querySelectorAll('#salas-tbody tr');
   return Array.from(rows).map(r=>({
@@ -908,6 +921,8 @@ function getSalas(){
     turno:   r.querySelector('[data-f="turno"]').value,
     arcond:  r.querySelector('[data-f="arcond"]').checked,
     ventilador: r.querySelector('[data-f="vent"]').checked,
+    atendimentoEspecial: r.querySelector('[data-f="especial"]')?.checked || false,
+    explicacaoEspecial: r.querySelector('[data-f="explicacao"]')?.value.trim() || '',
   }));
 }
 
