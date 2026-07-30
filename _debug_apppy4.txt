@@ -1,0 +1,124 @@
+import streamlit as st
+import streamlit.components.v1 as components
+from urllib.parse import urlencode
+import requests, json, re, secrets, hashlib
+from datetime import datetime, date
+
+CLIENT_ID    = "cf858739-80c5-4bf0-bc5c-6f5b0cefb70d"
+TENANT_ID    = "e1362ab7-0546-4f12-9f44-0867415479b9"
+REDIRECT_URI = "https://ibgp-minhas-tarefas-jkdmypmipxemkvhh6c5vjv.streamlit.app/"
+SCOPES       = "Tasks.ReadWrite Group.Read.All User.Read offline_access"
+NOME_PLANO   = "PLANNER IBGP"
+
+USUARIOS_PATH = "/mount/src/ibgp-minhas-tarefas/usuarios.json"
+
+def carregar_usuarios():
+    try:
+        with open(USUARIOS_PATH, "r", encoding="utf-8") as f:
+            return json.load(f)["usuarios"]
+    except Exception:
+        return []
+
+def usuarios_para_nome_map(usuarios):
+    m = {}
+    for u in usuarios:
+        if not u.get("ativo", True): continue
+        for alias in u.get("aliases", []):
+            m[alias.lower()] = u["nome_interno"]
+    return m
+
+def usuarios_com_perfil(usuarios, perfil):
+    return [u["nome_interno"] for u in usuarios if u.get("ativo",True) and u.get("perfil")==perfil]
+
+def hash_senha(senha):
+    return hashlib.sha256(senha.encode()).hexdigest()
+
+def verificar_senha(senha, hash_salvo):
+    return hashlib.sha256(senha.encode()).hexdigest() == hash_salvo
+
+def gerar_codigo():
+    return secrets.token_urlsafe(8)
+
+def salvar_usuarios_github(usuarios, gh_token):
+    import base64
+    REPO = "manuela-sena/ibgp-minhas-tarefas"
+    r_sha = requests.get(f"https://api.github.com/repos/{REPO}/contents/usuarios.json",
+        headers={"Authorization": f"Bearer {gh_token}"})
+    sha = r_sha.json().get("sha","")
+    conteudo = json.dumps({"usuarios": usuarios}, ensure_ascii=False, indent=2)
+    return requests.put(f"https://api.github.com/repos/{REPO}/contents/usuarios.json",
+        headers={"Authorization": f"Bearer {gh_token}", "Content-Type":"application/json"},
+        json={"message":"chore: atualização de usuários","content":base64.b64encode(conteudo.encode()).decode(),"sha":sha})
+
+def buscar_usuario_local(nome_interno):
+    for u in USUARIOS:
+        if u.get("nome_interno") == nome_interno and u.get("auth_tipo") == "local":
+            return u
+    return None
+
+USUARIOS      = carregar_usuarios()
+NOME_MAP      = usuarios_para_nome_map(USUARIOS)
+GESTORAS      = usuarios_com_perfil(USUARIOS, "gestora")
+CRONOGRAMAS   = usuarios_com_perfil(USUARIOS, "cronograma")
+OPERACIONAIS  = usuarios_com_perfil(USUARIOS, "operacional")
+
+_atrib_raw = open("/mount/src/ibgp-minhas-tarefas/atribuicoes.js").read()
+ATRIBUICOES = {k: v for k, v in re.findall(r'"([^"]+)":\s*"([^"]+)"', _atrib_raw)}
+
+def carregar_ferias():
+    try:
+        with open("/mount/src/ibgp-minhas-tarefas/ferias.json", "r", encoding="utf-8") as f:
+            return json.load(f).get("ferias", [])
+    except Exception:
+        return []
+
+st.set_page_config(page_title="IBGP · Minhas Tarefas", page_icon="✅", layout="wide")
+
+st.markdown("""<style>
+header[data-testid="stHeader"]{display:none}
+footer{display:none}
+#MainMenu{display:none}
+.stApp{overflow:hidden}
+.block-container{padding:0!important;max-width:100%!important}
+[data-testid="stAppViewContainer"]{padding:0!important}
+[data-testid="stVerticalBlock"]{gap:0!important;padding:0!important}
+</style>""", unsafe_allow_html=True)
+
+# ── AUTH ──────────────────────────────────────────────────────────────
+def auth_url():
+    p = {"client_id":CLIENT_ID,"response_type":"code","redirect_uri":REDIRECT_URI,
+         "scope":SCOPES,"response_mode":"query"}
+    return f"https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/authorize?" + urlencode(p)
+
+def trocar_codigo(code):
+    r = requests.post(
+        f"https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/token",
+        data={"client_id":CLIENT_ID,"client_secret":st.secrets["CLIENT_SECRET"],
+              "grant_type":"authorization_code","code":code,
+              "redirect_uri":REDIRECT_URI,"scope":SCOPES})
+    return r.json()
+
+params = st.query_params
+code   = params.get("code")
+
+# ── Processar callback Microsoft ──────────────────────────────────────
+if code and "access_token" not in st.session_state and "local_user" not in st.session_state:
+    with st.spinner("Autenticando..."):
+        td = trocar_codigo(code)
+    if "access_token" in td:
+        st.session_state["access_token"]  = td["access_token"]
+        st.session_state["refresh_token"] = td.get("refresh_token")
+        st.query_params.clear()
+        st.rerun()
+    else:
+        st.error(f"Erro: {td.get('error_description','')}")
+    st.stop()
+
+# ── Verificar se está logado (Microsoft ou local) ─────────────────────
+logado_microsoft = "access_token" in st.session_state
+logado_local     = "local_user" in st.session_state
+
+if not logado_microsoft and not logado_local:
+    erro          = st.session_state.pop("login_erro", "")
+    primeiro_acesso = st.session_state.get("convite_ok", False)
+    primei
