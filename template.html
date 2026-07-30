@@ -6365,12 +6365,19 @@ function executarMotorAlocacao(candidatos, escolas){
         escola: nomeEsc, bloco: s.bloco||'', andar: (s.andar===undefined||s.andar===null) ? '' : String(s.andar),
         salaBase: s.sala||'', capacidadeOriginal: parseInt(s.capacidade)||0,
         capacidadeDisponivel: parseInt(s.capacidade)||0,
-        turno: s.turno||'AMBOS', ocupantes: []
+        turno: s.turno||'AMBOS', ocupantes: [],
+        atendimentoEspecial: s.atendimentoEspecial===true || s.atendimentoEspecial==='true',
+        explicacaoEspecial: s.explicacaoEspecial||'',
       });
     });
   });
   // Ordenar por capacidade desc (maior primeiro)
   salasPool.sort((a,b)=>b.capacidadeOriginal - a.capacidadeOriginal);
+
+  // Salas reservadas para atendimento especial (biblioteca, laboratório, sala multimídia etc)
+  // ficam separadas do pool de salas normais de prova.
+  const salasEspeciais = salasPool.filter(s=>s.atendimentoEspecial);
+  const salasNormais   = salasPool.filter(s=>!s.atendimentoEspecial);
 
   // ── 2. Identificar atendimento especial de cada candidato ──
   function getAtendimentos(c){
@@ -6380,6 +6387,9 @@ function executarMotorAlocacao(candidatos, escolas){
   }
   function precisaSalaIndividual(atendimentos){
     return atendimentos.some(a=>SALA_INDIVIDUAL.some(k=>a.toUpperCase().includes(k)));
+  }
+  function precisaSalaGrupo(atendimentos){
+    return atendimentos.some(a=>MESMA_SALA_GRUPO.some(k=>a.toUpperCase().includes(k)));
   }
   function precisaTerreo(c){
     const t = (c['SALA TÉRREA']||c['TERREO']||'').toString().toUpperCase();
@@ -6397,6 +6407,7 @@ function executarMotorAlocacao(candidatos, escolas){
     c._atendimentos = getAtendimentos(c);
     c._atendimentosRaw = c._atendimentos;
     c._individual = precisaSalaIndividual(c._atendimentos);
+    c._grupoEspecial = !c._individual && precisaSalaGrupo(c._atendimentos);
     c._terreo = precisaTerreo(c);
   });
   candidatos.sort((a,b)=>
@@ -6407,29 +6418,36 @@ function executarMotorAlocacao(candidatos, escolas){
 
   const alocados = [];
   const naoAlocados = [];
-  const salasIndividuaisUsadas = new Set();
 
-  // ── 4. Alocar candidatos de sala individual primeiro ──
-  const individuais = candidatos.filter(c=>c._individual);
-  const demais = candidatos.filter(c=>!c._individual);
+  const individuais   = candidatos.filter(c=>c._individual);
+  const grupoEspecial = candidatos.filter(c=>c._grupoEspecial);
+  const demais        = candidatos.filter(c=>!c._individual && !c._grupoEspecial);
 
-  individuais.forEach(c=>{
-    // Buscar sala livre (preferência: térrea se necessário)
+  // ── 4. Alocar primeiro quem NÃO tem condição especial, preenchendo as salas
+  //      normais de maior para menor capacidade. As salas de atendimento especial
+  //      (biblioteca, laboratório, sala multimídia etc) ficam reservadas para o
+  //      próximo passo. ──
+  let salaAtualIdx = 0;
+  demais.forEach(c=>{
     let salaEscolhida = null;
-    // Preferir sala dedicada (capacidade original = 1) quando exigido atendimento individual
-    salaEscolhida = salasPool.find(s => s.capacidadeOriginal === 1 && s.capacidadeDisponivel >= 1 && (!c._terreo || salaEhTerrea(s.andar)));
-    // Fallback: sem sala dedicada disponível, usa qualquer sala com vaga (respeitando térreo)
-    if(!salaEscolhida){
-      salaEscolhida = salasPool.find(s => s.capacidadeDisponivel >= 1 && (!c._terreo || salaEhTerrea(s.andar)));
+    if(c._terreo){
+      salaEscolhida = salasNormais.find(s=>
+        s.capacidadeDisponivel > 0 && salaEhTerrea(s.andar)
+      );
     }
+    if(!salaEscolhida){
+      while(salaAtualIdx < salasNormais.length && salasNormais[salaAtualIdx].capacidadeDisponivel <= 0){
+        salaAtualIdx++;
+      }
+      if(salaAtualIdx < salasNormais.length) salaEscolhida = salasNormais[salaAtualIdx];
+    }
+
     if(salaEscolhida){
       salaEscolhida.capacidadeDisponivel -= 1;
-      const abrevs = c._atendimentos.filter(a=>SALA_INDIVIDUAL.some(k=>a.toUpperCase().includes(k))).map(abreviarAtendimento);
-      const nomeSalaFinal = `${salaEscolhida.salaBase} ${abrevs.join(', ')}`;
       alocados.push({
         ...mapCandidato(c),
-        SALA: nomeSalaFinal, ANDAR: salaEscolhida.andar, BLOCO: salaEscolhida.bloco, ESCOLA: salaEscolhida.escola,
-        _tipoSala: 'individual'
+        SALA: salaEscolhida.salaBase, ANDAR: salaEscolhida.andar, BLOCO: salaEscolhida.bloco, ESCOLA: salaEscolhida.escola,
+        _tipoSala: 'regular'
       });
       salaEscolhida.ocupantes.push(c);
     } else {
@@ -6437,36 +6455,63 @@ function executarMotorAlocacao(candidatos, escolas){
     }
   });
 
-  // ── 5. Alocar demais candidatos em ordem, preenchendo salas de maior p/ menor ──
-  let salaAtualIdx = 0;
-  demais.forEach(c=>{
+  // ── 5. Por último, alocar as condições especiais (individual, depois grupo).
+  //      Preferência: salas reservadas de atendimento especial. Sem vaga nelas,
+  //      cai para a sala normal com a MENOR capacidade que ainda tiver vaga
+  //      (evita usar uma sala grande com apenas 1 candidato). ──
+  function alocarEmSalaEspecialOuFallback(c, tipo){
     let salaEscolhida = null;
-    // Se precisa térreo, buscar entre as com capacidade
-    if(c._terreo){
-      salaEscolhida = salasPool.find(s=>
-        s.capacidadeDisponivel > 0 && salaEhTerrea(s.andar)
-      );
-    }
-    if(!salaEscolhida){
-      // Pegar a sala atual com espaço (segue ordem, maior capacidade primeiro)
-      while(salaAtualIdx < salasPool.length && salasPool[salaAtualIdx].capacidadeDisponivel <= 0){
-        salaAtualIdx++;
+
+    if(tipo==='individual'){
+      salaEscolhida = salasEspeciais.find(s => s.capacidadeOriginal===1 && s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)));
+      if(!salaEscolhida){
+        salaEscolhida = salasEspeciais.find(s => s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)));
       }
-      if(salaAtualIdx < salasPool.length) salaEscolhida = salasPool[salaAtualIdx];
+    } else {
+      salaEscolhida = salasEspeciais.find(s => s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)));
     }
 
-    if(salaEscolhida){
-      salaEscolhida.capacidadeDisponivel -= 1;
-      let nomeSalaFinal = salaEscolhida.salaBase;
-      // Se tem atendimento "mesma sala do grupo", adicionar abreviação
-      const abrevsGrupo = c._atendimentos.filter(a=>MESMA_SALA_GRUPO.some(k=>a.toUpperCase().includes(k))).map(abreviarAtendimento);
-      if(abrevsGrupo.length) nomeSalaFinal = `${salaEscolhida.salaBase} ${abrevsGrupo.join(', ')}`;
+    let usouSalaEspecial = !!salaEscolhida;
+
+    if(!salaEscolhida){
+      const candidatas = salasNormais
+        .filter(s => s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)))
+        .sort((a,b)=>a.capacidadeOriginal - b.capacidadeOriginal);
+      salaEscolhida = candidatas[0] || null;
+    }
+
+    if(!salaEscolhida) return null;
+
+    salaEscolhida.capacidadeDisponivel -= 1;
+    salaEscolhida.ocupantes.push(c);
+    return {salaEscolhida, usouSalaEspecial};
+  }
+
+  individuais.forEach(c=>{
+    const r = alocarEmSalaEspecialOuFallback(c, 'individual');
+    if(r){
+      const abrevs = c._atendimentos.filter(a=>SALA_INDIVIDUAL.some(k=>a.toUpperCase().includes(k))).map(abreviarAtendimento);
+      const nomeSalaFinal = `${r.salaEscolhida.salaBase} ${abrevs.join(', ')}`;
       alocados.push({
         ...mapCandidato(c),
-        SALA: nomeSalaFinal, ANDAR: salaEscolhida.andar, BLOCO: salaEscolhida.bloco, ESCOLA: salaEscolhida.escola,
-        _tipoSala: 'grupo'
+        SALA: nomeSalaFinal, ANDAR: r.salaEscolhida.andar, BLOCO: r.salaEscolhida.bloco, ESCOLA: r.salaEscolhida.escola,
+        _tipoSala: 'individual', _salaEspecialUsada: r.usouSalaEspecial
       });
-      salaEscolhida.ocupantes.push(c);
+    } else {
+      naoAlocados.push(mapCandidato(c));
+    }
+  });
+
+  grupoEspecial.forEach(c=>{
+    const r = alocarEmSalaEspecialOuFallback(c, 'grupo');
+    if(r){
+      const abrevsGrupo = c._atendimentos.filter(a=>MESMA_SALA_GRUPO.some(k=>a.toUpperCase().includes(k))).map(abreviarAtendimento);
+      const nomeSalaFinal = abrevsGrupo.length ? `${r.salaEscolhida.salaBase} ${abrevsGrupo.join(', ')}` : r.salaEscolhida.salaBase;
+      alocados.push({
+        ...mapCandidato(c),
+        SALA: nomeSalaFinal, ANDAR: r.salaEscolhida.andar, BLOCO: r.salaEscolhida.bloco, ESCOLA: r.salaEscolhida.escola,
+        _tipoSala: 'grupo', _salaEspecialUsada: r.usouSalaEspecial
+      });
     } else {
       naoAlocados.push(mapCandidato(c));
     }
@@ -6474,7 +6519,6 @@ function executarMotorAlocacao(candidatos, escolas){
 
   return {alocados, naoAlocados, salasPool};
 }
-
 function mapCandidato(c){
   return {
     INSCRIÇÃO: c['INSCRIÇÃO']||'', CANDIDATO: c['CANDIDATO']||'', CPF: c['CPF']||'',
