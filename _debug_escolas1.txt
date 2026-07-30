@@ -1,0 +1,100 @@
+h(arq.download_url);
+      const dados = await rd.json();
+      // Filtrar pelo concurso selecionado
+      const nomeConcurso = (dados.concurso?.concurso||dados.concurso||'').toString();
+      const nomeEscola   = (dados.concurso?.escola||dados.escola||'').toString();
+      const matchConcurso = !concursoNome || 
+        nomeConcurso.toLowerCase().trim().includes(concursoNome.toLowerCase().trim().substring(0,15)) ||
+        dados.token?.startsWith('DEMO');
+      if(matchConcurso){
+        // Buscar status
+        const statusFile = statusArq.find(s=>s.name==='status_'+dados.token+'.json');
+        let status = {acessos:0, enviado:false};
+        if(statusFile){
+          const rs = await fetch(statusFile.download_url);
+          status = await rs.json();
+        }
+        // Garantir que enviado está correto — checar tanto no status quanto no token
+        if(dados.enviadoEm) status.enviado = true;
+        // Normalizar para boolean
+        status.enviado = status.enviado === true || status.enviado === 'true';
+        escolas.push({...dados, _status: status});
+      }
+    }
+    
+    renderEscolas(escolas, concursoNome);
+  }catch(e){
+    el.innerHTML=`<div class="card card-pad" style="color:#c0322f">Erro ao carregar: ${e.message}</div>`;
+  }
+}
+
+function renderEscolas(escolas, concursoNome){
+  const el = document.getElementById('aloc-content');
+  window._alocEscolas = escolas;
+
+  // Mostrar área de ações se tiver escolas
+  const acoesWrap = document.getElementById('aloc-acoes-wrap');
+  if(acoesWrap) acoesWrap.style.display = escolas.length ? 'block' : 'none';
+  
+  const nTotal    = escolas.length;
+  const nEnviado  = escolas.filter(e=>e._status?.enviado||e.enviadoEm).length;
+  const nAcessado = escolas.filter(e=>!e._status?.enviado&&(e._status?.acessos||0)>0).length;
+  const nPendente = nTotal - nEnviado - nAcessado;
+  
+  el.innerHTML = `
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px">
+  ${[['Total',nTotal,'#1f4e8c'],['Enviados',nEnviado,'#2e7d52'],['Acessados',nAcessado,'#a06c12'],['Pendentes',nPendente,'#c0322f']]
+    .map(([l,v,c])=>`<div class="card card-pad" style="text-align:center;padding:14px">
+      <div style="font-size:26px;font-weight:800;color:${c}">${v}</div>
+      <div style="font-size:11px;color:#8a9ab5;font-weight:600;text-transform:uppercase;letter-spacing:.08em">${l}</div>
+    </div>`).join('')}
+</div>
+
+<div class="card" style="overflow:hidden">
+  <div style="padding:13px 18px;font-size:12.5px;color:#7a869c;border-bottom:1px solid #eef1f6;display:flex;align-items:center;justify-content:space-between">
+    <span>${nTotal} escola(s) cadastrada(s)</span>
+    <button class="btn-secondary" style="height:30px;padding:0 12px;font-size:12px" onclick="copiarTodosLinks()">
+      📋 Copiar todos os links
+    </button>
+  </div>
+  <table style="width:100%;border-collapse:collapse">
+    <thead>
+      <tr style="background:#f7f9fc">
+        <th style="padding:9px 14px;font-size:11px;font-weight:700;color:#41506b;text-align:left;border-bottom:1px solid #e2e7ef">ESCOLA</th>
+        <th style="padding:9px 14px;font-size:11px;font-weight:700;color:#41506b;text-align:center;border-bottom:1px solid #e2e7ef;white-space:nowrap">STATUS</th>
+        <th style="padding:9px 14px;font-size:11px;font-weight:700;color:#41506b;text-align:center;border-bottom:1px solid #e2e7ef;white-space:nowrap">ACESSOS</th>
+        <th style="padding:9px 14px;font-size:11px;font-weight:700;color:#41506b;text-align:center;border-bottom:1px solid #e2e7ef;white-space:nowrap">ÚLTIMO ACESSO</th>
+        <th style="padding:9px 14px;font-size:11px;font-weight:700;color:#41506b;text-align:right;border-bottom:1px solid #e2e7ef">AÇÕES</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${escolas.length ? escolas.map((e,i)=>{
+        const enviado  = e._status?.enviado === true || e._status?.enviado === 'true';
+        const acessos  = e._status?.acessos||0;
+        const ultimoAc = e._status?.ultimoAcesso ? new Date(e._status.ultimoAcesso).toLocaleString('pt-BR') : '—';
+        const badge    = enviado 
+          ? '<span class="badge-green" style="font-size:10px;padding:2px 8px;border-radius:12px;font-weight:700">✓ Enviado</span>'
+          : acessos>0 
+            ? '<span class="badge-yellow" style="font-size:10px;padding:2px 8px;border-radius:12px;font-weight:700">👁 Acessado</span>'
+            : '<span style="background:#fdeceb;color:#c0322f;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:700">⏳ Pendente</span>';
+        const link = `${FORM_BASE_URL}?token=${e.token}`;
+        return `<tr style="border-bottom:1px solid #eef1f6${i%2===1?';background:#fafbfc':''}">
+          <td style="padding:10px 14px;font-size:13px;font-weight:600;color:#1f2a3d">${e.concurso?.escola||e.escola||e.token}</td>
+          <td style="padding:10px 14px;text-align:center">${badge}</td>
+          <td style="padding:10px 14px;text-align:center;font-size:13px;color:#41506b">${acessos}</td>
+          <td style="padding:10px 14px;text-align:center;font-size:12px;color:#8a9ab5">${ultimoAc}</td>
+          <td style="padding:10px 14px;text-align:right">
+            <div style="display:flex;gap:6px;justify-content:flex-end">
+              <button title="Copiar link" onclick="copiarLink('${link}')" style="background:#e9f1fb;border:none;border-radius:7px;padding:5px 10px;cursor:pointer;font-size:12px;color:#1f4e8c;font-weight:600">🔗 Link</button>
+              ${enviado ? `<button title="Ver resposta" onclick="verResposta('${e.token}')" style="background:#e4f3ea;border:none;border-radius:7px;padding:5px 10px;cursor:pointer;font-size:12px;color:#2e7d52;font-weight:600">📋 Ver</button>` : ''}
+            </div>
+          </td>
+        </tr>`;
+      }).join('') : '<tr><td colspan="5" style="padding:32px;text-align:center;color:#8a9ab5">Nenhuma escola cadastrada.</td></tr>'}
+    </tbody>
+  </table>
+</div>`;
+
+  // Guardar links para copiar todos
+  window._alocLinks = escolas.map(e=>({
+    escola: e.concurs
