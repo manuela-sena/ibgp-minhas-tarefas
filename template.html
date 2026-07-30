@@ -6278,13 +6278,30 @@ async function processarAlocacao(){
         await gerarPlanilhaAlocacao(resultado);
 
         const avisoCondEspecial = fileCond
-          ? ` · 🧩 ${Object.keys(deferidos).length} de ${totalSolicitantes} condições especiais deferidas aplicadas`
-          : ' · ⚠️ nenhuma planilha de Condição Especial enviada — ninguém foi marcado com atendimento especial';
+          ? ` 🧩 ${Object.keys(deferidos).length} de ${totalSolicitantes} condições especiais deferidas aplicadas`
+          : ' ⚠️ nenhuma planilha de Condição Especial enviada — ninguém foi marcado com atendimento especial';
 
-        statusEl.innerHTML = `<div style="background:#e4f3ea;border:1px solid #a8dbb8;border-radius:9px;padding:12px 16px;font-size:13px;color:#2e7d52;font-weight:600">
-          ✅ Alocação gerada! ${resultado.alocados.length} candidatos alocados
-          ${resultado.naoAlocados.length ? ` · ⚠️ ${resultado.naoAlocados.length} não alocados (capacidade insuficiente)` : ''}
-          ${avisoCondEspecial}
+        // ── Checagem de capacidade: escolas selecionadas suportam a quantidade de candidatos? ──
+        const capacidadeTotal = enviadas.reduce((acc,e)=> acc + (e.salas||[]).reduce((a,s)=>a+(parseInt(s.capacidade)||0),0), 0);
+        const faltam = candidatos.length - capacidadeTotal;
+        const temInsuficiencia = resultado.naoAlocados.length > 0 || faltam > 0;
+
+        const corBox    = temInsuficiencia ? '#fdeceb' : '#e4f3ea';
+        const corBorda  = temInsuficiencia ? '#f3cfcd' : '#a8dbb8';
+        const corTexto  = temInsuficiencia ? '#c0322f' : '#2e7d52';
+        const icone     = temInsuficiencia ? '⚠️' : '✅';
+
+        const avisoCapacidade = temInsuficiencia
+          ? `<div style="margin-top:8px;padding-top:8px;border-top:1px solid ${corBorda};font-weight:700">
+              ⚠️ Capacidade insuficiente: ${enviadas.length} escola(s) selecionada(s) somam ${capacidadeTotal} vaga(s) para ${candidatos.length} candidato(s)${faltam>0?` (faltam ${faltam} vaga${faltam===1?'':'s'})`:''}.
+              ${resultado.naoAlocados.length} candidato(s) ficaram sem sala — veja a aba "NÃO ALOCADOS" na planilha gerada e considere selecionar mais escolas.
+            </div>`
+          : '';
+
+        statusEl.innerHTML = `<div style="background:${corBox};border:1px solid ${corBorda};border-radius:9px;padding:12px 16px;font-size:13px;color:${corTexto};font-weight:600">
+          ${icone} Alocação gerada! ${resultado.alocados.length} de ${candidatos.length} candidatos alocados · capacidade total selecionada: ${capacidadeTotal} vaga(s)
+          ${avisoCapacidade}
+          <div style="margin-top:4px;font-weight:500">${avisoCondEspecial}</div>
         </div>`;
       }catch(err){
         statusEl.innerHTML = `<div style="color:#c0322f;padding:10px">Erro: ${err.message}</div>`;
