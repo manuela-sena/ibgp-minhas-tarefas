@@ -5022,15 +5022,20 @@ function processarInscricoes(){
           if(cods.length>=2) conjuntos.push(cods);
         });
 
-        const cancelar=new Set();    // duplicatas no mesmo cargo → muda status para Cancelada
+        const cancelar=new Set();    // duplicatas no mesmo turno (mesma data/horário prova) → muda status para Cancelada, mantém a mais recente
         const retirar=new Set();     // mesma prova → só sai da alocação, status original mantido
         const groupBy=(arr,fn)=>arr.reduce((g,x)=>{const k=fn(x);(g[k]=g[k]||[]).push(x);return g;},{});
         todos.forEach(r=>{ r._dt=new Date(r['DATA INSCRICAO']||r['DATA INSCRIÇÃO']||0).getTime()||0; });
 
-        // Regra 1: duplicata no mesmo cargo → cancela
-        const byCargoCpf=groupBy(todos,r=>`${(r['CPF']||'').replace(/\D/g,'')}__${(r['CÓDIGO']||r['CODIGO']||'').toString().trim()}`);
-        Object.values(byCargoCpf).forEach(grp=>{
+        // Regra 1: duplicata no mesmo turno (mesma data/horário de prova) → cancela, mantém a mais recente
+        const byTurnoCpf=groupBy(todos,r=>{
+          const cpf = (r['CPF']||'').replace(/\D/g,'');
+          const turno = (r['DATA REALIZAÇÃO PROVA']||r['DATA PROVA']||'').toString().trim();
+          return `${cpf}__${turno}`;
+        });
+        Object.values(byTurnoCpf).forEach(grp=>{
           const ativos=grp.filter(r=>STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase())).sort((a,b)=>a._dt-b._dt);
+          // Mantém a MAIS RECENTE (última do array ordenado ascendente), cancela as demais
           ativos.slice(0,-1).forEach(r=>cancelar.add(r['INSCRIÇÃO']?.toString()));
         });
 
