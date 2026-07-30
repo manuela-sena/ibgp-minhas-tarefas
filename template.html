@@ -6444,6 +6444,13 @@ async function gerarPlanilhaAlocacao(resultado){
   }
 
   // ── DADOS ALOCAÇÃO ──
+  resultado.alocados.sort((a,b)=>
+    (a['DATA PROVA']||'').localeCompare(b['DATA PROVA']||'') ||
+    (a.TURNO||'').localeCompare(b.TURNO||'') ||
+    (a.ESCOLA||'').localeCompare(b.ESCOLA||'') ||
+    (a.SALA||'').localeCompare(b.SALA||'', undefined, {numeric:true}) ||
+    (a.CANDIDATO||'').localeCompare(b.CANDIDATO||'', 'pt-BR', {sensitivity:'base'})
+  );
   const dadosAlocacao = resultado.alocados.map((a,i)=>({
     'Índice': i+1, 'INSCRIÇÃO': a['INSCRIÇÃO'], 'CANDIDATO': a['CANDIDATO'], 'CPF': a['CPF'],
     'DATA NASCIMENTO': a['DATA NASCIMENTO'], 'CONCURSO': a['CONCURSO'], 'CÓDIGO': a['CÓDIGO'], 'CARGO': a['CARGO'],
