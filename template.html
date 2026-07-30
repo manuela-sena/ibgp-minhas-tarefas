@@ -6726,6 +6726,8 @@ if(typeof IS_CRONOGRAMA!=='undefined'&&IS_CRONOGRAMA){
     const btn=document.querySelector(`[data-page="${id}"]`);
     if(btn) btn.style.display='none';
   });
+  loadTarefas();
+  renderConcluidas();
   goPage('dashboard');
 } else {
   loadTarefas();
