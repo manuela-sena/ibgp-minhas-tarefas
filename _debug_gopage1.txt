@@ -1,0 +1,32 @@
+function goPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const pg = document.getElementById('page-'+id);
+  if(pg) pg.classList.add('active');
+  const nb = document.querySelector(`[data-page="${id}"]`);
+  if(nb) nb.classList.add('active');
+  _currentPage = id;
+  // Lazy loads
+  if(id==='reajustar' && !_bucketsLoaded) { loadReajusteConcursos(); _bucketsLoaded=true; }
+  if(id==='usuarios') renderUsuarios();
+  if(id==='ferias'){ initFerias(); }
+  if(id==='planejamentos') carregarPlanejamentos();
+  if(id==='indicadores') renderIndicadores();
+  if(id==='agenda') initAgenda();
+  if(id==='alocacao') initAlocacao();
+}
+function goPageTab(page, tab) { goPage(page); setTab(tab); }
+
+// ── TABS ────────────────────────────────────────────────────────────
+let _currentTab = 'vencidas';
+function setTab(tab) {
+  _currentTab = tab;
+  ['vencidas','hoje','7d','futuras'].forEach(t=>{
+    document.getElementById('tab-'+t)?.classList.toggle('active', t===tab);
+  });
+  renderVisibleGroup();
+}
+
+// ── API ─────────────────────────────────────────────────────────────
+async function api(url, opts={}) {
+  const r = await fetch(url, {
