@@ -829,7 +829,7 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
           </div>
         </div>
         <!-- Header da tabela -->
-        <div id="task-table-header" style="display:grid;grid-template-columns:180px 1fr 120px 140px 104px;gap:0;padding:8px 18px;background:#f7f9fc;border-bottom:1px solid #e2e7ef;border-radius:14px 14px 0 0">
+        <div id="task-table-header" style="display:grid;grid-template-columns:180px 1fr 120px 140px 68px;gap:0;padding:8px 18px;background:#f7f9fc;border-bottom:1px solid #e2e7ef;border-radius:14px 14px 0 0">
           <div style="font-size:10.5px;font-weight:700;color:#8a9ab5;letter-spacing:.07em;text-transform:uppercase">Concurso</div>
           <div style="font-size:10.5px;font-weight:700;color:#8a9ab5;letter-spacing:.07em;text-transform:uppercase">Tarefa</div>
           <div style="font-size:10.5px;font-weight:700;color:#8a9ab5;letter-spacing:.07em;text-transform:uppercase">Responsável</div>
@@ -1571,7 +1571,7 @@ function renderTaskRow(t, showP){
   const notaPreview = nota || (t.hasNota ? 'Carregando observação…' : '');
   return `
 <div>
-<div class="t-row" style="display:grid;grid-template-columns:180px 1fr 120px 140px 104px;gap:0;align-items:center">
+<div class="t-row" style="display:grid;grid-template-columns:180px 1fr 120px 140px 68px;gap:0;align-items:center">
   <div style="min-width:0;padding-right:8px">
     <div class="t-mun" style="font-size:11px;font-weight:700;color:#8a9ab5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${t.municipio}">${t.municipio}</div>
   </div>
