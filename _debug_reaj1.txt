@@ -1,0 +1,27 @@
+id="page-reajustar" class="page">
+      <div class="page-header">
+        <div class="page-title-h1"><svg width="21" height="21" fill="none" stroke="#1f4e8c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-reaj"/></svg>Reajustar Cronograma</div>
+        <div class="page-sub">Selecione um concurso e ajuste as datas das tarefas já cadastradas no Planner.</div>
+      </div>
+      <div class="card card-pad" style="overflow:visible">
+        <label class="form-label">Selecione o concurso</label>
+        <div style="position:relative;max-width:480px">
+          <input id="inp-reaj-concurso" class="filter-select" type="text" placeholder="Buscar concurso..." autocomplete="off"
+            oninput="filtrarReajDropdown()" onfocus="filtrarReajDropdown()" style="width:100%;padding-right:28px">
+          <svg style="position:absolute;right:8px;top:50%;transform:translateY(-50%);pointer-events:none" width="12" height="12" fill="none" stroke="#9aa6b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          <div id="drop-reaj-concurso" style="display:none;position:absolute;left:0;right:0;z-index:9999;background:#fff;border:1px solid #e2e7ef;border-radius:9px;box-shadow:0 8px 24px rgba(16,30,54,0.18);max-height:260px;overflow-y:auto;margin-top:2px"></div>
+          <input type="hidden" id="sel-reaj-concurso">
+        </div>
+      </div>
+      <div id="reajuste-tarefas"></div>
+    </div>
+
+    <!-- ══ PÁGINAS FUTURAS ══════════════════════ -->
+    <div id="page-indicadores" class="page">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:4px">
+        <div>
+          <div style="font-size:19px;font-weight:800;color:#1f2a3d;display:flex;align-items:center;gap:10px">
+            <svg width="21" height="21" fill="none" stroke="#1f4e8c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-relat"/></svg>
+            Painel de Indicadores
+          </div>
+          <div style="font-size:12.5px;color:#8a9
