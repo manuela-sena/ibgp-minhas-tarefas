@@ -1582,7 +1582,7 @@ function renderTaskRow(t, showP){
     ${temNota?`<div style="display:flex;align-items:center;gap:6px;margin-top:3px"><span class="chip-nota" id="nota-preview-${t.id}">📝 ${notaPreview.length>40?notaPreview.substring(0,40)+'…':notaPreview}</span></div>`:''}
   </div>
   <div>${t.responsavel?chipP(t.responsavel):''}</div>
-  <div>${chipD(t.dias,t.data)}</div>
+  <div style="display:flex;justify-content:flex-end">${chipD(t.dias,t.data)}</div>
   <div class="act-wrap">
     <button class="act-quick" onclick="concluir('${t.id}')" title="Concluir tarefa" style="width:30px;height:30px;border-radius:8px;border:1px solid #cfe8d9;background:#e4f3ea;color:#2e7d52;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;transition:background .14s">
       <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 8.5 7 11.5 12 4.5"/></svg>
