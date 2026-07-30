@@ -1,0 +1,26 @@
+async function carregarEscolas(){
+  const concursoId  = document.getElementById('sel-aloc-concurso')?.value;
+  const concursoNome= (document.getElementById('inp-aloc-concurso')?.value || '').trim();
+  const el = document.getElementById('aloc-content');
+  if(!concursoId){ el.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Selecione um concurso</div></div>'; return; }
+  
+  el.innerHTML='<div class="loading"><div class="spinner"></div>Carregando escolas...</div>';
+  
+  try{
+    // Buscar arquivos na pasta respostas_escolas do GitHub
+    const r = await fetch(
+      `https://api.github.com/repos/${GH_REPO_ALOC}/contents/respostas_escolas`,
+      {headers:{'Authorization':'Bearer '+GH_TOKEN_ALOC}}
+    );
+    const arquivos = await r.json();
+    
+    // Filtrar tokens deste concurso
+    const tokensArq = arquivos.filter(a=>a.name.startsWith('token_')&&a.name.endsWith('.json'));
+    const statusArq = arquivos.filter(a=>a.name.startsWith('status_')&&a.name.endsWith('.json'));
+    
+    // Carregar dados de cada escola
+    const escolas = [];
+    for(const arq of tokensArq){
+      const rd = await fetch(arq.download_url);
+      const dados = await rd.json();
+      // Filtrar pelo concurso selecionado
