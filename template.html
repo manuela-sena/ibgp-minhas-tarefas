@@ -1480,11 +1480,12 @@ function loadTarefas(){
     const due=parseISO(t.due);
     let dias = diffDays(due);
     let pendenteForcado = false;
-    if(EXCECOES_PENDENTE.has(t.tarefa) && dias!==null && dias<0){
+    const isAnaliseInscricao = EXCECOES_PENDENTE.has(t.tarefa);
+    if(isAnaliseInscricao && dias!==null && dias<0){
       dias = null;
       pendenteForcado = true;
     }
-    return {...t, due, data:fmtDate(due), dias, _pendenteForcado: pendenteForcado};
+    return {...t, due, data:fmtDate(due), dias, _pendenteForcado: pendenteForcado, _isAnaliseInscricao: isAnaliseInscricao};
   }).sort((a,b)=>{
     if(a.dias===null&&b.dias===null) return 0;
     if(a.dias===null) return 1; if(b.dias===null) return -1;
@@ -1545,11 +1546,11 @@ function applyFilters(){
 }
 
 function updateKPIs(tasks){
-  const venc=tasks.filter(t=>t.dias!==null&&t.dias<0);
-  const hoje=tasks.filter(t=>t.dias===0);
-  const sem=tasks.filter(t=>t.dias!==null&&t.dias>=1&&t.dias<=7);
-  const analise=tasks.filter(t=>t._pendenteForcado);
-  const fut=tasks.filter(t=>!t._pendenteForcado&&(t.dias===null||t.dias>7));
+  const venc=tasks.filter(t=>!t._isAnaliseInscricao&&t.dias!==null&&t.dias<0);
+  const hoje=tasks.filter(t=>!t._isAnaliseInscricao&&t.dias===0);
+  const sem=tasks.filter(t=>!t._isAnaliseInscricao&&t.dias!==null&&t.dias>=1&&t.dias<=7);
+  const analise=tasks.filter(t=>t._isAnaliseInscricao);
+  const fut=tasks.filter(t=>!t._isAnaliseInscricao&&(t.dias===null||t.dias>7));
   ['total','venc','hoje','7d'].forEach(k=>{
     const v=k==='total'?tasks.length:k==='venc'?venc.length:k==='hoje'?hoje.length:sem.length;
     const el=document.getElementById('kpi-'+k);
@@ -1571,11 +1572,11 @@ function renderVisibleGroup(){
   const tasks=_filtered;
   const isG=typeof IS_GESTORA!=='undefined'&&IS_GESTORA;
   const showP=isG&&!(document.getElementById('sel-pessoa')?.value);
-  const venc=tasks.filter(t=>t.dias!==null&&t.dias<0);
-  const hoje=tasks.filter(t=>t.dias===0);
-  const sem=tasks.filter(t=>t.dias!==null&&t.dias>=1&&t.dias<=7);
-  const analise=tasks.filter(t=>t._pendenteForcado);
-  const fut=tasks.filter(t=>!t._pendenteForcado&&(t.dias===null||t.dias>7));
+  const venc=tasks.filter(t=>!t._isAnaliseInscricao&&t.dias!==null&&t.dias<0);
+  const hoje=tasks.filter(t=>!t._isAnaliseInscricao&&t.dias===0);
+  const sem=tasks.filter(t=>!t._isAnaliseInscricao&&t.dias!==null&&t.dias>=1&&t.dias<=7);
+  const analise=tasks.filter(t=>t._isAnaliseInscricao);
+  const fut=tasks.filter(t=>!t._isAnaliseInscricao&&(t.dias===null||t.dias>7));
   const groups={vencidas:venc,hoje,['7d']:sem,futuras:fut,analise};
   const cur=groups[_currentTab]||[];
   const el=document.getElementById('task-list');
