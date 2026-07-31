@@ -1,0 +1,34 @@
+=====S1(99500)=====
+lTasks.find(x=>x.id===id);
+  if(!t) return;
+  const nota=_notas[id]||'(sem nota)';
+  alert(`📋 DETALHES DA TAREFA\n\nConcurso: ${t.municipio}\nTarefa: ${t.tarefa}\nResponsável: ${t.responsavel}\nVencimento: ${t.data||'Sem data'}\nDias: ${t.dias===null?'—':t.dias<0?`Venceu há ${Math.abs(t.dias)} dia(s)`:t.dias===0?'Hoje':`${t.dias} dia(s)`}\n\nObservação:\n${nota}`);
+}
+
+// ── MOVIMENTAÇÕES ───────────────────────────────────────────────────
+function addMov(desc, color){
+  _movimentos.unshift({des
+=====S2(103300)=====
+'open'); });
+
+// ── DASHBOARD ────────────────────────────────────────────────────────
+function renderDashboard(){
+  const all=_allTasks;
+  const venc=all.filter(t=>t.dias!==null&&t.dias<0);
+  const hoje=all.filter(t=>t.dias===0);
+  const sem=all.filter(t=>t.dias!==null&&t.dias>=1&&t.dias<=7);
+  const fut=all.filter(t=>t.dias===null||t.dias>7);
+  // KPIs dash
+  ['d-total','d-venc','d-hoje','d-7d'].forEach((k,i)=>{
+    const v=[all.length,venc.length,hoje.length,sem.length][i];
+    const el=docum
+=====S3(106500)=====
+erflow:ellipsis;white-space:nowrap;max-width:140px" title="${t.municipio}">${t.municipio}</span>
+      ${chipP(t.responsavel)}
+    </div>
+  </div>
+  <div style="flex:none;margin-left:6px">${chipD(t.dias,t.data,t._pendenteForcado)}</div>
+</div>`;
+  }).join(''):'<div class="empty-state" style="padding:12px 0"><div class="empty-desc">Nenhuma entrega próxima.</div></div>';
+  // Concursos ativos
+  cons
