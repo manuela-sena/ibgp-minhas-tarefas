@@ -1487,6 +1487,8 @@ function loadTarefas(){
     }
     return {...t, due, data:fmtDate(due), dias, _pendenteForcado: pendenteForcado, _isAnaliseInscricao: isAnaliseInscricao};
   }).sort((a,b)=>{
+    if(a._pendenteForcado&&!b._pendenteForcado) return -1;
+    if(!a._pendenteForcado&&b._pendenteForcado) return 1;
     if(a.dias===null&&b.dias===null) return 0;
     if(a.dias===null) return 1; if(b.dias===null) return -1;
     if(a.dias<0&&b.dias<0) return a.dias-b.dias;
