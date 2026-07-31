@@ -1,0 +1,22 @@
+    }));
+    }
+    // Carregar histórico completo de concluídas (usado na Agenda)
+    if(!_concluidasTodas.length){
+      _concluidasTodas = (DADOS_INICIAIS.concluidasTodas||[]).map(t=>({...t, concluida:true}));
+    }
+  }
+  _allTasks = raw.map(t=>{
+    const due=parseISO(t.due);
+    let dias = diffDays(due);
+    let pendenteForcado = false;
+    if(EXCECOES_PENDENTE.has(t.tarefa) && dias!==null && dias<0){
+      dias = null;
+      pendenteForcado = true;
+    }
+    return {...t, due, data:fmtDate(due), dias, _pendenteForcado: pendenteForcado};
+  }).sort((a,b)=>{
+    if(a.dias===null&&b.dias===null) return 0;
+    if(a.dias===null) return 1; if(b.dias===null) return -1;
+    if(a.dias<0&&b.dias<0) return a.dias-b.dias;
+    if(a.dias<0) return -1; if(b.dias<0) return 1;
+    return a.dias-b.dias;
