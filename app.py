@@ -406,6 +406,10 @@ if _nav == "homologacao":
     st.session_state["pagina"] = "homologacao"
     st.query_params.clear()
     st.rerun()
+if _nav == "classificacao":
+    st.session_state["pagina"] = "classificacao"
+    st.query_params.clear()
+    st.rerun()
 
 # ── PÁGINA DE RESULTADOS ──────────────────────────────────────────────
 if st.session_state.get("pagina") == "resultados":
@@ -567,6 +571,13 @@ header[data-testid="stHeader"]{display:none}
                     import traceback; st.code(traceback.format_exc())
     st.stop()
 
+
+# ── PÁGINA DE CLASSIFICAÇÃO FINAL ─────────────────────────────────────
+if st.session_state.get("pagina") == "classificacao":
+    import sys
+    sys.path.insert(0, "/mount/src/ibgp-minhas-tarefas")
+    from classificacao_page import render as render_classificacao
+    render_classificacao(st.secrets.get("GITHUB_TOKEN",""))
 
 # v2026.07.09-inscricoes
 # ── LER E INJETAR TEMPLATE ────────────────────────────────────────────
