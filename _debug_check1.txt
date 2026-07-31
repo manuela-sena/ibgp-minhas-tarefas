@@ -1,0 +1,12 @@
+LEN=358504 COUNT_isAnalise=11
+===AT89523===
+function updateKPIs(tasks){
+  const venc=tasks.filter(t=>!t._isAnaliseInscricao&&t.dias!==null&&t.dias<0);
+  const hoje=tasks.filter(t=>!t._isAnaliseInscricao&&t.dias===0);
+  const sem=tasks.filter(t=>!t._isAnaliseInscricao&&t.dias!==null&&t.dias>=1&&t.dias<=7);
+  const analise=tasks.filter(t=>t._is
+===AT99500===
+lTasks.find(x=>x.id===id);
+  if(!t) return;
+  const nota=_notas[id]||'(sem nota)';
+  alert(`📋 DETALHES DA TAREFA\n\nConcurso: ${t.municipio}\nTarefa: ${t.tarefa}\nResponsável: ${t.responsavel}\nVencimento: ${t.data||'Sem data'}\nDias: ${t.dias===null?'—':t.dias<0?`Venceu há ${Math.abs(t.dias)} dia(
