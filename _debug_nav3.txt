@@ -1,0 +1,87 @@
+@31097:
+ncluidas" onclick="goPage('concluidas')">
+        <svg width="16" height="16"><use href="#ico-concl"/></svg>Concluídas
+      </button>
+    </nav>
+
+    <div class="nav-section" style="margin-top:4px">Resultados</div>
+    <nav>
+      <button class="nav-btn" data-page="inscricoes" onclick="goPage('inscricoes')">
+        <svg width="16" height="16" fil
+----
+@71584:
+yle="margin-top:14px"></div>
+      </div>
+    </div>
+
+    <!-- PÁGINA INSCRIÇÕES -->
+    <div id="page-inscricoes" class="page">
+      <div class="page-header">
+        <div class="page-title-h1">📄 Resultados · Inscrições</div>
+        <div class="page-sub">Processe o relatório geral e gere as planilhas de resultado e alocação.</div>
+      </div>
+
+----
+@73120:
+xar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PÁGINA HOMOLOGAÇÃO -->
+    <div id="page-homologacao" class="page">
+      <div class="page-header">
+        <div class="page-title-h1">✅ Resultados · Homologação</div>
+        <div class="page-sub">Gere a planilha de homologação unindo classificação final com dados dos candidatos.</div>
+
+----
+@164909:
+de recurso, inscrições, envio) → dias úteis, qualquer
+  { match: ['PERÍODO','ABERTURA DE RECURSO','ENVIO','ANÁLISE','ANÁLISE BANCA',
+            'CORREÇÃO','MANIFESTAÇÃO'],
+    regra: 'util' },
+  // Resultados → dia útil
+  { match: ['RESULTADO','GABARITO PÓS-RECURSO','CLASSIFICAÇÃO','HOMOLOGAÇÃO','PUBLICAÇÃO'],
+    regra: 'util' },
+];
+
+function reg
+----
+@191433:
+fim.toDateString() ? DIAS[ini.getDay()] : '';
+    aoa.push([t.seq, t.atividade, dataTxt, diaTxt]);
+  }
+
+  // Rodapé
+  aoa.push(['', 'Datas passíveis de alteração, acompanhe com frequência.\nTodos os resultados serão publicados após as 20h.', '', '']);
+
+  // Cria workbook
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+----
+@194268:
+etDay()] : '';
+    ws[`D${row}`] = cell(diaTxt, {sz:11, h:'center', border:true});
+  }
+
+  // Rodapé
+  ws[`B${lastRow}`] = cell(
+    'Datas passíveis de alteração, acompanhe com frequência.\nTodos os resultados serão publicados após as 20h.',
+    {sz:11, italic:true, h:'center', wrap:true}
+  );
+
+  XLSX.utils.book_append_sheet(wb, ws, 'CRONOGRAMA IBG
+----
+@237219:
+cd;color:#c0322f'}`;
+    msg.textContent = msgPython;
+    setTimeout(()=>{ if(msg) msg.style.display='none'; }, 5000);
+  }
+  mostrarConviteGerado();
+}
+
+function renderCronResult(){ /* reservado para resultados vindos do Python */ }
+
+// ── AUTOCOMPLETE FILTROS (usa engine genérica) ───────────────────────
+function initDropdownsFiltros(){
+  dropdownI
