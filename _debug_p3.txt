@@ -1,0 +1,82 @@
+criarTarefasRetroativas()" disabled>
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      Criar tarefas no Planner
+    </button>
+  </div>
+</div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e=>{ if(e.target===modal) modal.remove(); });
+
+  // Carregar buckets
+  try {
+    await getBuckets();
+    const sorted = Object.entries(_buckets).sort((a,b)=>a[1].localeCompare(b[1]));
+    window._retroBuckets = sorted; // guardar para o autocomplete
+    const inp = document.getElementById('inp-retro-concurso');
+    if(inp) inp.placeholder = `Buscar entre ${sorted.length} concursos...`;
+
+    // Inicializar dropdown genérico
+    dropdownInit('retro-concurso',
+      ()=>sorted.map(([id,nome])=>({label:nome,value:id})),
+      (val)=>{
+        document.getElementById('retro-btn-criar').disabled = !val;
+        if(val) previewRetroativo(val);
+        else document.getElementById('retro-preview').innerHTML = '';
+      }
+    );
+  } catch(e){
+    document.getElementById('retro-preview').innerHTML = `<div style="color:#c0322f;font-size:12.5px">Erro ao carregar concursos: ${e.message}</div>`;
+  }
+}
+
+let _retroTarefas = [], _retroBucketId = '', _retroNome = '';
+
+function atualizarModoLabel(){
+  const padrao  = document.getElementById('retro-modo-padrao')?.checked;
+  const lPadrao = document.getElementById('modo-padrao-label');
+  const lUrg    = document.getElementById('modo-urgente-label');
+  if(lPadrao) lPadrao.style.borderColor = padrao ? '#1f4e8c' : '#e2e7ef';
+  if(lUrg)    lUrg.style.borderColor    = !padrao ? '#c0322f' : '#e2e7ef';
+  // Reatualizar preview com o novo modo
+  const bucketId = document.getElementById('sel-retro-concurso')?.value;
+  if(bucketId) previewRetroativo(bucketId);
+}
+
+async function previewRetroativo(bucketId){
+  const preview = document.getElementById('retro-preview');
+  const btn = document.getElementById('retro-btn-criar');
+  _retroTarefas = []; _retroBucketId = bucketId;
+  if(!bucketId){ preview.innerHTML=''; btn && (btn.disabled=true); return; }
+
+  _retroNome = _buckets[bucketId] || '';
+  preview.innerHTML = '<div class="loading" style="padding:12px 0"><div class="spinner"></div>Analisando tarefas...</div>';
+  btn && (btn.disabled=true);
+
+  try {
+    // Buscar TODAS as tarefas do bucket (abertas + concluídas)
+    const tasks = await apiAll(`https://graph.microsoft.com/v1.0/planner/buckets/${bucketId}/tasks`);
+
+    // Identificar datas-âncora — inclui tarefas concluídas
+    let fimInscricoes=null, dataProva=null, resultPrelObjetiva=null;
+    const jaExistem = new Set();
+
+    for(const t of tasks){
+      const titulo = (t.title||'').toUpperCase().trim();
+      // Usar dueDateTime independente de estar concluída
+      const due = t.dueDateTime ? new Date(t.dueDateTime) : null;
+
+      // Fim das inscrições
+      if(titulo.includes('PERÍODO DE INSCRIÇÕES') && due && !fimInscricoes)
+        fimInscricoes = due;
+
+      // Data da prova — aceita qualquer variação
+      if(!dataProva && due && (
+        titulo === 'PROVA OBJETIVA' ||
+        titulo.startsWith('PROVA OBJETIVA E') ||
+        titulo.startsWith('PROVA OBJETIVA -') ||
+        titulo === 'PROVA OBJETIVA E PROVA DISCURSIVA' ||
+        titulo.startsWith('REALIZAÇÃO DA PROVA OBJETIVA') ||
+        titulo.startsWith('APLICAÇÃO DA PROVA OBJETIVA')
+      )) dataProva = due;
+
+      // Resultado preliminar da totalizaç
