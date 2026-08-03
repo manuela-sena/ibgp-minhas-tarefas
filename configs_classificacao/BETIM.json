@@ -83,28 +83,28 @@
       "nome": "HETEROIDENTIFICAÇÃO",
       "tipo": "binaria",
       "valorAprovado": "DEFERIDA",
-      "eliminaDoConcurso": true,
+      "eliminaDoConcurso": false,
       "gatePool": "pnp"
     },
     {
       "nome": "INSCRIÇÕES PCD",
       "tipo": "binaria",
       "valorAprovado": "DEFERIDA",
-      "eliminaDoConcurso": true,
+      "eliminaDoConcurso": false,
       "gatePool": "pcd"
     },
     {
       "nome": "INSCRIÇÕES INDIGENA",
       "tipo": "binaria",
       "valorAprovado": "DEFERIDA",
-      "eliminaDoConcurso": true,
+      "eliminaDoConcurso": false,
       "gatePool": "indigena"
     },
     {
       "nome": "INSCRIÇÕES QUILOMBOLA",
       "tipo": "binaria",
       "valorAprovado": "DEFERIDA",
-      "eliminaDoConcurso": true,
+      "eliminaDoConcurso": false,
       "gatePool": "quilombola"
     },
     {
