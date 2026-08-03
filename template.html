@@ -6965,7 +6965,16 @@ function clfParseData(v){
   if(v instanceof Date) return v;
   const s=String(v).trim();
   const m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
-  if(m){ const d=new Date(+m[3]<100?2000+ +m[3]:+m[3], +m[2]-1, +m[1]); return isNaN(d.getTime())?null:d; }
+  if(m){
+    let ano = +m[3];
+    if(ano<100){
+      // Ano com 2 dígitos: assume século 19xx/20xx pelo mesmo critério do Excel
+      // (>= 30 vira 19xx, < 30 vira 20xx) — evita nascimentos no futuro.
+      ano = ano>=30 ? 1900+ano : 2000+ano;
+    }
+    const d=new Date(ano, +m[2]-1, +m[1]);
+    return isNaN(d.getTime())?null:d;
+  }
   const d2 = new Date(s);
   return isNaN(d2.getTime()) ? null : d2;
 }
@@ -7506,7 +7515,23 @@ async function gerarClassificacaoFinal(){
       const FONTE='Times New Roman';
       const BORDA={top:{style:'thin',color:{argb:'FF000000'}},bottom:{style:'thin',color:{argb:'FF000000'}},left:{style:'thin',color:{argb:'FF000000'}},right:{style:'thin',color:{argb:'FF000000'}}};
 
+      // Colunas de notas: uma coluna por campo de cada etapa de pontuação/classificatória,
+      // mais o total da etapa; e uma coluna de resultado para etapas binárias.
+      const etapaCols = [];
+      (config.etapas||[]).forEach(et=>{
+        const nomeEt = et.nome || 'Etapa';
+        if(et.tipo==='pontuacao' || et.tipo==='classificatoria'){
+          (et.campos||[]).forEach(campo=>{
+            etapaCols.push({header: campo, get: c => c.etapas?.[nomeEt]?.campos?.[campo] ?? ''});
+          });
+          etapaCols.push({header: `TOTAL ${nomeEt}`.toUpperCase(), get: c => c.etapas?.[nomeEt]?.total ?? ''});
+        } else if(et.tipo==='binaria'){
+          etapaCols.push({header: `RESULTADO ${nomeEt}`.toUpperCase(), get: c => c.etapas?.[nomeEt]?.resultado ?? ''});
+        }
+      });
+
       const cols = ['INSCRIÇÃO','CANDIDATO','DATA DE NASCIMENTO','CARGO',
+        ...etapaCols.map(ec=>ec.header),
         ...config.pools.map(p=>p.toUpperCase()), 'TOTAL GERAL',
         ...poolsAtivos.map(p=>`CLASS. ${p.toUpperCase()}`)];
 
@@ -7536,6 +7561,7 @@ async function gerarClassificacaoFinal(){
         if(c.cargo !== cargoAtual){ cargoAtual=c.cargo; corIdx=(corIdx+1)%2; }
         const cor = corIdx===0?'FFFFFFFF':'FFF0F4FF';
         const linha = [c.inscricao, c.nome, c.nascimento ? c.nascimento.toLocaleDateString('pt-BR') : '', c.cargo,
+          ...etapaCols.map(ec=>ec.get(c)),
           ...config.pools.map(p=>c.pools[p]?'SIM':'-'),
           c.totalGeral,
           ...poolsAtivos.map(p=>classes[`${c.cargo}|${p}|${c.inscricao}`]||'')];
