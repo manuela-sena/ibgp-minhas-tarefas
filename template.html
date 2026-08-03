@@ -5275,7 +5275,7 @@ function processarInscricoes(){
           // Linha 1: título — branca, letra preta, negrito, altura 80
           ws.mergeCells(1,1,1,cols.length);
           const tCell=ws.getCell(1,1);
-          tCell.value=`${nomeConcurso}\n\nRESULTADO PRELIMINAR DAS INSCRIÇÕES - ${titulo}`;
+          tCell.value=`${nomeConcurso}\n\nRESULTADO PRELIMINAR DAS INSCRIÇÕES - ${titulo.toUpperCase()}`;
           tCell.font={bold:true,color:{argb:'FF000000'},name:FONTE,size:10};
           tCell.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
           tCell.alignment={horizontal:'center',vertical:'middle',wrapText:true};
@@ -5301,10 +5301,14 @@ function processarInscricoes(){
               let val=row[col];
               if(val===undefined||val===null||String(val)==='nan') val='';
               if((col.includes('NASC'))&&val&&val!=='-') val=fmtData(val);
+              if(col==='STATUS DE PAGAMENTO'&&val!==''){
+                val=String(val).trim().toUpperCase();
+                if(val==='PENDENTE') val='PENDENTE DE PAGAMENTO';
+              }
               c.value=String(val);
               c.font={name:FONTE,size:9};
               c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
-              c.alignment={vertical:'middle'};
+              c.alignment={vertical:'middle',horizontal:(col==='STATUS DE PAGAMENTO'||col.includes('NASC'))?'center':undefined};
               c.border=bordaThin;
             });
             ws.getRow(ri+3).height=30;
