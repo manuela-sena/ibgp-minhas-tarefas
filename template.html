@@ -572,7 +572,7 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         Inscrições
       </button>
-      <button class="nav-btn" data-page="classificacao" onclick="document.getElementById('form-nav-classificacao').submit()">
+      <button class="nav-btn" data-page="classificacao" onclick="navegarTopoStreamlit('classificacao')">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10l-1.5 8a4 4 0 0 1-3.5 3.3V17a4 4 0 0 1-3.5-3.3z"/></svg>
         Classificação
       </button>
@@ -1353,6 +1353,15 @@ const MONTHS_SHORT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out
 
 // ── NAVEGAÇÃO ───────────────────────────────────────────────────────
 let _currentPage = 'dashboard';
+// Navega para uma página Python/Streamlit fora do iframe via postMessage.
+// Necessário porque o iframe do components.html tem sandbox sem
+// allow-top-navigation — target="_top" é silenciosamente bloqueado pelo browser.
+// Um listener no lado de fora (injetado via st.markdown no app.py) recebe
+// esta mensagem e faz window.location.href no contexto de topo.
+function navegarTopoStreamlit(pagina) {
+  window.parent.postMessage({streamlitNav: pagina}, '*');
+}
+
 function goPage(id) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
@@ -6833,14 +6842,6 @@ if(typeof IS_CRONOGRAMA!=='undefined'&&IS_CRONOGRAMA){
 }
 </script>
 <!-- Form oculto para navegação para Resultados -->
-<form id="form-nav-resultados" method="GET" action="" target="_top" style="display:none">
-  <input type="hidden" name="nav" value="resultados">
-</form>
-<form id="form-nav-homologacao" method="GET" action="" target="_top" style="display:none">
-  <input type="hidden" name="nav" value="homologacao">
-</form>
-<form id="form-nav-classificacao" method="GET" action="" target="_top" style="display:none">
-  <input type="hidden" name="nav" value="classificacao">
-</form>
+
 </body>
 </html>
