@@ -1,0 +1,77 @@
+function processarHomologacao(){
+  if(!_homolCF||!_homolDados){alert('Carregue os dois arquivos.');return;}
+  const res=document.getElementById('homol-resultado');
+  res.innerHTML='<div class="loading"><div class="spinner"></div>Processando...</div>';
+  try{
+    // ── Ler CF: todas as abas, header na linha 2 ──────────────────
+    let cfTodos=[];
+    for(const nome of _homolCF.SheetNames){
+      const rows=XLSX.utils.sheet_to_json(_homolCF.Sheets[nome],{range:1,defval:''});
+      rows.forEach(r=>{
+        // Limpar chaves com \n e __EMPTY
+        Object.keys(r).forEach(k=>{
+          if(k.includes('__EMPTY')){delete r[k];return;}
+          const kn=k.replace(/\n/g,' ').trim();
+          if(kn!==k){r[kn]=r[k];delete r[k];}
+        });
+      });
+      cfTodos=cfTodos.concat(rows);
+    }
+
+    // ── Ler Dados: header na linha 2 ─────────────────────────────
+    let dadosTodos=[];
+    let colunasDados=[];
+    for(const nome of _homolDados.SheetNames){
+      const ws=_homolDados.Sheets[nome];
+      const rows=XLSX.utils.sheet_to_json(ws,{range:1,defval:''});
+      if(rows.length && !colunasDados.length){
+        colunasDados=Object.keys(rows[0]).filter(k=>!k.includes('__EMPTY'));
+      }
+      dadosTodos=dadosTodos.concat(rows);
+    }
+
+    // Índice por inscrição
+    const dadosIdx={};
+    dadosTodos.forEach(r=>{
+      const insc=(r['INSCRIÇÃO']||'').toString().trim();
+      if(insc) dadosIdx[insc]=r;
+    });
+
+    // Detectar colunas de classificação na CF por padrão flexível
+    const primeiraLinha=cfTodos[0]||{};
+    // Varrer TODAS as linhas para detectar colunas — abas diferentes podem ter colunas diferentes
+    const todasColsSet=new Set();
+    cfTodos.forEach(r=>Object.keys(r).forEach(k=>todasColsSet.add(k)));
+    const todasCols=Array.from(todasColsSet);
+
+    // Função para detectar reserva pelo nome da coluna
+    function detectarReserva(col){
+      const u=col.toUpperCase().replace(/\s/g,'').replace(/\./g,'');
+      // Deve conter CLASS ou CASS (erro de digitação comum) + palavra de reserva
+      const isClass = u.includes('CLASS')||u.includes('CASS');
+      if(!isClass) return null;
+      if(u.includes('PCD')||u.includes('PcD'.toUpperCase())||u.includes('DEFIC')) return 'PCD';
+      if(u.includes('PNP')||u.includes('NEGRO')||u.includes('NEGR')) return 'PNP';
+      if(u.includes('INDIG')) return 'INDIGENA';
+      if(u.includes('QUILOM')) return 'QUILOMBOLA';
+      if(u.includes('TRANS')&&!u.includes('TOTAL')) return 'TRANS';
+      if(u.includes('AMPLA')||u.includes('CARGO')||u.includes('GERAL')) return 'AMPLA';
+      // Se só tem CLASS sem reserva específica, é AMPLA
+      return 'AMPLA';
+    }
+
+    const reservasDetectadas=[];
+    const abasJaAdicionadas=new Set();
+    // Prioridade: AMPLA primeiro, depois demais
+    const ordemPrioridade=['AMPLA','PCD','PNP','INDIGENA','QUILOMBOLA','TRANS'];
+    const colsPorReserva={};
+    todasCols.forEach(col=>{
+      const reserva=detectarReserva(col);
+      if(reserva && !colsPorReserva[reserva]){
+        colsPorReserva[reserva]=col;
+      }
+    });
+    ordemPrioridade.forEach(reserva=>{
+      if(colsPorReserva[reserva]){
+        reservasDetectadas.push({col:colsPorReserva[reserva],aba:reserva});
+  
