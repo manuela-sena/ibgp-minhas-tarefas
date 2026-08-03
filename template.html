@@ -1426,14 +1426,6 @@ const MONTHS_SHORT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out
 
 // ── NAVEGAÇÃO ───────────────────────────────────────────────────────
 let _currentPage = 'dashboard';
-// Navega para uma página Python/Streamlit fora do iframe via postMessage.
-// Necessário porque o iframe do components.html tem sandbox sem
-// allow-top-navigation — target="_top" é silenciosamente bloqueado pelo browser.
-// Um listener no lado de fora (injetado via st.markdown no app.py) recebe
-// esta mensagem e faz window.location.href no contexto de topo.
-function navegarTopoStreamlit(pagina) {
-  window.parent.postMessage({streamlitNav: pagina}, '*');
-}
 
 function goPage(id) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
