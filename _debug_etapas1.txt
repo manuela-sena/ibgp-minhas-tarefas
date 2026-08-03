@@ -1,0 +1,28 @@
+S1@371900
+────────────────────────────────────────────
+function addEtapaClassificacao(){
+  _clfConfig.etapas = _clfConfig.etapas || [];
+  _clfConfig.etapas.push({nome:'', tipo:'pontuacao', campos:[]});
+  renderEtapasList();
+}
+function removeEtapaClassificacao(idx){
+  _clfConfig.etapas.splice(idx,1);
+  delete _clfEtapaWb[idx];
+  renderEtapasList();
+}
+function renderEtapasList(){
+  const etapas = _clfConfig.etapas || [];
+  const el = document.getElementById('clf-etapas-list');
+  if(!etapas.length){
+    el.i
+====S2@372700====
+ subFields = '';
+    if(et.tipo==='pontuacao' || et.tipo==='classificatoria'){
+      subFields = `
+      <div style="margin-top:10px">
+        <label class="form-label">Campos de nota (separados por vírgula)</label>
+        <input type="text" id="clf-etapa-campos-${i}" class="form-input" style="height:34px" placeholder="Ex: PORTUGUÊS,MATEMÁTICA,CONHECIMENTOS ESPECÍFICOS" value="${(et.campos||[]).join(',')}">
+      </div>`;
+      if(et.tipo==='pontuacao'){
+        subFields += `
+      <div style="display:flex;gap:16px;align-items:center;margin-t
