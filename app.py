@@ -598,6 +598,21 @@ html = html.replace("// PLACEHOLDER_ATRIB",
 # ── BOTÕES DE NAVEGAÇÃO PARA RESULTADOS (fora do iframe) ─────────────
 st.markdown("<style>[data-testid='stChatInput'],[data-testid='stBottom']{display:none!important}</style>", unsafe_allow_html=True)
 
+# Listener de postMessage — recebe pedidos de navegação vindos de dentro do
+# iframe (components.html) e navega no contexto de topo, já que o iframe
+# tem sandbox sem allow-top-navigation e bloqueia qualquer target="_top".
+st.markdown("""
+<script>
+window.addEventListener('message', function(event){
+  if(event.data && event.data.streamlitNav){
+    const url = new URL(window.location.href);
+    url.searchParams.set('nav', event.data.streamlitNav);
+    window.location.href = url.toString();
+  }
+});
+</script>
+""", unsafe_allow_html=True)
+
 if logado_microsoft and is_gestora:
     with st.expander("🔑 Token de serviço para contas locais (avançado)"):
         rt_atual = st.session_state.get("refresh_token")
