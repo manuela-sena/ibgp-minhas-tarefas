@@ -3285,15 +3285,32 @@ function calcularTarefasOperacionais(cronograma, temDiscursiva, modo='padrao'){
   const alertas = [];
 
   // Extrair datas-âncora do cronograma
+  // Obs: o texto da atividade de "fim das inscrições" varia bastante entre editais
+  // (ex: "PERÍODO DE INSCRIÇÕES...", "INSCRIÇÕES/ENVIO DE LAUDOS MÉDICOS PARA VAGAS PCD..."),
+  // por isso aceitamos qualquer linha com "INSCRIÇÕES" que não seja resultado/recurso/
+  // publicação/convocação/isenção (essas são etapas relacionadas, não o período em si).
   let fimInscricoes=null, dataProva=null, resultPrelObjetiva=null;
   for(const t of cronograma){
     const a=t.atividade.toUpperCase();
-    if(a.includes('PERÍODO DE INSCRIÇÕES')&&!fimInscricoes) fimInscricoes=t.data_fim;
+    if(!fimInscricoes && a.includes('INSCRIÇÕES') &&
+       !a.includes('RESULTADO') && !a.includes('RECURSO') &&
+       !a.includes('PUBLICAÇÃO') && !a.includes('ABERTURA') &&
+       !a.includes('CONVOCAÇÃO') && !a.includes('ISENÇÃO'))
+      fimInscricoes=t.data_fim;
     if((a==='PROVA OBJETIVA'||a.startsWith('PROVA OBJETIVA E')||a.startsWith('REALIZAÇÃO DA PROVA OBJETIVA')||a.startsWith('APLICAÇÃO DA PROVA OBJETIVA'))&&!dataProva) dataProva=t.data_fim;
     if(a.includes('RESULTADO PRELIMINAR DA TOTALIZAÇÃO')&&!resultPrelObjetiva) resultPrelObjetiva=t.data_fim;
   }
 
-  if(!dataProva) return {tarefas, alertas};
+  if(!fimInscricoes){
+    alertas.push({tipo:'aviso', msg:'⚠️ Não encontrei no cronograma a data de fim das inscrições (procurei uma linha com "INSCRIÇÕES" que não fosse resultado/recurso/publicação/convocação/isenção). As tarefas que dependem desse prazo (ofícios às escolas, arquivos de impressão, alocação, impressão, escaneamento, leitura das folhas) não foram geradas.'});
+  }
+  if(!resultPrelObjetiva){
+    alertas.push({tipo:'aviso', msg:'⚠️ Não encontrei no cronograma a data de "resultado preliminar da totalização" da prova objetiva. O despacho do material e o fluxo da prova discursiva não foram gerados.'});
+  }
+  if(!dataProva){
+    alertas.push({tipo:'aviso', msg:'⚠️ Não encontrei no cronograma a data da prova objetiva. Nenhuma tarefa operacional foi gerada.'});
+    return {tarefas, alertas};
+  }
 
   // ── Calcular dias úteis disponíveis entre fim inscrições e prova ──
   let duDisponiveis = 0;
