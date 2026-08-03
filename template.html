@@ -7169,11 +7169,10 @@ function renderEtapasList(){
     if(wbState?.sheetNames?.length){
       uploadArea += `
       <div style="margin-top:10px">
-        <label class="form-label">Aba</label>
-        <select id="clf-etapa-sheet-${i}" class="filter-select" style="height:34px" onchange="onEtapaSheetChange(${i})">
-          <option value="">Selecione...</option>
-          ${wbState.sheetNames.map(s=>`<option value="${s}" ${wbState.sheet===s?'selected':''}>${s}</option>`).join('')}
-        </select>
+        <label class="form-label">Abas utilizadas (todas as marcadas serão combinadas nesta etapa)</label>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px">
+          ${wbState.sheetNames.map(s=>`<label style="display:flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;color:#3a4a66"><input type="checkbox" onchange="onEtapaSheetToggle(${i},'${s.replace(/'/g,"\\'")}',this.checked)" ${(wbState.sheets||[]).includes(s)?'checked':''}>${s}</label>`).join('')}
+        </div>
       </div>`;
     }
     if(wbState?.colunas?.length){
@@ -7227,19 +7226,22 @@ async function onEtapaArquivo(idx, input){
     const reader = new FileReader();
     reader.onload = (e)=>{
       const wb = XLSX.read(e.target.result, {type:'binary', cellDates:true});
-      _clfEtapaWb[idx] = {wb, sheetNames: wb.SheetNames, sheet:null, colunas:[], map:{}};
+      const sheetNames = wb.SheetNames;
+      _clfEtapaWb[idx] = {wb, sheetNames, sheets: [...sheetNames], colunas: clfLerColunas(wb, sheetNames[0]), map:{}};
       renderEtapasList();
     };
     reader.readAsBinaryString(file);
   });
 }
 
-function onEtapaSheetChange(idx){
-  const sheet = document.getElementById('clf-etapa-sheet-'+idx)?.value;
-  if(!sheet) return;
+function onEtapaSheetToggle(idx, sheet, checked){
   const state = _clfEtapaWb[idx];
-  state.sheet = sheet;
-  state.colunas = clfLerColunas(state.wb, sheet);
+  if(!state) return;
+  state.sheets = state.sheets || [];
+  if(checked){ if(!state.sheets.includes(sheet)) state.sheets.push(sheet); }
+  else { state.sheets = state.sheets.filter(s=>s!==sheet); }
+  state.sheets = state.sheetNames.filter(s=>state.sheets.includes(s));
+  state.colunas = state.sheets.length ? clfLerColunas(state.wb, state.sheets[0]) : [];
   renderEtapasList();
 }
 
@@ -7298,9 +7300,9 @@ async function gerarClassificacaoFinal(){
     for(let i=0;i<config.etapas.length;i++){
       const et = config.etapas[i];
       const wbState = _clfEtapaWb[i];
-      if(!wbState?.sheet){ continue; }
+      if(!wbState?.sheets?.length){ continue; }
       const map = coletarMapaEtapa(i, et.tipo, et.campos||[], poolsAtivos);
-      const linhasRaw = clfLerLinhas(wbState.wb, wbState.sheet);
+      const linhasRaw = wbState.sheets.flatMap(sh=>clfLerLinhas(wbState.wb, sh));
 
       const linhas = linhasRaw.map(r=>{
         const insc = map.inscricao ? r[map.inscricao] : null;
