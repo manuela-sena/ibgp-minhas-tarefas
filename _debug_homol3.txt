@@ -1,0 +1,14 @@
+function detectarReserva(col){
+      const u=col.toUpperCase().replace(/\s/g,'').replace(/\./g,'');
+      // Deve conter CLASS ou CASS (erro de digitação comum) + palavra de reserva
+      const isClass = u.includes('CLASS')||u.includes('CASS');
+      if(!isClass) return null;
+      if(u.includes('PCD')||u.includes('PcD'.toUpperCase())||u.includes('DEFIC')) return 'PCD';
+      if(u.includes('PNP')||u.includes('NEGRO')||u.includes('NEGR')) return 'PNP';
+      if(u.includes('INDIG')) return 'INDIGENA';
+      if(u.includes('QUILOM')) return 'QUILOMBOLA';
+      if(u.includes('TRANS')&&!u.includes('TOTAL')) return 'TRANS';
+      if(u.includes('AMPLA')||u.includes('CARGO')||u.includes('GERAL')) return 'AMPLA';
+      // Se só tem CLASS sem reserva específica, é AMPLA
+      return 'AMPLA';
+    }
