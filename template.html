@@ -7068,6 +7068,15 @@ function getClfCamposDisponiveis(){
   (_clfConfig.etapas||[]).forEach(et=>{ (et.campos||[]).forEach(c=>{ if(c) set.add(c); }); });
   return [...set];
 }
+function syncDesempateFromDom(idx){
+  const crit = _clfConfig.desempate[idx];
+  if(!crit) return;
+  const tipoEl = document.getElementById('clf-desemp-tipo-'+idx);
+  if(tipoEl) crit.tipo = tipoEl.value;
+  const campoEl = document.getElementById('clf-desemp-campo-'+idx);
+  if(campoEl) crit.campo = campoEl.value;
+}
+
 function renderDesempateList(){
   const desempate = _clfConfig.desempate || [];
   const el = document.getElementById('clf-desempate-list');
@@ -7078,7 +7087,7 @@ function renderDesempateList(){
   el.innerHTML = desempate.map((crit,i)=>`
 <div class="clf-desemp-row" data-idx="${i}" style="display:flex;gap:10px;align-items:center;margin-bottom:8px;padding:8px;background:#f7f9fc;border-radius:8px">
   <div style="font-size:12px;font-weight:700;color:#8a9ab5;width:20px">${i+1}º</div>
-  <select id="clf-desemp-tipo-${i}" class="filter-select" style="height:34px;flex:1" onchange="renderDesempateList()">
+  <select id="clf-desemp-tipo-${i}" class="filter-select" style="height:34px;flex:1" onchange="syncDesempateFromDom(${i});renderDesempateList()">
     <option value="idoso_60" ${crit.tipo==='idoso_60'?'selected':''}>Idoso (≥60 anos)</option>
     <option value="maior_nota" ${crit.tipo==='maior_nota'?'selected':''}>Maior nota em critério</option>
     <option value="jurado" ${crit.tipo==='jurado'?'selected':''}>Jurado</option>
