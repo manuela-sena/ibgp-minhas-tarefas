@@ -1,0 +1,19 @@
+ll('#clf-etapas-list .clf-etapa-card').forEach(card=>{
+    const idx = card.dataset.idx;
+    const nome = document.getElementById('clf-etapa-nome-'+idx)?.value || '';
+    const tipo = document.getElementById('clf-etapa-tipo-'+idx)?.value;
+    const et = {nome, tipo};
+    if(tipo==='pontuacao'||tipo==='classificatoria'){
+      et.campos = (document.getElementById('clf-etapa-campos-'+idx)?.value||'').split(',').map(s=>s.trim()).filter(Boolean);
+      if(tipo==='pontuacao'){
+        const temCorte = document.getElementById('clf-etapa-temcorte-'+idx)?.checked;
+        if(temCorte){
+          et.corte = {
+            notaMinimaTotal: parseFloat(document.getElementById('clf-etapa-notamin-'+idx)?.value) || null,
+            naoZerar: document.getElementById('clf-etapa-naozerar-'+idx)?.checked || false
+          };
+        }
+      }
+    } else if(tipo==='binaria'){
+      et.valorAprovado = document.getElementById('clf-etapa-valoraprovado-'+idx)?.value || 'DEFERIDA';
+      et.eliminaDoConcurso 
