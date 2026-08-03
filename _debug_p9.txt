@@ -1,0 +1,14 @@
+function calcularTarefasOperacionais(cronograma, temDiscursiva, modo='padrao'){
+  const tarefas = [];
+  const alertas = [];
+
+  // Extrair datas-âncora do cronograma
+  let fimInscricoes=null, dataProva=null, resultPrelObjetiva=null;
+  for(const t of cronograma){
+    const a=t.atividade.toUpperCase();
+    if(a.includes('PERÍODO DE INSCRIÇÕES')&&!fimInscricoes) fimInscricoes=t.data_fim;
+    if((a==='PROVA OBJETIVA'||a.startsWith('PROVA OBJETIVA E')||a.startsWith('REALIZAÇÃO DA PROVA OBJETIVA')||a.startsWith('APLICAÇÃO DA PROVA OBJETIVA'))&&!dataProva) dataProva=t.data_fim;
+    if(a.includes('RESULTADO PRELIMINAR DA TOTALIZAÇÃO')&&!resultPrelObjetiva) resultPrelObjetiva=t.data_fim;
+  }
+
+  if(!da
