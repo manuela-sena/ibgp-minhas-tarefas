@@ -5015,6 +5015,10 @@ const RESERVAS_INSC_DISPONIVEIS=[
     cols:['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO','CONCORRE VAGA QUILOMBOLA','DATA REALIZAÇÃO PROVA']},
   {key:'TRANS', label:'Trans', col:'CONCORRE VAGA TRANS',
     cols:['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO','CONCORRE VAGA TRANS','DATA REALIZAÇÃO PROVA']},
+  // Reserva para mulheres: em alguns editais não existe uma coluna "CONCORRE VAGA ..." própria,
+  // o critério é simplesmente ser do sexo feminino (coluna SEXO = 'F').
+  {key:'MULHER', label:'Mulher (vaga reservada por sexo)', col:'SEXO', val:'F',
+    cols:['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO','SEXO','DATA REALIZAÇÃO PROVA']},
 ];
 function atualizarReservasInscSelecionadas(){
   window._inscReservasSelecionadas = RESERVAS_INSC_DISPONIVEIS
@@ -5373,7 +5377,8 @@ function processarInscricoes(){
         const reservasSelecionadas = window._inscReservasSelecionadas || [];
         for(const rInfo of RESERVAS_INSC_DISPONIVEIS){
           if(!reservasSelecionadas.includes(rInfo.key)) continue;
-          const lista=todos.filter(r=>(r[rInfo.col]||'').toUpperCase()==='SIM'&&STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase()));
+          const valorEsperado=(rInfo.val||'SIM').toString().trim().toUpperCase();
+          const lista=todos.filter(r=>(r[rInfo.col]||'').toString().trim().toUpperCase()===valorEsperado&&STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase()));
           if(lista.length){
             await criarAbaExcel(wbRes,rInfo.key,rInfo.label,rInfo.cols,lista.map(r=>mapRow(r,rInfo.cols)));
           }
