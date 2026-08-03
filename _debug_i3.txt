@@ -1,0 +1,7 @@
+= candidatos.concat(rows);
+        }
+        candidatos = candidatos.map(r=>{
+          const n={};
+          Object.keys(r).forEach(k=>{ n[k.trim()]=typeof r[k]==='string'?r[k].trim():r[k]; });
+          return n;
+        }).filter(c=>c['INSCRIÇÃO']
