@@ -7112,6 +7112,40 @@ function syncClfEtapaCampos(idx, valor){
   _clfConfig.etapas[idx].campos = valor.split(',').map(c=>c.trim()).filter(c=>c);
   if(document.getElementById('clf-desempate-list')) renderDesempateList();
 }
+function syncEtapaFromDom(idx){
+  const et = _clfConfig.etapas[idx];
+  if(!et) return;
+  const nomeEl = document.getElementById('clf-etapa-nome-'+idx);
+  if(nomeEl) et.nome = nomeEl.value;
+  const tipoEl = document.getElementById('clf-etapa-tipo-'+idx);
+  if(tipoEl) et.tipo = tipoEl.value;
+  if(et.tipo==='pontuacao' || et.tipo==='classificatoria'){
+    const camposEl = document.getElementById('clf-etapa-campos-'+idx);
+    if(camposEl) et.campos = camposEl.value.split(',').map(s=>s.trim()).filter(Boolean);
+    if(et.tipo==='pontuacao'){
+      const temCorteEl = document.getElementById('clf-etapa-temcorte-'+idx);
+      if(temCorteEl){
+        if(temCorteEl.checked){
+          const notaMinEl = document.getElementById('clf-etapa-notamin-'+idx);
+          const naoZerarEl = document.getElementById('clf-etapa-naozerar-'+idx);
+          et.corte = {
+            notaMinimaTotal: notaMinEl ? (notaMinEl.value===''? null : (parseFloat(notaMinEl.value) || null)) : (et.corte?.notaMinimaTotal ?? null),
+            naoZerar: naoZerarEl ? naoZerarEl.checked : (et.corte?.naoZerar ?? false)
+          };
+        } else {
+          et.corte = null;
+        }
+      }
+    } else {
+      et.corte = null;
+    }
+  } else if(et.tipo==='binaria'){
+    et.valorAprovado = document.getElementById('clf-etapa-valoraprovado-'+idx)?.value || 'DEFERIDA';
+    et.eliminaDoConcurso = document.getElementById('clf-etapa-elimina-'+idx)?.checked || false;
+    et.gatePool = document.getElementById('clf-etapa-gatepool-'+idx)?.value || '';
+  }
+}
+
 function renderEtapasList(){
   const etapas = _clfConfig.etapas || [];
   const el = document.getElementById('clf-etapas-list');
@@ -7133,7 +7167,7 @@ function renderEtapasList(){
         subFields += `
       <div style="display:flex;gap:16px;align-items:center;margin-top:10px;flex-wrap:wrap">
         <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
-          <input type="checkbox" id="clf-etapa-temcorte-${i}" ${et.corte?'checked':''} onchange="renderEtapasList()"> Tem nota mínima?
+          <input type="checkbox" id="clf-etapa-temcorte-${i}" ${et.corte?'checked':''} onchange="syncEtapaFromDom(${i});renderEtapasList()"> Tem nota mínima?
         </label>
         ${et.corte ? `
         <div><label class="form-label">Nota mínima total</label><input type="number" id="clf-etapa-notamin-${i}" class="form-input" style="height:32px;width:110px" value="${et.corte.notaMinimaTotal??''}"></div>
@@ -7206,7 +7240,7 @@ function renderEtapasList(){
   <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end">
     <div><label class="form-label">Nome da etapa</label><input type="text" id="clf-etapa-nome-${i}" class="form-input" style="height:34px" value="${et.nome||''}" placeholder="Ex: Prova Objetiva"></div>
     <div><label class="form-label">Tipo</label>
-      <select id="clf-etapa-tipo-${i}" class="filter-select" style="height:34px" onchange="renderEtapasList()">
+      <select id="clf-etapa-tipo-${i}" class="filter-select" style="height:34px" onchange="syncEtapaFromDom(${i});renderEtapasList()">
         <option value="pontuacao" ${et.tipo==='pontuacao'?'selected':''}>Pontuação (com corte)</option>
         <option value="classificatoria" ${et.tipo==='classificatoria'?'selected':''}>Classificatória (não elimina)</option>
         <option value="binaria" ${et.tipo==='binaria'?'selected':''}>Binária (aprovado/reprovado)</option>
