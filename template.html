@@ -5002,6 +5002,26 @@ function carregarSheetJS(cb){
   s.onload=cb; document.head.appendChild(s);
 }
 
+// ── Reservas de vaga configuráveis na Análise de Inscrições ───────────
+// (mesmas categorias usadas na Classificação Final / Homologação)
+const RESERVAS_INSC_DISPONIVEIS=[
+  {key:'PCD', label:'PCD (Pessoa com Deficiência)', col:'CONCORRE VAGA DEFICIÊNCIA',
+    cols:['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO','CONCORRE VAGA DEFICIÊNCIA','DEFICIÊNCIA','RESULTADO','JUSTIFICATIVA','LINK']},
+  {key:'PNP', label:'PNP (Pretos, Pardos e Negros)', col:'CONCORRE VAGA NEGRO',
+    cols:['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO','CONCORRE VAGA NEGRO','DATA REALIZAÇÃO PROVA']},
+  {key:'INDIGENA', label:'Indígena', col:'CONCORRE VAGA INDÍGENA',
+    cols:['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO','CONCORRE VAGA INDÍGENA','DATA REALIZAÇÃO PROVA']},
+  {key:'QUILOMBOLA', label:'Quilombola', col:'CONCORRE VAGA QUILOMBOLA',
+    cols:['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO','CONCORRE VAGA QUILOMBOLA','DATA REALIZAÇÃO PROVA']},
+  {key:'TRANS', label:'Trans', col:'CONCORRE VAGA TRANS',
+    cols:['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO','CONCORRE VAGA TRANS','DATA REALIZAÇÃO PROVA']},
+];
+function atualizarReservasInscSelecionadas(){
+  window._inscReservasSelecionadas = RESERVAS_INSC_DISPONIVEIS
+    .filter(r => document.getElementById('insc-reserva-'+r.key)?.checked)
+    .map(r => r.key);
+}
+
 function carregarArquivoInscricoes(input){
   const file=input.files[0]; if(!file) return;
   const status=document.getElementById('insc-status');
@@ -5074,6 +5094,32 @@ function carregarArquivoInscricoes(input){
         window._inscColProcesso=null;
         window._inscProcessoAtual=null;
         document.getElementById('insc-sel-processo-wrap')?.remove();
+      }
+
+      // Detectar quais colunas de reserva de vaga existem nesta planilha e deixar
+      // o usuário escolher quais valem para este concurso (algumas planilhas não têm todas).
+      const reservasDisponiveis = RESERVAS_INSC_DISPONIVEIS.filter(r => primeiraLinha.hasOwnProperty(r.col));
+      let reservasWrap = document.getElementById('insc-sel-reservas-wrap');
+      if(reservasDisponiveis.length){
+        if(!reservasWrap){
+          reservasWrap = document.createElement('div');
+          reservasWrap.id = 'insc-sel-reservas-wrap';
+          reservasWrap.className = 'card card-pad';
+          reservasWrap.style.marginBottom = '14px';
+          wrapConj.parentElement.insertBefore(reservasWrap, wrapConj);
+        }
+        reservasWrap.style.display = 'block';
+        reservasWrap.innerHTML = `
+<div style="font-size:13px;font-weight:600;color:#1f2a3d;margin-bottom:10px">Reservas de vaga deste concurso</div>
+<div style="display:flex;flex-wrap:wrap;gap:14px">
+  ${reservasDisponiveis.map(r=>`<label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
+    <input type="checkbox" id="insc-reserva-${r.key}" checked onchange="atualizarReservasInscSelecionadas()"> ${r.label}
+  </label>`).join('')}
+</div>`;
+        window._inscReservasSelecionadas = reservasDisponiveis.map(r=>r.key); // todas marcadas por padrão
+      } else {
+        if(reservasWrap) reservasWrap.style.display = 'none';
+        window._inscReservasSelecionadas = [];
       }
 
       wrapConj.style.display='block';
@@ -5313,16 +5359,15 @@ function processarInscricoes(){
 
         await criarAbaExcel(wbRes,'AMPLA','AMPLA',COLS_AMPLA,todos.map(r=>mapRow(r,COLS_AMPLA)));
 
-        const pcd=todos.filter(r=>(r['CONCORRE VAGA DEFICIÊNCIA']||'').toUpperCase()==='SIM'&&STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase()));
-        if(pcd.length){
-          const colsPcd=['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO','CONCORRE VAGA DEFICIÊNCIA','DEFICIÊNCIA','RESULTADO','JUSTIFICATIVA','LINK'];
-          await criarAbaExcel(wbRes,'PCD','PcD',colsPcd,pcd.map(r=>mapRow(r,colsPcd)));
-        }
-
-        const pnp=todos.filter(r=>(r['CONCORRE VAGA NEGRO']||'').toUpperCase()==='SIM'&&STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase()));
-        if(pnp.length){
-          const colsPnp=['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO','CONCORRE VAGA NEGRO','DATA REALIZAÇÃO PROVA'];
-          await criarAbaExcel(wbRes,'PNP','PNP',colsPnp,pnp.map(r=>mapRow(r,colsPnp)));
+        // Uma aba por reserva de vaga marcada pelo usuário na tela de upload
+        // (antes só existiam PCD e PNP fixos no código; agora é configurável)
+        const reservasSelecionadas = window._inscReservasSelecionadas || [];
+        for(const rInfo of RESERVAS_INSC_DISPONIVEIS){
+          if(!reservasSelecionadas.includes(rInfo.key)) continue;
+          const lista=todos.filter(r=>(r[rInfo.col]||'').toUpperCase()==='SIM'&&STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase()));
+          if(lista.length){
+            await criarAbaExcel(wbRes,rInfo.key,rInfo.label,rInfo.cols,lista.map(r=>mapRow(r,rInfo.cols)));
+          }
         }
 
         const cond=todos.filter(r=>{
