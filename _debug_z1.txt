@@ -1,0 +1,27 @@
+function renderDesempateList(){
+  const desempate = _clfConfig.desempate || [];
+  const el = document.getElementById('clf-desempate-list');
+  if(!desempate.length){
+    el.innerHTML = '<div style="font-size:12.5px;color:#8a9ab5;padding:8px 0">Nenhum critério configurado.</div>';
+    return;
+  }
+  el.innerHTML = desempate.map((crit,i)=>`
+<div class="clf-desemp-row" data-idx="${i}" style="display:flex;gap:10px;align-items:center;margin-bottom:8px;padding:8px;background:#f7f9fc;border-radius:8px">
+  <div style="font-size:12px;font-weight:700;color:#8a9ab5;width:20px">${i+1}º</div>
+  <select id="clf-desemp-tipo-${i}" class="filter-select" style="height:34px;flex:1" onchange="renderDesempateList()">
+    <option value="idoso_60" ${crit.tipo==='idoso_60'?'selected':''}>Idoso (≥60 anos)</option>
+    <option value="maior_nota" ${crit.tipo==='maior_nota'?'selected':''}>Maior nota em critério</option>
+    <option value="jurado" ${crit.tipo==='jurado'?'selected':''}>Jurado</option>
+    <option value="idade_maior" ${crit.tipo==='idade_maior'?'selected':''}>Maior idade</option>
+  </select>
+  ${crit.tipo==='maior_nota' ? (()=>{
+    const camposDisp = getClfCamposDisponiveis();
+    const atual = crit.campo||'';
+    const opts = camposDisp.slice();
+    if(atual && !opts.includes(atual)) opts.push(atual);
+    return '<select id="clf-desemp-campo-'+i+'" class="filter-select" style="height:34px;flex:1"><option value="">Selecione o campo...</option>' +
+      opts.map(c=>'<option value="'+c.replace(/"/g,'&quot;')+'" '+(c===atual?'selected':'')+'>'+c+'</option>').join('') +
+      '</select>';
+  })() : '<div style="flex:1"></div>'}
+  <button onclick="removeDesempateCriterio(${i})" style="background:none;border:none;color:#c0322f;font-size:16px;cursor:pointer;padding:4px 8px">×</button>
+</div>`
