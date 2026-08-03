@@ -1,0 +1,14 @@
+function addEtapaClassificacao(){
+  _clfConfig.etapas = _clfConfig.etapas || [];
+  _clfConfig.etapas.push({nome:'', tipo:'pontuacao', campos:[]});
+  renderEtapasList();
+}
+function removeEtapaClassificacao(idx){
+  _clfConfig.etapas.splice(idx,1);
+  delete _clfEtapaWb[idx];
+  renderEtapasList();
+}
+function syncClfEtapaCampos(idx, valor){
+  if(!_clfConfig.etapas || !_clfConfig.etapas[idx]) return;
+  _clfConfig.etapas[idx].campos = valor.split(',').map(c=>c.trim()).filter(c=>c);
+  if(document.getEle
