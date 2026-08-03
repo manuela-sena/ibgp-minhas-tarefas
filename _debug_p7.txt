@@ -1,0 +1,47 @@
+OND. ESPECIAL/ENVIO LAUDOS', data_fim:fimInscricoes});
+    cronFake.push({atividade:'PROVA OBJETIVA', data_fim:dataProva});
+    if(resultPrelObjetiva) cronFake.push({atividade:'RESULTADO PRELIMINAR DA TOTALIZAÇÃO DA PROVA OBJETIVA', data_fim:resultPrelObjetiva});
+
+    const modoAtual = document.getElementById('retro-modo-urgente')?.checked ? 'urgente' : 'padrao';
+    const {tarefas: todasOp, alertas} = calcularTarefasOperacionais(cronFake, temDisc, modoAtual);
+    const novas = todasOp.filter(t => !jaExistem.has(t.titulo.toUpperCase()));
+    _retroTarefas = novas;
+
+    const alertasHtml = alertas.length ? alertas.map(a=>`
+<div style="background:${a.tipo==='risco'?'#fff8e6':'#fff5f5'};border:1px solid ${a.tipo==='risco'?'#f0dfa0':'#f3cfcd'};border-radius:8px;padding:10px 14px;margin-bottom:8px;font-size:12px;color:${a.tipo==='risco'?'#a06c12':'#c0322f'}">
+  ${a.msg}
+</div>`).join('') : '';
+
+    if(!novas.length){
+      preview.innerHTML = alertasHtml + `<div style="background:#e4f3ea;border:1px solid #a8dbb8;border-radius:8px;padding:10px 14px;font-size:12.5px;color:#2e7d52">
+        ✅ Todas as tarefas operacionais já existem neste bucket!</div>`;
+      return;
+    }
+
+    const DIAS_PT=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    preview.innerHTML = alertasHtml + `
+<div style="background:#e9f1fb;border:1px solid #b8d0ef;border-radius:8px;padding:12px 14px;margin-bottom:4px">
+  <div style="font-size:12px;font-weight:700;color:#1f4e8c;margin-bottom:8px">📋 ${novas.length} tarefa(s) serão criadas:</div>
+  ${novas.map(t=>`
+  <div style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid #d0e0f5">
+    <div style="flex:1;font-size:12px;color:#1f2a3d">${t.titulo}</div>
+    <div style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px;background:${(RESP_COLORS[t.resp]||'#5b6577')}18;color:${RESP_COLORS[t.resp]||'#5b6577'};flex:none">${t.resp}</div>
+    <div style="font-size:11px;color:#8a9ab5;flex:none">${t.fim.toLocaleDateString('pt-BR')} ${DIAS_PT[t.fim.getDay()]}</div>
+  </div>`).join('')}
+</div>`;
+
+    btn && (btn.disabled=false);
+  } catch(e){
+    preview.innerHTML = `<div style="color:#c0322f;font-size:12.5px">Erro: ${e.message}</div>`;
+  }
+}
+
+async function criarTarefasRetroativas(){
+  if(!_retroTarefas.length||!_retroBucketId) return;
+  const btn = document.getElementById('retro-btn-criar');
+  btn && (btn.disabled=true, btn.innerHTML='<div class="spinner" style="width:13px;height:13px;border-width:2px"></div> Criando...');
+
+  try {
+    await getBuckets();
+    let ok=0, err=0;
+    for(const t of _retroTarefas)
