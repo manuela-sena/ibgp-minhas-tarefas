@@ -1,0 +1,74 @@
+function lerExcel(file,cb){
+  carregarSheetJS(()=>{
+    const reader=new FileReader();
+    reader.onload=e=>cb(XLSX.read(e.target.result,{type:'binary',cellDates:true}));
+    reader.readAsBinaryString(file);
+  });
+}
+
+function verificarHomologacao(){
+  const cf=document.getElementById('homol-cf').files[0];
+  const dados=document.getElementById('homol-dados').files[0];
+  const status=document.getElementById('homol-status');
+  const btnWrap=document.getElementById('homol-btn-wrap');
+  if(cf&&dados){
+    status.innerHTML=`â <strong>${cf.name}</strong> + <strong>${dados.name}</strong> â clique em Gerar HomologaÃ§Ã£o.`;
+    status.style.color='#2e7d52';
+    btnWrap.style.display='block';
+    lerExcel(cf,wb=>_homolCF=wb);
+    lerExcel(dados,wb=>_homolDados=wb);
+  } else {
+    status.textContent='Carregue os dois arquivos.';
+    status.style.color='#8a9ab5';
+    btnWrap.style.display='none';
+  }
+}
+
+function processarHomologacao(){
+  if(!_homolCF||!_homolDados){alert('Carregue os dois arquivos.');return;}
+  const res=document.getElementById('homol-resultado');
+  res.innerHTML='<div class="loading"><div class="spinner"></div>Processando...</div>';
+  try{
+    // ââ Ler CF: todas as abas, header na linha 2 ââââââââââââââââââ
+    let cfTodos=[];
+    for(const nome of _homolCF.SheetNames){
+      const rows=XLSX.utils.sheet_to_json(_homolCF.Sheets[nome],{range:1,defval:''});
+      rows.forEach(r=>{
+        // Limpar chaves com \n e __EMPTY
+        Object.keys(r).forEach(k=>{
+          if(k.includes('__EMPTY')){delete r[k];return;}
+          const kn=k.replace(/\n/g,' ').trim();
+          if(kn!==k){r[kn]=r[k];delete r[k];}
+        });
+      });
+      cfTodos=cfTodos.concat(rows);
+    }
+
+    // ââ Ler Dados: header na linha 2 âââââââââââââââââââââââââââââ
+    let dadosTodos=[];
+    let colunasDados=[];
+    for(const nome of _homolDados.SheetNames){
+      const ws=_homolDados.Sheets[nome];
+      const rows=XLSX.utils.sheet_to_json(ws,{range:1,defval:''});
+      if(rows.length && !colunasDados.length){
+        colunasDados=Object.keys(rows[0]).filter(k=>!k.includes('__EMPTY'));
+      }
+      dadosTodos=dadosTodos.concat(rows);
+    }
+
+    // Ãndice por inscriÃ§Ã£o
+    const dadosIdx={};
+    dadosTodos.forEach(r=>{
+      const insc=(r['INSCRIÃÃO']||'').toString().trim();
+      if(insc) dadosIdx[insc]=r;
+    });
+
+    // Detectar colunas de classificaÃ§Ã£o na CF por padrÃ£o flexÃ­vel
+    const primeiraLinha=cfTodos[0]||{};
+    // Varrer TODAS as linhas para detectar colunas â abas diferentes podem ter colunas diferentes
+    const todasColsSet=new Set();
+    cfTodos.forEach(r=>Object.keys(r).forEach(k=>todasColsSet.add(k)));
+    const todasCols=Array.from(todasColsSet);
+
+    // FunÃ§Ã£o para detectar reserva pelo nome da coluna
+    
