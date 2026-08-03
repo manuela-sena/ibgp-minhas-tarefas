@@ -1,0 +1,7 @@
+function lerExcel(file,cb){
+  carregarSheetJS(()=>{
+    const reader=new FileReader();
+    reader.onload=e=>cb(XLSX.read(e.target.result,{type:'binary',cellDates:true}));
+    reader.readAsBinaryString(file);
+  });
+}
