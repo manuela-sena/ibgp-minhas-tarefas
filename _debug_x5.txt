@@ -1,0 +1,9 @@
+mentById('clf-etapa-tipo-'+idx)?.value;
+    const et = {nome, tipo};
+    if(tipo==='pontuacao'||tipo==='classificatoria'){
+      et.campos = (document.getElementById('clf
+---
+align-items:center;gap:6px;font-size:13px;cursor:pointer">
+          <input type="checkbox" id="clf-etapa-temcorte-${i}" ${et.corte?'checked':''} onchange="syncEtapaFromDom(${i});renderEtapasList()"> Tem nota mínima?
+        </label>
+      
