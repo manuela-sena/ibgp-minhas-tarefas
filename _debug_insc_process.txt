@@ -1,0 +1,68 @@
+function processarInscricoes(){
+  if(!_inscWorkbook){alert('Carregue o arquivo primeiro.');return;}
+  const btn=event?.target;
+  if(btn){btn.disabled=true;btn.textContent='Processando...';}
+
+  carregarSheetJS(()=>{
+    carregarExcelJS(async()=>{
+      try{
+        const STATUS_ATIVOS=['pago','deferida','deferido'];
+        let todos=[];
+        for(const nome of _inscWorkbook.SheetNames){
+          const rows=XLSX.utils.sheet_to_json(_inscWorkbook.Sheets[nome],{defval:'',range:1});
+          todos=todos.concat(rows);
+        }
+        todos=todos.map(r=>{
+          const n={};
+          Object.keys(r).forEach(k=>{n[k.trim()]=typeof r[k]==='string'?r[k].trim():r[k];});
+          return n;
+        });
+        if(!todos.length){alert('Nenhum dado encontrado.');if(btn){btn.disabled=false;btn.textContent='âï¸ Processar e baixar';}return;}
+
+        if(window._inscColProcesso && window._inscProcessoAtual){
+          todos=todos.filter(r=>(r[window._inscColProcesso]||'').toString().trim()===window._inscProcessoAtual.trim());
+          if(!todos.length){alert(`Nenhum registro para "${window._inscProcessoAtual}".`);if(btn){btn.disabled=false;btn.textContent='âï¸ Processar e baixar';}return;}
+        } else if(window._inscColProcesso && !window._inscProcessoAtual){
+          alert('Selecione um processo antes de processar.');if(btn){btn.disabled=false;btn.textContent='âï¸ Processar e baixar';}return;
+        }
+
+        const conjuntos=[];
+        document.querySelectorAll('[id^="conj-"]').forEach(inp=>{
+          const cods=inp.value.split(',').map(c=>c.trim()).filter(Boolean);
+          if(cods.length>=2) conjuntos.push(cods);
+        });
+
+        const cancelar=new Set();    // duplicatas no mesmo turno (mesma data/horÃ¡rio prova) â muda status para Cancelada, mantÃ©m a mais recente
+        const retirar=new Set();     // mesma prova â sÃ³ sai da alocaÃ§Ã£o, status original mantido
+        const groupBy=(arr,fn)=>arr.reduce((g,x)=>{const k=fn(x);(g[k]=g[k]||[]).push(x);return g;},{});
+        todos.forEach(r=>{ r._dt=new Date(r['DATA INSCRICAO']||r['DATA INSCRIÃÃO']||0).getTime()||0; });
+
+        // Regra 1: duplicata no mesmo turno (mesma data/horÃ¡rio de prova) â cancela, mantÃ©m a mais recente
+        const byTurnoCpf=groupBy(todos,r=>{
+          const cpf = (r['CPF']||'').replace(/\D/g,'');
+          const turno = (r['DATA REALIZAÃÃO PROVA']||r['DATA PROVA']||'').toString().trim();
+          return `${cpf}__${turno}`;
+        });
+        Object.values(byTurnoCpf).forEach(grp=>{
+          const ativos=grp.filter(r=>STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase())).sort((a,b)=>a._dt-b._dt);
+          // MantÃ©m a MAIS RECENTE (Ãºltima do array ordenado ascendente), cancela as demais
+          ativos.slice(0,-1).forEach(r=>cancelar.add(r['INSCRIÃÃO']?.toString()));
+        });
+
+        // Regra 2: conjuntos de mesma prova â apenas retira da alocaÃ§Ã£o
+        conjuntos.forEach(conj=>{
+          const sub=todos.filter(r=>conj.includes((r['CÃDIGO']||r['CODIGO']||'').toString().trim()));
+          const byCpf=groupBy(sub,r=>(r['CPF']||'').replace(/\D/g,''));
+          Object.values(byCpf).forEach(grp=>{
+            const ativos=grp.filter(r=>STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase())).sort((a,b)=>a._dt-b._dt);
+            ativos.slice(0,-1).forEach(r=>retirar.add(r['INSCRIÃÃO']?.toString()));
+          });
+        });
+
+        // Aplicar cancelamentos (sÃ³ regra 1 muda o status)
+        todos.forEach(r=>{if(cancelar.has(r['INSCRIÃÃO']?.toString())) r['STATUS']='Cancelada';});
+        todos.sort((a,b)=>(a['CARGO']||'').localeCompare(b['CARGO']||'')||((a['INSCRIÃÃO']||0)-(b['INSCRIÃÃO']||0)));
+
+        const nomeConcurso=window._inscProcessoAtual||'CONCURSO';
+
+        
