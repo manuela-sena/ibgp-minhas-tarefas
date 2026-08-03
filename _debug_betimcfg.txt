@@ -1,0 +1,118 @@
+{
+  "nome": "BETIM",
+  "pools": [
+    "pcd",
+    "pnp",
+    "indigena",
+    "quilombola"
+  ],
+  "desempate": [
+    {
+      "tipo": "idoso_60",
+      "campo": ""
+    },
+    {
+      "tipo": "maior_nota",
+      "campo": "CONHECIMENTOS ESPECÍFICOS"
+    },
+    {
+      "tipo": "maior_nota",
+      "campo": "PORTUGUÊS"
+    },
+    {
+      "tipo": "maior_nota",
+      "campo": "LEG. MUNICIPAL"
+    },
+    {
+      "tipo": "maior_nota",
+      "campo": "CONHECIMENTOS GERAIS"
+    },
+    {
+      "tipo": "maior_nota",
+      "campo": "NOÇÕES DE INFORMÁTICA"
+    },
+    {
+      "tipo": "jurado",
+      "campo": ""
+    },
+    {
+      "tipo": "idade_maior",
+      "campo": ""
+    }
+  ],
+  "etapas": [
+    {
+      "nome": "PROVA OBJETIVA",
+      "tipo": "pontuacao",
+      "campos": [
+        "PORTUGUÊS",
+        "NOÇÕES DE INFORMÁTICA",
+        "LEG. MUNICIPAL",
+        "CONHECIMENTOS GERAIS",
+        "CONHECIMENTOS ESPECÍFICOS"
+      ],
+      "corte": {
+        "notaMinimaTotal": 60,
+        "naoZerar": true
+      }
+    },
+    {
+      "nome": "PROVA DISCURSIVA",
+      "tipo": "pontuacao",
+      "campos": [
+        "CP",
+        "PO",
+        "M",
+        "CC"
+      ],
+      "corte": {
+        "notaMinimaTotal": 11,
+        "naoZerar": false
+      }
+    },
+    {
+      "nome": "PROVA DE TÍTULOS",
+      "tipo": "classificatoria",
+      "campos": [
+        "DOUTORADO",
+        "MESTRADO",
+        "PÓS GRADUAÇÃO"
+      ]
+    },
+    {
+      "nome": "HETEROIDENTIFICAÇÃO",
+      "tipo": "binaria",
+      "valorAprovado": "DEFERIDA",
+      "eliminaDoConcurso": true,
+      "gatePool": "pnp"
+    },
+    {
+      "nome": "INSCRIÇÕES PCD",
+      "tipo": "binaria",
+      "valorAprovado": "DEFERIDA",
+      "eliminaDoConcurso": true,
+      "gatePool": "pcd"
+    },
+    {
+      "nome": "INSCRIÇÕES INDIGENA",
+      "tipo": "binaria",
+      "valorAprovado": "DEFERIDA",
+      "eliminaDoConcurso": true,
+      "gatePool": "indigena"
+    },
+    {
+      "nome": "INSCRIÇÕES QUILOMBOLA",
+      "tipo": "binaria",
+      "valorAprovado": "DEFERIDA",
+      "eliminaDoConcurso": true,
+      "gatePool": "quilombola"
+    },
+    {
+      "nome": "JURADO",
+      "tipo": "binaria",
+      "valorAprovado": "DEFERIDA",
+      "eliminaDoConcurso": true,
+      "gatePool": ""
+    }
+  ]
+}
