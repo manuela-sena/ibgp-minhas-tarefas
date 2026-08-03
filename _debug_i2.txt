@@ -1,0 +1,15 @@
+ await criarAbaExcel(wbRes,'AMPLA','AMPLA',COLS_AMPLA,todos.map(r=>mapRow(r,COLS_AMPLA)));
+
+        const pcd=todos.filter(r=>(r['CONCORRE VAGA DEFICIÊNCIA']||'').toUpperCase()==='SIM'&&STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase()));
+        if(pcd.length){
+          const colsPcd=['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO','CONCORRE VAGA DEFICIÊNCIA','DEFICIÊNCIA','RESULTADO','JUSTIFICATIVA','LINK'];
+          await criarAbaExcel(wbRes,'PCD','PcD',colsPcd,pcd.map(r=>mapRow(r,colsPcd)));
+        }
+
+        const pnp=todos.filter(r=>(r['CONCORRE VAGA NEGRO']||'').toUpperCase()==='SIM'&&STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase()));
+        if(pnp.length){
+          const colsPnp=['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO','CONCORRE VAGA NEGRO','DATA REALIZAÇÃO PROVA'];
+          await criarAbaExcel(wbRes,'PNP','PNP',colsPnp,pnp.map(r=>mapRow(r,colsPnp)));
+        }
+
+        const cond=todos.
