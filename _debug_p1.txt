@@ -1,0 +1,23 @@
+function loadTarefas(){
+  const raw = (typeof DADOS_INICIAIS !== 'unde
+function concluir(id){
+  if(!confirm('Marcar esta tarefa como concluíd
+function loadReajusteTarefas(){
+  const bucketId = document.getElement
+function calcularCronograma(){
+  const nome=document.getElementById('g
+function motorCronograma(p){
+  if(p.tipo==='PSS')    return calcularPS
+function calcularTarefasOperacionais(cronograma, temDiscursiva, modo='
+function _gerarXLSX(){
+  const nome  = _cronNome || 'Cronograma';
+  co
+function carregarPlanejamentos(){
+  const el = document.getElementById
+function criarTarefasRetroativas(){
+  if(!_retroTarefas.length||!_retr
+function getIndTarefas(){
+  let tasks = [..._allTasks];
+  const pessoa
+function _isProva(t){ return TAREFAS_PROVA.some(p => t.tarefa.toUpperC
+function _isHomol(t){ return TAREFAS_HOMOL.some(p => t.tarefa.toUpperC
