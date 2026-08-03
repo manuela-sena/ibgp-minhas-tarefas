@@ -4010,11 +4010,11 @@ async function abrirGeracaoRetroativa(){
     <label class="form-label">Concurso (bucket no Planner)</label>
     <div style="position:relative">
       <input id="inp-retro-concurso" class="filter-select" type="text" placeholder="Digite para buscar..." autocomplete="off"
-        oninput="filtrarRetroDropdown()" onfocus="filtrarRetroDropdown()" style="padding-right:28px">
+        oninput="dropdownOpen('retro-concurso')" onfocus="dropdownOpen('retro-concurso')" style="padding-right:28px">
       <svg style="position:absolute;right:8px;top:50%;transform:translateY(-50%);pointer-events:none" width="12" height="12" fill="none" stroke="#9aa6b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
-    <div id="drop-retro-concurso" style="display:none;position:absolute;left:28px;right:28px;z-index:600;background:#fff;border:1px solid #e2e7ef;border-radius:9px;box-shadow:0 8px 24px rgba(16,30,54,0.12);max-height:220px;overflow-y:auto;margin-top:2px"></div>
-    <input type="hidden" id="retro-concurso">
+    <div id="drop-retro-concurso" style="display:none;position:absolute;left:28px;right:28px;z-index:9999;background:#fff;border:1px solid #e2e7ef;border-radius:9px;box-shadow:0 8px 24px rgba(16,30,54,0.18);max-height:220px;overflow-y:auto;margin-top:2px"></div>
+    <input type="hidden" id="sel-retro-concurso">
   </div>
 
   <div style="margin-bottom:16px">
@@ -4057,6 +4057,16 @@ async function abrirGeracaoRetroativa(){
     window._retroBuckets = sorted; // guardar para o autocomplete
     const inp = document.getElementById('inp-retro-concurso');
     if(inp) inp.placeholder = `Buscar entre ${sorted.length} concursos...`;
+
+    // Inicializar dropdown genérico
+    dropdownInit('retro-concurso',
+      ()=>sorted.map(([id,nome])=>({label:nome,value:id})),
+      (val)=>{
+        document.getElementById('retro-btn-criar').disabled = !val;
+        if(val) previewRetroativo(val);
+        else document.getElementById('retro-preview').innerHTML = '';
+      }
+    );
   } catch(e){
     document.getElementById('retro-preview').innerHTML = `<div style="color:#c0322f;font-size:12.5px">Erro ao carregar concursos: ${e.message}</div>`;
   }
@@ -4071,7 +4081,7 @@ function atualizarModoLabel(){
   if(lPadrao) lPadrao.style.borderColor = padrao ? '#1f4e8c' : '#e2e7ef';
   if(lUrg)    lUrg.style.borderColor    = !padrao ? '#c0322f' : '#e2e7ef';
   // Reatualizar preview com o novo modo
-  const bucketId = document.getElementById('retro-concurso')?.value;
+  const bucketId = document.getElementById('sel-retro-concurso')?.value;
   if(bucketId) previewRetroativo(bucketId);
 }
 
@@ -7108,13 +7118,11 @@ function renderDesempateList(){
 
 // ── ETAPAS: UI DINÂMICA ────────────────────────────────────────────────
 function addEtapaClassificacao(){
-  syncAllEtapasFromDom();
   _clfConfig.etapas = _clfConfig.etapas || [];
   _clfConfig.etapas.push({nome:'', tipo:'pontuacao', campos:[]});
   renderEtapasList();
 }
 function removeEtapaClassificacao(idx){
-  syncAllEtapasFromDom();
   _clfConfig.etapas.splice(idx,1);
   delete _clfEtapaWb[idx];
   renderEtapasList();
@@ -7177,48 +7185,7 @@ function toggleClfEtapaCampo(idx, coluna, checked){
   renderEtapasList();
 }
 
-function syncEtapaMapFromDom(idx){
-  const wbState = _clfEtapaWb[idx];
-  if(!wbState) return;
-  const g = (id) => document.getElementById(id);
-  wbState.map = wbState.map || {};
-  const campos = ['insc','nome','nasc','cargo','total','resultado'];
-  const destKeys = {insc:'inscricao', nome:'nome', nasc:'nascimento', cargo:'cargo', total:'total', resultado:'resultado'};
-  campos.forEach(k=>{
-    const el = g('clf-etapa-map-'+k+'-'+idx);
-    if(el) wbState.map[destKeys[k]] = el.value;
-  });
-  const et = _clfConfig.etapas[idx];
-  if(et && (et.tipo==='pontuacao'||et.tipo==='classificatoria')){
-    wbState.map.camposMap = wbState.map.camposMap || {};
-    (et.campos||[]).forEach(campo=>{
-      const elId = 'clf-etapa-map-campo-'+idx+'-'+campo.replace(/[^a-zA-Z0-9]/g,'_');
-      const el = g(elId);
-      if(el) wbState.map.camposMap[campo] = el.value;
-    });
-    wbState.map.poolCols = wbState.map.poolCols || {};
-    const poolsAtivos = ['ampla', ...['pcd','pnp','indigena','quilombola'].filter(p=>document.getElementById('clf-pool-'+p)?.checked)];
-    poolsAtivos.forEach(p=>{
-      const el = g('clf-etapa-map-pool-'+idx+'-'+p);
-      if(el) wbState.map.poolCols[p] = el.value;
-    });
-  } else if(et && et.tipo==='binaria'){
-    const gp = g('clf-etapa-gatepool-'+idx);
-    if(gp) et.gatePool = gp.value;
-  }
-}
-function syncAllEtapasFromDom(){
-  const cards = document.querySelectorAll('#clf-etapas-list .clf-etapa-card');
-  if(!cards.length || cards.length !== (_clfConfig.etapas||[]).length) return;
-  cards.forEach(card=>{
-    const idx = +card.dataset.idx;
-    syncEtapaFromDom(idx);
-    syncEtapaMapFromDom(idx);
-  });
-}
-
 function renderEtapasList(){
-  syncAllEtapasFromDom();
   const etapas = _clfConfig.etapas || [];
   const el = document.getElementById('clf-etapas-list');
   if(!etapas.length){
