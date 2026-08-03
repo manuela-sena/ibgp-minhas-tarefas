@@ -1,0 +1,258 @@
+number' && !isNaN(x); }
+function clfNorm(s){
+  if(s==null) return '';
+  return String(s).trim().toUpperCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'');
+}
+
+class ClfCandidato {
+  constructor(inscricao){
+    this.inscricao=inscricao; this.nome=''; this.nascimento=null; this.cargo='';
+    this.pools={ampla:true}; this.etapas={}; this.eliminado=false; this.motivoEliminacao='';
+  }
+  get totalGeral(){
+    let t=0;
+    for(const et of Object.values(this.etapas)){
+      if((et.contaNoTotal ?? true) && clfIsNum(et.total)) t+=et.total;
+    }
+    return t;
+  }
+}
+
+class ClfMotor {
+  constructor(config){ this.config=config; this.candidatos={}; }
+  getOrCreate(insc,nome,nasc,cargo){
+    let c=this.candidatos[insc];
+    if(!c){ c=new ClfCandidato(insc); this.candidatos[insc]=c; }
+    if(nome) c.nome=nome;
+    if(nasc!=null) c.nascimento=nasc;
+    if(cargo) c.cargo=cargo;
+    return c;
+  }
+  carregarFlagsPool(linhas, mapaColunas){
+    linhas.forEach(l=>{
+      const c=this.getOrCreate(l.inscricao,l.nome,l.nascimento,l.cargo);
+      Object.entries(mapaColunas).forEach(([pool,coluna])=>{
+        if(!coluna || !(coluna in l)) return;
+        c.pools[pool] = clfNorm(l[coluna])==='SIM';
+      });
+    });
+  }
+  carregarEtapaPontuacao(nomeEtapa, linhas, campos, corte, contaNoTotal=true){
+    linhas.forEach(l=>{
+      const c=this.getOrCreate(l.inscricao,l.nome,l.nascimento,l.cargo);
+      const valores=l.valores||{};
+      const total=l.total;
+      let aprovado=true, motivo='';
+      if(corte){
+        if(!clfIsNum(total)){ aprovado=false; motivo=`${nomeEtapa}: ausente/sem nota numÃ©rica`; }
+        else{
+          if(corte.notaMinimaTotal!=null && total<corte.notaMinimaTotal){ aprovado=false; motivo=`${nomeEtapa}: total ${total} < mÃ­nimo ${corte.notaMinimaTotal}`; }
+          if(aprovado && corte.naoZerar){
+            for(const campo of campos){
+              const v=valores[campo];
+              if(clfIsNum(v) && v===0){ aprovado=false; motivo=`${nomeEtapa}: zerou em ${campo}`; break; }
+            }
+          }
+        }
+      }
+      c.etapas[nomeEtapa] = {campos:valores, total, aprovado, contaNoTotal};
+      if(!aprovado){ c.eliminado=true; c.motivoEliminacao=c.motivoEliminacao||motivo; }
+    });
+  }
+  carregarEtapaBinaria(nomeEtapa, linhas, valorAprovado, eliminaDoConcurso, gatePool){
+    linhas.forEach(l=>{
+      const c=this.getOrCreate(l.inscricao,l.nome,l.nascimento,l.cargo);
+      const ok = clfNorm(l.resultado)===clfNorm(valorAprovado);
+      c.etapas[nomeEtapa] = {resultado:l.resultado, aprovado:ok, contaNoTotal:false};
+      if(gatePool) c.pools[gatePool] = ok && !!c.pools[gatePool];
+      if(eliminaDoConcurso && !ok){ c.eliminado=true; c.motivoEliminacao=c.motivoEliminacao||`${nomeEtapa}: nÃ£o apto/deferido`; }
+    });
+  }
+  chaveDesempate(c, dataRef){
+    const chave=[];
+    (this.config.desempate||[]).forEach(crit=>{
+      if(crit.tipo==='idoso_60'){
+        const idade=this._idade(c.nascimento,dataRef);
+        chave.push(idade!=null && idade>=60 ? 0:1);
+      } else if(crit.tipo==='maior_nota'){
+        let v=null;
+        for(const et of Object.values(c.etapas)){
+          if(et.campos && crit.campo in et.campos){ v=et.campos[crit.campo]; break; }
+        }
+        chave.push(-(clfIsNum(v)?v:-1e9));
+      } else if(crit.tipo==='jurado'){
+        chave.push(c.pools.jurado ? 0:1);
+      } else if(crit.tipo==='idade_maior'){
+        chave.push(c.nascimento ? c.nascimento.getTime() : Infinity);
+      } else chave.push(0);
+    });
+    return chave;
+  }
+  _idade(nasc,dataRef){
+    if(!nasc||!dataRef) return null;
+    let anos=dataRef.getFullYear()-nasc.getFullYear();
+    const antesAniversario=(dataRef.getMonth()<nasc.getMonth())||(dataRef.getMonth()===nasc.getMonth() && dataRef.getDate()<nasc.getDate());
+    if(antesAniversario) anos--;
+    return anos;
+  }
+  classificar(dataRef){
+    const aptos = Object.values(this.candidatos).filter(c=>!c.eliminado);
+    aptos.sort((a,b)=>{
+      if(b.totalGeral !== a.totalGeral) return b.totalGeral - a.totalGeral;
+      const ka=this.chaveDesempate(a,dataRef), kb=this.chaveDesempate(b,dataRef);
+      for(let i=0;i<Math.max(ka.length,kb.length);i++){
+        const va=ka[i]??0, vb=kb[i]??0;
+        if(va!==vb) return va-vb;
+      }
+      return 0;
+    });
+    const poolsConfig = this.config.pools || ['ampla'];
+    const porCargo={};
+    aptos.forEach(c=>{ (porCargo[c.cargo]=porCargo[c.cargo]||[]).push(c); });
+    const ranking={};
+    Object.entries(porCargo).forEach(([cargo,lista])=>{
+      ranking[cargo]={};
+      poolsConfig.forEach(pool=>{ ranking[cargo][pool]=lista.filter(c=>c.pools[pool]); });
+    });
+    this.ranking=ranking;
+    return {ranking, todosAptos:aptos};
+  }
+}
+
+// ââ LEITURA DE PLANILHAS (header sempre linha 2) âââââââââââââââââââââ
+function clfLerColunas(wb, sheet){
+  const ws=wb.Sheets[sheet];
+  const aoa=XLSX.utils.sheet_to_json(ws,{header:1,range:1,defval:''});
+  if(!aoa.length) return [];
+  return aoa[0].map(x=>String(x).trim()).filter(Boolean);
+}
+function clfLerLinhas(wb, sheet){
+  const ws=wb.Sheets[sheet];
+  const aoa=XLSX.utils.sheet_to_json(ws,{header:1,range:1,defval:'',raw:false});
+  if(aoa.length<2) return [];
+  const header=aoa[0].map(x=>String(x).trim());
+  return aoa.slice(1).filter(r=>r[0]!=='' && r[0]!=null).map(r=>{
+    const o={};
+    header.forEach((h,i)=>{ o[h]=r[i]; });
+    return o;
+  });
+}
+function clfParseData(v){
+  if(!v) return null;
+  if(v instanceof Date) return v;
+  const s=String(v).trim();
+  const m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+  if(m){
+    let ano = +m[3];
+    if(ano<100){
+      // Ano com 2 dÃ­gitos: assume sÃ©culo 19xx/20xx pelo mesmo critÃ©rio do Excel
+      // (>= 30 vira 19xx, < 30 vira 20xx) â evita nascimentos no futuro.
+      ano = ano>=30 ? 1900+ano : 2000+ano;
+    }
+    const d=new Date(ano, +m[2]-1, +m[1]);
+    return isNaN(d.getTime())?null:d;
+  }
+  const d2 = new Date(s);
+  return isNaN(d2.getTime()) ? null : d2;
+}
+
+// ââ ESTADO GLOBAL DA PÃGINA ââââââââââââââââââââââââââââââââââââââââââââ
+let _clfConfig = {nome:'', pools:['pcd','pnp','indigena','quilombola'], desempate:[], etapas:[]};
+let _clfEtapaWb = {};      // idx -> {wb, sheetNames}
+let _clfDesempateCount = 0;
+let _clfEtapaCount = 0;
+
+function initClassificacao(){
+  listarConfigsClassificacao();
+  if(!document.getElementById('clf-desempate-list').children.length &&
+     !document.getElementById('clf-etapas-list').children.length){
+    renderDesempateList();
+    renderEtapasList();
+  }
+}
+
+// ââ CONFIG: LISTAR / CARREGAR / SALVAR NO GITHUB ââââââââââââââââââââââ
+async function listarConfigsClassificacao(){
+  const sel = document.getElementById('clf-config-select');
+  try{
+    const r = await fetch(`https://api.github.com/repos/${GH_REPO_CLF}/contents/${CLF_CONFIG_DIR}`,
+      {headers:{'Authorization':'Bearer '+GH_TOKEN_CLF}});
+    if(!r.ok){ sel.innerHTML='<option value="">Nova configuraÃ§Ã£o...</option>'; return; }
+    const arquivos = await r.json();
+    const nomes = arquivos.filter(a=>a.name.endsWith('.json')).map(a=>a.name.slice(0,-5));
+    sel.innerHTML = '<option value="">Nova configuraÃ§Ã£o...</option>' +
+      nomes.map(n=>`<option value="${n}">${n}</option>`).join('');
+  }catch(e){ /* silencioso */ }
+}
+
+async function carregarConfigClassificacao(){
+  const nome = document.getElementById('clf-config-select').value;
+  if(!nome){ return; }
+  try{
+    const r = await fetch(`https://api.github.com/repos/${GH_REPO_CLF}/contents/${CLF_CONFIG_DIR}/${encodeURIComponent(nome)}.json`,
+      {headers:{'Authorization':'Bearer '+GH_TOKEN_CLF}});
+    if(!r.ok){ alert('ConfiguraÃ§Ã£o nÃ£o encontrada.'); return; }
+    const d = await r.json();
+    const config = JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))));
+    _clfConfig = config;
+    document.getElementById('clf-nome').value = config.nome||'';
+    ['pcd','pnp','indigena','quilombola'].forEach(p=>{
+      document.getElementById('clf-pool-'+p).checked = (config.pools||[]).includes(p);
+    });
+    renderDesempateList();
+    renderEtapasList();
+    document.getElementById('clf-status').innerHTML =
+      `<div class="alert alert-success" style="background:#e4f3ea;border:1px solid #a8dbb8;border-radius:9px;padding:10px 14px;color:#2e7d52;font-size:13px">â ConfiguraÃ§Ã£o "${nome}" carregada.</div>`;
+  }catch(e){ alert('Erro ao carregar: '+e.message); }
+}
+
+function coletarConfigAtual(){
+  const pools = ['pcd','pnp','indigena','quilombola'].filter(p=>document.getElementById('clf-pool-'+p)?.checked);
+  const desempate = [];
+  document.querySelectorAll('#clf-desempate-list .clf-desemp-row').forEach(row=>{
+    const idx = row.dataset.idx;
+    const tipo = document.getElementById('clf-desemp-tipo-'+idx)?.value;
+    const campo = document.getElementById('clf-desemp-campo-'+idx)?.value || '';
+    desempate.push({tipo, campo});
+  });
+  const etapas = [];
+  document.querySelectorAll('#clf-etapas-list .clf-etapa-card').forEach(card=>{
+    const idx = card.dataset.idx;
+    const nome = document.getElementById('clf-etapa-nome-'+idx)?.value || '';
+    const tipo = document.getElementById('clf-etapa-tipo-'+idx)?.value;
+    const et = {nome, tipo};
+    if(tipo==='pontuacao'||tipo==='classificatoria'){
+      const camposInputEl = document.getElementById('clf-etapa-campos-'+idx);
+      et.campos = camposInputEl ? camposInputEl.value.split(',').map(s=>s.trim()).filter(Boolean) : (_clfConfig.etapas[idx]?.campos || []);
+      if(tipo==='pontuacao'){
+        const temCorte = document.getElementById('clf-etapa-temcorte-'+idx)?.checked;
+        if(temCorte){
+          et.corte = {
+            notaMinimaTotal: parseFloat(document.getElementById('clf-etapa-notamin-'+idx)?.value) || null,
+            naoZerar: document.getElementById('clf-etapa-naozerar-'+idx)?.checked || false
+          };
+        }
+      }
+    } else if(tipo==='binaria'){
+      et.valorAprovado = document.getElementById('clf-etapa-valoraprovado-'+idx)?.value || 'DEFERIDA';
+      et.eliminaDoConcurso = document.getElementById('clf-etapa-elimina-'+idx)?.checked || false;
+      et.gatePool = document.getElementById('clf-etapa-gatepool-'+idx)?.value || '';
+    }
+    etapas.push(et);
+  });
+  return {
+    nome: document.getElementById('clf-nome')?.value?.trim()||'',
+    pools, desempate, etapas
+  };
+}
+
+async function salvarConfigClassificacao(){
+  const config = coletarConfigAtual();
+  if(!config.nome){ alert('DÃª um nome ao concurso antes de salvar.'); return; }
+  try{
+    const path = `${CLF_CONFIG_DIR}/${config.nome}.json`;
+    const r0 = await fetch(`https://api.github.com/repos/${GH_REPO_CLF}/contents/${path}`,
+      {headers:{'Authorization':'Bearer '+GH_TOKEN_CLF}});
+    let sha; if(r0.ok){ sha=(await r0.json()).sha; }
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(config,null,2))));
+    
