@@ -1,0 +1,86 @@
+function carregarArquivoInscricoes(input){
+  const file=input.files[0]; if(!file) return;
+  const status=document.getElementById('insc-status');
+  status.textContent='Lendo arquivo...';
+  carregarSheetJS(()=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      _inscWorkbook=XLSX.read(e.target.result,{type:'binary',cellDates:true});
+
+      // Ler todas as abas com header na linha 2 (range:1)
+      let todos=[];
+      for(const nome of _inscWorkbook.SheetNames){
+        const rows=XLSX.utils.sheet_to_json(_inscWorkbook.Sheets[nome],{defval:'',range:1});
+        todos=todos.concat(rows);
+      }
+      // Normalizar chaves (remover espaços extras)
+      todos=todos.map(r=>{
+        const n={};
+        Object.keys(r).forEach(k=>{ n[k.trim()]=typeof r[k]==='string'?r[k].trim():r[k]; });
+        return n;
+      });
+
+      // Detectar coluna de processo/edital
+      const primeiraLinha=todos[0]||{};
+      const colProcesso=Object.keys(primeiraLinha).find(k=>
+        ['EDITAL','CONCURSO','PROCESSO','MUNICÍPIO','MUNICIPIO'].some(x=>k.toUpperCase().includes(x))
+      );
+
+      status.innerHTML=`✅ <strong>${file.name}</strong> carregado — ${todos.length} registros`;
+
+      // Debug: mostrar colunas detectadas
+      const colsDetectadas=Object.keys(todos[0]||{}).slice(0,8).join(', ');
+      status.innerHTML+=`<br><small style="color:#8a9ab5">Colunas: ${colsDetectadas}...</small>`;
+
+      // Mostrar seletor de processo se tiver coluna identificadora
+      const wrapConj=document.getElementById('insc-conjuntos-wrap');
+      const wrapPreview=document.getElementById('insc-preview');
+
+      if(colProcesso){
+        const processos=[...new Set(todos.map(r=>(r[colProcesso]||'').toString().trim()).filter(Boolean))].sort();
+
+        // Usar o wrap existente no HTML
+        let selWrap=document.getElementById('insc-sel-processo-wrap');
+        if(!selWrap){
+          selWrap=document.createElement('div');
+          selWrap.id='insc-sel-processo-wrap';
+          selWrap.className='card card-pad';
+          selWrap.style.marginBottom='14px';
+          wrapConj.parentElement.insertBefore(selWrap, wrapConj);
+        }
+        selWrap.style.display='block';
+        selWrap.innerHTML=`
+<div style="font-size:13px;font-weight:600;color:#1f2a3d;margin-bottom:12px">
+  Selecione o processo a processar
+  <span style="font-size:11px;color:#8a9ab5;font-weight:400">(coluna: ${colProcesso})</span>
+</div>
+<div style="margin-bottom:10px">
+  <input id="insc-busca-processo" class="form-input" placeholder="Buscar processo..." type="text"
+    oninput="filtrarProcessos()" style="margin-bottom:8px">
+  <div id="insc-lista-processos" style="max-height:200px;overflow-y:auto;border:1px solid #e2e7ef;border-radius:8px"></div>
+</div>
+<div id="insc-processo-selecionado" style="font-size:12.5px;color:#8a9ab5">Nenhum processo selecionado.</div>`;
+
+        window._inscProcessos=processos;
+        window._inscColProcesso=colProcesso;
+        window._inscProcessoAtual=null;
+        filtrarProcessos();
+      } else {
+        // Sem coluna de processo — processa tudo
+        window._inscColProcesso=null;
+        window._inscProcessoAtual=null;
+        document.getElementById('insc-sel-processo-wrap')?.remove();
+      }
+
+      wrapConj.style.display='block';
+      wrapPreview.style.display='block';
+      document.getElementById('insc-preview-content').innerHTML=
+        colProcesso
+          ? `<div style="font-size:13px;color:#41506b">Selecione o processo acima antes de processar.</div>`
+          : `<div style="font-size:13px;color:#41506b">Arquivo pronto. Configure os conjuntos se necessário e clique em <strong>Processar e baixar</strong>.</div>`;
+    };
+    reader.readAsBinaryString(file);
+  });
+}
+
+function filtrarProce
