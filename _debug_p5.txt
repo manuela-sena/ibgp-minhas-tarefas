@@ -1,0 +1,70 @@
+sp:'Laryssa', ini:proxUtilApos(fimInscricoes), fim:L1},
+      {titulo:'ALOCAÇÃO DE CANDIDATOS POR ESCOLA',          resp:'Laryssa', ini:proxUtilApos(L1),            fim:L2},
+      {titulo:'IMPRESSÃO DAS PROVAS',                       resp:'Jordan',  ini:J1ini,  fim:J1fim},
+      {titulo:'IMPRESSÃO DA PAPELARIA DE APLICAÇÃO',        resp:'Jordan',  ini:J2ini,  fim:J2fim},
+      {titulo:'EMPACOTAMENTO (PROVAS + PAPELARIA)',         resp:'Jordan',  ini:J3ini,  fim:J3fim},
+      {titulo:'MONTAGEM DAS CAIXAS DE MATERIAL POR ESCOLA', resp:'Jordan',  ini:J4ini,  fim:J4fim},
+      {titulo:'MONTAGEM DAS PASTAS DO COORDENADOR',         resp:'Jordan',  ini:J4ini,  fim:J4fim},
+      {titulo:'ESCANEAMENTO DAS FOLHAS DE RESPOSTA',        resp:'Jordan',  ini:segunda, fim:quarta},
+      {titulo:'ESCANEAMENTO DAS ATAS DE APLICAÇÃO',         resp:'Jordan',  ini:segunda, fim:quarta},
+      {titulo:'LIBERAÇÃO DAS ATAS PARA OS COORDENADORES',   resp:'Laryssa', ini:quinta,  fim:quinta},
+      {titulo:'RECEBIMENTO DOS RELATÓRIOS DE APLICAÇÃO',    resp:'Laryssa', ini:quinta,  fim:addDiasUteis(quinta, 3)},
+      {titulo:'LEITURA DAS FOLHAS DE RESPOSTA',             resp:'Natália', ini:proxUtilApos(quarta), fim:aposEsc},
+    );
+  }
+
+  // ── MODO URGENTE: recebemos a prova na segunda, tudo de trás para frente até quinta ──
+  if(modo === 'urgente' && dataProva){
+    // Prova é sempre domingo → semana da prova:
+    const U_segunda = addDays(dataProva, -6); // segunda = 6 dias antes do domingo
+    const U_terca   = addDays(dataProva, -5); // terça
+    const U_quarta  = addDays(dataProva, -4); // quarta
+    const U_quinta  = addDays(dataProva, -3); // quinta = caixas prontas
+
+    alertas.push({
+      tipo:'risco',
+      msg:`⚡ Modo Urgente: prova recebida na segunda ${fmtBR(U_segunda)}. Caixas prontas até a quinta ${fmtBR(U_quinta)}.`
+    });
+
+    // Parte do fluxo que usa fim das inscrições (igual ao padrão)
+    if(fimInscricoes){
+      const L1 = addDiasUteis(fimInscricoes, 2);
+      const L2 = addDiasUteis(L1, 2);
+      let iniInscricoes = null;
+      for(const t of cronograma){
+        if(t.atividade.toUpperCase().includes('PERÍODO DE INSCRIÇÕES')){
+          iniInscricoes = t.data_ini || t.data_fim; break;
+        }
+      }
+      tarefas.push(
+        {titulo:'ENVIO DE OFÍCIOS ÀS ESCOLAS',             resp:'Laryssa', ini:iniInscricoes||fimInscricoes, fim:iniInscricoes||fimInscricoes},
+        {titulo:'SOLICITAR ARQUIVOS DE IMPRESSÃO À BANCA', resp:'Manuela', ini:addDiasUteis(fimInscricoes,1), fim:addDiasUteis(fimInscricoes,1)},
+        {titulo:'LEVANTAMENTO DE ESCOLAS PARA APLICAÇÃO',  resp:'Laryssa', ini:proxUtilApos(fimInscricoes), fim:L1},
+        {titulo:'ALOCAÇÃO DE CANDIDATOS POR ESCOLA',       resp:'Laryssa', ini:proxUtilApos(L1), fim:L2},
+      );
+    }
+
+    // Bloco urgente: impressão em diante a partir da segunda
+    tarefas.push(
+      {titulo:'RECEBIMENTO DOS ARQUIVOS DE IMPRESSÃO',      resp:'Jordan', ini:U_segunda, fim:U_segunda},
+      {titulo:'ENVIAR ARQUIVO DE PROVAS PARA IMPRESSÃO',   resp:'Tiago',  ini:U_segunda, fim:U_segunda},
+      {titulo:'IMPRESSÃO DAS PROVAS',                      resp:'Jordan', ini:U_terca,   fim:U_terca},
+      {titulo:'IMPRESSÃO DA PAPELARIA DE APLICAÇÃO',       resp:'Jordan', ini:U_terca,   fim:U_terca},
+      {titulo:'EMPACOTAMENTO (PROVAS + PAPELARIA)',        resp:'Jordan', ini:U_quarta,  fim:U_quarta},
+      {titulo:'MONTAGEM DAS CAIXAS DE MATERIAL POR ESCOLA',resp:'Jordan', ini:U_quinta,  fim:U_quinta},
+      {titulo:'MONTAGEM DAS PASTAS DO COORDENADOR',        resp:'Jordan', ini:U_quinta,  fim:U_quinta},
+    );
+
+    // Pós-prova igual ao padrão
+    const segunda_pos = addDays(dataProva, 1);
+    const quarta_pos  = addDays(dataProva, 3);
+    const quinta_pos  = addDays(dataProva, 4);
+    tarefas.push(
+      {titulo:'ESCANEAMENTO DAS FOLHAS DE RESPOSTA',       resp:'Jordan',  ini:segunda_pos, fim:quarta_pos},
+      {titulo:'ESCANEAMENTO DAS ATAS DE APLICAÇÃO',        resp:'Jordan',  ini:segunda_pos, fim:quarta_pos},
+      {titulo:'LIBERAÇÃO DAS ATAS PARA OS COORDENADORES',  resp:'Laryssa', ini:quinta_pos,  fim:quinta_pos},
+      {titulo:'RECEBIMENTO DOS RELATÓRIOS DE APLICAÇÃO',   resp:'Laryssa', ini:quinta_pos,  fim:addDiasUteis(quinta_pos, 3)},
+      {titulo:'LEITURA DAS FOLHAS DE RESPOSTA',            resp:'Natália', ini:proxUtilApos(quarta_pos), fim:addDiasUteis(quarta_pos, 2)},
+    );
+  }
+
