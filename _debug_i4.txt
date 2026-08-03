@@ -1,0 +1,8 @@
+k=>{ n[k.trim()]=typeof r[k]==='string'?r[k].trim():r[k]; });
+        retur
+@@@
+(k=>{n[k.trim()]=typeof r[k]==='string'?r[k].trim():r[k];});
+          retu
+@@@
+k=>{ n[k.trim()]=typeof r[k]==='string'?r[k].trim():r[k]; });
+          ret
