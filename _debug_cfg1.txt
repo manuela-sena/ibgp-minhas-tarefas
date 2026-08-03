@@ -1,7 +1,0 @@
-_TOKEN_CLF = ['ghp_iwsiJT','m95ck1QUPJZ4dth','7MqYB6dCU1sU7fu'].join('');
-const CLF_CONFIG_DIR = 'configs_classificacao';
-
-function clfIsNum(x){ return typeof x==='number' && !isNaN(x); }
-function clfNorm(s){
-  if(s==null) return '';
-  return String(s).trim().toUpperCase().normal
