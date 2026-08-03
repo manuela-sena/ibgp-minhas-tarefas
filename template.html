@@ -7531,8 +7531,9 @@ async function gerarClassificacaoFinal(){
       });
 
       const cols = ['INSCRIÇÃO','CANDIDATO','DATA DE NASCIMENTO','CARGO',
+        ...config.pools.map(p=>p.toUpperCase()),
         ...etapaCols.map(ec=>ec.header),
-        ...config.pools.map(p=>p.toUpperCase()), 'TOTAL GERAL',
+        'TOTAL GERAL',
         ...poolsAtivos.map(p=>`CLASS. ${p.toUpperCase()}`)];
 
       cols.forEach((c,ci)=>{
@@ -7561,8 +7562,8 @@ async function gerarClassificacaoFinal(){
         if(c.cargo !== cargoAtual){ cargoAtual=c.cargo; corIdx=(corIdx+1)%2; }
         const cor = corIdx===0?'FFFFFFFF':'FFF0F4FF';
         const linha = [c.inscricao, c.nome, c.nascimento ? c.nascimento.toLocaleDateString('pt-BR') : '', c.cargo,
-          ...etapaCols.map(ec=>ec.get(c)),
           ...config.pools.map(p=>c.pools[p]?'SIM':'-'),
+          ...etapaCols.map(ec=>ec.get(c)),
           c.totalGeral,
           ...poolsAtivos.map(p=>classes[`${c.cargo}|${p}|${c.inscricao}`]||'')];
         linha.forEach((v,ci)=>{
