@@ -7135,11 +7135,13 @@ function renderDesempateList(){
 
 // ── ETAPAS: UI DINÂMICA ────────────────────────────────────────────────
 function addEtapaClassificacao(){
+  syncAllEtapasFromDom();
   _clfConfig.etapas = _clfConfig.etapas || [];
   _clfConfig.etapas.push({nome:'', tipo:'pontuacao', campos:[]});
   renderEtapasList();
 }
 function removeEtapaClassificacao(idx){
+  syncAllEtapasFromDom();
   _clfConfig.etapas.splice(idx,1);
   delete _clfEtapaWb[idx];
   renderEtapasList();
@@ -7202,7 +7204,48 @@ function toggleClfEtapaCampo(idx, coluna, checked){
   renderEtapasList();
 }
 
+function syncEtapaMapFromDom(idx){
+  const wbState = _clfEtapaWb[idx];
+  if(!wbState) return;
+  const g = (id) => document.getElementById(id);
+  wbState.map = wbState.map || {};
+  const campos = ['insc','nome','nasc','cargo','total','resultado'];
+  const destKeys = {insc:'inscricao', nome:'nome', nasc:'nascimento', cargo:'cargo', total:'total', resultado:'resultado'};
+  campos.forEach(k=>{
+    const el = g('clf-etapa-map-'+k+'-'+idx);
+    if(el) wbState.map[destKeys[k]] = el.value;
+  });
+  const et = _clfConfig.etapas[idx];
+  if(et && (et.tipo==='pontuacao'||et.tipo==='classificatoria')){
+    wbState.map.camposMap = wbState.map.camposMap || {};
+    (et.campos||[]).forEach(campo=>{
+      const elId = 'clf-etapa-map-campo-'+idx+'-'+campo.replace(/[^a-zA-Z0-9]/g,'_');
+      const el = g(elId);
+      if(el) wbState.map.camposMap[campo] = el.value;
+    });
+    wbState.map.poolCols = wbState.map.poolCols || {};
+    const poolsAtivos = ['ampla', ...['pcd','pnp','indigena','quilombola'].filter(p=>document.getElementById('clf-pool-'+p)?.checked)];
+    poolsAtivos.forEach(p=>{
+      const el = g('clf-etapa-map-pool-'+idx+'-'+p);
+      if(el) wbState.map.poolCols[p] = el.value;
+    });
+  } else if(et && et.tipo==='binaria'){
+    const gp = g('clf-etapa-gatepool-'+idx);
+    if(gp) et.gatePool = gp.value;
+  }
+}
+function syncAllEtapasFromDom(){
+  const cards = document.querySelectorAll('#clf-etapas-list .clf-etapa-card');
+  if(!cards.length || cards.length !== (_clfConfig.etapas||[]).length) return;
+  cards.forEach(card=>{
+    const idx = +card.dataset.idx;
+    syncEtapaFromDom(idx);
+    syncEtapaMapFromDom(idx);
+  });
+}
+
 function renderEtapasList(){
+  syncAllEtapasFromDom();
   const etapas = _clfConfig.etapas || [];
   const el = document.getElementById('clf-etapas-list');
   if(!etapas.length){
