@@ -7009,7 +7009,8 @@ function coletarConfigAtual(){
     const tipo = document.getElementById('clf-etapa-tipo-'+idx)?.value;
     const et = {nome, tipo};
     if(tipo==='pontuacao'||tipo==='classificatoria'){
-      et.campos = (document.getElementById('clf-etapa-campos-'+idx)?.value||'').split(',').map(s=>s.trim()).filter(Boolean);
+      const camposInputEl = document.getElementById('clf-etapa-campos-'+idx);
+      et.campos = camposInputEl ? camposInputEl.value.split(',').map(s=>s.trim()).filter(Boolean) : (_clfConfig.etapas[idx]?.campos || []);
       if(tipo==='pontuacao'){
         const temCorte = document.getElementById('clf-etapa-temcorte-'+idx)?.checked;
         if(temCorte){
@@ -7146,6 +7147,25 @@ function syncEtapaFromDom(idx){
   }
 }
 
+function toggleClfEtapaCampo(idx, coluna, checked){
+  const et = _clfConfig.etapas[idx];
+  if(!et) return;
+  et.campos = et.campos || [];
+  const wbState = _clfEtapaWb[idx];
+  if(checked){
+    if(!et.campos.includes(coluna)) et.campos.push(coluna);
+    if(wbState){ wbState.map = wbState.map || {}; wbState.map.camposMap = wbState.map.camposMap || {}; wbState.map.camposMap[coluna] = coluna; }
+  } else {
+    et.campos = et.campos.filter(c=>c!==coluna);
+    if(wbState?.map?.camposMap) delete wbState.map.camposMap[coluna];
+  }
+  if(wbState?.colunas?.length){
+    et.campos = wbState.colunas.filter(c=>et.campos.includes(c));
+  }
+  if(document.getElementById('clf-desempate-list')) renderDesempateList();
+  renderEtapasList();
+}
+
 function renderEtapasList(){
   const etapas = _clfConfig.etapas || [];
   const el = document.getElementById('clf-etapas-list');
@@ -7158,11 +7178,22 @@ function renderEtapasList(){
   el.innerHTML = etapas.map((et,i)=>{
     let subFields = '';
     if(et.tipo==='pontuacao' || et.tipo==='classificatoria'){
-      subFields = `
+      const wbStateCampos = _clfEtapaWb[i];
+      if(wbStateCampos?.colunas?.length){
+        subFields = `
+      <div style="margin-top:10px">
+        <label class="form-label">Campos de nota (marque as colunas da planilha que são notas)</label>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px">
+          ${wbStateCampos.colunas.map(c=>`<label style="display:flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;color:#3a4a66"><input type="checkbox" onchange="toggleClfEtapaCampo(${i},'${c.replace(/'/g,"\\'")}',this.checked)" ${(et.campos||[]).includes(c)?'checked':''}>${c}</label>`).join('')}
+        </div>
+      </div>`;
+      } else {
+        subFields = `
       <div style="margin-top:10px">
         <label class="form-label">Campos de nota (separados por vírgula)</label>
         <input type="text" id="clf-etapa-campos-${i}" class="form-input" style="height:34px" placeholder="Ex: PORTUGUÊS,MATEMÁTICA,CONHECIMENTOS ESPECÍFICOS" value="${(et.campos||[]).join(',')}" oninput="syncClfEtapaCampos(${i}, this.value)">
       </div>`;
+      }
       if(et.tipo==='pontuacao'){
         subFields += `
       <div style="display:flex;gap:16px;align-items:center;margin-top:10px;flex-wrap:wrap">
