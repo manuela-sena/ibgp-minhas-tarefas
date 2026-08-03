@@ -1,0 +1,17 @@
+function verificarHomologacao(){
+  const cf=document.getElementById('homol-cf').files[0];
+  const dados=document.getElementById('homol-dados').files[0];
+  const status=document.getElementById('homol-status');
+  const btnWrap=document.getElementById('homol-btn-wrap');
+  if(cf&&dados){
+    status.innerHTML=`✅ <strong>${cf.name}</strong> + <strong>${dados.name}</strong> — clique em Gerar Homologação.`;
+    status.style.color='#2e7d52';
+    btnWrap.style.display='block';
+    lerExcel(cf,wb=>_homolCF=wb);
+    lerExcel(dados,wb=>_homolDados=wb);
+  } else {
+    status.textContent='Carregue os dois arquivos.';
+    status.style.color='#8a9ab5';
+    btnWrap.style.display='none';
+  }
+}
