@@ -7062,6 +7062,11 @@ function removeDesempateCriterio(idx){
   _clfConfig.desempate.splice(idx,1);
   renderDesempateList();
 }
+function getClfCamposDisponiveis(){
+  const set = new Set();
+  (_clfConfig.etapas||[]).forEach(et=>{ (et.campos||[]).forEach(c=>{ if(c) set.add(c); }); });
+  return [...set];
+}
 function renderDesempateList(){
   const desempate = _clfConfig.desempate || [];
   const el = document.getElementById('clf-desempate-list');
@@ -7078,7 +7083,15 @@ function renderDesempateList(){
     <option value="jurado" ${crit.tipo==='jurado'?'selected':''}>Jurado</option>
     <option value="idade_maior" ${crit.tipo==='idade_maior'?'selected':''}>Maior idade</option>
   </select>
-  ${crit.tipo==='maior_nota' ? `<input type="text" id="clf-desemp-campo-${i}" class="form-input" style="height:34px;flex:1" placeholder="Nome do campo (ex: NOTA REDAÇÃO)" value="${crit.campo||''}">` : '<div style="flex:1"></div>'}
+  ${crit.tipo==='maior_nota' ? (()=>{
+    const camposDisp = getClfCamposDisponiveis();
+    const atual = crit.campo||'';
+    const opts = camposDisp.slice();
+    if(atual && !opts.includes(atual)) opts.push(atual);
+    return '<select id="clf-desemp-campo-'+i+'" class="filter-select" style="height:34px;flex:1"><option value="">Selecione o campo...</option>' +
+      opts.map(c=>'<option value="'+c.replace(/"/g,'&quot;')+'" '+(c===atual?'selected':'')+'>'+c+'</option>').join('') +
+      '</select>';
+  })() : '<div style="flex:1"></div>'}
   <button onclick="removeDesempateCriterio(${i})" style="background:none;border:none;color:#c0322f;font-size:16px;cursor:pointer;padding:4px 8px">×</button>
 </div>`).join('');
 }
@@ -7093,6 +7106,11 @@ function removeEtapaClassificacao(idx){
   _clfConfig.etapas.splice(idx,1);
   delete _clfEtapaWb[idx];
   renderEtapasList();
+}
+function syncClfEtapaCampos(idx, valor){
+  if(!_clfConfig.etapas || !_clfConfig.etapas[idx]) return;
+  _clfConfig.etapas[idx].campos = valor.split(',').map(c=>c.trim()).filter(c=>c);
+  if(document.getElementById('clf-desempate-list')) renderDesempateList();
 }
 function renderEtapasList(){
   const etapas = _clfConfig.etapas || [];
@@ -7109,7 +7127,7 @@ function renderEtapasList(){
       subFields = `
       <div style="margin-top:10px">
         <label class="form-label">Campos de nota (separados por vírgula)</label>
-        <input type="text" id="clf-etapa-campos-${i}" class="form-input" style="height:34px" placeholder="Ex: PORTUGUÊS,MATEMÁTICA,CONHECIMENTOS ESPECÍFICOS" value="${(et.campos||[]).join(',')}">
+        <input type="text" id="clf-etapa-campos-${i}" class="form-input" style="height:34px" placeholder="Ex: PORTUGUÊS,MATEMÁTICA,CONHECIMENTOS ESPECÍFICOS" value="${(et.campos||[]).join(',')}" oninput="syncClfEtapaCampos(${i}, this.value)">
       </div>`;
       if(et.tipo==='pontuacao'){
         subFields += `
