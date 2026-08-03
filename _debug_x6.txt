@@ -1,0 +1,3 @@
+el>
+      <select id="clf-etapa-tipo-${i}" class="filter-select" style="height:34px" onchange="syncEtapaFromDom(${i});renderEtapasList()">
+        <option value="pontuacao" ${et.tipo==='pontuacao'?'selected':''}>Pontuação (com cor
