@@ -7006,15 +7006,30 @@ class ClfMotor {
 }
 
 // ── LEITURA DE PLANILHAS (header sempre linha 2) ─────────────────────
+function clfDetectarLinhaCabecalho(ws){
+  // Nem toda planilha tem uma linha de título antes do cabeçalho (algumas já
+  // começam com o cabeçalho na linha 1, outras têm uma linha em branco extra).
+  // Testa as 3 primeiras posições e usa a que tiver mais células de texto preenchidas.
+  let melhorRange = 1, melhorQtd = -1;
+  for(const range of [0,1,2]){
+    const aoa = XLSX.utils.sheet_to_json(ws, {header:1, range, defval:''});
+    if(!aoa.length) continue;
+    const qtd = aoa[0].filter(x=>String(x).trim()).length;
+    if(qtd > melhorQtd){ melhorQtd = qtd; melhorRange = range; }
+  }
+  return melhorRange;
+}
 function clfLerColunas(wb, sheet){
   const ws=wb.Sheets[sheet];
-  const aoa=XLSX.utils.sheet_to_json(ws,{header:1,range:1,defval:''});
+  const range=clfDetectarLinhaCabecalho(ws);
+  const aoa=XLSX.utils.sheet_to_json(ws,{header:1,range,defval:''});
   if(!aoa.length) return [];
   return aoa[0].map(x=>String(x).trim()).filter(Boolean);
 }
 function clfLerLinhas(wb, sheet){
   const ws=wb.Sheets[sheet];
-  const aoa=XLSX.utils.sheet_to_json(ws,{header:1,range:1,defval:'',raw:false});
+  const range=clfDetectarLinhaCabecalho(ws);
+  const aoa=XLSX.utils.sheet_to_json(ws,{header:1,range,defval:'',raw:false});
   if(aoa.length<2) return [];
   const header=aoa[0].map(x=>String(x).trim());
   return aoa.slice(1).filter(r=>r[0]!=='' && r[0]!=null).map(r=>{
