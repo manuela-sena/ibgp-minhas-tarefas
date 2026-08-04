@@ -1,11 +1,182 @@
 {
   "token": "ESC_MSDINK2R_EHS9",
-  "criadoEm": "2026-08-03T17:41:48.003Z",
+  "enviadoEm": "2026-08-04T17:48:46.084Z",
+  "protocolo": "ESC_MSDINK2R_EHS9_1785865726084",
   "concurso": {
     "concurso": "CÂMARA DE CATAGUASES/MG - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
     "municipio": "CATAGUASES/MG",
     "dataProva": "23/08/2026",
     "escola": "ESCOLA ESTADUAL GUIDO MARLIERE",
     "idEscola": "ESC_MSDINK2R_EHS9"
-  }
+  },
+  "instituicao": {
+    "nome": "ESCOLA ESTADUAL GUIDO MARLIEREGUIDO MARLIERE",
+    "cnpj": "19.649.565/0001-22",
+    "razao": "CAIXA ESCOLAR GUIDO THOMAZ MARLIERE",
+    "endereco": "RUA TENENTE LUIZ RIBEIRO",
+    "numero": "110",
+    "complemento": "TÉRREO",
+    "bairro": "VILA DOMINGOS LOPES",
+    "cidade": "CATAGUASES",
+    "uf": "MG",
+    "cep": "36774-034",
+    "responsavel": {
+      "nome": "ELIAS FRANCISCO DE OLIVEIRA JÚNIOR",
+      "cargo": "DIRETOR",
+      "email": "escola.97357@educacao.mg.gov.br",
+      "tel": "(32) 99947-5550"
+    },
+    "diretor": {
+      "nome": "ELIAS FRANCISCO DE OLIVEIRA JÚNIOR",
+      "email": "eliaskta@gmail.com"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "4",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "4",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "1",
+      "andar": "",
+      "sala": "01",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "",
+      "sala": "02",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "",
+      "sala": "03",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "",
+      "sala": "04",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "",
+      "sala": "05",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "",
+      "sala": "06",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "",
+      "sala": "07",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "",
+      "sala": "08",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "",
+      "sala": "09",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "",
+      "sala": "10",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "",
+      "sala": "11",
+      "capacidade": 2,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "1",
+      "andar": "",
+      "sala": "12",
+      "capacidade": 2,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    }
+  ]
 }
