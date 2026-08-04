@@ -7436,14 +7436,19 @@ function renderEtapasList(){
   }).join('');
 }
 
-async function onEtapaArquivo(idx, input){
+async function clfColunasUniao(wb, sheets){
+  const set = new Set();
+  (sheets||[]).forEach(sh => clfLerColunas(wb, sh).forEach(c => set.add(c)));
+  return [...set];
+}
+function onEtapaArquivo(idx, input){
   const file = input.files[0]; if(!file) return;
   carregarSheetJSClf(()=>{
     const reader = new FileReader();
     reader.onload = (e)=>{
       const wb = XLSX.read(e.target.result, {type:'binary', cellDates:true});
       const sheetNames = wb.SheetNames;
-      _clfEtapaWb[idx] = {wb, sheetNames, sheets: [...sheetNames], colunas: clfLerColunas(wb, sheetNames[0]), map:{}};
+      _clfEtapaWb[idx] = {wb, sheetNames, sheets: [...sheetNames], colunas: clfColunasUniao(wb, sheetNames), map:{}};
       renderEtapasList();
     };
     reader.readAsBinaryString(file);
@@ -7457,7 +7462,7 @@ function onEtapaSheetToggle(idx, sheet, checked){
   if(checked){ if(!state.sheets.includes(sheet)) state.sheets.push(sheet); }
   else { state.sheets = state.sheets.filter(s=>s!==sheet); }
   state.sheets = state.sheetNames.filter(s=>state.sheets.includes(s));
-  state.colunas = state.sheets.length ? clfLerColunas(state.wb, state.sheets[0]) : [];
+  state.colunas = state.sheets.length ? clfColunasUniao(state.wb, state.sheets) : [];
   renderEtapasList();
 }
 
