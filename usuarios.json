@@ -101,6 +101,15 @@
       "perfil": "equipe",
       "auth_tipo": "microsoft",
       "ativo": true
+    },
+    {
+      "nome_interno": "Financeiro Grupo IBGP",
+      "aliases": [
+        "financeiro grupo ibgp",
+        "finaceiro"
+      ],
+      "perfil": "equipe",
+      "ativo": true
     }
   ]
 }
