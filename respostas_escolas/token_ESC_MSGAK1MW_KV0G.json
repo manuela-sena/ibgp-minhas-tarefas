@@ -1,11 +1,232 @@
 {
   "token": "ESC_MSGAK1MW_KV0G",
-  "criadoEm": "2026-08-05T16:18:25.736Z",
+  "enviadoEm": "2026-08-05T17:31:16.756Z",
+  "protocolo": "ESC_MSGAK1MW_KV0G_1785951076756",
   "concurso": {
     "concurso": "ARAXÁ/MG - EDITAL Nº 01/2026  - PSP",
     "municipio": "ARAXÁ/MG",
     "dataProva": "23/08/2026",
     "escola": "ESCOLA ESTADUAL ARMANDO SANTOS",
     "idEscola": "ESC_MSGAK1MW_KV0G"
-  }
+  },
+  "instituicao": {
+    "nome": "ESCOLA ESTADUAL ARMANDO SANTOS",
+    "cnpj": "20.011.250/0001-34",
+    "razao": "CAIXA ESCOLAR ARMANDO SANTOS",
+    "endereco": "PRAÇA FAUSTO BARBOSA",
+    "numero": "790",
+    "complemento": "CASA",
+    "bairro": "SÃO GERALDO",
+    "cidade": "ARAXÁ",
+    "uf": "MG",
+    "cep": "38180-100",
+    "responsavel": {
+      "nome": "DANILO MARTINS VARGAS",
+      "cargo": "DIRETOR",
+      "email": "danilo.martins.vargas@educacao.mg.gov.br",
+      "tel": "(34) 98879-7090"
+    },
+    "diretor": {
+      "nome": "Danilo Martins Vargas",
+      "email": "danilo.martins.vargas@educacao.mg.gov.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "4",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "4",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "A",
+      "andar": "1° Andar",
+      "sala": "1",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1° Andar",
+      "sala": "2",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º Andar",
+      "sala": "3",
+      "capacidade": 32,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º Andar",
+      "sala": "4",
+      "capacidade": 32,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º Andar",
+      "sala": "17",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º Andar",
+      "sala": "18",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º Andar",
+      "sala": "19",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º Andar",
+      "sala": "20",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º Andar",
+      "sala": "21",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "1º Andar",
+      "sala": "22",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "1º Andar",
+      "sala": "23",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "1º Andar",
+      "sala": "24",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "1º Andar",
+      "sala": "25",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "1º Andar",
+      "sala": "28",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "1º Andar",
+      "sala": "29",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "1º Andar",
+      "sala": "30",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º Andar",
+      "sala": "14",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    }
+  ]
 }
