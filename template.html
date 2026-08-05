@@ -4131,7 +4131,9 @@ async function previewRetroativo(bucketId){
       if(titulo.includes('INSCRIÇÕES') && !titulo.includes('RESULTADO') && !titulo.includes('RECURSO') && !titulo.includes('PUBLICAÇÃO') && !titulo.includes('ABERTURA') && !titulo.includes('CONVOCAÇÃO') && !titulo.includes('ISENÇÃO') && due && !fimInscricoes){
         fimInscricoes = due;
         inicioInscricoes = t.startDateTime ? new Date(t.startDateTime) : due;
+        console.log('[DEBUG INSCRICOES] titulo=', titulo, '| due=', due, '| startDateTime=', t.startDateTime);
       }
+      if(titulo.includes('INSCRIÇÕES')) console.log('[DEBUG TODAS INSCRICOES] titulo=', titulo, '| due=', due, '| start=', t.startDateTime, '| excluida=', (titulo.includes('RESULTADO')||titulo.includes('RECURSO')||titulo.includes('PUBLICAÇÃO')||titulo.includes('ABERTURA')||titulo.includes('CONVOCAÇÃO')||titulo.includes('ISENÇÃO')));
 
       // Data da prova — aceita qualquer variação
       if(!dataProva && due && (
