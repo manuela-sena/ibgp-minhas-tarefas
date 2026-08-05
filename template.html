@@ -3303,7 +3303,7 @@ function calcularTarefasOperacionais(cronograma, temDiscursiva, modo='padrao'){
   // por isso aceitamos qualquer linha com "INSCRIÇÕES" que não seja resultado/recurso/
   // publicação/convocação/isenção (essas são etapas relacionadas, não o período em si).
   let fimInscricoes=null, iniInscricoes=null, dataProva=null, resultPrelObjetiva=null;
-  console.log('[DEBUG CALC] cronograma recebido=', cronograma.map(x=>({atividade:x.atividade, data_inicio: x.data_inicio? new Date(x.data_inicio).toString(): x.data_inicio, data_fim: x.data_fim? new Date(x.data_fim).toString(): x.data_fim})), '| modo=', modo);
+  cronograma.forEach((x,i)=>console.log('[DEBUG CALC] item'+i+' atividade='+x.atividade+' | data_inicio='+(x.data_inicio? new Date(x.data_inicio).toString(): x.data_inicio)+' | data_fim='+(x.data_fim? new Date(x.data_fim).toString(): x.data_fim)));
   for(const t of cronograma){
     const a=t.atividade.toUpperCase();
     if(!fimInscricoes && a.includes('INSCRIÇÕES') &&
