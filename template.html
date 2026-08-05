@@ -4126,7 +4126,7 @@ async function previewRetroativo(bucketId){
       const due = t.dueDateTime ? new Date(t.dueDateTime) : null;
 
       // Fim das inscrições
-      if(titulo.includes('PERÍODO DE INSCRIÇÕES') && due && !fimInscricoes)
+      if(titulo.includes('INSCRIÇÕES') && !titulo.includes('RESULTADO') && !titulo.includes('RECURSO') && !titulo.includes('PUBLICAÇÃO') && !titulo.includes('ABERTURA') && !titulo.includes('CONVOCAÇÃO') && !titulo.includes('ISENÇÃO') && due && !fimInscricoes)
         fimInscricoes = due;
 
       // Data da prova — aceita qualquer variação
