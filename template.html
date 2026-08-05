@@ -5791,9 +5791,18 @@ function _isPericiaMedica(t){ return TAREFAS_PERICIA_MEDICA.some(p=>t.tarefa.toU
 function _isPcf(t){ return TAREFAS_PCF.some(p=>t.tarefa.toUpperCase().startsWith(p)); }
 function _isExameMedico(t){ return TAREFAS_EXAME_MEDICO.some(p=>t.tarefa.toUpperCase().startsWith(p)); }
 function _isHeteroidentificacao(t){ return TAREFAS_HETEROIDENTIFICACAO.some(p=>t.tarefa.toUpperCase().startsWith(p)); }
+const TAREFAS_ENCERRAMENTO_INSCRICAO = [
+  'PERÍODO DE INSCRIÇÕES',
+  'ENCERRAMENTO DAS INSCRIÇÕES',
+  'ENCERRAMENTO DA INSCRIÇÃO',
+  'TÉRMINO DAS INSCRIÇÕES',
+  'TÉRMINO DA INSCRIÇÃO',
+  'PRAZO DE INSCRIÇÕES',
+  'INSCRIÇÕES',
+];
 function _isEncerramentoInscricao(t){
   const T = t.tarefa.toUpperCase();
-  return T.includes('INSCRIÇÕES') && !T.includes('RESULTADO') && !T.includes('RECURSO') && !T.includes('PUBLICAÇÃO') && !T.includes('ABERTURA') && !T.includes('CONVOCAÇÃO') && !T.includes('ISENÇÃO');
+  return TAREFAS_ENCERRAMENTO_INSCRICAO.some(p=>T.startsWith(p)) && !T.includes('RESULTADO') && !T.includes('RECURSO') && !T.includes('PUBLICAÇÃO') && !T.includes('ABERTURA') && !T.includes('CONVOCAÇÃO') && !T.includes('ISENÇÃO');
 }
 
 const CATEGORIAS_AGENDA = [
