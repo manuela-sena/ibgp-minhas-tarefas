@@ -1,11 +1,102 @@
 {
   "token": "ESC_MSG8AYDJ_8RQY",
-  "criadoEm": "2026-08-05T15:15:22.375Z",
+  "enviadoEm": "2026-08-05T15:33:53.976Z",
+  "protocolo": "ESC_MSG8AYDJ_8RQY_1785944033976",
   "concurso": {
     "concurso": "ARAXÁ/MG - EDITAL Nº 01/2026  - PSP",
     "municipio": "ARAXÁ/MG",
     "dataProva": "06/09/2026",
     "escola": "ESCOLA ESTADUAL PROFESSOR LUIZ ANTONIO DE OLIVEIRA",
     "idEscola": "ESC_MSG8AYDJ_8RQY"
-  }
+  },
+  "instituicao": {
+    "nome": "JERRY TADEU DE RESENDE",
+    "cnpj": "20.017.166/0001-28",
+    "razao": "",
+    "endereco": "Rua Santo Antônio",
+    "numero": "150",
+    "complemento": "",
+    "bairro": "Santo Antônio",
+    "cidade": "Araxá",
+    "uf": "MG",
+    "cep": "38182-106",
+    "responsavel": {
+      "nome": "JERRY TADEU DE RESENDE",
+      "cargo": "diretor",
+      "email": "jerry.resende@educacao.mg.gov.br",
+      "tel": "(34) 99951-0357"
+    },
+    "diretor": {
+      "nome": "JERRY TADEU DE RESENDE",
+      "email": "jerry.resende@educacao.mg.gov.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": true,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "1",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "1",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "A",
+      "andar": "",
+      "sala": "1 a 10",
+      "capacidade": 350,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "",
+      "sala": "11 a 13",
+      "capacidade": 105,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "",
+      "sala": "14 a 16",
+      "capacidade": 105,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "D",
+      "andar": "",
+      "sala": "1",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    }
+  ]
 }
