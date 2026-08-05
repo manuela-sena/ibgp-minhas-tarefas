@@ -3303,14 +3303,13 @@ function calcularTarefasOperacionais(cronograma, temDiscursiva, modo='padrao'){
   // por isso aceitamos qualquer linha com "INSCRIÇÕES" que não seja resultado/recurso/
   // publicação/convocação/isenção (essas são etapas relacionadas, não o período em si).
   let fimInscricoes=null, iniInscricoes=null, dataProva=null, resultPrelObjetiva=null;
-  cronograma.forEach((x,i)=>console.log('[DEBUG CALC] item'+i+' atividade='+x.atividade+' | data_inicio='+(x.data_inicio? new Date(x.data_inicio).toString(): x.data_inicio)+' | data_fim='+(x.data_fim? new Date(x.data_fim).toString(): x.data_fim)));
   for(const t of cronograma){
     const a=t.atividade.toUpperCase();
     if(!fimInscricoes && a.includes('INSCRIÇÕES') &&
        !a.includes('RESULTADO') && !a.includes('RECURSO') &&
        !a.includes('PUBLICAÇÃO') && !a.includes('ABERTURA') &&
        !a.includes('CONVOCAÇÃO') && !a.includes('ISENÇÃO'))
-      fimInscricoes=t.data_fim;iniInscricoes=t.data_inicio||t.data_fim;
+      { fimInscricoes = t.data_fim; iniInscricoes = t.data_inicio||t.data_fim; }
     if((a==='PROVA OBJETIVA'||a.startsWith('PROVA OBJETIVA E')||a.startsWith('REALIZAÇÃO DA PROVA OBJETIVA')||a.startsWith('APLICAÇÃO DA PROVA OBJETIVA'))&&!dataProva) dataProva=t.data_fim;
     if(a.includes('RESULTADO PRELIMINAR DA TOTALIZAÇÃO')&&!resultPrelObjetiva) resultPrelObjetiva=t.data_fim;
   }
@@ -3382,7 +3381,7 @@ function calcularTarefasOperacionais(cronograma, temDiscursiva, modo='padrao'){
       });
     }
 
-    console.log('[DEBUG CALC] iniInscricoes=', iniInscricoes, '| fimInscricoes=', fimInscricoes, '| dataProva=', dataProva); tarefas.push(
+    tarefas.push(
       {titulo:'ENVIO DE OFÍCIO À SECRETARIA DE EDUCAÇÃO',   resp:'Laryssa', ini:iniInscricoes||fimInscricoes, fim:iniInscricoes||fimInscricoes},
       {titulo:'ENVIO DE OFÍCIOS ÀS ESCOLAS',                resp:'Laryssa', ini:proxUtil(new Date(((iniInscricoes||fimInscricoes).getTime()+fimInscricoes.getTime())/2)), fim:proxUtil(new Date(((iniInscricoes||fimInscricoes).getTime()+fimInscricoes.getTime())/2))},
       {titulo:'SOLICITAR ARQUIVOS DE IMPRESSÃO À BANCA',    resp:'Manuela', ini:A1,    fim:A1},
@@ -3420,7 +3419,7 @@ function calcularTarefasOperacionais(cronograma, temDiscursiva, modo='padrao'){
     if(fimInscricoes){
       const L1 = addDiasUteis(fimInscricoes, 2);
       const L2 = addDiasUteis(L1, 2);
-      console.log('[DEBUG CALC] iniInscricoes=', iniInscricoes, '| fimInscricoes=', fimInscricoes, '| dataProva=', dataProva); tarefas.push(
+      tarefas.push(
         {titulo:'ENVIO DE OFÍCIO À SECRETARIA DE EDUCAÇÃO',   resp:'Laryssa', ini:iniInscricoes||fimInscricoes, fim:iniInscricoes||fimInscricoes},
         {titulo:'ENVIO DE OFÍCIOS ÀS ESCOLAS',             resp:'Laryssa', ini:proxUtil(new Date(((iniInscricoes||fimInscricoes).getTime()+fimInscricoes.getTime())/2)), fim:proxUtil(new Date(((iniInscricoes||fimInscricoes).getTime()+fimInscricoes.getTime())/2))},
         {titulo:'SOLICITAR ARQUIVOS DE IMPRESSÃO À BANCA', resp:'Manuela', ini:addDiasUteis(fimInscricoes,1), fim:addDiasUteis(fimInscricoes,1)},
@@ -4132,9 +4131,7 @@ async function previewRetroativo(bucketId){
       if(titulo.includes('INSCRIÇÕES') && !titulo.includes('RESULTADO') && !titulo.includes('RECURSO') && !titulo.includes('PUBLICAÇÃO') && !titulo.includes('ABERTURA') && !titulo.includes('CONVOCAÇÃO') && !titulo.includes('ISENÇÃO') && due && !fimInscricoes){
         fimInscricoes = due;
         inicioInscricoes = t.startDateTime ? new Date(t.startDateTime) : due;
-        console.log('[DEBUG INSCRICOES] titulo=', titulo, '| due=', due, '| startDateTime=', t.startDateTime);
       }
-      if(titulo.includes('INSCRIÇÕES')) console.log('[DEBUG TODAS INSCRICOES] titulo=', titulo, '| due=', due, '| start=', t.startDateTime, '| excluida=', (titulo.includes('RESULTADO')||titulo.includes('RECURSO')||titulo.includes('PUBLICAÇÃO')||titulo.includes('ABERTURA')||titulo.includes('CONVOCAÇÃO')||titulo.includes('ISENÇÃO')));
 
       // Data da prova — aceita qualquer variação
       if(!dataProva && due && (
