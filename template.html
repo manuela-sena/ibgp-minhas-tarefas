@@ -3878,6 +3878,9 @@ async function carregarPlanejamentos(){
     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
     Adicionar concurso existente
   </button>
+    <button class="btn-secondary" onclick="atribuirFinanceiroEmMassa()" style="height:34px;padding:0 14px;font-size:12.5px">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" style="margin-right:5px"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Atribuir Financeiro
+    </button>
 </div>`;
       return;
     }
@@ -4253,6 +4256,48 @@ const PERFIL_LABELS = {
   equipe:       {label:'Equipe',       bg:'#eef0f4',color:'#41506b'},
   operacional:  {label:'Operacional',  bg:'#f3eafb',color:'#7b34c1'},
 };
+
+async function atribuirFinanceiroEmMassa(){
+  if(!confirm('Isso vai atribuir "Financeiro Grupo IBGP" como responsável em TODAS as tarefas (de qualquer concurso, passado ou futuro) cujo título comece com "COBRANÇA PAGAMENTO". Continuar?')) return;
+  const btn = event?.currentTarget;
+  const origHtml = btn ? btn.innerHTML : null;
+  if(btn){ btn.disabled = true; btn.innerHTML = '<div class="spinner" style="width:13px;height:13px;border-width:2px;display:inline-block;margin-right:6px"></div>Processando...'; }
+  try{
+    const usersJson = await api(`https://graph.microsoft.com/v1.0/users?$filter=startswith(displayName,'Financeiro Grupo IBGP')`);
+    const user = (usersJson.value||[])[0];
+    if(!user) throw new Error('Usuário "Financeiro Grupo IBGP" não encontrado no Microsoft 365.');
+    const userId = user.id;
+
+    let url = `https://graph.microsoft.com/v1.0/planner/plans/${_planoId}/tasks`;
+    let todas = [];
+    while(url){
+      const pag = await api(url);
+      todas = todas.concat(pag.value||[]);
+      url = pag['@odata.nextLink'] || null;
+    }
+
+    const alvo = todas.filter(t => (t.title||'').trim().toUpperCase().startsWith('COBRANÇA PAGAMENTO'));
+
+    let ok=0, jaTinha=0, erro=0;
+    for(const t of alvo){
+      try{
+        if(t.assignments && t.assignments[userId]){ jaTinha++; continue; }
+        const etag = t['@odata.etag'];
+        await api(`https://graph.microsoft.com/v1.0/planner/tasks/${t.id}`, {
+          method:'PATCH',
+          headers:{'If-Match': etag},
+          body: JSON.stringify({assignments:{[userId]:{'@odata.type':'#microsoft.graph.plannerAssignment', orderHint:' !'}}})
+        });
+        ok++;
+      }catch(e){ erro++; }
+    }
+    alert(`Atribuição concluída.\n\nEncontradas: ${alvo.length}\nAtribuídas agora: ${ok}\nJá estavam atribuídas: ${jaTinha}\nErros: ${erro}`);
+  }catch(e){
+    alert('Erro ao atribuir: '+e.message);
+  } finally {
+    if(btn){ btn.disabled=false; if(origHtml) btn.innerHTML = origHtml; }
+  }
+}
 
 function renderUsuarios(){
   const tbody = document.getElementById('usuarios-tbody');
