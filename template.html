@@ -1067,9 +1067,20 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
           <div>
             <label class="form-label">Tipo</label>
             <select id="agenda-tipo" class="filter-select" style="height:36px" onchange="renderAgenda()">
-              <option value="todos">Ambos</option>
+              <option value="todos">Todos</option>
               <option value="prova">Prova Objetiva</option>
               <option value="homol">Homologação</option>
+              <option value="curso_formacao">Curso de Formação</option>
+              <option value="entrevista">Entrevista</option>
+              <option value="prova_pratica">Prova Prática</option>
+              <option value="psicologica">Avaliação Psicológica</option>
+              <option value="curso_aperfeicoamento">Curso de Aperfeiçoamento</option>
+              <option value="av_medica">Avaliação Médica</option>
+              <option value="devolutiva">Devolutiva</option>
+              <option value="pericia_medica">Perícia Médica</option>
+              <option value="pcf">Prova de Capacidade Física</option>
+              <option value="exame_medico">Exame Médico</option>
+              <option value="heteroidentificacao">Heteroidentificação</option>
             </select>
           </div>
           <button class="btn-primary" onclick="renderAgenda()" style="height:36px;padding:0 16px">
@@ -5697,6 +5708,9 @@ const TAREFAS_PROVA = [
   'PROVA OBJETIVA',
   'REALIZAÇÃO DA PROVA OBJETIVA',
   'APLICAÇÃO DA PROVA OBJETIVA',
+  'REALIZAÇÃO DA 2ª ETAPA - AVALIAÇÃO DE CONHECIMENTOS',
+  'REALIZAÇÃO DA 2ª ETAPA PROVA OBJETIVA',
+  'REALIZAÇÃO DO PROCESSO ELETIVO',
 ];
 const TAREFAS_HOMOL = [
   'HOMOLOGAÇÃO',
@@ -5712,6 +5726,91 @@ const TAREFAS_HOMOL = [
 function _isProva(t){ return TAREFAS_PROVA.some(p => t.tarefa.toUpperCase().startsWith(p)); }
 function _isHomol(t){ return TAREFAS_HOMOL.some(p => t.tarefa.toUpperCase().startsWith(p)); }
 
+
+const TAREFAS_CURSO_FORMACAO = [
+  'REALIZAÇÃO DO CURSO DE FORMAÇÃO',
+  'REALIZAÇÃO CURSO FORMAÇÃO INTRODUTÓRIA BÁSICA',
+  'REALIZAÇÃO DA PROVA DO CURSO DE FORMAÇÃO',
+  'REALIZAÇÃO DA PROVA FINAL DO CURSO DE FORMAÇÃO',
+];
+const TAREFAS_ENTREVISTA = [
+  'PREVISÃO DE REALIZAÇÃO DA 3ª ETAPA - ENTREVISTA',
+  'PREVISÃO DE REALIZAÇÃO DA 4ª ETAPA - ENTREVISTA',
+  'PREVISÃO DE REALIZAÇÃO DA 5ª ETAPA - ENTREVISTA',
+  'REALIZAÇÃO ENTREVISTA POR COMPETÊNCIAS',
+];
+const TAREFAS_PROVA_PRATICA = [
+  'PREVISÃO DE REALIZAÇÃO DA 5ª ETAPA – PROVA PRÁTICA',
+  'PROVA PRÁTICA',
+  'REALIZAÇÃO DA PROVA PRÁTICA',
+  'REALIZAÇÃO PROVA PRÁTICA',
+];
+const TAREFAS_PSICOLOGICA = [
+  'REALIZAÇÃO AVALIAÇÃO PSICOLÓGICA',
+  'REALIZAÇÃO DA 3ª ETAPA - AVALIAÇÃO PSICOLÓGICA',
+  'REALIZAÇÃO DA AVALIAÇÃO PSICOLÓGICA',
+];
+const TAREFAS_CURSO_APERFEICOAMENTO = [
+  'REALIZAÇÃO DA 4ª ETAPA - CURSO DE APERFEIÇOAMENTO',
+];
+const TAREFAS_AV_MEDICA = [
+  'REALIZAÇÃO DA AVALIAÇÃO CLÍNICA',
+  'REALIZAÇÃO DA AVALIAÇÃO MÉDICA',
+  'REALIZAÇÃO DA AVALIAÇÃO MÉDICO PERICIAL MULTIPROFISSIONAL',
+];
+const TAREFAS_DEVOLUTIVA = [
+  'REALIZAÇÃO DA ENTREVISTA DEVOLUTIVA',
+  'REALIZAÇÃO DAS ENTREVISTAS DEVOLUTIVAS',
+];
+const TAREFAS_PERICIA_MEDICA = [
+  'REALIZAÇÃO DA PERÍCIA MÉDICA',
+  'REALIZAÇÃO/AV. MÉD. PERICIAL MULTI/BIOPSICOSSOCIAL',
+];
+const TAREFAS_PCF = [
+  'REALIZAÇÃO DA PROVA DE CAPACIDADE FÍSICA',
+  'REALIZAÇÃO PROVA DE CAPACIDADE FÍSICA',
+];
+const TAREFAS_EXAME_MEDICO = [
+  'REALIZAÇÃO DO EXAME MÉDICO',
+  'REALIZAÇÃO DOS EXAMES CLÍNICOS E LABORATORIAIS',
+];
+const TAREFAS_HETEROIDENTIFICACAO = [
+  'REALIZAÇÃO DO PROCEDIMENTO DE VERIFICAÇÃO DA VERACIDADE DA AUTODECLARAÇÃO',
+  'REALIZAÇÃO DO PROCEDIMENTO HETEROIDENTIFICAÇÃO',
+];
+
+function _isCursoFormacao(t){ return TAREFAS_CURSO_FORMACAO.some(p=>t.tarefa.toUpperCase().startsWith(p)); }
+function _isEntrevista(t){ return TAREFAS_ENTREVISTA.some(p=>t.tarefa.toUpperCase().startsWith(p)); }
+function _isProvaPratica(t){ return TAREFAS_PROVA_PRATICA.some(p=>t.tarefa.toUpperCase().startsWith(p)); }
+function _isPsicologica(t){ return TAREFAS_PSICOLOGICA.some(p=>t.tarefa.toUpperCase().startsWith(p)); }
+function _isCursoAperfeicoamento(t){ return TAREFAS_CURSO_APERFEICOAMENTO.some(p=>t.tarefa.toUpperCase().startsWith(p)); }
+function _isAvMedica(t){ return TAREFAS_AV_MEDICA.some(p=>t.tarefa.toUpperCase().startsWith(p)); }
+function _isDevolutiva(t){ return TAREFAS_DEVOLUTIVA.some(p=>t.tarefa.toUpperCase().startsWith(p)); }
+function _isPericiaMedica(t){ return TAREFAS_PERICIA_MEDICA.some(p=>t.tarefa.toUpperCase().startsWith(p)); }
+function _isPcf(t){ return TAREFAS_PCF.some(p=>t.tarefa.toUpperCase().startsWith(p)); }
+function _isExameMedico(t){ return TAREFAS_EXAME_MEDICO.some(p=>t.tarefa.toUpperCase().startsWith(p)); }
+function _isHeteroidentificacao(t){ return TAREFAS_HETEROIDENTIFICACAO.some(p=>t.tarefa.toUpperCase().startsWith(p)); }
+
+const CATEGORIAS_AGENDA = [
+  {id:'prova', label:'Prova Objetiva', bg:'#fdeceb', cor:'#c0322f', test:_isProva},
+  {id:'homol', label:'Homologação', bg:'#e4f3ea', cor:'#2e7d52', test:_isHomol},
+  {id:'curso_formacao', label:'Curso de Formação', bg:'#eaf1fd', cor:'#1f4e8c', test:_isCursoFormacao},
+  {id:'entrevista', label:'Entrevista', bg:'#f5eefc', cor:'#7c3aed', test:_isEntrevista},
+  {id:'prova_pratica', label:'Prova Prática', bg:'#fef3e0', cor:'#b8720b', test:_isProvaPratica},
+  {id:'psicologica', label:'Avaliação Psicológica', bg:'#fdeaf3', cor:'#b8256f', test:_isPsicologica},
+  {id:'curso_aperfeicoamento', label:'Curso de Aperfeiçoamento', bg:'#e8f7f5', cor:'#0f7a6c', test:_isCursoAperfeicoamento},
+  {id:'av_medica', label:'Avaliação Médica', bg:'#e6f7fb', cor:'#0e7490', test:_isAvMedica},
+  {id:'devolutiva', label:'Devolutiva', bg:'#f4f1fd', cor:'#5b3aa0', test:_isDevolutiva},
+  {id:'pericia_medica', label:'Perícia Médica', bg:'#fbeee9', cor:'#a8451f', test:_isPericiaMedica},
+  {id:'pcf', label:'Prova de Capacidade Física', bg:'#eef6e3', cor:'#4c7a1f', test:_isPcf},
+  {id:'exame_medico', label:'Exame Médico', bg:'#eef2fb', cor:'#33508a', test:_isExameMedico},
+  {id:'heteroidentificacao', label:'Heteroidentificação', bg:'#f8eef7', cor:'#8a2a7a', test:_isHeteroidentificacao},
+];
+function _tipoAgenda(t){
+  const c = CATEGORIAS_AGENDA.find(c=>c.test(t));
+  return c || {id:'outro', label:'Outro', bg:'#eef1f6', cor:'#41506b'};
+}
+function _matchTipo(t){ return CATEGORIAS_AGENDA.some(c=>c.test(t)); }
 function initAgenda(){
   // Definir datas padrão: hoje até fim do ano
   const ini = document.getElementById('agenda-ini');
@@ -5755,13 +5854,12 @@ function renderAgenda(){
     if(!t.due) return false;
     const d = parseISO(t.due);
     if(d < iniDate || d > fimDate) return false;
-    if(tipo === 'prova') return isProva(t);
-    if(tipo === 'homol') return isHomol(t);
-    return isProva(t) || isHomol(t);
+    if(tipo!=='todos'){ const cat=CATEGORIAS_AGENDA.find(c=>c.id===tipo); return cat?cat.test(t):false; }
+    return _matchTipo(t);
   });
 
   if(!tarefas.length){
-    el.innerHTML=`<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">Nenhum evento encontrado</div><div class="empty-desc">Não há ${tipo==='prova'?'provas objetivas':tipo==='homol'?'homologações':'eventos'} no período selecionado.</div></div>`;
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">Nenhum evento encontrado</div><div class="empty-desc">Não há ${(CATEGORIAS_AGENDA.find(c=>c.id===tipo)||{label:'eventos'}).label.toLowerCase()} no período selecionado.</div></div>`;
     return;
   }
 
@@ -5824,7 +5922,7 @@ function renderAgenda(){
       <tbody>
         ${mes.items.map((t,i) => {
           const d = parseISO(t.due);
-          const tipo = isProva(t) ? {label:'Prova',bg:'#fdeceb',cor:'#c0322f'} : {label:'Homologação',bg:'#e4f3ea',cor:'#2e7d52'};
+          const tipo = _tipoAgenda(t);
           const status = t.concluida ? {label:'Concluída',bg:'#e4f3ea',cor:'#2e7d52'} : {label:'Pendente',bg:'#fdf3e3',cor:'#a8711b'};
           return `<tr style="border-bottom:1px solid #eef1f6;${i%2===1?'background:#fafbfc':''}">
             <td style="padding:9px 14px;font-size:12.5px;color:#1f2a3d;white-space:nowrap;font-weight:600">
@@ -5857,7 +5955,7 @@ function exportarAgendaPDF(){
   if(!conteudo){ alert('Filtre os eventos primeiro.'); return; }
 
   const fmtBRDate = v => { if(!v) return ''; const [y,m,d]=v.split('-'); return `${d}/${m}/${y}`; };
-  const tipoLabel = tipo==='prova'?'Provas Objetivas':tipo==='homol'?'Homologações':'Provas Objetivas e Homologações';
+  const tipoLabel = (CATEGORIAS_AGENDA.find(c=>c.id===tipo)||{}).label || 'Todos os Eventos';
 
   const win = window.open('','_blank','width=1000,height=800');
   if(!win){ alert('Permita pop-ups para exportar.'); return; }
