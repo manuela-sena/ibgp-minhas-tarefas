@@ -6095,6 +6095,7 @@ async function verResposta(token){
     );
     const d = await r.json();
     const dados = JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))));
+    window._respAtual = {token, dados};
     
     const modal = document.createElement('div');
     modal.style.cssText='position:fixed;inset:0;background:rgba(16,30,54,0.5);z-index:9999;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto';
@@ -6143,12 +6144,136 @@ async function verResposta(token){
         </tr>`).join('')}</tbody>
       </table>
       <div style="display:flex;justify-content:flex-end;margin-top:16px;gap:8px">
+        <button onclick="editarResposta()" style="background:#eaf1fb;border:1.5px solid #cfe0f5;color:#1f4e8c;border-radius:9px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer">Editar</button>
         <button onclick="this.closest('[style*=fixed]').remove()" style="background:#f4f6fa;border:1.5px solid #e2e7ef;border-radius:9px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer">Fechar</button>
       </div>
     </div>`;
     document.body.appendChild(modal);
   }catch(e){
     alert('Erro ao carregar resposta: '+e.message);
+  }
+}
+
+
+function editarResposta(){
+  const info = window._respAtual;
+  if(!info) return;
+  const {token, dados} = info;
+  const salas = dados.salas||[];
+  const wrap = document.querySelector('div[style*="z-index:9999"]');
+  const inner = wrap ? wrap.firstElementChild : null;
+  if(!inner) return;
+  inner.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div style="font-size:16px;font-weight:700;color:#1f2a3d">Editar - ${dados.instituicao?.nome||token}</div>
+      <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;font-size:22px;color:#8a9ab5;cursor:pointer">×</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+      <label style="font-size:11px;font-weight:700;color:#8a9ab5">Endereço<input id="edResp-endereco" value="${(dados.instituicao?.endereco||'').replace(/"/g,'&quot;')}" style="width:100%;margin-top:4px;padding:7px 9px;border:1.5px solid #e2e7ef;border-radius:7px;font-size:13px"></label>
+      <label style="font-size:11px;font-weight:700;color:#8a9ab5">Responsável<input id="edResp-responsavel" value="${(dados.instituicao?.responsavel?.nome||'').replace(/"/g,'&quot;')}" style="width:100%;margin-top:4px;padding:7px 9px;border:1.5px solid #e2e7ef;border-radius:7px;font-size:13px"></label>
+      <label style="font-size:11px;font-weight:700;color:#8a9ab5">Telefone<input id="edResp-tel" value="${(dados.instituicao?.responsavel?.tel||'').replace(/"/g,'&quot;')}" style="width:100%;margin-top:4px;padding:7px 9px;border:1.5px solid #e2e7ef;border-radius:7px;font-size:13px"></label>
+      <label style="font-size:11px;font-weight:700;color:#8a9ab5">E-mail<input id="edResp-email" value="${(dados.instituicao?.responsavel?.email||'').replace(/"/g,'&quot;')}" style="width:100%;margin-top:4px;padding:7px 9px;border:1.5px solid #e2e7ef;border-radius:7px;font-size:13px"></label>
+    </div>
+    <div style="font-size:13px;font-weight:700;color:#1f4e8c;margin-bottom:8px">Salas</div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px" id="edResp-tabela">
+      <thead><tr style="background:#1f4e8c;color:#fff">
+        <th style="padding:6px 8px;text-align:left">Sala</th>
+        <th style="padding:6px 8px;text-align:left">Bloco</th>
+        <th style="padding:6px 8px;text-align:left">Andar</th>
+        <th style="padding:6px 8px;text-align:center">Cap.</th>
+        <th style="padding:6px 8px;text-align:center">Turno</th>
+        <th style="padding:6px 8px;text-align:center">Ar</th>
+        <th style="padding:6px 8px;text-align:center">Vent.</th>
+        <th></th>
+      </tr></thead>
+      <tbody>${salas.map((s)=>`<tr>
+        <td style="padding:4px"><input value="${(s.sala||'').toString().replace(/"/g,'&quot;')}" style="width:56px;padding:5px;border:1.5px solid #e2e7ef;border-radius:6px" data-f="sala"></td>
+        <td style="padding:4px"><input value="${(s.bloco||'').toString().replace(/"/g,'&quot;')}" style="width:50px;padding:5px;border:1.5px solid #e2e7ef;border-radius:6px" data-f="bloco"></td>
+        <td style="padding:4px"><input value="${(s.andar||'').toString().replace(/"/g,'&quot;')}" style="width:50px;padding:5px;border:1.5px solid #e2e7ef;border-radius:6px" data-f="andar"></td>
+        <td style="padding:4px;text-align:center"><input type="number" value="${s.capacidade||0}" style="width:55px;padding:5px;border:1.5px solid #e2e7ef;border-radius:6px;text-align:center" data-f="capacidade"></td>
+        <td style="padding:4px;text-align:center"><select data-f="turno" style="padding:5px;border:1.5px solid #e2e7ef;border-radius:6px">
+          <option value="MANHA" ${s.turno==='MANHA'?'selected':''}>M</option>
+          <option value="TARDE" ${s.turno==='TARDE'?'selected':''}>T</option>
+          <option value="AMBOS" ${s.turno==='AMBOS'?'selected':''}>M/T</option>
+        </select></td>
+        <td style="padding:4px;text-align:center"><input type="checkbox" data-f="arcond" ${s.arcond?'checked':''}></td>
+        <td style="padding:4px;text-align:center"><input type="checkbox" data-f="ventilador" ${s.ventilador?'checked':''}></td>
+        <td style="padding:4px;text-align:center"><button onclick="this.closest('tr').remove()" style="background:none;border:none;color:#c0392b;cursor:pointer;font-size:14px">🗑</button></td>
+      </tr>`).join('')}</tbody>
+    </table>
+    <div style="display:flex;justify-content:space-between;margin-top:12px">
+      <button onclick="adicionarSalaEdicao()" style="background:#eaf1fb;border:1.5px solid #cfe0f5;color:#1f4e8c;border-radius:9px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer">+ Adicionar sala</button>
+      <div style="display:flex;gap:8px">
+        <button onclick="this.closest('[style*=fixed]').remove()" style="background:#f4f6fa;border:1.5px solid #e2e7ef;border-radius:9px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer">Cancelar</button>
+        <button onclick="salvarEdicaoResposta()" style="background:#1f4e8c;color:#fff;border:none;border-radius:9px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer">Salvar alterações</button>
+      </div>
+    </div>
+  `;
+}
+
+function adicionarSalaEdicao(){
+  const tbody = document.querySelector('#edResp-tabela tbody');
+  if(!tbody) return;
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td style="padding:4px"><input value="" style="width:56px;padding:5px;border:1.5px solid #e2e7ef;border-radius:6px" data-f="sala"></td>
+    <td style="padding:4px"><input value="" style="width:50px;padding:5px;border:1.5px solid #e2e7ef;border-radius:6px" data-f="bloco"></td>
+    <td style="padding:4px"><input value="" style="width:50px;padding:5px;border:1.5px solid #e2e7ef;border-radius:6px" data-f="andar"></td>
+    <td style="padding:4px;text-align:center"><input type="number" value="0" style="width:55px;padding:5px;border:1.5px solid #e2e7ef;border-radius:6px;text-align:center" data-f="capacidade"></td>
+    <td style="padding:4px;text-align:center"><select data-f="turno" style="padding:5px;border:1.5px solid #e2e7ef;border-radius:6px">
+      <option value="MANHA">M</option>
+      <option value="TARDE">T</option>
+      <option value="AMBOS">M/T</option>
+    </select></td>
+    <td style="padding:4px;text-align:center"><input type="checkbox" data-f="arcond"></td>
+    <td style="padding:4px;text-align:center"><input type="checkbox" data-f="ventilador"></td>
+    <td style="padding:4px;text-align:center"><button onclick="this.closest('tr').remove()" style="background:none;border:none;color:#c0392b;cursor:pointer;font-size:14px">🗑</button></td>
+  `;
+  tbody.appendChild(tr);
+}
+
+async function salvarEdicaoResposta(){
+  try{
+    const info = window._respAtual;
+    const token = info.token, dados = info.dados;
+    dados.instituicao = dados.instituicao || {};
+    dados.instituicao.endereco = document.getElementById('edResp-endereco').value;
+    dados.instituicao.responsavel = dados.instituicao.responsavel || {};
+    dados.instituicao.responsavel.nome = document.getElementById('edResp-responsavel').value;
+    dados.instituicao.responsavel.tel = document.getElementById('edResp-tel').value;
+    dados.instituicao.responsavel.email = document.getElementById('edResp-email').value;
+    const linhas = [...document.querySelectorAll('#edResp-tabela tbody tr')];
+    dados.salas = linhas.map(tr=>{
+      const g = (f)=>tr.querySelector('[data-f="'+f+'"]');
+      return {
+        sala: g('sala').value,
+        bloco: g('bloco').value,
+        andar: g('andar').value,
+        capacidade: parseInt(g('capacidade').value)||0,
+        turno: g('turno').value,
+        arcond: g('arcond').checked,
+        ventilador: g('ventilador').checked
+      };
+    });
+    const shaAtual = await fetch(
+      `https://api.github.com/repos/${GH_REPO_ALOC}/contents/respostas_escolas/token_${token}.json`,
+      {headers:{'Authorization':'Bearer '+GH_TOKEN_ALOC}}
+    ).then(r=>r.json()).then(j=>j.sha);
+    const conteudo = btoa(unescape(encodeURIComponent(JSON.stringify(dados))));
+    const put = await fetch(
+      `https://api.github.com/repos/${GH_REPO_ALOC}/contents/respostas_escolas/token_${token}.json`,
+      {
+        method:'PUT',
+        headers:{'Authorization':'Bearer '+GH_TOKEN_ALOC,'Content-Type':'application/json'},
+        body: JSON.stringify({message:'Edicao manual da resposta '+token, content:conteudo, sha:shaAtual, branch:'main'})
+      }
+    );
+    if(!put.ok){ const err = await put.json(); throw new Error(err.message||'Erro ao salvar'); }
+    document.querySelector('div[style*="z-index:9999"]')?.remove();
+    alert('Alterações salvas com sucesso!');
+    if(typeof carregarEscolas === 'function') carregarEscolas();
+  }catch(e){
+    alert('Erro ao salvar: '+e.message);
   }
 }
 
