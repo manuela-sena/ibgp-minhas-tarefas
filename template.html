@@ -4128,9 +4128,10 @@ async function previewRetroativo(bucketId){
       const due = t.dueDateTime ? new Date(t.dueDateTime) : null;
 
       // Fim das inscrições
-      if(titulo.includes('INSCRIÇÕES') && !titulo.includes('RESULTADO') && !titulo.includes('RECURSO') && !titulo.includes('PUBLICAÇÃO') && !titulo.includes('ABERTURA') && !titulo.includes('CONVOCAÇÃO') && !titulo.includes('ISENÇÃO') && due && !fimInscricoes)
+      if(titulo.includes('INSCRIÇÕES') && !titulo.includes('RESULTADO') && !titulo.includes('RECURSO') && !titulo.includes('PUBLICAÇÃO') && !titulo.includes('ABERTURA') && !titulo.includes('CONVOCAÇÃO') && !titulo.includes('ISENÇÃO') && due && !fimInscricoes){
         fimInscricoes = due;
         inicioInscricoes = t.startDateTime ? new Date(t.startDateTime) : due;
+      }
 
       // Data da prova — aceita qualquer variação
       if(!dataProva && due && (
