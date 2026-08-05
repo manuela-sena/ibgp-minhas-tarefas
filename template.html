@@ -3923,6 +3923,7 @@ async function carregarPlanejamentos(){
         'SEPARAÇÃO DAS PROVAS DISCURSIVAS PARA CORREÇÃO',
         'ENVIO DAS PROVAS DISCURSIVAS PARA A BANCA'
       ].includes(t.tarefa.toUpperCase()));
+      const fluxoOutras = tasks.filter(t=>!fluxoAplicacao.includes(t)&&!fluxoDisc.includes(t));
 
       function renderFluxo(titulo, fluxo){
         if(!fluxo.length) return '';
@@ -3977,6 +3978,7 @@ async function carregarPlanejamentos(){
   <!-- Fluxos -->
   ${renderFluxo('🏫 Aplicação de Prova', fluxoAplicacao)}
   ${fluxoDisc.length?renderFluxo('📝 Correção Discursiva', fluxoDisc):''}
+  ${fluxoOutras.length?renderFluxo('📋 Outras Tarefas', fluxoOutras):''}
 </div>`;
     }).join('');
 
