@@ -3303,6 +3303,7 @@ function calcularTarefasOperacionais(cronograma, temDiscursiva, modo='padrao'){
   // por isso aceitamos qualquer linha com "INSCRIÇÕES" que não seja resultado/recurso/
   // publicação/convocação/isenção (essas são etapas relacionadas, não o período em si).
   let fimInscricoes=null, iniInscricoes=null, dataProva=null, resultPrelObjetiva=null;
+  console.log('[DEBUG CALC] cronograma recebido=', JSON.parse(JSON.stringify(cronograma)), '| modo=', modo);
   for(const t of cronograma){
     const a=t.atividade.toUpperCase();
     if(!fimInscricoes && a.includes('INSCRIÇÕES') &&
@@ -3381,7 +3382,7 @@ function calcularTarefasOperacionais(cronograma, temDiscursiva, modo='padrao'){
       });
     }
 
-    tarefas.push(
+    console.log('[DEBUG CALC] iniInscricoes=', iniInscricoes, '| fimInscricoes=', fimInscricoes, '| dataProva=', dataProva); tarefas.push(
       {titulo:'ENVIO DE OFÍCIO À SECRETARIA DE EDUCAÇÃO',   resp:'Laryssa', ini:iniInscricoes||fimInscricoes, fim:iniInscricoes||fimInscricoes},
       {titulo:'ENVIO DE OFÍCIOS ÀS ESCOLAS',                resp:'Laryssa', ini:proxUtil(new Date(((iniInscricoes||fimInscricoes).getTime()+fimInscricoes.getTime())/2)), fim:proxUtil(new Date(((iniInscricoes||fimInscricoes).getTime()+fimInscricoes.getTime())/2))},
       {titulo:'SOLICITAR ARQUIVOS DE IMPRESSÃO À BANCA',    resp:'Manuela', ini:A1,    fim:A1},
@@ -3419,7 +3420,7 @@ function calcularTarefasOperacionais(cronograma, temDiscursiva, modo='padrao'){
     if(fimInscricoes){
       const L1 = addDiasUteis(fimInscricoes, 2);
       const L2 = addDiasUteis(L1, 2);
-      tarefas.push(
+      console.log('[DEBUG CALC] iniInscricoes=', iniInscricoes, '| fimInscricoes=', fimInscricoes, '| dataProva=', dataProva); tarefas.push(
         {titulo:'ENVIO DE OFÍCIO À SECRETARIA DE EDUCAÇÃO',   resp:'Laryssa', ini:iniInscricoes||fimInscricoes, fim:iniInscricoes||fimInscricoes},
         {titulo:'ENVIO DE OFÍCIOS ÀS ESCOLAS',             resp:'Laryssa', ini:proxUtil(new Date(((iniInscricoes||fimInscricoes).getTime()+fimInscricoes.getTime())/2)), fim:proxUtil(new Date(((iniInscricoes||fimInscricoes).getTime()+fimInscricoes.getTime())/2))},
         {titulo:'SOLICITAR ARQUIVOS DE IMPRESSÃO À BANCA', resp:'Manuela', ini:addDiasUteis(fimInscricoes,1), fim:addDiasUteis(fimInscricoes,1)},
