@@ -1615,6 +1615,7 @@ function applyFilters(){
   if(isG){
     const p=document.getElementById('sel-pessoa')?.value;
     if(p) tasks=tasks.filter(t=>t.responsavel===p);
+    else tasks=tasks.filter(t=>t.responsavel!=='Financeiro Grupo IBGP');
   } else {
     tasks=tasks.filter(t=>t.responsavel===nome);
   }
