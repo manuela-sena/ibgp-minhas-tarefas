@@ -1081,6 +1081,7 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
               <option value="pcf">Prova de Capacidade Física</option>
               <option value="exame_medico">Exame Médico</option>
               <option value="heteroidentificacao">Heteroidentificação</option>
+              <option value="encerramento_inscricao">Encerramento de Inscrição</option>
             </select>
           </div>
           <button class="btn-primary" onclick="renderAgenda()" style="height:36px;padding:0 16px">
@@ -5790,6 +5791,10 @@ function _isPericiaMedica(t){ return TAREFAS_PERICIA_MEDICA.some(p=>t.tarefa.toU
 function _isPcf(t){ return TAREFAS_PCF.some(p=>t.tarefa.toUpperCase().startsWith(p)); }
 function _isExameMedico(t){ return TAREFAS_EXAME_MEDICO.some(p=>t.tarefa.toUpperCase().startsWith(p)); }
 function _isHeteroidentificacao(t){ return TAREFAS_HETEROIDENTIFICACAO.some(p=>t.tarefa.toUpperCase().startsWith(p)); }
+function _isEncerramentoInscricao(t){
+  const T = t.tarefa.toUpperCase();
+  return T.includes('INSCRIÇÕES') && !T.includes('RESULTADO') && !T.includes('RECURSO') && !T.includes('PUBLICAÇÃO') && !T.includes('ABERTURA') && !T.includes('CONVOCAÇÃO') && !T.includes('ISENÇÃO');
+}
 
 const CATEGORIAS_AGENDA = [
   {id:'prova', label:'Prova Objetiva', bg:'#fdeceb', cor:'#c0322f', test:_isProva},
@@ -5805,6 +5810,7 @@ const CATEGORIAS_AGENDA = [
   {id:'pcf', label:'Prova de Capacidade Física', bg:'#eef6e3', cor:'#4c7a1f', test:_isPcf},
   {id:'exame_medico', label:'Exame Médico', bg:'#eef2fb', cor:'#33508a', test:_isExameMedico},
   {id:'heteroidentificacao', label:'Heteroidentificação', bg:'#f8eef7', cor:'#8a2a7a', test:_isHeteroidentificacao},
+  {id:'encerramento_inscricao', label:'Encerramento de Inscrição', bg:'#fdf3e3', cor:'#a8711b', test:_isEncerramentoInscricao},
 ];
 function _tipoAgenda(t){
   const c = CATEGORIAS_AGENDA.find(c=>c.test(t));
