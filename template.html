@@ -3289,14 +3289,14 @@ function calcularTarefasOperacionais(cronograma, temDiscursiva, modo='padrao'){
   // (ex: "PERÍODO DE INSCRIÇÕES...", "INSCRIÇÕES/ENVIO DE LAUDOS MÉDICOS PARA VAGAS PCD..."),
   // por isso aceitamos qualquer linha com "INSCRIÇÕES" que não seja resultado/recurso/
   // publicação/convocação/isenção (essas são etapas relacionadas, não o período em si).
-  let fimInscricoes=null, dataProva=null, resultPrelObjetiva=null;
+  let fimInscricoes=null, iniInscricoes=null, dataProva=null, resultPrelObjetiva=null;
   for(const t of cronograma){
     const a=t.atividade.toUpperCase();
     if(!fimInscricoes && a.includes('INSCRIÇÕES') &&
        !a.includes('RESULTADO') && !a.includes('RECURSO') &&
        !a.includes('PUBLICAÇÃO') && !a.includes('ABERTURA') &&
        !a.includes('CONVOCAÇÃO') && !a.includes('ISENÇÃO'))
-      fimInscricoes=t.data_fim;
+      fimInscricoes=t.data_fim;iniInscricoes=t.data_inicio||t.data_fim;
     if((a==='PROVA OBJETIVA'||a.startsWith('PROVA OBJETIVA E')||a.startsWith('REALIZAÇÃO DA PROVA OBJETIVA')||a.startsWith('APLICAÇÃO DA PROVA OBJETIVA'))&&!dataProva) dataProva=t.data_fim;
     if(a.includes('RESULTADO PRELIMINAR DA TOTALIZAÇÃO')&&!resultPrelObjetiva) resultPrelObjetiva=t.data_fim;
   }
@@ -3368,17 +3368,9 @@ function calcularTarefasOperacionais(cronograma, temDiscursiva, modo='padrao'){
       });
     }
 
-    // Buscar data de início das inscrições no cronograma
-    let iniInscricoes = null;
-    for(const t of cronograma){
-      if(t.atividade.toUpperCase().includes('PERÍODO DE INSCRIÇÕES')){
-        iniInscricoes = t.data_ini || t.data_fim;
-        break;
-      }
-    }
-
     tarefas.push(
-      {titulo:'ENVIO DE OFÍCIOS ÀS ESCOLAS',                resp:'Laryssa', ini:iniInscricoes||fimInscricoes, fim:iniInscricoes||fimInscricoes},
+      {titulo:'ENVIO DE OFÍCIO À SECRETARIA DE EDUCAÇÃO',   resp:'Laryssa', ini:iniInscricoes||fimInscricoes, fim:iniInscricoes||fimInscricoes},
+      {titulo:'ENVIO DE OFÍCIOS ÀS ESCOLAS',                resp:'Laryssa', ini:proxUtil(new Date(((iniInscricoes||fimInscricoes).getTime()+fimInscricoes.getTime())/2)), fim:proxUtil(new Date(((iniInscricoes||fimInscricoes).getTime()+fimInscricoes.getTime())/2))},
       {titulo:'SOLICITAR ARQUIVOS DE IMPRESSÃO À BANCA',    resp:'Manuela', ini:A1,    fim:A1},
       {titulo:'RECEBIMENTO DOS ARQUIVOS DE IMPRESSÃO',       resp:'Jordan',  ini:A1,    fim:A2},
       {titulo:'ENVIAR ARQUIVO DE PROVAS PARA IMPRESSÃO',    resp:'Tiago',   ini:A1,    fim:T1},
@@ -3414,14 +3406,9 @@ function calcularTarefasOperacionais(cronograma, temDiscursiva, modo='padrao'){
     if(fimInscricoes){
       const L1 = addDiasUteis(fimInscricoes, 2);
       const L2 = addDiasUteis(L1, 2);
-      let iniInscricoes = null;
-      for(const t of cronograma){
-        if(t.atividade.toUpperCase().includes('PERÍODO DE INSCRIÇÕES')){
-          iniInscricoes = t.data_ini || t.data_fim; break;
-        }
-      }
       tarefas.push(
-        {titulo:'ENVIO DE OFÍCIOS ÀS ESCOLAS',             resp:'Laryssa', ini:iniInscricoes||fimInscricoes, fim:iniInscricoes||fimInscricoes},
+        {titulo:'ENVIO DE OFÍCIO À SECRETARIA DE EDUCAÇÃO',   resp:'Laryssa', ini:iniInscricoes||fimInscricoes, fim:iniInscricoes||fimInscricoes},
+        {titulo:'ENVIO DE OFÍCIOS ÀS ESCOLAS',             resp:'Laryssa', ini:proxUtil(new Date(((iniInscricoes||fimInscricoes).getTime()+fimInscricoes.getTime())/2)), fim:proxUtil(new Date(((iniInscricoes||fimInscricoes).getTime()+fimInscricoes.getTime())/2))},
         {titulo:'SOLICITAR ARQUIVOS DE IMPRESSÃO À BANCA', resp:'Manuela', ini:addDiasUteis(fimInscricoes,1), fim:addDiasUteis(fimInscricoes,1)},
         {titulo:'LEVANTAMENTO DE ESCOLAS PARA APLICAÇÃO',  resp:'Laryssa', ini:proxUtilApos(fimInscricoes), fim:L1},
         {titulo:'ALOCAÇÃO DE CANDIDATOS POR ESCOLA',       resp:'Laryssa', ini:proxUtilApos(L1), fim:L2},
@@ -4119,7 +4106,7 @@ async function previewRetroativo(bucketId){
     const tasks = await apiAll(`https://graph.microsoft.com/v1.0/planner/buckets/${bucketId}/tasks`);
 
     // Identificar datas-âncora — inclui tarefas concluídas
-    let fimInscricoes=null, dataProva=null, resultPrelObjetiva=null;
+    let fimInscricoes=null, inicioInscricoes=null, dataProva=null, resultPrelObjetiva=null;
     const jaExistem = new Set();
 
     for(const t of tasks){
@@ -4130,6 +4117,7 @@ async function previewRetroativo(bucketId){
       // Fim das inscrições
       if(titulo.includes('INSCRIÇÕES') && !titulo.includes('RESULTADO') && !titulo.includes('RECURSO') && !titulo.includes('PUBLICAÇÃO') && !titulo.includes('ABERTURA') && !titulo.includes('CONVOCAÇÃO') && !titulo.includes('ISENÇÃO') && due && !fimInscricoes)
         fimInscricoes = due;
+        inicioInscricoes = t.startDateTime ? new Date(t.startDateTime) : due;
 
       // Data da prova — aceita qualquer variação
       if(!dataProva && due && (
@@ -4176,7 +4164,7 @@ async function previewRetroativo(bucketId){
     });
 
     const cronFake = [];
-    if(fimInscricoes) cronFake.push({atividade:'PERÍODO DE INSCRIÇÕES/PCD/SOLICITAÇÃO COND. ESPECIAL/ENVIO LAUDOS', data_fim:fimInscricoes});
+    if(fimInscricoes) cronFake.push({atividade:'PERÍODO DE INSCRIÇÕES/PCD/SOLICITAÇÃO COND. ESPECIAL/ENVIO LAUDOS', data_inicio:inicioInscricoes, data_fim:fimInscricoes});
     cronFake.push({atividade:'PROVA OBJETIVA', data_fim:dataProva});
     if(resultPrelObjetiva) cronFake.push({atividade:'RESULTADO PRELIMINAR DA TOTALIZAÇÃO DA PROVA OBJETIVA', data_fim:resultPrelObjetiva});
 
