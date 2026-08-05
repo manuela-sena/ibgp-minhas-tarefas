@@ -6160,7 +6160,7 @@ function editarResposta(){
   if(!info) return;
   const {token, dados} = info;
   const salas = dados.salas||[];
-  const wrap = document.querySelector('div[style*="z-index:9999"]');
+  const wrap = document.querySelector('div[style*="fixed"]');
   const inner = wrap ? wrap.firstElementChild : null;
   if(!inner) return;
   inner.innerHTML = `
@@ -6269,7 +6269,7 @@ async function salvarEdicaoResposta(){
       }
     );
     if(!put.ok){ const err = await put.json(); throw new Error(err.message||'Erro ao salvar'); }
-    document.querySelector('div[style*="z-index:9999"]')?.remove();
+    document.querySelector('div[style*="fixed"]')?.remove();
     alert('Alterações salvas com sucesso!');
     if(typeof carregarEscolas === 'function') carregarEscolas();
   }catch(e){
