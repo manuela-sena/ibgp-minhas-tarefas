@@ -4177,7 +4177,8 @@ async function previewRetroativo(bucketId){
 
     const modoAtual = document.getElementById('retro-modo-urgente')?.checked ? 'urgente' : 'padrao';
     const {tarefas: todasOp, alertas} = calcularTarefasOperacionais(cronFake, temDisc, modoAtual);
-    const novas = todasOp.filter(t => !jaExistem.has(t.titulo.toUpperCase()));
+    const novas = todasOp.filter(t => !jaExistem.has(t.titulo.toUpperCase()))
+      .sort((a,b)=>a.ini - b.ini);
     _retroTarefas = novas;
 
     const alertasHtml = alertas.length ? alertas.map(a=>`
