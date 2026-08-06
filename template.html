@@ -3363,7 +3363,7 @@ function calcularTarefasOperacionais(cronograma, temDiscursiva, modo='padrao'){
     // J3: Empacotamento → J1/J2 + 2du (data única)
     const J3 = addDiasUteis(J1fim > J2fim ? J1fim : J2fim, 2);
     // J4: Caixas + pastas → J3 + 2du (data única)
-    const J4 = addDiasUteis(J3, 2);
+    const J4 = addDiasUteis(J3, 1);
 
     // ── Alerta se J4 ultrapassa a quinta anterior à prova ─────────────
     if(J4 > quintaAntes){
