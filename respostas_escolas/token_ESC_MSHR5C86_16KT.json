@@ -1,11 +1,162 @@
 {
   "token": "ESC_MSHR5C86_16KT",
-  "criadoEm": "2026-08-06T16:50:39.270Z",
+  "enviadoEm": "2026-08-06T17:04:24.564Z",
+  "protocolo": "ESC_MSHR5C86_16KT_1786035864564",
   "concurso": {
     "concurso": "CÂMARA DE CATAGUASES/MG - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
     "municipio": "CATAGUASES/MG",
     "dataProva": "23/08/2026",
     "escola": "ESCOLA ESTADUAL MANUEL INÁCIO PEIXOTO (COLÉGIO CATAGUASES)",
     "idEscola": "ESC_MSHR5C86_16KT"
-  }
+  },
+  "instituicao": {
+    "nome": "ESCOLA ESTADUAL MANUEL INÁCIO PEIXOTO (COLÉGIO CATAGUASES)",
+    "cnpj": "19.649.714/0001-53",
+    "razao": "Caixa Escolar Nair Guimarães",
+    "endereco": "Chácara Granjaria",
+    "numero": "s/n",
+    "complemento": "Colégio Cataguases",
+    "bairro": "Granjaria",
+    "cidade": "Cataguases",
+    "uf": "MG",
+    "cep": "36773-563",
+    "responsavel": {
+      "nome": "Marcos Octávio Leite da Silva",
+      "cargo": "Diretor",
+      "email": "marcos.leite@educacao.mg.gov.br",
+      "tel": "(31) 99124-8086"
+    },
+    "diretor": {
+      "nome": "",
+      "email": ""
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": true,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "1",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "1",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "Unico",
+      "andar": "1° andar",
+      "sala": "1",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "Unico",
+      "andar": "1° andar",
+      "sala": "2",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "Unico",
+      "andar": "1° andar",
+      "sala": "3",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "Unico",
+      "andar": "1° andar",
+      "sala": "4",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "Unico",
+      "andar": "1° andar",
+      "sala": "5",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "Unico",
+      "andar": "1° andar",
+      "sala": "6",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "Unico",
+      "andar": "1° andar",
+      "sala": "7",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "Unico",
+      "andar": "1° andar",
+      "sala": "8",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "Unico",
+      "andar": "1° andar",
+      "sala": "9",
+      "capacidade": 1,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "Unico",
+      "andar": "1° andar",
+      "sala": "10",
+      "capacidade": 1,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    }
+  ]
 }
