@@ -3372,6 +3372,13 @@ function calcularTarefasOperacionais(cronograma, temDiscursiva, modo='padrao'){
         msg:`🔴 Fluxo não termina antes da semana da prova. Previsão de conclusão: ${fmtBR(J4)} — quinta limite: ${fmtBR(quintaAntes)}.`
       });
     }
+    // ── Alerta crítico se J4 ultrapassar a própria data da prova ──────
+    if(J4 >= dataProva){
+      alertas.push({
+        tipo:'atraso',
+        msg:`🔴 CRÍTICO: a organização (montagem das caixas e pastas) só ficaria pronta em ${fmtBR(J4)} — na data ou depois da prova objetiva (${fmtBR(dataProva)}). O material precisa estar pronto ANTES do dia da prova.`
+      });
+    }
 
     tarefas.push(
       {titulo:'ENVIO DE OFÍCIO À SECRETARIA DE EDUCAÇÃO',   resp:'Laryssa', ini:diasUteisAntes(fimInscricoes,29), fim:diasUteisAntes(fimInscricoes,29)},
