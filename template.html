@@ -7772,8 +7772,10 @@ async function gerarClassificacaoFinal(){
     for(let i=0;i<config.etapas.length;i++){
       const et = config.etapas[i];
       const wbState = _clfEtapaWb[i];
+      console.log('[DEBUG CLF] etapa'+i+' nome='+et.nome+' tipo='+et.tipo+' | temArquivo='+(!!wbState)+' | sheets='+(wbState?.sheets?.join(',')));
       if(!wbState?.sheets?.length){ continue; }
       const map = coletarMapaEtapa(i, et.tipo, et.campos||[], poolsAtivos);
+      console.log('[DEBUG CLF] etapa'+i+' map='+JSON.stringify(map));
       const linhasRaw = wbState.sheets.flatMap(sh=>clfLerLinhas(wbState.wb, sh));
 
       const linhas = linhasRaw.map(r=>{
@@ -7800,6 +7802,7 @@ async function gerarClassificacaoFinal(){
         }
         return item;
       }).filter(Boolean);
+      console.log('[DEBUG CLF] etapa'+i+' linhasRaw='+linhasRaw.length+' | linhasAposFiltro='+linhas.length);
 
       if(et.tipo==='pontuacao' || et.tipo==='classificatoria'){
         motor.carregarEtapaPontuacao(et.nome||`Etapa ${i+1}`, linhas, et.campos||[],
