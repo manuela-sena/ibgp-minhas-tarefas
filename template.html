@@ -7335,6 +7335,7 @@ async function carregarConfigClassificacao(){
 
 function coletarConfigAtual(){
   const pools = ['pcd','pnp','indigena','quilombola'].filter(p=>document.getElementById('clf-pool-'+p)?.checked);
+  const poolsAtivos = ['ampla', ...pools];
   const desempate = [];
   document.querySelectorAll('#clf-desempate-list .clf-desemp-row').forEach(row=>{
     const idx = row.dataset.idx;
@@ -7365,6 +7366,7 @@ function coletarConfigAtual(){
       et.eliminaDoConcurso = document.getElementById('clf-etapa-elimina-'+idx)?.checked || false;
       et.gatePool = document.getElementById('clf-etapa-gatepool-'+idx)?.value || '';
     }
+    et.mapaColunas = coletarMapaEtapa(idx, tipo, et.campos||[], poolsAtivos);
     etapas.push(et);
   });
   return {
@@ -7689,7 +7691,15 @@ function onEtapaArquivo(idx, input){
     reader.onload = (e)=>{
       const wb = XLSX.read(e.target.result, {type:'binary', cellDates:true});
       const sheetNames = wb.SheetNames;
-      _clfEtapaWb[idx] = {wb, sheetNames, sheets: [...sheetNames], colunas: clfColunasUniao(wb, sheetNames), map:{}};
+      const colunas = clfColunasUniao(wb, sheetNames);
+      const salvo = _clfConfig.etapas[idx]?.mapaColunas;
+      const map = {};
+      if(salvo){
+        ['inscricao','nome','nascimento','cargo','total'].forEach(k=>{ if(salvo[k] && colunas.includes(salvo[k])) map[k]=salvo[k]; });
+        if(salvo.camposMap){ map.camposMap={}; Object.keys(salvo.camposMap).forEach(campo=>{ const v=salvo.camposMap[campo]; if(v && colunas.includes(v)) map.camposMap[campo]=v; }); }
+        if(salvo.poolCols){ map.poolCols={}; Object.keys(salvo.poolCols).forEach(p=>{ const v=salvo.poolCols[p]; if(v && colunas.includes(v)) map.poolCols[p]=v; }); }
+      }
+      _clfEtapaWb[idx] = {wb, sheetNames, sheets: [...sheetNames], colunas, map};
       renderEtapasList();
     };
     reader.readAsBinaryString(file);
