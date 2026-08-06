@@ -3348,52 +3348,45 @@ function calcularTarefasOperacionais(cronograma, temDiscursiva, modo='padrao'){
   const aposEsc     = addDiasUteis(quarta, 2);       // N1: quarta + 2du
 
   if(modo === 'padrao' && fimInscricoes){
-    // A1: Solicitar arquivos à banca → fim insc + 1du
-    const A1 = addDiasUteis(fimInscricoes, 1);
     // A2: Receber arquivos → fim insc + 4du
     const A2 = addDiasUteis(fimInscricoes, 4);
     // T1: Enviar arquivo de provas para impressão → fim insc + 4du (mesmo prazo A2)
     const T1 = addDiasUteis(fimInscricoes, 4);
-    // L0: Envio de ofícios às escolas → início das inscrições
-    const L0 = new Date(fimInscricoes); // será substituído pela data de início
-    // L1: Levantamento escolas → fim insc + 2du
-    const L1 = addDiasUteis(fimInscricoes, 2);
-    // L2: Alocação → L1 + 2du
-    const L2 = addDiasUteis(L1, 2);
+    // L1: Levantamento escolas → fim insc - 5du
+    const L1 = diasUteisAntes(fimInscricoes, 5);
+    // L2: Alocação → fim insc + 2du
+    const L2 = addDiasUteis(fimInscricoes, 2);
     // J1: Impressão provas → A2 + 1du, dura 2du
     const J1ini = addDiasUteis(A2, 1);
     const J1fim = addDiasUteis(J1ini, 2);
-    // J2: Impressão papelaria → L2 + 1du, dura 2du (paralelo J1)
-    const J2ini = addDiasUteis(L2, 1);
-    const J2fim = addDiasUteis(J2ini, 2);
-    // J3: Empacotamento → após J1 e J2, dura 2du
-    const J3ini = proxUtilApos(J1fim > J2fim ? J1fim : J2fim);
-    const J3fim = addDiasUteis(J3ini, 2);
-    // J4: Caixas + pastas → J3 + 1du, dura 2du
-    const J4ini = addDiasUteis(J3fim, 1);
-    const J4fim = addDiasUteis(J4ini, 2);
+    // J2: Impressão papelaria → mesmo período de J1
+    const J2ini = J1ini;
+    const J2fim = J1fim;
+    // J3: Empacotamento → J1/J2 + 2du (data única)
+    const J3 = addDiasUteis(J1fim > J2fim ? J1fim : J2fim, 2);
+    // J4: Caixas + pastas → J3 + 2du (data única)
+    const J4 = addDiasUteis(J3, 2);
 
     // ── Alerta se J4 ultrapassa a quinta anterior à prova ─────────────
-    if(J4fim > quintaAntes){
+    if(J4 > quintaAntes){
       alertas.push({
         tipo:'atraso',
-        msg:`🔴 Fluxo não termina antes da semana da prova. Previsão de conclusão: ${fmtBR(J4fim)} — quinta limite: ${fmtBR(quintaAntes)}.`
+        msg:`🔴 Fluxo não termina antes da semana da prova. Previsão de conclusão: ${fmtBR(J4)} — quinta limite: ${fmtBR(quintaAntes)}.`
       });
     }
 
     tarefas.push(
       {titulo:'ENVIO DE OFÍCIO À SECRETARIA DE EDUCAÇÃO',   resp:'Laryssa', ini:iniInscricoes||fimInscricoes, fim:iniInscricoes||fimInscricoes},
       {titulo:'ENVIO DE OFÍCIOS ÀS ESCOLAS',                resp:'Laryssa', ini:proxUtil(new Date(((iniInscricoes||fimInscricoes).getTime()+fimInscricoes.getTime())/2)), fim:proxUtil(new Date(((iniInscricoes||fimInscricoes).getTime()+fimInscricoes.getTime())/2))},
-      {titulo:'SOLICITAR ARQUIVOS DE IMPRESSÃO À BANCA',    resp:'Manuela', ini:A1,    fim:A1},
-      {titulo:'RECEBIMENTO DOS ARQUIVOS DE IMPRESSÃO',       resp:'Jordan',  ini:A1,    fim:A2},
-      {titulo:'ENVIAR ARQUIVO DE PROVAS PARA IMPRESSÃO',    resp:'Tiago',   ini:A1,    fim:T1},
-      {titulo:'LEVANTAMENTO DE ESCOLAS PARA APLICAÇÃO',     resp:'Laryssa', ini:proxUtilApos(fimInscricoes), fim:L1},
-      {titulo:'ALOCAÇÃO DE CANDIDATOS POR ESCOLA',          resp:'Laryssa', ini:proxUtilApos(L1),            fim:L2},
+      {titulo:'RECEBIMENTO DOS ARQUIVOS DE IMPRESSÃO',       resp:'Jordan',  ini:addDiasUteis(fimInscricoes,1), fim:A2},
+      {titulo:'ENVIAR ARQUIVO DE PROVAS PARA IMPRESSÃO',    resp:'Tiago',   ini:addDiasUteis(fimInscricoes,1), fim:T1},
+      {titulo:'LEVANTAMENTO DE ESCOLAS PARA APLICAÇÃO',     resp:'Laryssa', ini:L1,     fim:L1},
+      {titulo:'ALOCAÇÃO DE CANDIDATOS POR ESCOLA',          resp:'Laryssa', ini:L2,     fim:L2},
       {titulo:'IMPRESSÃO DAS PROVAS',                       resp:'Jordan',  ini:J1ini,  fim:J1fim},
       {titulo:'IMPRESSÃO DA PAPELARIA DE APLICAÇÃO',        resp:'Jordan',  ini:J2ini,  fim:J2fim},
-      {titulo:'EMPACOTAMENTO (PROVAS + PAPELARIA)',         resp:'Jordan',  ini:J3ini,  fim:J3fim},
-      {titulo:'MONTAGEM DAS CAIXAS DE MATERIAL POR ESCOLA', resp:'Jordan',  ini:J4ini,  fim:J4fim},
-      {titulo:'MONTAGEM DAS PASTAS DO COORDENADOR',         resp:'Jordan',  ini:J4ini,  fim:J4fim},
+      {titulo:'EMPACOTAMENTO (PROVAS + PAPELARIA)',         resp:'Jordan',  ini:J3,     fim:J3},
+      {titulo:'MONTAGEM DAS CAIXAS DE MATERIAL POR ESCOLA', resp:'Jordan',  ini:J4,     fim:J4},
+      {titulo:'MONTAGEM DAS PASTAS DO COORDENADOR',         resp:'Jordan',  ini:J4,     fim:J4},
       {titulo:'ESCANEAMENTO DAS FOLHAS DE RESPOSTA',        resp:'Jordan',  ini:segunda, fim:quarta},
       {titulo:'ESCANEAMENTO DAS ATAS DE APLICAÇÃO',         resp:'Jordan',  ini:segunda, fim:quarta},
       {titulo:'LIBERAÇÃO DAS ATAS PARA OS COORDENADORES',   resp:'Laryssa', ini:quinta,  fim:quinta},
