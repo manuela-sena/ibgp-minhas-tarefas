@@ -3376,8 +3376,8 @@ function calcularTarefasOperacionais(cronograma, temDiscursiva, modo='padrao'){
     }
 
     tarefas.push(
-      {titulo:'ENVIO DE OFÍCIO À SECRETARIA DE EDUCAÇÃO',   resp:'Laryssa', ini:diasUteisAntes(fimInscricoes,29), fim:diasUteisAntes(fimInscricoes,29)},
-      {titulo:'ENVIO DE OFÍCIOS ÀS ESCOLAS',                resp:'Laryssa', ini:diasUteisAntes(fimInscricoes,10), fim:diasUteisAntes(fimInscricoes,10)},
+      {titulo:'ENVIO DE OFÍCIO À SECRETARIA DE EDUCAÇÃO',   resp:'Laryssa', ini:addDays(fimInscricoes,-29), fim:addDays(fimInscricoes,-29)},
+      {titulo:'ENVIO DE OFÍCIOS ÀS ESCOLAS',                resp:'Laryssa', ini:addDays(fimInscricoes,-10), fim:addDays(fimInscricoes,-10)},
       {titulo:'RECEBIMENTO DOS ARQUIVOS DE IMPRESSÃO',       resp:'Jordan',  ini:addDiasUteis(fimInscricoes,1), fim:A2},
       {titulo:'ENVIAR ARQUIVO DE PROVAS PARA IMPRESSÃO',    resp:'Tiago',   ini:addDiasUteis(fimInscricoes,1), fim:T1},
       {titulo:'LEVANTAMENTO DE ESCOLAS PARA APLICAÇÃO',     resp:'Laryssa', ini:L1,     fim:L1},
@@ -3413,8 +3413,8 @@ function calcularTarefasOperacionais(cronograma, temDiscursiva, modo='padrao'){
       const L1 = addDiasUteis(fimInscricoes, 2);
       const L2 = addDiasUteis(L1, 2);
       tarefas.push(
-        {titulo:'ENVIO DE OFÍCIO À SECRETARIA DE EDUCAÇÃO',   resp:'Laryssa', ini:diasUteisAntes(fimInscricoes,29), fim:diasUteisAntes(fimInscricoes,29)},
-        {titulo:'ENVIO DE OFÍCIOS ÀS ESCOLAS',             resp:'Laryssa', ini:diasUteisAntes(fimInscricoes,10), fim:diasUteisAntes(fimInscricoes,10)},
+        {titulo:'ENVIO DE OFÍCIO À SECRETARIA DE EDUCAÇÃO',   resp:'Laryssa', ini:addDays(fimInscricoes,-29), fim:addDays(fimInscricoes,-29)},
+        {titulo:'ENVIO DE OFÍCIOS ÀS ESCOLAS',             resp:'Laryssa', ini:addDays(fimInscricoes,-10), fim:addDays(fimInscricoes,-10)},
         {titulo:'SOLICITAR ARQUIVOS DE IMPRESSÃO À BANCA', resp:'Manuela', ini:addDiasUteis(fimInscricoes,1), fim:addDiasUteis(fimInscricoes,1)},
         {titulo:'LEVANTAMENTO DE ESCOLAS PARA APLICAÇÃO',  resp:'Laryssa', ini:proxUtilApos(fimInscricoes), fim:L1},
         {titulo:'ALOCAÇÃO DE CANDIDATOS POR ESCOLA',       resp:'Laryssa', ini:proxUtilApos(L1), fim:L2},
