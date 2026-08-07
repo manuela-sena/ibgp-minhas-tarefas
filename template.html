@@ -7080,11 +7080,12 @@ async function gerarPlanilhaAlocacao(resultado){
   criarAba('AT ESPECIAL', atEspecialRows,
     ['INSCRIÇÃO','CANDIDATO','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO','ATENDIMENTO ESPECIAL','RESULTADO','JUSTIFICATIVA']);
 
+  function salaSemSufixo(s){ return String(s||'').split(' - ')[0]; }
+
   // ── ATA DE SALA (resumo por sala) ──
   const porSala = {};
   resultado.alocados.forEach(a=>{
-    function salaSemSufixo(s){ return String(s||'').split(' - ')[0]; }
-  const chave = a.ESCOLA+'|'+salaSemSufixo(a.SALA)+'|'+a.ANDAR+'|'+a.BLOCO;
+    const chave = a.ESCOLA+'|'+salaSemSufixo(a.SALA)+'|'+a.ANDAR+'|'+a.BLOCO;
     (porSala[chave] = porSala[chave]||[]).push(a);
   });
   const ataRows = Object.keys(porSala).map(chave=>{
