@@ -6555,26 +6555,18 @@ const KEYWORDS_ATENDIMENTO = [...SALA_INDIVIDUAL, ...MESMA_SALA_GRUPO, ...SEM_RE
 
 function abreviarAtendimento(nome){
   const map = {
-    'LEDOR':'ledor', 'TRANSCRITOR':'transc', 'TRANSCRIÇÃO':'transc', 'SOFTWARE':'software', 'SALA INDIVIDUAL':'individual', 'LIBRAS':'libras',
-    'PROVA AMPLIADA':'ampliada', 'SALA AMAMENTAÇÃO':'amamentação', 'TEMPO ADICIONAL':'15min', 'APÓS AS 18H':'18h', 'APÓS 18H':'18h',
+    'LEDOR':'ledor', 'TRANSCRITOR':'transc', 'TRANSCRIÇÃO':'transc', 'SOFTWARE':'software', 'SALA INDIVIDUAL':'ind', 'LIBRAS':'libras',
+    'PROVA AMPLIADA':'ampl', 'SALA AMAMENTAÇÃO':'amamentação', 'TEMPO ADICIONAL':'15min', 'APÓS AS 18H':'18h', 'APÓS 18H':'18h',
     'CADEIRA SEPARADA':'cad.sep', 'CADEIRA CANHOTO':'canhoto', 'CADEIRA PARA CANHOTO':'canhoto', 'APOIO DE PÉ':'apoio pé', 'PRÓTESE AUDITIVA':'prótese aud', 'BOMBA DE INSULINA':'insulina'
   };
   const key = (nome||'').toUpperCase().trim();
-  let abrev;
-  if(map[key]){
-    abrev = map[key];
-  } else {
-    const candidatos = Object.keys(map).filter(k=>key.includes(k));
-    if(candidatos.length){
-      candidatos.sort((a,b)=>b.length-a.length);
-      abrev = map[candidatos[0]];
-    } else {
-      abrev = (nome||'').toLowerCase();
-    }
+  if(map[key]) return map[key];
+  const candidatos = Object.keys(map).filter(k=>key.includes(k));
+  if(candidatos.length){
+    candidatos.sort((a,b)=>b.length-a.length);
+    return map[candidatos[0]];
   }
-  const fonte = key.match(/FONTE\s*(\d+)/);
-  if(fonte && !abrev.toLowerCase().includes('fonte')) abrev += ' (fonte ' + fonte[1] + ')';
-  return abrev;
+  return (nome||'').toLowerCase();
 }
 function toggleTodasEscolas(checked){
   const escolas = window._alocEscolas||[];
