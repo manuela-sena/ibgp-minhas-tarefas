@@ -7855,7 +7855,7 @@ function renderEtapasList(){
   }).join('');
 }
 
-async function clfColunasUniao(wb, sheets){
+function clfColunasUniao(wb, sheets){
   const set = new Set();
   (sheets||[]).forEach(sh => clfLerColunas(wb, sh).forEach(c => set.add(c)));
   return [...set];
