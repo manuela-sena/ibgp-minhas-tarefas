@@ -1,11 +1,152 @@
 {
   "token": "ESC_MSG6ZYWV_TZMS",
-  "criadoEm": "2026-08-05T14:38:50.239Z",
+  "enviadoEm": "2026-08-07T14:49:22.046Z",
+  "protocolo": "ESC_MSG6ZYWV_TZMS_1786114162046",
   "concurso": {
     "concurso": "CÂMARA DE CATAGUASES/MG - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
     "municipio": "CATAGUASES/MG",
     "dataProva": "23/08/2026",
     "escola": "ESCOLA ESTADUAL ASTOLFO DURTA",
     "idEscola": "ESC_MSG6ZYWV_TZMS"
-  }
+  },
+  "instituicao": {
+    "nome": "E. E. ASTOLFO DUTRA",
+    "cnpj": "19.746.688/0001-09",
+    "razao": "Caixa Escolar Amelinha de Carvalho Peixoto",
+    "endereco": "Rua Marlene",
+    "numero": "123",
+    "complemento": "",
+    "bairro": "Dico Leite",
+    "cidade": "Cataguases",
+    "uf": "MG",
+    "cep": "36772-456",
+    "responsavel": {
+      "nome": "Rayanne Gonçalves Martins dos Santos",
+      "cargo": "Diretora",
+      "email": "escola.97306@educacao.mg.gov.br",
+      "tel": "(32) 3421-3088"
+    },
+    "diretor": {
+      "nome": "Rayanne Gonçalves Martins dos Santos",
+      "email": "rayanne.martins@educacao.mg.gov.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": false,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": true
+    },
+    "infraestrutura": {
+      "rampa": false,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "1",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "1",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "1",
+      "andar": "",
+      "sala": "6",
+      "capacidade": 15,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "2",
+      "andar": "",
+      "sala": "16",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "2",
+      "andar": "",
+      "sala": "15",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "2",
+      "andar": "",
+      "sala": "14",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "2",
+      "andar": "",
+      "sala": "13",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "2",
+      "andar": "",
+      "sala": "12",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "2",
+      "andar": "",
+      "sala": "11",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "2",
+      "andar": "",
+      "sala": "10",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "2",
+      "andar": "",
+      "sala": "09",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    }
+  ]
 }
