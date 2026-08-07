@@ -6964,6 +6964,25 @@ function executarMotorAlocacao(candidatos, escolas){
   //      desperdiçar capacidade que os candidatos regulares poderiam ter
   //      usado. Assim a prioridade fica: 1) regulares nas maiores salas,
   //      2) especiais nas salas que sobrarem. ──
+    function alocarUmExclusivo(c){
+    let s = salasEspeciais.find(x=>x.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(x.andar)));
+    if(!s){
+      const cands = salasNormais
+        .filter(x=>x.ocupantes.length===0 && (!c._terreo || salaEhTerrea(x.andar)))
+        .sort((a,b)=>(a.capacidadeOriginal-b.capacidadeOriginal) || (capTotalPorEscola[b.escola]-capTotalPorEscola[a.escola]));
+      s = cands[0] || null;
+      if(s){
+        const idxReserva = reservasTerreo.findIndex(r=>r.sala===s);
+        if(idxReserva!==-1) reservasTerreo.splice(idxReserva,1);
+        s.capacidadeDisponivel = s.capacidadeOriginal;
+      }
+    }
+    if(!s) return null;
+    s.capacidadeDisponivel -= 1;
+    s.ocupantes.push(c);
+    s.capacidadeDisponivel = 0;
+    return s;
+  }
   gruposExclusivos.forEach(grp=>{
     const qtd = grp.candidatos.length;
     const precisaTerreoGrp = grp.candidatos.some(c=>c._terreo);
@@ -6981,7 +7000,18 @@ function executarMotorAlocacao(candidatos, escolas){
       }
     }
     if(!sala){
-      grp.candidatos.forEach(c=>naoAlocados.push(mapCandidato(c)));
+      grp.candidatos.forEach(c=>{
+        const s = alocarUmExclusivo(c);
+        if(!s){ naoAlocados.push(mapCandidato(c)); return; }
+        let abrevs;
+        if(grp.tipoSala==='individual'){
+          abrevs = c._atendimentos.filter(a=>SALA_INDIVIDUAL.some(k=>a.toUpperCase().includes(k))).map(abreviarAtendimento);
+        } else {
+          abrevs = c._atendimentos.filter(a=>MESMA_SALA_GRUPO.some(k=>a.toUpperCase().includes(k))).map(abreviarAtendimento);
+        }
+        const nomeSalaFinal = abrevs.length ? (s.salaBase + ' - ' + abrevs.join(', ')) : s.salaBase;
+        alocados.push({...mapCandidato(c), SALA: nomeSalaFinal, ANDAR: s.andar, BLOCO: s.bloco, ESCOLA: s.escola, _tipoSala: grp.tipoSala, _salaEspecialUsada: true});
+      });
       return;
     }
     grp.candidatos.forEach(c=>{
