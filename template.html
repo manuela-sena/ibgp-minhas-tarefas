@@ -6797,7 +6797,9 @@ function executarMotorAlocacao(candidatos, escolas){
     });
   });
   // Ordenar por capacidade desc (maior primeiro)
-  salasPool.sort((a,b)=>b.capacidadeOriginal - a.capacidadeOriginal);
+  const capTotalPorEscola = {};
+  salasPool.forEach(s=>{ capTotalPorEscola[s.escola] = (capTotalPorEscola[s.escola]||0) + s.capacidadeOriginal; });
+  salasPool.sort((a,b)=> (capTotalPorEscola[b.escola]-capTotalPorEscola[a.escola]) || (b.capacidadeOriginal - a.capacidadeOriginal));
 
   // Salas reservadas para atendimento especial (biblioteca, laboratório, sala multimídia etc)
   // ficam separadas do pool de salas normais de prova.
