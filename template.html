@@ -6551,6 +6551,7 @@ function carregarExcelJSAloc(cb){
 const SALA_INDIVIDUAL = ['LEDOR','TRANSCRITOR','SOFTWARE','SALA INDIVIDUAL','LIBRAS'];
 const MESMA_SALA_GRUPO = ['PROVA AMPLIADA','SALA AMAMENTAÇÃO','TEMPO ADICIONAL','APÓS AS 18H','APÓS 18H'];
 const SEM_RESTRICAO = ['CADEIRA SEPARADA','CADEIRA CANHOTO','APOIO DE PÉ','PRÓTESE AUDITIVA','BOMBA DE INSULINA'];
+const KEYWORDS_ATENDIMENTO = [...SALA_INDIVIDUAL, ...MESMA_SALA_GRUPO, ...SEM_RESTRICAO];
 
 function abreviarAtendimento(nome){
   const map = {
@@ -6677,10 +6678,13 @@ async function processarAlocacao(){
             if(!insc) return;
             totalSolicitantes++;
             const resultado = String(r['RESULTADO']||'').trim().toUpperCase();
-            if(resultado==='DEFERIDA'){
+            if(resultado === 'DEFERIDA'){
+              const atendCol = String(r['ATENDIMENTO ESPECIAL']||'').trim();
+              const justif = String(r['JUSTIFICATIVA']||'').trim();
+              const inferido = KEYWORDS_ATENDIMENTO.filter(k=>justif.toUpperCase().includes(k)).join(', ');
               deferidos[insc] = {
-                atendimento: String(r['ATENDIMENTO ESPECIAL']||'').trim(),
-                justificativa: String(r['JUSTIFICATIVA']||'').trim(),
+                atendimento: atendCol || inferido,
+                justificativa: justif,
               };
             }
           });
