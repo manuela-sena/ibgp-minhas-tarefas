@@ -1,11 +1,192 @@
 {
   "token": "ESC_MSJ5TE5F_KNCT",
-  "criadoEm": "2026-08-07T16:29:02.307Z",
+  "enviadoEm": "2026-08-07T16:54:19.492Z",
+  "protocolo": "ESC_MSJ5TE5F_KNCT_1786121659492",
   "concurso": {
     "concurso": "ENTRE RIOS DE MINAS/MG - EDITAL Nº 01/2026 - PSP",
     "municipio": "ENTRE RIOS DE MINAS/MG",
     "dataProva": "23/08/2026",
     "escola": "ESCOLA MUNICIPAL DOM OSCAR",
     "idEscola": "ESC_MSJ5TE5F_KNCT"
-  }
+  },
+  "instituicao": {
+    "nome": "ESCOLA MUNICIPAL DOM OSCAR DE OLIVEIRA",
+    "cnpj": "02.621.922/0001-41",
+    "razao": "ASSOCIAÇÃO DE PAIS E MESTRES DA ESCOLA MUNICIPAL DOM OSCAR DE OLIVEIRA",
+    "endereco": "RUA MONSENHOR LEÃO",
+    "numero": "89",
+    "complemento": "------",
+    "bairro": "CENTRO",
+    "cidade": "ENTRE RIOS DE MINAS - MG",
+    "uf": "MG",
+    "cep": "35490-000",
+    "responsavel": {
+      "nome": "ALESSANDRA MAIA RIBEIRO CHARNECA LEOPOLDINO",
+      "cargo": "DIRETORA",
+      "email": "emdomoscar@yahoo.com.br",
+      "tel": "(31) 99988-3039"
+    },
+    "diretor": {
+      "nome": "ALESSANDRA MAIA RIBEIRO CHARNECA LEOPOLDINO",
+      "email": "alessandramrcleopoldino@gmail.com"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": false,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "1",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "1",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "01",
+      "andar": "1º ANDAR",
+      "sala": "SALA 07",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "01",
+      "andar": "1º ANDAR",
+      "sala": "SALA 08",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "01",
+      "andar": "1º ANDAR",
+      "sala": "SALA 09",
+      "capacidade": 22,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "01",
+      "andar": "1º ANDAR",
+      "sala": "SALA 10",
+      "capacidade": 23,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "01",
+      "andar": "1º ANDAR",
+      "sala": "SALA 11",
+      "capacidade": 17,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "01",
+      "andar": "1º ANDAR",
+      "sala": "SALA 12",
+      "capacidade": 15,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "02",
+      "andar": "2º ANDAR",
+      "sala": "SALA 15",
+      "capacidade": 22,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "02",
+      "andar": "2º ANDAR",
+      "sala": "SALA 16",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "02",
+      "andar": "2º ANDAR",
+      "sala": "SALA 17",
+      "capacidade": 22,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "02",
+      "andar": "2º ANDAR",
+      "sala": "SALA 18",
+      "capacidade": 21,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "02",
+      "andar": "2º ANDAR",
+      "sala": "SALA 19",
+      "capacidade": 21,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "01",
+      "andar": "1º ANDAR",
+      "sala": "SALA S/N",
+      "capacidade": 10,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "02",
+      "andar": "2º ANDAR",
+      "sala": "SALA 20",
+      "capacidade": 10,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    }
+  ]
 }
