@@ -27,7 +27,7 @@
       "tel": "(34) 98879-7090"
     },
     "diretor": {
-      "nome": "Danilo Martins Vargas",
+      "nome": "DANILO MARTINS VARGAS",
       "email": "danilo.martins.vargas@educacao.mg.gov.br"
     }
   },
@@ -60,8 +60,8 @@
   "salas": [
     {
       "bloco": "A",
-      "andar": "1° Andar",
-      "sala": "1",
+      "andar": "1° ANDAR",
+      "sala": "SALA 1",
       "capacidade": 35,
       "turno": "AMBOS",
       "arcond": false,
@@ -70,8 +70,8 @@
     },
     {
       "bloco": "A",
-      "andar": "1° Andar",
-      "sala": "2",
+      "andar": "1° ANDAR",
+      "sala": "SALA 2",
       "capacidade": 35,
       "turno": "AMBOS",
       "arcond": false,
@@ -80,8 +80,8 @@
     },
     {
       "bloco": "A",
-      "andar": "1º Andar",
-      "sala": "3",
+      "andar": "1º ANDAR",
+      "sala": "SALA 3",
       "capacidade": 32,
       "turno": "AMBOS",
       "arcond": false,
@@ -90,8 +90,8 @@
     },
     {
       "bloco": "A",
-      "andar": "1º Andar",
-      "sala": "4",
+      "andar": "1º ANDAR",
+      "sala": "SALA 4",
       "capacidade": 32,
       "turno": "AMBOS",
       "arcond": false,
@@ -100,8 +100,8 @@
     },
     {
       "bloco": "A",
-      "andar": "1º Andar",
-      "sala": "17",
+      "andar": "1º ANDAR",
+      "sala": "SALA 17",
       "capacidade": 35,
       "turno": "AMBOS",
       "arcond": false,
@@ -110,8 +110,8 @@
     },
     {
       "bloco": "A",
-      "andar": "1º Andar",
-      "sala": "18",
+      "andar": "1º ANDAR",
+      "sala": "SALA 18",
       "capacidade": 35,
       "turno": "AMBOS",
       "arcond": false,
@@ -120,8 +120,8 @@
     },
     {
       "bloco": "A",
-      "andar": "1º Andar",
-      "sala": "19",
+      "andar": "1º ANDAR",
+      "sala": "SALA 19",
       "capacidade": 35,
       "turno": "AMBOS",
       "arcond": false,
@@ -130,8 +130,8 @@
     },
     {
       "bloco": "A",
-      "andar": "1º Andar",
-      "sala": "20",
+      "andar": "1º ANDAR",
+      "sala": "SALA 20",
       "capacidade": 35,
       "turno": "AMBOS",
       "arcond": false,
@@ -140,8 +140,8 @@
     },
     {
       "bloco": "A",
-      "andar": "1º Andar",
-      "sala": "21",
+      "andar": "1º ANDAR",
+      "sala": "SALA 21",
       "capacidade": 35,
       "turno": "AMBOS",
       "arcond": false,
@@ -150,8 +150,8 @@
     },
     {
       "bloco": "B",
-      "andar": "1º Andar",
-      "sala": "22",
+      "andar": "1º ANDAR",
+      "sala": "SALA 22",
       "capacidade": 35,
       "turno": "AMBOS",
       "arcond": false,
@@ -160,8 +160,8 @@
     },
     {
       "bloco": "B",
-      "andar": "1º Andar",
-      "sala": "23",
+      "andar": "1º ANDAR",
+      "sala": "SALA 23",
       "capacidade": 35,
       "turno": "AMBOS",
       "arcond": false,
@@ -170,8 +170,8 @@
     },
     {
       "bloco": "B",
-      "andar": "1º Andar",
-      "sala": "24",
+      "andar": "1º ANDAR",
+      "sala": "SALA 24",
       "capacidade": 35,
       "turno": "AMBOS",
       "arcond": false,
@@ -180,8 +180,8 @@
     },
     {
       "bloco": "B",
-      "andar": "1º Andar",
-      "sala": "25",
+      "andar": "1º ANDAR",
+      "sala": "SALA 25",
       "capacidade": 35,
       "turno": "AMBOS",
       "arcond": false,
@@ -190,8 +190,8 @@
     },
     {
       "bloco": "B",
-      "andar": "1º Andar",
-      "sala": "28",
+      "andar": "1º ANDAR",
+      "sala": "SALA 28",
       "capacidade": 35,
       "turno": "AMBOS",
       "arcond": false,
@@ -200,8 +200,8 @@
     },
     {
       "bloco": "B",
-      "andar": "1º Andar",
-      "sala": "29",
+      "andar": "1º ANDAR",
+      "sala": "SALA 29",
       "capacidade": 35,
       "turno": "AMBOS",
       "arcond": false,
@@ -210,8 +210,8 @@
     },
     {
       "bloco": "B",
-      "andar": "1º Andar",
-      "sala": "30",
+      "andar": "1º ANDAR",
+      "sala": "SALA 30",
       "capacidade": 35,
       "turno": "AMBOS",
       "arcond": false,
@@ -220,8 +220,8 @@
     },
     {
       "bloco": "A",
-      "andar": "1º Andar",
-      "sala": "14",
+      "andar": "1º ANDAR",
+      "sala": "SALA 14",
       "capacidade": 20,
       "turno": "AMBOS",
       "arcond": false,
