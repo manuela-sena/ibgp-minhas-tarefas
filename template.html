@@ -6548,16 +6548,16 @@ function carregarExcelJSAloc(cb){
 }
 
 // ── MOTOR DE ALOCAÇÃO ─────────────────────────────────────────────────
-const SALA_INDIVIDUAL = ['LEDOR','TRANSCRITOR','SOFTWARE','SALA INDIVIDUAL','LIBRAS'];
+const SALA_INDIVIDUAL = ['LEDOR','TRANSCRITOR','TRANSCRIÇÃO','SOFTWARE','SALA INDIVIDUAL','LIBRAS'];
 const MESMA_SALA_GRUPO = ['PROVA AMPLIADA','SALA AMAMENTAÇÃO','TEMPO ADICIONAL','APÓS AS 18H','APÓS 18H'];
-const SEM_RESTRICAO = ['CADEIRA SEPARADA','CADEIRA CANHOTO','APOIO DE PÉ','PRÓTESE AUDITIVA','BOMBA DE INSULINA'];
+const SEM_RESTRICAO = ['CADEIRA SEPARADA','CADEIRA CANHOTO','CADEIRA PARA CANHOTO','APOIO DE PÉ','PRÓTESE AUDITIVA','BOMBA DE INSULINA'];
 const KEYWORDS_ATENDIMENTO = [...SALA_INDIVIDUAL, ...MESMA_SALA_GRUPO, ...SEM_RESTRICAO];
 
 function abreviarAtendimento(nome){
   const map = {
-    'LEDOR':'ledor','TRANSCRITOR':'transc','SOFTWARE':'software','SALA INDIVIDUAL':'individual','LIBRAS':'libras',
+    'LEDOR':'ledor','TRANSCRITOR':'transc','TRANSCRIÇÃO':'transc','SOFTWARE':'software','SALA INDIVIDUAL':'individual','LIBRAS':'libras',
     'PROVA AMPLIADA':'ampliada','SALA AMAMENTAÇÃO':'amamentação','TEMPO ADICIONAL':'15min','APÓS AS 18H':'18h','APÓS 18H':'18h',
-    'CADEIRA SEPARADA':'cad.sep','CADEIRA CANHOTO':'canhoto','APOIO DE PÉ':'apoio pé','PRÓTESE AUDITIVA':'prótese aud','BOMBA DE INSULINA':'insulina'
+    'CADEIRA SEPARADA':'cad.sep','CADEIRA CANHOTO':'canhoto','CADEIRA PARA CANHOTO':'canhoto','APOIO DE PÉ':'apoio pé','PRÓTESE AUDITIVA':'prótese aud','BOMBA DE INSULINA':'insulina'
   };
   return map[nome.toUpperCase()] || nome.toLowerCase();
 }
@@ -6806,10 +6806,13 @@ function executarMotorAlocacao(candidatos, escolas){
 
   // ── 2. Identificar atendimento especial de cada candidato ──
   function getAtendimentos(c){
-    const campo = (c['ATENDIMENTO ESPECIAL']||c['CONDIÇÃO ESPECIAL']||c['ATENDIMENTOS']||'').toString().toUpperCase();
-    if(!campo || campo==='NÃO'||campo==='NAO'||campo==='-') return [];
-    return campo.split(/[,;]/).map(s=>s.trim()).filter(Boolean);
+    const campo = (c['ATENDIMENTO ESPECIAL']||c['CONDIÇÃO ESPECIAL']||c['ATENDIMENTOS']||'').toString();
+    if(!campo) return [];
+    return campo.split(/\r?\n|[,;]/)
+      .map(s=>s.replace(/^\s*\d+\s*[-–.)]\s*/,'').trim().toUpperCase())
+      .filter(s=>s && s!=='NÃO' && s!=='NAO' && s!=='-');
   }
+
   function precisaSalaIndividual(atendimentos){
     return atendimentos.some(a=>SALA_INDIVIDUAL.some(k=>a.toUpperCase().includes(k)));
   }
