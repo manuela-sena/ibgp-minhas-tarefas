@@ -13,16 +13,16 @@
     "nome": "JERRY TADEU DE RESENDE",
     "cnpj": "20.017.166/0001-28",
     "razao": "",
-    "endereco": "Rua Santo Antônio",
+    "endereco": "RUA SANTO ANTÔNIO",
     "numero": "150",
     "complemento": "",
-    "bairro": "Santo Antônio",
-    "cidade": "Araxá",
+    "bairro": "SANTO ANTÔNIO",
+    "cidade": "ARAXÁ",
     "uf": "MG",
     "cep": "38182-106",
     "responsavel": {
       "nome": "JERRY TADEU DE RESENDE",
-      "cargo": "diretor",
+      "cargo": "DIRETOR",
       "email": "jerry.resende@educacao.mg.gov.br",
       "tel": "(34) 99951-0357"
     },
@@ -61,7 +61,7 @@
     {
       "bloco": "A",
       "andar": "",
-      "sala": "1 a 10",
+      "sala": "SALA 1 A 10",
       "capacidade": 350,
       "turno": "AMBOS",
       "arcond": false,
@@ -71,7 +71,7 @@
     {
       "bloco": "B",
       "andar": "",
-      "sala": "11 a 13",
+      "sala": "SALA 11 A 13",
       "capacidade": 105,
       "turno": "AMBOS",
       "arcond": false,
@@ -81,7 +81,7 @@
     {
       "bloco": "C",
       "andar": "",
-      "sala": "14 a 16",
+      "sala": "SALA 14 A 16",
       "capacidade": 105,
       "turno": "AMBOS",
       "arcond": false,
@@ -91,7 +91,7 @@
     {
       "bloco": "D",
       "andar": "",
-      "sala": "1",
+      "sala": "SALA 1",
       "capacidade": 30,
       "turno": "AMBOS",
       "arcond": false,
