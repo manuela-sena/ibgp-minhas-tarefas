@@ -1,1 +1,152 @@
-{"token":"ESC_MSHR5C86_16KT","enviadoEm":"2026-08-06T17:04:24.564Z","protocolo":"ESC_MSHR5C86_16KT_1786035864564","concurso":{"concurso":"CÂMARA DE CATAGUASES/MG - EDITAL Nº 01/2026 - CONCURSO PÚBLICO","municipio":"CATAGUASES/MG","dataProva":"23/08/2026","escola":"ESCOLA ESTADUAL MANUEL INÁCIO PEIXOTO (COLÉGIO CATAGUASES)","idEscola":"ESC_MSHR5C86_16KT"},"instituicao":{"nome":"ESCOLA ESTADUAL MANUEL INÁCIO PEIXOTO (COLÉGIO CATAGUASES)","cnpj":"19.649.714/0001-53","razao":"Caixa Escolar Nair Guimarães","endereco":"Chácara Granjaria","numero":"s/n","complemento":"Colégio Cataguases","bairro":"Granjaria","cidade":"Cataguases","uf":"MG","cep":"36773-563","responsavel":{"nome":"Marcos Octávio Leite da Silva","cargo":"Diretor","email":"marcos.leite@educacao.mg.gov.br","tel":"(31) 99124-8086"},"diretor":{"nome":"","email":""}},"estrutura":{"carteiras":{"mesa":true,"universitaria":false,"canhoto":false,"dupla":false},"infraestrutura":{"rampa":true,"elevador":false,"gerador":false,"auditorio":true,"arcond":false,"ventilador":true},"banheiros":{"masc":{"qtd":"1","adaptado":false},"fem":{"qtd":"1","adaptado":false}}},"salas":[{"sala":"1","bloco":"ÚNICO","andar":"1° andar","capacidade":35,"turno":"AMBOS","arcond":false,"ventilador":true},{"sala":"2","bloco":"ÚNICO","andar":"1° andar","capacidade":35,"turno":"AMBOS","arcond":false,"ventilador":true},{"sala":"3","bloco":"ÚNICO","andar":"1° andar","capacidade":35,"turno":"AMBOS","arcond":false,"ventilador":true},{"sala":"4","bloco":"ÚNICO","andar":"1° andar","capacidade":35,"turno":"AMBOS","arcond":false,"ventilador":true},{"sala":"5","bloco":"ÚNICO","andar":"1° andar","capacidade":35,"turno":"AMBOS","arcond":false,"ventilador":true},{"sala":"6","bloco":"ÚNICO","andar":"1° andar","capacidade":35,"turno":"AMBOS","arcond":false,"ventilador":true},{"sala":"7","bloco":"ÚNICO","andar":"1° andar","capacidade":35,"turno":"AMBOS","arcond":false,"ventilador":true},{"sala":"8","bloco":"ÚNICO","andar":"1° andar","capacidade":35,"turno":"AMBOS","arcond":false,"ventilador":true},{"sala":"9","bloco":"ÚNICO","andar":"1° andar","capacidade":1,"turno":"AMBOS","arcond":false,"ventilador":true},{"sala":"10","bloco":"ÚNICO","andar":"1° andar","capacidade":1,"turno":"AMBOS","arcond":false,"ventilador":true}]}
+{
+  "token": "ESC_MSHR5C86_16KT",
+  "enviadoEm": "2026-08-06T17:04:24.564Z",
+  "protocolo": "ESC_MSHR5C86_16KT_1786035864564",
+  "concurso": {
+    "concurso": "CÂMARA DE CATAGUASES/MG - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+    "municipio": "CATAGUASES/MG",
+    "dataProva": "23/08/2026",
+    "escola": "ESCOLA ESTADUAL MANUEL INÁCIO PEIXOTO (COLÉGIO CATAGUASES)",
+    "idEscola": "ESC_MSHR5C86_16KT"
+  },
+  "instituicao": {
+    "nome": "ESCOLA ESTADUAL MANUEL INÁCIO PEIXOTO (COLÉGIO CATAGUASES)",
+    "cnpj": "19.649.714/0001-53",
+    "razao": "CAIXA ESCOLAR NAIR GUIMARÃES",
+    "endereco": "CHÁCARA GRANJARIA",
+    "numero": "S/N",
+    "complemento": "COLÉGIO CATAGUASES",
+    "bairro": "GRANJARIA",
+    "cidade": "CATAGUASES",
+    "uf": "MG",
+    "cep": "36773-563",
+    "responsavel": {
+      "nome": "MARCOS OCTÁVIO LEITE DA SILVA",
+      "cargo": "DIRETOR",
+      "email": "marcos.leite@educacao.mg.gov.br",
+      "tel": "(31) 99124-8086"
+    },
+    "diretor": {
+      "nome": "",
+      "email": ""
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": true,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "1",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "1",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "sala": "SALA 1",
+      "bloco": "ÚNICO",
+      "andar": "1° ANDAR",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 2",
+      "bloco": "ÚNICO",
+      "andar": "1° ANDAR",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 3",
+      "bloco": "ÚNICO",
+      "andar": "1° ANDAR",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 4",
+      "bloco": "ÚNICO",
+      "andar": "1° ANDAR",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 5",
+      "bloco": "ÚNICO",
+      "andar": "1° ANDAR",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 6",
+      "bloco": "ÚNICO",
+      "andar": "1° ANDAR",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 7",
+      "bloco": "ÚNICO",
+      "andar": "1° ANDAR",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 8",
+      "bloco": "ÚNICO",
+      "andar": "1° ANDAR",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 9",
+      "bloco": "ÚNICO",
+      "andar": "1° ANDAR",
+      "capacidade": 1,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 10",
+      "bloco": "ÚNICO",
+      "andar": "1° ANDAR",
+      "capacidade": 1,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true
+    }
+  ]
+}
