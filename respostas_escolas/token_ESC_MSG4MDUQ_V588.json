@@ -13,21 +13,21 @@
     "nome": "ESCOLA ESTADUAL CORONEL VIEIRA",
     "cnpj": "",
     "razao": "",
-    "endereco": "Avenida Astolfo Dutra",
+    "endereco": "AVENIDA ASTOLFO DUTRA",
     "numero": "303",
     "complemento": "",
-    "bairro": "Centro",
-    "cidade": "Cataguases",
+    "bairro": "CENTRO",
+    "cidade": "CATAGUASES",
     "uf": "MG",
     "cep": "36770-001",
     "responsavel": {
-      "nome": "Dirceia do Carmo Godinho",
-      "cargo": "Diretora",
+      "nome": "DIRCEIA DO CARMO GODINHO",
+      "cargo": "DIRETORA",
       "email": "escola.97314@educacao.mg.gov.br",
       "tel": "(32) 3421-5153"
     },
     "diretor": {
-      "nome": "Dirceia do Carmo Godinho",
+      "nome": "DIRCEIA DO CARMO GODINHO",
       "email": "dirceia.godinho@educacao.mg.gov.br"
     }
   },
@@ -59,9 +59,9 @@
   },
   "salas": [
     {
-      "bloco": "Bloco 1",
-      "andar": "Térreo",
-      "sala": "02",
+      "bloco": "BLOCO 1",
+      "andar": "TÉRREO",
+      "sala": "SALA 02",
       "capacidade": 30,
       "turno": "AMBOS",
       "arcond": false,
@@ -69,9 +69,9 @@
       "atendimentoEspecial": false
     },
     {
-      "bloco": "Bloco 1",
-      "andar": "Térreo",
-      "sala": "03",
+      "bloco": "BLOCO 1",
+      "andar": "TÉRREO",
+      "sala": "SALA 03",
       "capacidade": 30,
       "turno": "AMBOS",
       "arcond": false,
@@ -79,9 +79,9 @@
       "atendimentoEspecial": false
     },
     {
-      "bloco": "Bloco 1",
-      "andar": "Térreo",
-      "sala": "04",
+      "bloco": "BLOCO 1",
+      "andar": "TÉRREO",
+      "sala": "SALA 04",
       "capacidade": 30,
       "turno": "AMBOS",
       "arcond": false,
@@ -89,9 +89,9 @@
       "atendimentoEspecial": false
     },
     {
-      "bloco": "Bloco 1",
-      "andar": "Térreo",
-      "sala": "07",
+      "bloco": "BLOCO 1",
+      "andar": "TÉRREO",
+      "sala": "SALA 07",
       "capacidade": 30,
       "turno": "AMBOS",
       "arcond": false,
@@ -99,9 +99,9 @@
       "atendimentoEspecial": false
     },
     {
-      "bloco": "Bloco 1",
-      "andar": "Térreo",
-      "sala": "08",
+      "bloco": "BLOCO 1",
+      "andar": "TÉRREO",
+      "sala": "SALA 08",
       "capacidade": 30,
       "turno": "AMBOS",
       "arcond": false,
@@ -109,9 +109,9 @@
       "atendimentoEspecial": false
     },
     {
-      "bloco": "Bloco 1",
-      "andar": "Térreo",
-      "sala": "09",
+      "bloco": "BLOCO 1",
+      "andar": "TÉRREO",
+      "sala": "SALA 09",
       "capacidade": 30,
       "turno": "AMBOS",
       "arcond": false,
@@ -119,9 +119,9 @@
       "atendimentoEspecial": false
     },
     {
-      "bloco": "Bloco 1",
-      "andar": "Térreo",
-      "sala": "10",
+      "bloco": "BLOCO 1",
+      "andar": "TÉRREO",
+      "sala": "SALA 10",
       "capacidade": 30,
       "turno": "AMBOS",
       "arcond": false,
@@ -129,9 +129,9 @@
       "atendimentoEspecial": false
     },
     {
-      "bloco": "Bloco 1",
-      "andar": "Térreo",
-      "sala": "11",
+      "bloco": "BLOCO 1",
+      "andar": "TÉRREO",
+      "sala": "SALA 11",
       "capacidade": 30,
       "turno": "AMBOS",
       "arcond": false,
@@ -139,9 +139,9 @@
       "atendimentoEspecial": false
     },
     {
-      "bloco": "Bloco 1",
-      "andar": "Térreo",
-      "sala": "12",
+      "bloco": "BLOCO 1",
+      "andar": "TÉRREO",
+      "sala": "SALA 12",
       "capacidade": 30,
       "turno": "AMBOS",
       "arcond": false,
@@ -149,9 +149,9 @@
       "atendimentoEspecial": false
     },
     {
-      "bloco": "Bloco 1",
-      "andar": "Térreo",
-      "sala": "13",
+      "bloco": "BLOCO 1",
+      "andar": "TÉRREO",
+      "sala": "SALA 13",
       "capacidade": 30,
       "turno": "AMBOS",
       "arcond": false,
@@ -159,9 +159,9 @@
       "atendimentoEspecial": false
     },
     {
-      "bloco": "Bloco 2",
-      "andar": "Térreo",
-      "sala": "14",
+      "bloco": "BLOCO 2",
+      "andar": "TÉRREO",
+      "sala": "SALA 14",
       "capacidade": 20,
       "turno": "AMBOS",
       "arcond": false,
@@ -169,9 +169,9 @@
       "atendimentoEspecial": false
     },
     {
-      "bloco": "Bloco 2",
-      "andar": "Térreo",
-      "sala": "15",
+      "bloco": "BLOCO 2",
+      "andar": "TÉRREO",
+      "sala": "SALA 15",
       "capacidade": 20,
       "turno": "AMBOS",
       "arcond": false,
@@ -179,9 +179,9 @@
       "atendimentoEspecial": false
     },
     {
-      "bloco": "Bloco 2",
-      "andar": "Térreo",
-      "sala": "16",
+      "bloco": "BLOCO 2",
+      "andar": "TÉRREO",
+      "sala": "SALA 16",
       "capacidade": 20,
       "turno": "AMBOS",
       "arcond": false,
@@ -189,9 +189,9 @@
       "atendimentoEspecial": false
     },
     {
-      "bloco": "Bloco 2",
-      "andar": "Térreo",
-      "sala": "17",
+      "bloco": "BLOCO 2",
+      "andar": "TÉRREO",
+      "sala": "SALA 17",
       "capacidade": 20,
       "turno": "AMBOS",
       "arcond": false,
@@ -199,9 +199,9 @@
       "atendimentoEspecial": false
     },
     {
-      "bloco": "Bloco 1",
-      "andar": "Térreo",
-      "sala": "Informática",
+      "bloco": "BLOCO 1",
+      "andar": "TÉRREO",
+      "sala": "SALA INFORMÁTICA",
       "capacidade": 1,
       "turno": "AMBOS",
       "arcond": false,
@@ -209,9 +209,9 @@
       "atendimentoEspecial": true
     },
     {
-      "bloco": "Bloco 2",
-      "andar": "Térreo",
-      "sala": "Biblioteca",
+      "bloco": "BLOCO 2",
+      "andar": "TÉRREO",
+      "sala": "SALA BIBLIOTECA",
       "capacidade": 1,
       "turno": "AMBOS",
       "arcond": false,
