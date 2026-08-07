@@ -6555,13 +6555,27 @@ const KEYWORDS_ATENDIMENTO = [...SALA_INDIVIDUAL, ...MESMA_SALA_GRUPO, ...SEM_RE
 
 function abreviarAtendimento(nome){
   const map = {
-    'LEDOR':'ledor','TRANSCRITOR':'transc','TRANSCRIÇÃO':'transc','SOFTWARE':'software','SALA INDIVIDUAL':'individual','LIBRAS':'libras',
-    'PROVA AMPLIADA':'ampliada','SALA AMAMENTAÇÃO':'amamentação','TEMPO ADICIONAL':'15min','APÓS AS 18H':'18h','APÓS 18H':'18h',
-    'CADEIRA SEPARADA':'cad.sep','CADEIRA CANHOTO':'canhoto','CADEIRA PARA CANHOTO':'canhoto','APOIO DE PÉ':'apoio pé','PRÓTESE AUDITIVA':'prótese aud','BOMBA DE INSULINA':'insulina'
+    'LEDOR':'ledor', 'TRANSCRITOR':'transc', 'TRANSCRIÇÃO':'transc', 'SOFTWARE':'software', 'SALA INDIVIDUAL':'individual', 'LIBRAS':'libras',
+    'PROVA AMPLIADA':'ampliada', 'SALA AMAMENTAÇÃO':'amamentação', 'TEMPO ADICIONAL':'15min', 'APÓS AS 18H':'18h', 'APÓS 18H':'18h',
+    'CADEIRA SEPARADA':'cad.sep', 'CADEIRA CANHOTO':'canhoto', 'CADEIRA PARA CANHOTO':'canhoto', 'APOIO DE PÉ':'apoio pé', 'PRÓTESE AUDITIVA':'prótese aud', 'BOMBA DE INSULINA':'insulina'
   };
-  return map[nome.toUpperCase()] || nome.toLowerCase();
+  const key = (nome||'').toUpperCase().trim();
+  let abrev;
+  if(map[key]){
+    abrev = map[key];
+  } else {
+    const candidatos = Object.keys(map).filter(k=>key.includes(k));
+    if(candidatos.length){
+      candidatos.sort((a,b)=>b.length-a.length);
+      abrev = map[candidatos[0]];
+    } else {
+      abrev = (nome||'').toLowerCase();
+    }
+  }
+  const fonte = key.match(/FONTE\s*(\d+)/);
+  if(fonte && !abrev.toLowerCase().includes('fonte')) abrev += ' (fonte ' + fonte[1] + ')';
+  return abrev;
 }
-
 function toggleTodasEscolas(checked){
   const escolas = window._alocEscolas||[];
   window._alocSelecionadas = window._alocSelecionadas || new Set();
@@ -6921,7 +6935,7 @@ function executarMotorAlocacao(candidatos, escolas){
     const r = alocarEmSalaEspecialOuFallback(c, 'individual');
     if(r){
       const abrevs = c._atendimentos.filter(a=>SALA_INDIVIDUAL.some(k=>a.toUpperCase().includes(k))).map(abreviarAtendimento);
-      const nomeSalaFinal = `${r.salaEscolhida.salaBase} ${abrevs.join(', ')}`;
+      const nomeSalaFinal = `${r.salaEscolhida.salaBase} - ${abrevs.join(', ')}`;
       alocados.push({
         ...mapCandidato(c),
         SALA: nomeSalaFinal, ANDAR: r.salaEscolhida.andar, BLOCO: r.salaEscolhida.bloco, ESCOLA: r.salaEscolhida.escola,
@@ -6936,7 +6950,7 @@ function executarMotorAlocacao(candidatos, escolas){
     const r = alocarEmSalaEspecialOuFallback(c, 'grupo');
     if(r){
       const abrevsGrupo = c._atendimentos.filter(a=>MESMA_SALA_GRUPO.some(k=>a.toUpperCase().includes(k))).map(abreviarAtendimento);
-      const nomeSalaFinal = abrevsGrupo.length ? `${r.salaEscolhida.salaBase} ${abrevsGrupo.join(', ')}` : r.salaEscolhida.salaBase;
+      const nomeSalaFinal = abrevsGrupo.length ? `${r.salaEscolhida.salaBase} - ${abrevsGrupo.join(', ')}` : r.salaEscolhida.salaBase;
       alocados.push({
         ...mapCandidato(c),
         SALA: nomeSalaFinal, ANDAR: r.salaEscolhida.andar, BLOCO: r.salaEscolhida.bloco, ESCOLA: r.salaEscolhida.escola,
