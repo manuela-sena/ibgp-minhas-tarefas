@@ -305,7 +305,7 @@
         <div class="form-grid">
           <div class="form-group span2">
             <label>Nome da Instituição <span class="req">*</span></label>
-            <input type="text" id="nome" placeholder="Ex: Escola Estadual João da Silva">
+            <input type="text" id="nome" placeholder="Ex: Escola Estadual João da Silva" oninput="upper(this)">
           </div>
           <div class="form-group">
             <label>CNPJ</label>
@@ -313,7 +313,7 @@
           </div>
           <div class="form-group">
             <label>Razão Social</label>
-            <input type="text" id="razao" placeholder="Razão social completa">
+            <input type="text" id="razao" placeholder="Razão social completa" oninput="upper(this)">
           </div>
         </div>
       </div>
@@ -328,19 +328,19 @@
         <div class="form-grid cols-3">
           <div class="form-group span2">
             <label>Endereço <span class="req">*</span></label>
-            <input type="text" id="endereco" placeholder="Rua, Avenida...">
+            <input type="text" id="endereco" placeholder="Rua, Avenida..." oninput="upper(this)">
           </div>
           <div class="form-group">
             <label>Número</label>
-            <input type="text" id="numero" placeholder="Nº ou S/N">
+            <input type="text" id="numero" placeholder="Nº ou S/N" oninput="upper(this)">
           </div>
           <div class="form-group">
             <label>Complemento</label>
-            <input type="text" id="complemento" placeholder="Bloco, sala...">
+            <input type="text" id="complemento" placeholder="Bloco, sala..." oninput="upper(this)">
           </div>
           <div class="form-group">
             <label>Bairro <span class="req">*</span></label>
-            <input type="text" id="bairro" placeholder="Bairro">
+            <input type="text" id="bairro" placeholder="Bairro" oninput="upper(this)">
           </div>
           <div class="form-group">
             <label>CEP</label>
@@ -348,7 +348,7 @@
           </div>
           <div class="form-group">
             <label>Cidade <span class="req">*</span></label>
-            <input type="text" id="cidade" placeholder="Cidade">
+            <input type="text" id="cidade" placeholder="Cidade" oninput="upper(this)">
           </div>
           <div class="form-group">
             <label>UF</label>
@@ -376,11 +376,11 @@
         <div class="form-grid">
           <div class="form-group">
             <label>Nome do Responsável <span class="req">*</span></label>
-            <input type="text" id="resp-nome" placeholder="Nome completo">
+            <input type="text" id="resp-nome" placeholder="Nome completo" oninput="upper(this)">
           </div>
           <div class="form-group">
             <label>Cargo do Responsável</label>
-            <input type="text" id="resp-cargo" placeholder="Ex: Diretor(a)">
+            <input type="text" id="resp-cargo" placeholder="Ex: Diretor(a)" oninput="upper(this)">
           </div>
           <div class="form-group">
             <label>E-mail de Contato <span class="req">*</span></label>
@@ -392,7 +392,7 @@
           </div>
           <div class="form-group">
             <label>Nome do Diretor</label>
-            <input type="text" id="diretor-nome" placeholder="Nome do diretor">
+            <input type="text" id="diretor-nome" placeholder="Nome do diretor" oninput="upper(this)">
           </div>
           <div class="form-group">
             <label>E-mail do Diretor</label>
@@ -821,9 +821,9 @@ function addSala(){
   tr.id = 'sala-row-'+salaCount;
   tr.innerHTML = `
 <td style="text-align:center;color:var(--muted);font-size:12px;font-weight:700">${tbody.children.length+1}</td>
-<td><input type="text" data-f="bloco" placeholder="Ex: A, B" style="min-width:70px"></td>
-<td><input type="text" data-f="andar" placeholder="1º Andar" style="min-width:90px"></td>
-<td><input type="text" data-f="sala" placeholder="Ex: 101" style="min-width:70px"></td>
+<td><input type="text" data-f="bloco" placeholder="Ex: A, B" style="min-width:70px" oninput="upper(this)"></td>
+<td><input type="text" data-f="andar" placeholder="1º Andar" style="min-width:90px" oninput="upper(this)"></td>
+<td><input type="text" data-f="sala" placeholder="Ex: 101" style="min-width:70px" oninput="upper(this)"></td>
 <td><input type="number" data-f="cap" min="1" max="100" placeholder="0" oninput="atualizarCapTotal()"></td>
 <td>
   <select data-f="turno">
@@ -910,7 +910,7 @@ function getSalas(){
   return Array.from(rows).map(r=>({
     bloco:   r.querySelector('[data-f="bloco"]').value.trim(),
     andar:   r.querySelector('[data-f="andar"]').value.trim(),
-    sala:    r.querySelector('[data-f="sala"]').value.trim(),
+    sala:    normalizarSala(r.querySelector('[data-f="sala"]').value),
     capacidade: parseInt(r.querySelector('[data-f="cap"]').value)||0,
     turno:   r.querySelector('[data-f="turno"]').value,
     arcond:  r.querySelector('[data-f="arcond"]').checked,
@@ -1026,6 +1026,18 @@ async function salvarNoGitHub(dados){
 }
 
 // ── HELPERS ───────────────────────────────────────────────────────────
+function upper(el){
+  const pos = el.selectionStart, pos2 = el.selectionEnd;
+  el.value = el.value.toUpperCase();
+  try{ el.setSelectionRange(pos, pos2); }catch(e){}
+}
+
+function normalizarSala(v){
+  v = (v||'').trim().toUpperCase();
+  if(v && !/^SALA(\s|$)/.test(v)) v = 'SALA ' + v;
+  return v;
+}
+
 function toggleCheck(cb, id){
   document.getElementById(id).classList.toggle('checked', cb.checked);
 }
