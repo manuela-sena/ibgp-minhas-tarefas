@@ -6555,9 +6555,9 @@ const KEYWORDS_ATENDIMENTO = [...SALA_INDIVIDUAL, ...MESMA_SALA_GRUPO, ...SEM_RE
 
 function abreviarAtendimento(nome){
   const map = {
-    'LEDOR':'ledor', 'TRANSCRITOR':'transc', 'TRANSCRIÇÃO':'transc', 'SOFTWARE':'software', 'SALA INDIVIDUAL':'ind', 'LIBRAS':'libras',
-    'PROVA AMPLIADA':'ampl', 'SALA AMAMENTAÇÃO':'amamentação', 'TEMPO ADICIONAL':'15min', 'APÓS AS 18H':'18h', 'APÓS 18H':'18h',
-    'CADEIRA SEPARADA':'cad.sep', 'CADEIRA CANHOTO':'canhoto', 'CADEIRA PARA CANHOTO':'canhoto', 'APOIO DE PÉ':'apoio pé', 'PRÓTESE AUDITIVA':'prótese aud', 'BOMBA DE INSULINA':'insulina'
+    'LEDOR':'LEDOR', 'TRANSCRITOR':'TRANSC', 'TRANSCRIÇÃO':'TRANSC', 'SOFTWARE':'SOFTWARE', 'SALA INDIVIDUAL':'IND', 'LIBRAS':'LIBRAS',
+    'PROVA AMPLIADA':'AMPL', 'SALA AMAMENTAÇÃO':'AMAMENTAÇÃO', 'TEMPO ADICIONAL':'15MIN', 'APÓS AS 18H':'18H', 'APÓS 18H':'18H',
+    'CADEIRA SEPARADA':'CAD.SEP', 'CADEIRA CANHOTO':'CANHOTO', 'CADEIRA PARA CANHOTO':'CANHOTO', 'APOIO DE PÉ':'APOIO PÉ', 'PRÓTESE AUDITIVA':'PRÓTESE AUD', 'BOMBA DE INSULINA':'INSULINA'
   };
   const key = (nome||'').toUpperCase().trim();
   if(map[key]) return map[key];
@@ -6566,7 +6566,7 @@ function abreviarAtendimento(nome){
     candidatos.sort((a,b)=>b.length-a.length);
     return map[candidatos[0]];
   }
-  return (nome||'').toLowerCase();
+  return key;
 }
 function toggleTodasEscolas(checked){
   const escolas = window._alocEscolas||[];
@@ -7030,12 +7030,13 @@ async function gerarPlanilhaAlocacao(resultado){
   }
 
   // ── ESCOLAS (mapa de salas usado nessa alocação) ──
+  const escolasUsadas = new Set(resultado.salasPool.filter(s=>s.ocupantes && s.ocupantes.length>0).map(s=>s.escola));
   const escolasRows = [];
   let acumulado = 0;
-  resultado.salasPool.slice().sort((x,y)=>y.capacidadeOriginal-x.capacidadeOriginal).forEach((s,i)=>{
+  resultado.salasPool.slice().filter(s=>escolasUsadas.has(s.escola)).sort((x,y)=>y.capacidadeOriginal-x.capacidadeOriginal).forEach((s,i)=>{
     acumulado += s.capacidadeOriginal;
     escolasRows.push({'Índice':i+1, 'Nome da Instituição': s.escola, 'Bloco': s.bloco, 'Andar': s.andar,
-      'Nº sala': 'SALA '+s.salaBase, 'Capacidade': s.capacidadeOriginal, 'TURNO': s.turno, 'CAP': acumulado, 'Coluna1': i+1});
+      'Nº sala': s.salaBase, 'Capacidade': s.capacidadeOriginal, 'TURNO': s.turno, 'CAP': acumulado, 'Coluna1': i+1});
   });
   criarAba('ESCOLAS', escolasRows, ['Índice','Nome da Instituição','Bloco','Andar','Nº sala','Capacidade','TURNO','CAP','Coluna1']);
 
