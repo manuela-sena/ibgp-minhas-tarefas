@@ -6907,58 +6907,7 @@ function executarMotorAlocacao(candidatos, escolas){
     }
   }
 
-  let salaAtualIdx = 0;
-  demais.forEach(c=>{
-    let salaEscolhida = null;
-    while(salaAtualIdx < salasNormais.length && salasNormais[salaAtualIdx].capacidadeDisponivel <= 0){
-      salaAtualIdx++;
-    }
-    if(salaAtualIdx < salasNormais.length) salaEscolhida = salasNormais[salaAtualIdx];
-
-    if(salaEscolhida){
-      salaEscolhida.capacidadeDisponivel -= 1;
-      alocados.push({
-        ...mapCandidato(c),
-        SALA: salaEscolhida.salaBase, ANDAR: salaEscolhida.andar, BLOCO: salaEscolhida.bloco, ESCOLA: salaEscolhida.escola,
-        _tipoSala: 'regular'
-      });
-      salaEscolhida.ocupantes.push(c);
-    } else {
-      naoAlocados.push(mapCandidato(c));
-    }
-  });
-
-  // ── Sala térrea compartilhável (usada só por quem não é individual/grupo,
-  //      pode ficar junto com candidatos regulares — só precisa ser térreo). ──
-  function alocarEmSalaEspecialOuFallback(c, tipo){
-    let salaEscolhida = null;
-
-    if(tipo==='individual'){
-      salaEscolhida = salasEspeciais.find(s => s.capacidadeOriginal===1 && s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)));
-      if(!salaEscolhida){
-        salaEscolhida = salasEspeciais.find(s => s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)));
-      }
-    } else {
-      salaEscolhida = salasEspeciais.find(s => s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)));
-    }
-
-    let usouSalaEspecial = !!salaEscolhida;
-
-    if(!salaEscolhida){
-      const candidatas = salasNormais
-        .filter(s => s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)))
-        .sort((a,b)=>(capTotalPorEscola[b.escola]-capTotalPorEscola[a.escola]) || (a.capacidadeOriginal - b.capacidadeOriginal));
-      salaEscolhida = candidatas[0] || null;
-    }
-
-    if(!salaEscolhida) return null;
-
-    salaEscolhida.capacidadeDisponivel -= 1;
-    salaEscolhida.ocupantes.push(c);
-    return {salaEscolhida, usouSalaEspecial};
-  }
-
-    // ── 5. Alocar cada grupo exclusivo (individual/grupo) em uma sala INTEIRA
+  // ── 5. Alocar cada grupo exclusivo (individual/grupo) em uma sala INTEIRA
   //      que ainda esteja livre (sem nenhum ocupante) depois do preenchimento
   //      normal acima — sempre a MENOR sala que caiba o grupo, pra não
   //      desperdiçar capacidade que os candidatos regulares poderiam ter
@@ -7031,7 +6980,58 @@ function executarMotorAlocacao(candidatos, escolas){
     sala.capacidadeDisponivel = 0;
   });
 
-// ── Devolver a capacidade térrea reservada só agora, depois de individual e
+let salaAtualIdx = 0;
+  demais.forEach(c=>{
+    let salaEscolhida = null;
+    while(salaAtualIdx < salasNormais.length && salasNormais[salaAtualIdx].capacidadeDisponivel <= 0){
+      salaAtualIdx++;
+    }
+    if(salaAtualIdx < salasNormais.length) salaEscolhida = salasNormais[salaAtualIdx];
+
+    if(salaEscolhida){
+      salaEscolhida.capacidadeDisponivel -= 1;
+      alocados.push({
+        ...mapCandidato(c),
+        SALA: salaEscolhida.salaBase, ANDAR: salaEscolhida.andar, BLOCO: salaEscolhida.bloco, ESCOLA: salaEscolhida.escola,
+        _tipoSala: 'regular'
+      });
+      salaEscolhida.ocupantes.push(c);
+    } else {
+      naoAlocados.push(mapCandidato(c));
+    }
+  });
+
+  // ── Sala térrea compartilhável (usada só por quem não é individual/grupo,
+  //      pode ficar junto com candidatos regulares — só precisa ser térreo). ──
+  function alocarEmSalaEspecialOuFallback(c, tipo){
+    let salaEscolhida = null;
+
+    if(tipo==='individual'){
+      salaEscolhida = salasEspeciais.find(s => s.capacidadeOriginal===1 && s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)));
+      if(!salaEscolhida){
+        salaEscolhida = salasEspeciais.find(s => s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)));
+      }
+    } else {
+      salaEscolhida = salasEspeciais.find(s => s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)));
+    }
+
+    let usouSalaEspecial = !!salaEscolhida;
+
+    if(!salaEscolhida){
+      const candidatas = salasNormais
+        .filter(s => s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)))
+        .sort((a,b)=>(capTotalPorEscola[b.escola]-capTotalPorEscola[a.escola]) || (a.capacidadeOriginal - b.capacidadeOriginal));
+      salaEscolhida = candidatas[0] || null;
+    }
+
+    if(!salaEscolhida) return null;
+
+    salaEscolhida.capacidadeDisponivel -= 1;
+    salaEscolhida.ocupantes.push(c);
+    return {salaEscolhida, usouSalaEspecial};
+  }
+
+    // ── Devolver a capacidade térrea reservada só agora, depois de individual e
   //      grupo já terem sido alocados (sem precisar de térrea, eles não podem
   //      roubar essa vaga de quem realmente precisa). ──
   reservasTerreo.forEach(({sala, qtd})=>{ sala.capacidadeDisponivel += qtd; });
