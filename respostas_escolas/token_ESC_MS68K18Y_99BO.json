@@ -13,11 +13,11 @@
     "nome": "EE. PADRE JOÃO NEIVA",
     "cnpj": "",
     "razao": "",
-    "endereco": "R. Pio XII",
+    "endereco": "R. PIO XII",
     "numero": "77",
     "complemento": "",
-    "bairro": "Centro",
-    "cidade": "Santana da Vargem",
+    "bairro": "CENTRO",
+    "cidade": "SANTANA DA VARGEM",
     "uf": "MG",
     "cep": "37195-000",
     "responsavel": {
@@ -61,7 +61,7 @@
     {
       "bloco": "ÚNICO",
       "andar": "ÚNICO",
-      "sala": "01",
+      "sala": "SALA 01",
       "capacidade": 34,
       "turno": "AMBOS",
       "arcond": false,
@@ -70,7 +70,7 @@
     {
       "bloco": "ÚNICO",
       "andar": "ÚNICO",
-      "sala": "02",
+      "sala": "SALA 02",
       "capacidade": 34,
       "turno": "AMBOS",
       "arcond": false,
@@ -79,7 +79,7 @@
     {
       "bloco": "ÚNICO",
       "andar": "ÚNICO",
-      "sala": "03",
+      "sala": "SALA 03",
       "capacidade": 34,
       "turno": "AMBOS",
       "arcond": false,
@@ -88,7 +88,7 @@
     {
       "bloco": "ÚNICO",
       "andar": "ÚNICO",
-      "sala": "04",
+      "sala": "SALA 04",
       "capacidade": 34,
       "turno": "AMBOS",
       "arcond": false,
@@ -97,7 +97,7 @@
     {
       "bloco": "ÚNICO",
       "andar": "ÚNICO",
-      "sala": "05",
+      "sala": "SALA 05",
       "capacidade": 34,
       "turno": "AMBOS",
       "arcond": false,
@@ -106,7 +106,7 @@
     {
       "bloco": "ÚNICO",
       "andar": "ÚNICO",
-      "sala": "06",
+      "sala": "SALA 06",
       "capacidade": 34,
       "turno": "AMBOS",
       "arcond": false,
