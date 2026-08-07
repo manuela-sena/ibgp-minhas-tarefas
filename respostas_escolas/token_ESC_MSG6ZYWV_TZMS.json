@@ -12,22 +12,22 @@
   "instituicao": {
     "nome": "E. E. ASTOLFO DUTRA",
     "cnpj": "19.746.688/0001-09",
-    "razao": "Caixa Escolar Amelinha de Carvalho Peixoto",
-    "endereco": "Rua Marlene",
+    "razao": "CAIXA ESCOLAR AMELINHA DE CARVALHO PEIXOTO",
+    "endereco": "RUA MARLENE",
     "numero": "123",
     "complemento": "",
-    "bairro": "Dico Leite",
-    "cidade": "Cataguases",
+    "bairro": "DICO LEITE",
+    "cidade": "CATAGUASES",
     "uf": "MG",
     "cep": "36772-456",
     "responsavel": {
-      "nome": "Rayanne Gonçalves Martins dos Santos",
-      "cargo": "Diretora",
+      "nome": "RAYANNE GONÇALVES MARTINS DOS SANTOS",
+      "cargo": "DIRETORA",
       "email": "escola.97306@educacao.mg.gov.br",
       "tel": "(32) 3421-3088"
     },
     "diretor": {
-      "nome": "Rayanne Gonçalves Martins dos Santos",
+      "nome": "RAYANNE GONÇALVES MARTINS DOS SANTOS",
       "email": "rayanne.martins@educacao.mg.gov.br"
     }
   },
@@ -61,7 +61,7 @@
     {
       "bloco": "1",
       "andar": "",
-      "sala": "6",
+      "sala": "SALA 6",
       "capacidade": 15,
       "turno": "AMBOS",
       "arcond": false,
@@ -71,7 +71,7 @@
     {
       "bloco": "2",
       "andar": "",
-      "sala": "16",
+      "sala": "SALA 16",
       "capacidade": 30,
       "turno": "AMBOS",
       "arcond": false,
@@ -81,7 +81,7 @@
     {
       "bloco": "2",
       "andar": "",
-      "sala": "15",
+      "sala": "SALA 15",
       "capacidade": 30,
       "turno": "AMBOS",
       "arcond": false,
@@ -91,7 +91,7 @@
     {
       "bloco": "2",
       "andar": "",
-      "sala": "14",
+      "sala": "SALA 14",
       "capacidade": 30,
       "turno": "AMBOS",
       "arcond": false,
@@ -101,7 +101,7 @@
     {
       "bloco": "2",
       "andar": "",
-      "sala": "13",
+      "sala": "SALA 13",
       "capacidade": 30,
       "turno": "AMBOS",
       "arcond": false,
@@ -111,7 +111,7 @@
     {
       "bloco": "2",
       "andar": "",
-      "sala": "12",
+      "sala": "SALA 12",
       "capacidade": 30,
       "turno": "AMBOS",
       "arcond": false,
@@ -121,7 +121,7 @@
     {
       "bloco": "2",
       "andar": "",
-      "sala": "11",
+      "sala": "SALA 11",
       "capacidade": 30,
       "turno": "AMBOS",
       "arcond": false,
@@ -131,7 +131,7 @@
     {
       "bloco": "2",
       "andar": "",
-      "sala": "10",
+      "sala": "SALA 10",
       "capacidade": 30,
       "turno": "AMBOS",
       "arcond": false,
@@ -141,7 +141,7 @@
     {
       "bloco": "2",
       "andar": "",
-      "sala": "09",
+      "sala": "SALA 09",
       "capacidade": 30,
       "turno": "AMBOS",
       "arcond": false,
