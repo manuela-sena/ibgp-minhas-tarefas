@@ -6864,6 +6864,47 @@ function executarMotorAlocacao(candidatos, escolas){
   //      normais de maior para menor capacidade. As salas de atendimento especial
   //      (biblioteca, laboratório, sala multimídia etc) ficam reservadas para o
   //      próximo passo. ──
+  // ── Reservar salas EXCLUSIVAS para individual (sozinho) e grupo (mesmo tipo
+  //      de atendimento, ex: todos que pedem prova ampliada juntos). Essas salas
+  //      não podem ter nenhum candidato regular nem de outro tipo de atendimento. ──
+  function chaveTipoGrupo(c){
+    const tipos = c._atendimentos
+      .map(a=>MESMA_SALA_GRUPO.find(k=>a.toUpperCase().includes(k)))
+      .filter(Boolean);
+    return [...new Set(tipos)].sort().join('+') || 'GRUPO';
+  }
+  const gruposExclusivos = [];
+  individuais.forEach(c=>{ gruposExclusivos.push({candidatos:[c], tipoSala:'individual'}); });
+  {
+    const porTipo = {};
+    grupoEspecial.forEach(c=>{
+      const chave = chaveTipoGrupo(c);
+      (porTipo[chave] = porTipo[chave]||[]).push(c);
+    });
+    Object.values(porTipo).forEach(grupo=>{ gruposExclusivos.push({candidatos:grupo, tipoSala:'grupo'}); });
+  }
+  gruposExclusivos.sort((a,b)=>b.candidatos.length - a.candidatos.length);
+
+  const reservasExclusivas = [];
+  gruposExclusivos.forEach(grp=>{
+    const qtd = grp.candidatos.length;
+    const precisaTerreoGrp = grp.candidatos.some(c=>c._terreo);
+    let sala = salasEspeciais.find(s=>s.capacidadeDisponivel>=qtd && (!precisaTerreoGrp || salaEhTerrea(s.andar)));
+    if(!sala){
+      const candidatasSala = salasNormais
+        .filter(s=>s.capacidadeDisponivel>0 && (!precisaTerreoGrp || salaEhTerrea(s.andar)))
+        .sort((a,b)=>(a.capacidadeOriginal - b.capacidadeOriginal) || (capTotalPorEscola[b.escola]-capTotalPorEscola[a.escola]));
+      sala = candidatasSala.find(s=>s.capacidadeDisponivel>=qtd) ||
+             candidatasSala.slice().sort((a,b)=>b.capacidadeDisponivel-a.capacidadeDisponivel)[0] || null;
+    }
+    if(sala){
+      reservasExclusivas.push({grp, sala, capReservada: sala.capacidadeDisponivel});
+      sala.capacidadeDisponivel = 0;
+    } else {
+      reservasExclusivas.push({grp, sala:null, capReservada:0});
+    }
+  });
+
   // ── Reservar capacidade térrea suficiente para quem vai precisar dela
   //      nos passos 5/6 (individual, grupo, apenas-térreo), para que o
   //      preenchimento normal (abaixo) não consuma essas vagas antes da hora. ──
@@ -6901,10 +6942,8 @@ function executarMotorAlocacao(candidatos, escolas){
     }
   });
 
-  // ── 5. Por último, alocar as condições especiais (individual, depois grupo).
-  //      Preferência: salas reservadas de atendimento especial. Sem vaga nelas,
-  //      cai para a sala normal com a MENOR capacidade que ainda tiver vaga
-  //      (evita usar uma sala grande com apenas 1 candidato). ──
+  // ── Sala térrea compartilhável (usada só por quem não é individual/grupo,
+  //      pode ficar junto com candidatos regulares — só precisa ser térreo). ──
   function alocarEmSalaEspecialOuFallback(c, tipo){
     let salaEscolhida = null;
 
@@ -6933,34 +6972,36 @@ function executarMotorAlocacao(candidatos, escolas){
     return {salaEscolhida, usouSalaEspecial};
   }
 
-  individuais.forEach(c=>{
-    const r = alocarEmSalaEspecialOuFallback(c, 'individual');
-    if(r){
-      const abrevs = c._atendimentos.filter(a=>SALA_INDIVIDUAL.some(k=>a.toUpperCase().includes(k))).map(abreviarAtendimento);
-      const nomeSalaFinal = `${r.salaEscolhida.salaBase} - ${abrevs.join(', ')}`;
+  // ── 5. Liberar as salas exclusivas reservadas para individual/grupo, agora
+  //      que os candidatos regulares já foram alocados, e distribuir cada
+  //      candidato na sua sala reservada. ──
+  reservasExclusivas.forEach(({grp, sala, capReservada})=>{
+    if(!sala){
+      grp.candidatos.forEach(c=>naoAlocados.push(mapCandidato(c)));
+      return;
+    }
+    sala.capacidadeDisponivel = capReservada;
+    grp.candidatos.forEach(c=>{
+      if(sala.capacidadeDisponivel<=0){ naoAlocados.push(mapCandidato(c)); return; }
+      sala.capacidadeDisponivel -= 1;
+      let nomeSalaFinal;
+      if(grp.tipoSala==='individual'){
+        const abrevs = c._atendimentos.filter(a=>SALA_INDIVIDUAL.some(k=>a.toUpperCase().includes(k))).map(abreviarAtendimento);
+        nomeSalaFinal = abrevs.length ? `${sala.salaBase} - ${abrevs.join(', ')}` : sala.salaBase;
+      } else {
+        const abrevsGrupo = c._atendimentos.filter(a=>MESMA_SALA_GRUPO.some(k=>a.toUpperCase().includes(k))).map(abreviarAtendimento);
+        nomeSalaFinal = abrevsGrupo.length ? `${sala.salaBase} - ${abrevsGrupo.join(', ')}` : sala.salaBase;
+      }
       alocados.push({
         ...mapCandidato(c),
-        SALA: nomeSalaFinal, ANDAR: r.salaEscolhida.andar, BLOCO: r.salaEscolhida.bloco, ESCOLA: r.salaEscolhida.escola,
-        _tipoSala: 'individual', _salaEspecialUsada: r.usouSalaEspecial
+        SALA: nomeSalaFinal, ANDAR: sala.andar, BLOCO: sala.bloco, ESCOLA: sala.escola,
+        _tipoSala: grp.tipoSala, _salaEspecialUsada: true
       });
-    } else {
-      naoAlocados.push(mapCandidato(c));
-    }
-  });
-
-  grupoEspecial.forEach(c=>{
-    const r = alocarEmSalaEspecialOuFallback(c, 'grupo');
-    if(r){
-      const abrevsGrupo = c._atendimentos.filter(a=>MESMA_SALA_GRUPO.some(k=>a.toUpperCase().includes(k))).map(abreviarAtendimento);
-      const nomeSalaFinal = abrevsGrupo.length ? `${r.salaEscolhida.salaBase} - ${abrevsGrupo.join(', ')}` : r.salaEscolhida.salaBase;
-      alocados.push({
-        ...mapCandidato(c),
-        SALA: nomeSalaFinal, ANDAR: r.salaEscolhida.andar, BLOCO: r.salaEscolhida.bloco, ESCOLA: r.salaEscolhida.escola,
-        _tipoSala: 'grupo', _salaEspecialUsada: r.usouSalaEspecial
-      });
-    } else {
-      naoAlocados.push(mapCandidato(c));
-    }
+      sala.ocupantes.push(c);
+    });
+    // Fecha a sala de novo — mesmo que sobre capacidade, ela fica exclusiva
+    // desse grupo e não pode ser usada por mais ninguém.
+    sala.capacidadeDisponivel = 0;
   });
 
   // ── Devolver a capacidade térrea reservada só agora, depois de individual e
