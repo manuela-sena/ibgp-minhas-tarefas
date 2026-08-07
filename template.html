@@ -6891,26 +6891,6 @@ function executarMotorAlocacao(candidatos, escolas){
   }
   gruposExclusivos.sort((a,b)=>b.candidatos.length - a.candidatos.length);
 
-  const reservasExclusivas = [];
-  gruposExclusivos.forEach(grp=>{
-    const qtd = grp.candidatos.length;
-    const precisaTerreoGrp = grp.candidatos.some(c=>c._terreo);
-    let sala = salasEspeciais.find(s=>s.capacidadeDisponivel>=qtd && (!precisaTerreoGrp || salaEhTerrea(s.andar)));
-    if(!sala){
-      const candidatasSala = salasNormais
-        .filter(s=>s.capacidadeDisponivel>0 && (!precisaTerreoGrp || salaEhTerrea(s.andar)))
-        .sort((a,b)=>(a.capacidadeOriginal - b.capacidadeOriginal) || (capTotalPorEscola[b.escola]-capTotalPorEscola[a.escola]));
-      sala = candidatasSala.find(s=>s.capacidadeDisponivel>=qtd) ||
-             candidatasSala.slice().sort((a,b)=>b.capacidadeDisponivel-a.capacidadeDisponivel)[0] || null;
-    }
-    if(sala){
-      reservasExclusivas.push({grp, sala, capReservada: sala.capacidadeDisponivel});
-      sala.capacidadeDisponivel = 0;
-    } else {
-      reservasExclusivas.push({grp, sala:null, capReservada:0});
-    }
-  });
-
   // ── Reservar capacidade térrea suficiente para quem vai precisar dela
   //      nos passos 5/6 (individual, grupo, apenas-térreo), para que o
   //      preenchimento normal (abaixo) não consuma essas vagas antes da hora. ──
@@ -6978,39 +6958,50 @@ function executarMotorAlocacao(candidatos, escolas){
     return {salaEscolhida, usouSalaEspecial};
   }
 
-  // ── 5. Liberar as salas exclusivas reservadas para individual/grupo, agora
-  //      que os candidatos regulares já foram alocados, e distribuir cada
-  //      candidato na sua sala reservada. ──
-  reservasExclusivas.forEach(({grp, sala, capReservada})=>{
+    // ── 5. Alocar cada grupo exclusivo (individual/grupo) em uma sala INTEIRA
+  //      que ainda esteja livre (sem nenhum ocupante) depois do preenchimento
+  //      normal acima — sempre a MENOR sala que caiba o grupo, pra não
+  //      desperdiçar capacidade que os candidatos regulares poderiam ter
+  //      usado. Assim a prioridade fica: 1) regulares nas maiores salas,
+  //      2) especiais nas salas que sobrarem. ──
+  gruposExclusivos.forEach(grp=>{
+    const qtd = grp.candidatos.length;
+    const precisaTerreoGrp = grp.candidatos.some(c=>c._terreo);
+    let sala = salasEspeciais.find(s=>s.capacidadeDisponivel>=qtd && (!precisaTerreoGrp || salaEhTerrea(s.andar)));
+    if(!sala){
+      const candidatasSala = salasNormais
+        .filter(s=>s.ocupantes.length===0 && (!precisaTerreoGrp || salaEhTerrea(s.andar)))
+        .sort((a,b)=>(a.capacidadeOriginal - b.capacidadeOriginal) || (capTotalPorEscola[b.escola]-capTotalPorEscola[a.escola]));
+      sala = candidatasSala.find(s=>s.capacidadeOriginal>=qtd) ||
+             candidatasSala.slice().sort((a,b)=>b.capacidadeOriginal-a.capacidadeOriginal)[0] || null;
+      if(sala){
+        const idxReserva = reservasTerreo.findIndex(r=>r.sala===sala);
+        if(idxReserva!==-1) reservasTerreo.splice(idxReserva,1);
+        sala.capacidadeDisponivel = sala.capacidadeOriginal;
+      }
+    }
     if(!sala){
       grp.candidatos.forEach(c=>naoAlocados.push(mapCandidato(c)));
       return;
     }
-    sala.capacidadeDisponivel = capReservada;
     grp.candidatos.forEach(c=>{
       if(sala.capacidadeDisponivel<=0){ naoAlocados.push(mapCandidato(c)); return; }
       sala.capacidadeDisponivel -= 1;
       let nomeSalaFinal;
       if(grp.tipoSala==='individual'){
         const abrevs = c._atendimentos.filter(a=>SALA_INDIVIDUAL.some(k=>a.toUpperCase().includes(k))).map(abreviarAtendimento);
-        nomeSalaFinal = abrevs.length ? `${sala.salaBase} - ${abrevs.join(', ')}` : sala.salaBase;
+        nomeSalaFinal = abrevs.length ? (sala.salaBase + ' - ' + abrevs.join(', ')) : sala.salaBase;
       } else {
         const abrevsGrupo = c._atendimentos.filter(a=>MESMA_SALA_GRUPO.some(k=>a.toUpperCase().includes(k))).map(abreviarAtendimento);
-        nomeSalaFinal = abrevsGrupo.length ? `${sala.salaBase} - ${abrevsGrupo.join(', ')}` : sala.salaBase;
+        nomeSalaFinal = abrevsGrupo.length ? (sala.salaBase + ' - ' + abrevsGrupo.join(', ')) : sala.salaBase;
       }
-      alocados.push({
-        ...mapCandidato(c),
-        SALA: nomeSalaFinal, ANDAR: sala.andar, BLOCO: sala.bloco, ESCOLA: sala.escola,
-        _tipoSala: grp.tipoSala, _salaEspecialUsada: true
-      });
+      alocados.push({...mapCandidato(c), SALA: nomeSalaFinal, ANDAR: sala.andar, BLOCO: sala.bloco, ESCOLA: sala.escola, _tipoSala: grp.tipoSala, _salaEspecialUsada: true});
       sala.ocupantes.push(c);
     });
-    // Fecha a sala de novo — mesmo que sobre capacidade, ela fica exclusiva
-    // desse grupo e não pode ser usada por mais ninguém.
     sala.capacidadeDisponivel = 0;
   });
 
-  // ── Devolver a capacidade térrea reservada só agora, depois de individual e
+// ── Devolver a capacidade térrea reservada só agora, depois de individual e
   //      grupo já terem sido alocados (sem precisar de térrea, eles não podem
   //      roubar essa vaga de quem realmente precisa). ──
   reservasTerreo.forEach(({sala, qtd})=>{ sala.capacidadeDisponivel += qtd; });
