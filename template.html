@@ -6788,12 +6788,18 @@ function salaEhTerrea(andarRaw){
 
 function executarMotorAlocacao(candidatos, escolas){
   // ── 1. Montar pool de salas de todas as escolas, ordenado por capacidade desc ──
+  function normalizarAndar(v){
+    v = String(v||'').trim().replace(/\s+/g,' ');
+    v = v.replace(/([°º])(?=\S)/g, '$1 ');
+    v = v.replace(/\s+/g,' ').trim();
+    return v;
+  }
   let salasPool = [];
   escolas.forEach(esc=>{
     const nomeEsc = esc.instituicao?.nome || esc.concurso?.escola || esc.token;
     (esc.salas||[]).forEach(s=>{
       salasPool.push({
-        escola: nomeEsc, bloco: s.bloco||'', andar: (s.andar===undefined||s.andar===null) ? '' : String(s.andar),
+        escola: nomeEsc, bloco: s.bloco||'', andar: normalizarAndar(s.andar),
         salaBase: String(s.sala||'').split('\n')[0].trim(), capacidadeOriginal: parseInt(s.capacidade)||0,
         capacidadeDisponivel: parseInt(s.capacidade)||0,
         turno: s.turno||'AMBOS', ocupantes: [],
