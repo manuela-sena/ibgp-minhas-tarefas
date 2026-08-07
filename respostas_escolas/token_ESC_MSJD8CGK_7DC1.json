@@ -1,11 +1,172 @@
 {
   "token": "ESC_MSJD8CGK_7DC1",
-  "criadoEm": "2026-08-07T19:56:37.268Z",
+  "enviadoEm": "2026-08-07T21:01:41.612Z",
+  "protocolo": "ESC_MSJD8CGK_7DC1_1786136501612",
   "concurso": {
     "concurso": "ENTRE RIOS DE MINAS/MG - EDITAL Nº 01/2026 - PSP",
     "municipio": "ENTRE RIOS DE MINAS/MG",
     "dataProva": "23/08/2026",
     "escola": "ESCOLA ESTADUAL RIBEIRO DE OLIVEIRA",
     "idEscola": "ESC_MSJD8CGK_7DC1"
-  }
+  },
+  "instituicao": {
+    "nome": "ESCOLA ESTADUAL RIBEIRO DE OLIVEIRA",
+    "cnpj": "19.894.591/0001-16",
+    "razao": "CAIXA ESCOLAR DOM RODOLFO PENA",
+    "endereco": "AVENIDA GETULIO VARGAS",
+    "numero": "19",
+    "complemento": "-",
+    "bairro": "CENTRO",
+    "cidade": "ENTRE RIOS DE MINAS",
+    "uf": "MG",
+    "cep": "35490-000",
+    "responsavel": {
+      "nome": "LEA APARECIDA DE MORAIS",
+      "cargo": "DIRETORA",
+      "email": "escola.193968@educacao.mg.gov.br",
+      "tel": "(31) 97211-7485"
+    },
+    "diretor": {
+      "nome": "LEA APARECIDA DE MORAIS",
+      "email": "lea.morais@educacao.mg.gov.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": false,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "01",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "01",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "A",
+      "andar": "1°",
+      "sala": "SALA A",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "1°",
+      "sala": "SALA B",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "1°",
+      "sala": "SALA C",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "D",
+      "andar": "1°",
+      "sala": "SALA D",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "E",
+      "andar": "1°",
+      "sala": "SALA E",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "F",
+      "andar": "1°",
+      "sala": "SALA F",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "G",
+      "andar": "1°",
+      "sala": "SALA G",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "H",
+      "andar": "1°",
+      "sala": "SALA H",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "I",
+      "andar": "1°",
+      "sala": "SALA I",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "J",
+      "andar": "1°",
+      "sala": "SALA J",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "L",
+      "andar": "1°",
+      "sala": "SALA L",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    }
+  ]
 }
