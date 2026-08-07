@@ -6788,7 +6788,7 @@ function executarMotorAlocacao(candidatos, escolas){
     (esc.salas||[]).forEach(s=>{
       salasPool.push({
         escola: nomeEsc, bloco: s.bloco||'', andar: (s.andar===undefined||s.andar===null) ? '' : String(s.andar),
-        salaBase: s.sala||'', capacidadeOriginal: parseInt(s.capacidade)||0,
+        salaBase: String(s.sala||'').split('\n')[0].trim(), capacidadeOriginal: parseInt(s.capacidade)||0,
         capacidadeDisponivel: parseInt(s.capacidade)||0,
         turno: s.turno||'AMBOS', ocupantes: [],
         atendimentoEspecial: s.atendimentoEspecial===true || s.atendimentoEspecial==='true',
