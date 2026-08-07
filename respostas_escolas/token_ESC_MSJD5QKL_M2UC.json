@@ -1,11 +1,102 @@
 {
   "token": "ESC_MSJD5QKL_M2UC",
-  "criadoEm": "2026-08-07T19:54:35.589Z",
+  "enviadoEm": "2026-08-07T19:57:23.495Z",
+  "protocolo": "ESC_MSJD5QKL_M2UC_1786132643495",
   "concurso": {
     "concurso": "CÂMARA DE SANTANA DA VARGEM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
     "municipio": "SANTANA DA VARGEM/MG",
     "dataProva": "26/07/2026",
     "escola": "TESTE",
     "idEscola": "ESC_MSJD5QKL_M2UC"
-  }
+  },
+  "instituicao": {
+    "nome": "TESTE",
+    "cnpj": "",
+    "razao": "",
+    "endereco": "R. PIO XII",
+    "numero": "",
+    "complemento": "",
+    "bairro": "CINQUENTENARIO",
+    "cidade": "SANTANA DA VARGEM",
+    "uf": "MG",
+    "cep": "",
+    "responsavel": {
+      "nome": "XXX",
+      "cargo": "",
+      "email": "santanadavargem@gmail.com",
+      "tel": "(31) 99222-1465"
+    },
+    "diretor": {
+      "nome": "",
+      "email": ""
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": false,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": true,
+      "arcond": false,
+      "ventilador": false
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "1",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "1",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "BLOCO 1",
+      "andar": "1ª ANDAR",
+      "sala": "SALA 01",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO 1",
+      "andar": "1ª ANDAR",
+      "sala": "SALA 02",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO 1",
+      "andar": "1ª ANDAR",
+      "sala": "SALA 03",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO 1",
+      "andar": "1ª ANDAR",
+      "sala": "SALA BIBLIOTECA",
+      "capacidade": 2,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    }
+  ]
 }
