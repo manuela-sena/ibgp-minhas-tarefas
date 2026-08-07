@@ -7261,7 +7261,7 @@ async function gerarPlanilhaAlocacao(resultado, escolasEnviadas){
     wsGeral.getCell(rowGeral,9).value = a.ESCOLA;
     wsGeral.getCell(rowGeral,10).value = end.endereco || '';
     wsGeral.getCell(rowGeral,11).value = end.numero || '';
-    wsGeral.getCell(rowGeral,12).value = end.complemento || '';
+    wsGeral.getCell(rowGeral,12).value = end.complemento || '-';
     wsGeral.getCell(rowGeral,13).value = end.bairro || '';
     wsGeral.getCell(rowGeral,14).value = end.cidade || '';
     wsGeral.getCell(rowGeral,15).value = (end.uf || '').toUpperCase();
