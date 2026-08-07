@@ -7083,7 +7083,8 @@ async function gerarPlanilhaAlocacao(resultado){
   // ── ATA DE SALA (resumo por sala) ──
   const porSala = {};
   resultado.alocados.forEach(a=>{
-    const chave = a.ESCOLA+'|'+a.SALA+'|'+a.ANDAR+'|'+a.BLOCO;
+    function salaSemSufixo(s){ return String(s||'').split(' - ')[0]; }
+  const chave = a.ESCOLA+'|'+salaSemSufixo(a.SALA)+'|'+a.ANDAR+'|'+a.BLOCO;
     (porSala[chave] = porSala[chave]||[]).push(a);
   });
   const ataRows = Object.keys(porSala).map(chave=>{
@@ -7126,7 +7127,7 @@ async function gerarPlanilhaAlocacao(resultado){
         const itensAndar = porAndar[andar];
         wsResumo.getCell(rr,1).value = '    '+andar; wsResumo.getCell(rr,2).value = itensAndar.length; rr++;
         const porSalaResumo = {};
-        itensAndar.forEach(a=>{ (porSalaResumo[a.SALA] = porSalaResumo[a.SALA]||[]).push(a); });
+        itensAndar.forEach(a=>{ (porSalaResumo[salaSemSufixo(a.SALA)] = porSalaResumo[salaSemSufixo(a.SALA)]||[]).push(a); });
         Object.keys(porSalaResumo).forEach(sala=>{
           wsResumo.getCell(rr,1).value = '      '+sala; wsResumo.getCell(rr,2).value = porSalaResumo[sala].length; rr++;
         });
