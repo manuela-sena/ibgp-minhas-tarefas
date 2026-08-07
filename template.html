@@ -6857,26 +6857,36 @@ function executarMotorAlocacao(candidatos, escolas){
 
   const individuais   = candidatos.filter(c=>c._individual);
   const grupoEspecial = candidatos.filter(c=>c._grupoEspecial);
-  const demais        = candidatos.filter(c=>!c._individual && !c._grupoEspecial);
+  const apenasTerreo  = candidatos.filter(c=>!c._individual && !c._grupoEspecial && c._terreo);
+  const demais        = candidatos.filter(c=>!c._individual && !c._grupoEspecial && !c._terreo);
 
   // ── 4. Alocar primeiro quem NÃO tem condição especial, preenchendo as salas
   //      normais de maior para menor capacidade. As salas de atendimento especial
   //      (biblioteca, laboratório, sala multimídia etc) ficam reservadas para o
   //      próximo passo. ──
+  // ── Reservar capacidade térrea suficiente para quem vai precisar dela
+  //      nos passos 5/6 (individual, grupo, apenas-térreo), para que o
+  //      preenchimento normal (abaixo) não consuma essas vagas antes da hora. ──
+  const precisamTerreo = candidatos.filter(c=>c._terreo).length;
+  let reservaTerreo = precisamTerreo;
+  const reservasTerreo = [];
+  for(const s of salasNormais){
+    if(reservaTerreo<=0) break;
+    if(salaEhTerrea(s.andar) && s.capacidadeDisponivel>0){
+      const qtd = Math.min(s.capacidadeDisponivel, reservaTerreo);
+      s.capacidadeDisponivel -= qtd;
+      reservasTerreo.push({sala:s, qtd});
+      reservaTerreo -= qtd;
+    }
+  }
+
   let salaAtualIdx = 0;
   demais.forEach(c=>{
     let salaEscolhida = null;
-    if(c._terreo){
-      salaEscolhida = salasNormais.find(s=>
-        s.capacidadeDisponivel > 0 && salaEhTerrea(s.andar)
-      );
+    while(salaAtualIdx < salasNormais.length && salasNormais[salaAtualIdx].capacidadeDisponivel <= 0){
+      salaAtualIdx++;
     }
-    if(!salaEscolhida){
-      while(salaAtualIdx < salasNormais.length && salasNormais[salaAtualIdx].capacidadeDisponivel <= 0){
-        salaAtualIdx++;
-      }
-      if(salaAtualIdx < salasNormais.length) salaEscolhida = salasNormais[salaAtualIdx];
-    }
+    if(salaAtualIdx < salasNormais.length) salaEscolhida = salasNormais[salaAtualIdx];
 
     if(salaEscolhida){
       salaEscolhida.capacidadeDisponivel -= 1;
@@ -6890,6 +6900,10 @@ function executarMotorAlocacao(candidatos, escolas){
       naoAlocados.push(mapCandidato(c));
     }
   });
+
+  // ── Devolver a capacidade térrea reservada antes de processar quem
+  //      realmente precisa dela (passos 5/6). ──
+  reservasTerreo.forEach(({sala, qtd})=>{ sala.capacidadeDisponivel += qtd; });
 
   // ── 5. Por último, alocar as condições especiais (individual, depois grupo).
   //      Preferência: salas reservadas de atendimento especial. Sem vaga nelas,
@@ -6947,6 +6961,21 @@ function executarMotorAlocacao(candidatos, escolas){
         ...mapCandidato(c),
         SALA: nomeSalaFinal, ANDAR: r.salaEscolhida.andar, BLOCO: r.salaEscolhida.bloco, ESCOLA: r.salaEscolhida.escola,
         _tipoSala: 'grupo', _salaEspecialUsada: r.usouSalaEspecial
+      });
+    } else {
+      naoAlocados.push(mapCandidato(c));
+    }
+  });
+
+  // ── 6. Candidatos que só precisam de sala térrea (sem ser individual/grupo).
+  //      Mesma lógica de prioridade por escola do passo 5. ──
+  apenasTerreo.forEach(c=>{
+    const r = alocarEmSalaEspecialOuFallback(c, 'terreo');
+    if(r){
+      alocados.push({
+        ...mapCandidato(c),
+        SALA: r.salaEscolhida.salaBase, ANDAR: r.salaEscolhida.andar, BLOCO: r.salaEscolhida.bloco, ESCOLA: r.salaEscolhida.escola,
+        _tipoSala: 'terreo', _salaEspecialUsada: r.usouSalaEspecial
       });
     } else {
       naoAlocados.push(mapCandidato(c));
