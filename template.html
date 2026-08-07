@@ -6706,7 +6706,7 @@ async function processarAlocacao(){
         });
 
         const resultado = executarMotorAlocacao(candidatos, enviadas);
-        await gerarPlanilhaAlocacao(resultado);
+        await gerarPlanilhaAlocacao(resultado, enviadas);
 
         const avisoCondEspecial = fileCond
           ? ` 🧩 ${Object.keys(deferidos).length} de ${totalSolicitantes} condições especiais deferidas aplicadas`
@@ -7084,7 +7084,7 @@ function mapCandidato(c){
   };
 }
 
-async function gerarPlanilhaAlocacao(resultado){
+async function gerarPlanilhaAlocacao(resultado, escolasEnviadas){
   const wb = new ExcelJS.Workbook();
   const FONTE='Times New Roman';
   const BORDA={top:{style:'thin',color:{argb:'FF000000'}},bottom:{style:'thin',color:{argb:'FF000000'}},left:{style:'thin',color:{argb:'FF000000'}},right:{style:'thin',color:{argb:'FF000000'}}};
@@ -7229,6 +7229,43 @@ async function gerarPlanilhaAlocacao(resultado){
   wsResumo.getCell(rr,2).font = {bold:true};
   wsResumo.getColumn(1).width = 42;
   wsResumo.getColumn(2).width = 22;
+
+  // ── Aba "Geral" — modelo enviado (candidato + sala + endereço completo da escola) ──
+  const enderecoPorEscolaGeral = {};
+  (escolasEnviadas||[]).forEach(esc=>{
+    const nomeEsc = esc.instituicao?.nome || esc.concurso?.escola || esc.token;
+    enderecoPorEscolaGeral[nomeEsc] = esc.instituicao || {};
+  });
+  const wsGeral = wb.addWorksheet('Geral');
+  const colGeral = ['INSCRIÇÃO','CANDIDATO','CONCURSO','CARGO','TURNO','SALA','ANDAR','BLOCO','ESCOLA','RUA','NUMERO','COMPLEMENTO','BAIRRO','CIDADE','UF'];
+  const colAmareloGeral = new Set(['INSCRIÇÃO','SALA','ANDAR','BLOCO','ESCOLA','RUA','NUMERO','COMPLEMENTO','BAIRRO','CIDADE','UF']);
+  colGeral.forEach((titulo, i)=>{
+    const cell = wsGeral.getCell(1, i+1);
+    cell.value = titulo;
+    cell.alignment = {horizontal:'center'};
+    if(colAmareloGeral.has(titulo)) cell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:'FFFFFF00'}};
+  });
+  const largurasGeral = [10.22,49.44,83.55,28.44,15.66,12,12.33,11.89,27.89,10,14,19.44,12.89,12.78,8.55];
+  largurasGeral.forEach((w,i)=>{ wsGeral.getColumn(i+1).width = w; });
+  resultado.alocados.forEach((a, idxGeral)=>{
+    const end = enderecoPorEscolaGeral[a.ESCOLA] || {};
+    const rowGeral = idxGeral+2;
+    wsGeral.getCell(rowGeral,1).value = a['INSCRIÇÃO'];
+    wsGeral.getCell(rowGeral,2).value = a.CANDIDATO;
+    wsGeral.getCell(rowGeral,3).value = a.CONCURSO;
+    wsGeral.getCell(rowGeral,4).value = a.CARGO;
+    wsGeral.getCell(rowGeral,5).value = a.TURNO;
+    wsGeral.getCell(rowGeral,6).value = a.SALA;
+    wsGeral.getCell(rowGeral,7).value = a.ANDAR;
+    wsGeral.getCell(rowGeral,8).value = a.BLOCO;
+    wsGeral.getCell(rowGeral,9).value = a.ESCOLA;
+    wsGeral.getCell(rowGeral,10).value = end.endereco || '';
+    wsGeral.getCell(rowGeral,11).value = end.numero || '';
+    wsGeral.getCell(rowGeral,12).value = end.complemento || '';
+    wsGeral.getCell(rowGeral,13).value = end.bairro || '';
+    wsGeral.getCell(rowGeral,14).value = end.cidade || '';
+    wsGeral.getCell(rowGeral,15).value = (end.uf || '').toUpperCase();
+  });
 
   const buf = await wb.xlsx.writeBuffer();
   const blob = new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
