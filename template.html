@@ -7239,17 +7239,18 @@ async function gerarPlanilhaAlocacao(resultado, escolasEnviadas){
   const wsGeral = wb.addWorksheet('Geral');
   const colGeral = ['INSCRIÇÃO','CANDIDATO','CONCURSO','CARGO','TURNO','SALA','ANDAR','BLOCO','ESCOLA','RUA','NUMERO','COMPLEMENTO','BAIRRO','CIDADE','UF'];
   const colAmareloGeral = new Set(['INSCRIÇÃO','SALA','ANDAR','BLOCO','ESCOLA','RUA','NUMERO','COMPLEMENTO','BAIRRO','CIDADE','UF']);
-  const colVerdeGeral = new Set(['CANDIDATO','CONCURSO']);
+  const colVerdeGeral = new Set(['CANDIDATO','CONCURSO','CARGO','TURNO']);
   colGeral.forEach((titulo, i)=>{
     const cell = wsGeral.getCell(1, i+1);
     cell.value = titulo;
-    cell.alignment = {horizontal:'center'};
+    cell.alignment = {horizontal:'center', vertical:'middle'};
     if(colAmareloGeral.has(titulo)) cell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:'FFFFFF00'}};
     else if(colVerdeGeral.has(titulo)) cell.fill = {type:'pattern', pattern:'solid', fgColor:{argb:'FFC6E0B4'}};
   });
   wsGeral.autoFilter = {from: {row:1, column:1}, to: {row:1, column:colGeral.length}};
-  const largurasGeral = [10.22,49.44,83.55,28.44,15.66,12,12.33,11.89,27.89,10,14,19.44,12.89,12.78,8.55];
-  largurasGeral.forEach((w,i)=>{ wsGeral.getColumn(i+1).width = w; });
+      wsGeral.getRow(1).height = 48.75;
+  const largurasGeral = [33.43,67.14,63.71,77.71,43.71,25.29,28.86,35.14,88.0,null,null,null,null,54.29,14.29];
+  largurasGeral.forEach((w,i)=>{ if(w!=null) wsGeral.getColumn(i+1).width = w; });
   resultado.alocados.forEach((a, idxGeral)=>{
     const end = enderecoPorEscolaGeral[a.ESCOLA] || {};
     const rowGeral = idxGeral+2;
@@ -7268,6 +7269,14 @@ async function gerarPlanilhaAlocacao(resultado, escolasEnviadas){
     wsGeral.getCell(rowGeral,13).value = end.bairro || '';
     wsGeral.getCell(rowGeral,14).value = end.cidade || '';
     wsGeral.getCell(rowGeral,15).value = (end.uf || '').toUpperCase();
+        for(let colB=1; colB<=9; colB++){
+          const cellB = wsGeral.getCell(rowGeral, colB);
+          cellB.border = {top:{style:'thin'}, bottom:{style:'thin'}};
+          if(rowGeral % 2 === 0) cellB.fill = {type:'pattern', pattern:'solid', fgColor:{argb:'FFE2EFDA'}};
+        }
+        for(let colC=10; colC<=15; colC++){
+          wsGeral.getCell(rowGeral, colC).alignment = {horizontal:'center', vertical:'middle'};
+        }
   });
 
   const buf = await wb.xlsx.writeBuffer();
