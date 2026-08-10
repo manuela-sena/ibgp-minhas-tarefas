@@ -6771,7 +6771,7 @@ function parseDataRealizacaoProva(valor){
   const turno = dt.getHours() < 12 ? 'MANHÃ' : 'TARDE';
   // ExcelJS grava a data usando getTime() sem converter fuso horário, então
   // criamos um Date 'UTC' com os mesmos números locais pra hora não mudar na planilha.
-  const dataObjExcel = new Date(Date.UTC(dt.getFullYear(), dt.getMonth(), dt.getDate(), dt.getHours(), dt.getMinutes(), dt.getSeconds()));
+  const dataObjExcel = new Date(Date.UTC(dt.getFullYear(), dt.getMonth(), dt.getDate(), dt.getHours(), dt.getMinutes(), 0, 0));
   return {data: `${dd}/${mm}/${yyyy}`, turno, dataHora: `${dd}/${mm}/${yyyy} ${hh}:${min}`, dataObj: dataObjExcel};
 }
 
