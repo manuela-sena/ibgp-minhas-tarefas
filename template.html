@@ -572,6 +572,10 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         Inscrições
       </button>
+      <button class="nav-btn" data-page="resultado-preliminar" onclick="goPage('resultado-preliminar')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V10"/><path d="M13 17V7"/><path d="M17 17v-4"/></svg>
+        Resultado Preliminar
+      </button>
       <button class="nav-btn" data-page="classificacao" onclick="goPage('classificacao')">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10l-1.5 8a4 4 0 0 1-3.5 3.3V17a4 4 0 0 1-3.5-3.3z"/></svg>
         Classificação
@@ -1259,6 +1263,36 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
         <div id="insc-preview-content"></div>
         <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end">
           <button class="btn-primary" onclick="processarInscricoes()">⚙️ Processar e baixar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="page-resultado-preliminar" class="page">
+      <div class="page-header">
+        <div class="page-title-h1">📄 Resultados · Resultado Preliminar</div>
+        <div class="page-sub">Junte o Relatório Geral com os arquivos de resultado do Remark/Gravic e gere a planilha de resultado preliminar por nível de escolaridade.</div>
+      </div>
+      <div class="card card-pad">
+        <label class="form-label">Relatório Geral (.xlsx)</label>
+        <input type="file" id="rp-geral-file" accept=".xlsx" class="form-input" style="padding:6px"
+          onchange="carregarRPGeral(this)">
+        <div id="rp-geral-status" style="margin-top:8px;font-size:12.5px;color:#8a9ab5"></div>
+      </div>
+      <div id="rp-conjuntos-wrap" style="display:none" class="card card-pad">
+        <div style="font-size:13px;font-weight:600;color:#1f2a3d;margin-bottom:12px">Cargos com mesma prova <span style="font-size:11px;color:#8a9ab5;font-weight:400">(opcional — mesmas regras da Análise de Inscrições)</span></div>
+        <div id="rp-conjuntos-lista"></div>
+        <button class="btn-secondary" style="margin-top:8px" onclick="adicionarConjuntoRP()">+ Adicionar conjunto</button>
+      </div>
+      <div class="card card-pad">
+        <label class="form-label">Resultados do Remark/Gravic (.xlsx) — um arquivo por prova/conjunto de disciplinas</label>
+        <input type="file" id="rp-remark-files" accept=".xlsx" multiple class="form-input" style="padding:6px"
+          onchange="carregarRPRemark(this)">
+        <div id="rp-remark-status" style="margin-top:8px;font-size:12.5px;color:#8a9ab5"></div>
+      </div>
+      <div id="rp-preview" style="display:none" class="card card-pad">
+        <div id="rp-preview-content"></div>
+        <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end">
+          <button class="btn-primary" onclick="gerarResultadoPreliminarXlsx()">⚙️ Gerar e baixar</button>
         </div>
       </div>
     </div>
@@ -5460,6 +5494,315 @@ function processarInscricoes(){
 }
 
 
+
+// ── RESULTADOS: RESULTADO PRELIMINAR ──────────────────────────────────
+const STATUS_ATIVOS_RP=['pago','deferida','deferido'];
+let _rpConjuntoCount=0;
+let _rpRegistry=null;
+let _rpResultados=new Map();
+let _rpArquivosRemark=[];
+
+function normalizarCPFRP(v){ return (v||'').toString().replace(/\D/g,''); }
+
+function tierPorCodigoRP(codigo){
+  const c=(codigo||'').toString().trim();
+  const primeiro=c[0];
+  const nomes={'1':'FUNDAMENTAL INCOM','2':'FUNDAMENTAL COMP','3':'MEDIO','4':'TECNICO','5':'SUPERIOR'};
+  return nomes[primeiro]||'OUTROS';
+}
+
+function adicionarConjuntoRP(){
+  _rpConjuntoCount++;
+  const lista=document.getElementById('rp-conjuntos-lista');
+  const div=document.createElement('div');
+  div.style.cssText='display:flex;align-items:center;gap:8px;margin-bottom:8px';
+  div.innerHTML=`<input id="rp-conj-${_rpConjuntoCount}" class="form-input" style="flex:1" placeholder="Ex: 314, 315" type="text">
+    <button class="btn-secondary" style="height:34px;padding:0 10px" onclick="this.parentElement.remove()">✕</button>`;
+  lista.appendChild(div);
+}
+
+function _rpMontarRegistryEGrupos(todosRaw){
+  const todos=todosRaw.map(r=>{
+    const n={};
+    Object.keys(r).forEach(k=>{const kn=k.replace(/\n/g,' ').replace(/\s+/g,' ').trim();n[kn]=typeof r[k]==='string'?r[k].trim():r[k];});
+    return n;
+  }).filter(r=>r['INSCRIÇÃO']!==undefined && r['INSCRIÇÃO']!=='');
+
+  const registry=new Map();
+  todos.forEach(r=>{
+    const insc=String(parseInt(r['INSCRIÇÃO'],10));
+    if(!insc||insc==='NaN') return;
+    registry.set(insc,{
+      INSCRICAO:insc,
+      CPF:normalizarCPFRP(r['CPF']),
+      CANDIDATO:(r['CANDIDATO']||'').toString().trim(),
+      CARGO:(r['CARGO']||'').toString().trim(),
+      CODIGO:(r['CÓDIGO']!==undefined?r['CÓDIGO']:(r['CODIGO']||'')).toString().trim(),
+      DATA_NASCIMENTO:r['DATA NASCIMENTO'],
+      DATA_INSCRICAO:r['DATA INSCRIÇÃO'],
+      STATUS:(r['STATUS']||'').toString().trim(),
+      TURNO:(r['DATA REALIZAÇÃO PROVA']!==undefined?r['DATA REALIZAÇÃO PROVA']:(r['DATA PROVA']||'')).toString().trim(),
+    });
+  });
+
+  // Regra 1 (CPF+TURNO) + Regra 2 (conjuntos de cargos com mesma prova), via union-find —
+  // igual à Análise de Inscrições, mas aqui não cancelamos/retiramos ninguém: só descobrimos
+  // quem são "irmãos" (mesma prova física) pra poder copiar o resultado pra todas as inscrições.
+  const parent=new Map();
+  function find(x){ if(!parent.has(x)) parent.set(x,x); let r=x; while(parent.get(r)!==r) r=parent.get(r); parent.set(x,r); return r; }
+  function union(a,b){ const ra=find(a), rb=find(b); if(ra!==rb) parent.set(ra,rb); }
+
+  const ativos=[...registry.values()].filter(r=>STATUS_ATIVOS_RP.includes(r.STATUS.toLowerCase()));
+
+  const byTurnoCpf={};
+  ativos.forEach(r=>{
+    if(!r.TURNO) return;
+    const k=r.CPF+'__'+r.TURNO;
+    (byTurnoCpf[k]=byTurnoCpf[k]||[]).push(r.INSCRICAO);
+  });
+  Object.values(byTurnoCpf).forEach(arr=>{ for(let i=1;i<arr.length;i++) union(arr[0],arr[i]); });
+
+  const conjuntosRP=[];
+  document.querySelectorAll('[id^="rp-conj-"]').forEach(inp=>{
+    const cods=inp.value.split(',').map(c=>c.trim()).filter(Boolean);
+    if(cods.length>=2) conjuntosRP.push(cods);
+  });
+  conjuntosRP.forEach(conj=>{
+    const sub=ativos.filter(r=>conj.includes(r.CODIGO));
+    const byCpf={};
+    sub.forEach(r=>{ (byCpf[r.CPF]=byCpf[r.CPF]||[]).push(r.INSCRICAO); });
+    Object.values(byCpf).forEach(arr=>{ for(let i=1;i<arr.length;i++) union(arr[0],arr[i]); });
+  });
+
+  const irmaosDe=new Map();
+  const porRaiz={};
+  ativos.forEach(r=>{ const raiz=find(r.INSCRICAO); (porRaiz[raiz]=porRaiz[raiz]||[]).push(r.INSCRICAO); });
+  Object.values(porRaiz).forEach(arr=>{ const set=new Set(arr); arr.forEach(insc=>irmaosDe.set(insc,set)); });
+
+  return {registry, irmaosDe};
+}
+
+function carregarRPGeral(input){
+  const file=input.files[0]; if(!file) return;
+  const status=document.getElementById('rp-geral-status');
+  status.textContent='Lendo arquivo...';
+  carregarSheetJS(()=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      try{
+        const wb=XLSX.read(e.target.result,{type:'binary',cellDates:true});
+        let todos=[];
+        for(const nome of wb.SheetNames){
+          const rows=XLSX.utils.sheet_to_json(wb.Sheets[nome],{defval:'',range:1});
+          todos=todos.concat(rows);
+        }
+        const {registry, irmaosDe}=_rpMontarRegistryEGrupos(todos);
+        _rpRegistry=registry;
+        window._rpIrmaosDe=irmaosDe;
+        status.innerHTML=`✅ <strong>${file.name}</strong> carregado — ${registry.size} inscrições encontradas`;
+        document.getElementById('rp-conjuntos-wrap').style.display='block';
+        atualizarPreviewResultadoPreliminar();
+      }catch(err){
+        status.innerHTML=`<div style="color:#c0322f">Erro ao ler planilha: ${err.message}</div>`;
+        console.error(err);
+      }
+    };
+    reader.readAsBinaryString(file);
+  });
+}
+
+function lerRemarkArquivo_RP(wb, nomeArquivo){
+  const ws=wb.Sheets[wb.SheetNames[0]];
+  const aoa=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+  const linhaMaterias=aoa[6]||[];
+  const blocos=[];
+  linhaMaterias.forEach((v,c)=>{ if(v&&String(v).trim()) blocos.push({nome:String(v).trim(),col:c}); });
+  if(!blocos.length) return {resultados:new Map(), erro:`"${nomeArquivo}" não parece um arquivo de resultado do Remark/Gravic (não encontrei a linha de matérias).`};
+  const geral=blocos[0];
+  const materias=blocos.slice(1);
+  const resultados=new Map();
+  for(let r=8;r<aoa.length;r++){
+    const row=aoa[r]; if(!row||!row.length) continue;
+    const inscRaw=row[0]; if(inscRaw===''||inscRaw===undefined) continue;
+    const insc=String(parseInt(inscRaw,10));
+    if(!insc||insc==='NaN') continue;
+    const totalGeral=Number(row[geral.col+3]);
+    const subjResults={}; const ordem=[];
+    materias.forEach(m=>{
+      const t=Number(row[m.col+1]);
+      subjResults[m.nome]=isNaN(t)?null:t;
+      ordem.push(m.nome);
+    });
+    resultados.set(insc,{total:isNaN(totalGeral)?null:totalGeral, subjects:subjResults, subjectOrder:ordem});
+  }
+  return {resultados, erro:null};
+}
+
+function carregarRPRemark(input){
+  const files=[...input.files]; if(!files.length) return;
+  const status=document.getElementById('rp-remark-status');
+  status.textContent='Lendo arquivo(s)...';
+  carregarSheetJS(()=>{
+    let pendentes=files.length;
+    const erros=[];
+    files.forEach(file=>{
+      const reader=new FileReader();
+      reader.onload=e=>{
+        try{
+          const wb=XLSX.read(e.target.result,{type:'binary',cellDates:true});
+          const {resultados, erro}=lerRemarkArquivo_RP(wb, file.name);
+          if(erro){ erros.push(erro); }
+          else{
+            resultados.forEach((v,k)=>_rpResultados.set(k,v));
+            if(!_rpArquivosRemark.includes(file.name)) _rpArquivosRemark.push(file.name);
+          }
+        }catch(err){
+          erros.push(`Erro ao ler "${file.name}": ${err.message}`);
+        }
+        pendentes--;
+        if(pendentes===0){
+          status.innerHTML = (erros.length? erros.map(e=>`<div style="color:#c0322f">⚠️ ${e}</div>`).join('') : '') +
+            `✅ ${_rpArquivosRemark.length} arquivo(s) carregado(s) — ${_rpResultados.size} resultados no total: <strong>${_rpArquivosRemark.join(', ')}</strong>`;
+          atualizarPreviewResultadoPreliminar();
+        }
+      };
+      reader.readAsBinaryString(file);
+    });
+  });
+}
+
+function montarLinhasResultadoPreliminar(){
+  const linhas=[]; const ordemMateriasPorNivel=new Map();
+  const irmaosDe=window._rpIrmaosDe||new Map();
+  _rpRegistry.forEach(rec=>{
+    if(!STATUS_ATIVOS_RP.includes(rec.STATUS.toLowerCase())) return;
+    let res=_rpResultados.get(rec.INSCRICAO);
+    if(!res){
+      const irmaos=irmaosDe.get(rec.INSCRICAO);
+      if(irmaos){
+        for(const outraInsc of irmaos){
+          if(outraInsc!==rec.INSCRICAO && _rpResultados.has(outraInsc)){ res=_rpResultados.get(outraInsc); break; }
+        }
+      }
+    }
+    const nivel=tierPorCodigoRP(rec.CODIGO);
+    if(!ordemMateriasPorNivel.has(nivel)) ordemMateriasPorNivel.set(nivel,[]);
+    const ordem=ordemMateriasPorNivel.get(nivel);
+    if(res) res.subjectOrder.forEach(m=>{ if(!ordem.includes(m)) ordem.push(m); });
+    linhas.push({
+      nivel, INSCRICAO:rec.INSCRICAO, CANDIDATO:rec.CANDIDATO, CARGO:rec.CARGO,
+      DATA_NASCIMENTO:rec.DATA_NASCIMENTO,
+      subjects: res?res.subjects:null,
+      total: res?res.total:'AUSENTE',
+    });
+  });
+  return {linhas, ordemMateriasPorNivel};
+}
+
+function atualizarPreviewResultadoPreliminar(){
+  const preview=document.getElementById('rp-preview');
+  const content=document.getElementById('rp-preview-content');
+  if(!_rpRegistry){ preview.style.display='none'; return; }
+  preview.style.display='block';
+  if(!_rpResultados.size){
+    content.innerHTML=`<div style="font-size:13px;color:#41506b">Relatório Geral carregado. Agora envie o(s) arquivo(s) de resultado do Remark/Gravic.</div>`;
+    return;
+  }
+  const {linhas}=montarLinhasResultadoPreliminar();
+  const byTier={}; let ausentes=0;
+  linhas.forEach(l=>{ byTier[l.nivel]=(byTier[l.nivel]||0)+1; if(l.total==='AUSENTE') ausentes++; });
+  const ORDEM_NIVEIS=['FUNDAMENTAL INCOM','FUNDAMENTAL COMP','MEDIO','TECNICO','SUPERIOR','OUTROS'];
+  const niveisComDados=ORDEM_NIVEIS.filter(n=>byTier[n]);
+  const linhasTier=niveisComDados.map(n=>
+    `<div style="text-align:center;background:#f7f9fc;border-radius:8px;padding:10px">
+      <div style="font-size:20px;font-weight:800;color:#41506b">${byTier[n]}</div>
+      <div style="font-size:11px;color:#8a9ab5;font-weight:600">${n}</div>
+    </div>`).join('');
+  content.innerHTML=`
+<div style="display:grid;grid-template-columns:repeat(${niveisComDados.length||1},1fr);gap:10px;margin-bottom:12px">${linhasTier}</div>
+<div style="font-size:13px;color:#41506b">Total: <strong>${linhas.length}</strong> inscrições${ausentes?` · <strong style="color:#a06c12">${ausentes} ausente(s)</strong> (sem resultado próprio nem de irmão de mesma prova)`:''}</div>
+<div style="font-size:12.5px;color:#8a9ab5;margin-top:6px">Clique em <strong>Gerar e baixar</strong> para criar a planilha com uma aba por nível de escolaridade.</div>`;
+}
+
+function fmtDataRP(v){
+  // ExcelJS grava Date via getTime() (UTC) sem ajustar fuso horário, então construímos sempre
+  // um Date 'UTC' com os números desejados pra não deslocar a hora ao abrir no Excel
+  // (mesmo problema/solução já usado no TURNO da aba Geral).
+  if(!v) return '';
+  if(v instanceof Date){
+    if(isNaN(v.getTime())) return '';
+    return new Date(Date.UTC(v.getFullYear(), v.getMonth(), v.getDate()));
+  }
+  const s=String(v).trim();
+  const m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if(m) return new Date(Date.UTC(Number(m[3]), Number(m[2])-1, Number(m[1])));
+  const d=new Date(s);
+  return isNaN(d.getTime())?s:new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+}
+
+function gerarResultadoPreliminarXlsx(){
+  if(!_rpRegistry){ alert('Carregue o Relatório Geral primeiro.'); return; }
+  if(!_rpResultados.size){ alert('Carregue ao menos um arquivo de resultado do Remark/Gravic primeiro.'); return; }
+  const btn=event?.target;
+  if(btn){btn.disabled=true;btn.textContent='Gerando...';}
+
+  carregarExcelJS(async()=>{
+    try{
+      const {linhas, ordemMateriasPorNivel}=montarLinhasResultadoPreliminar();
+
+      const wb=new ExcelJS.Workbook();
+      const bordaThin={top:{style:'thin'},bottom:{style:'thin'},left:{style:'thin'},right:{style:'thin'}};
+      const FONTE='Calibri';
+      const ORDEM_NIVEIS=['FUNDAMENTAL INCOM','FUNDAMENTAL COMP','MEDIO','TECNICO','SUPERIOR','OUTROS'];
+      const niveisPresentes=[...new Set(linhas.map(l=>l.nivel))].sort((a,b)=>ORDEM_NIVEIS.indexOf(a)-ORDEM_NIVEIS.indexOf(b));
+
+      niveisPresentes.forEach(nivel=>{
+        const materias=ordemMateriasPorNivel.get(nivel)||[];
+        const cols=['INSCRIÇÃO','CANDIDATO','CARGO','DATA DE\nNASCIMENTO',...materias,'TOTAL'];
+        const ws=wb.addWorksheet(nivel.substring(0,31));
+        cols.forEach((col,ci)=>{
+          const c=ws.getCell(1,ci+1);
+          c.value=col;
+          c.font={bold:true,name:FONTE,size:10};
+          c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFD9D9D9'}};
+          c.alignment={horizontal:'center',vertical:'middle',wrapText:true};
+          c.border=bordaThin;
+          ws.getColumn(ci+1).width = col==='CANDIDATO'?35 : col==='CARGO'?55 : 16;
+        });
+        ws.getRow(1).height=30;
+        const linhasNivel=linhas.filter(l=>l.nivel===nivel).sort((a,b)=>a.CARGO.localeCompare(b.CARGO)||(Number(a.INSCRICAO)-Number(b.INSCRICAO)));
+        linhasNivel.forEach((l,ri)=>{
+          const row=ri+2;
+          const dataNasc=fmtDataRP(l.DATA_NASCIMENTO);
+          const vals=[Number(l.INSCRICAO)||l.INSCRICAO, l.CANDIDATO, l.CARGO, dataNasc,
+            ...materias.map(m=> l.subjects ? (l.subjects[m]!==undefined && l.subjects[m]!==null ? l.subjects[m] : '-') : '-'),
+            l.total];
+          vals.forEach((v,ci)=>{
+            const c=ws.getCell(row,ci+1);
+            c.value=v;
+            c.font={name:FONTE,size:10};
+            c.border=bordaThin;
+            c.alignment={vertical:'middle',horizontal: ci===1||ci===2 ? 'left':'center'};
+            if(cols[ci]==='DATA DE\nNASCIMENTO' && v instanceof Date) c.numFmt='dd/mm/yyyy';
+          });
+        });
+        ws.views=[{state:'frozen',xSplit:0,ySplit:1}];
+        ws.autoFilter={from:{row:1,column:1},to:{row:Math.max(1,linhasNivel.length+1),column:cols.length}};
+      });
+
+      const buf=await wb.xlsx.writeBuffer();
+      const blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download='RESULTADO_PRELIMINAR.xlsx';
+      a.click();
+    }catch(e){
+      alert('Erro ao gerar planilha: '+e.message);
+      console.error(e);
+    }
+    if(btn){btn.disabled=false;btn.textContent='⚙️ Gerar e baixar';}
+  });
+}
 
 // ── RESULTADOS: HOMOLOGAÇÃO ───────────────────────────────────────────
 let _homolCF=null, _homolDados=null;
