@@ -7265,7 +7265,7 @@ async function gerarPlanilhaAlocacao(resultado, escolasEnviadas){
     wsGeral.getCell(rowGeral,2).value = a.CANDIDATO;
     wsGeral.getCell(rowGeral,3).value = a.CONCURSO;
     wsGeral.getCell(rowGeral,4).value = a.CARGO;
-    (()=>{ const cellTurno = wsGeral.getCell(rowGeral,5); if(a['DATA HORA PROVA OBJ']){ cellTurno.value = a['DATA HORA PROVA OBJ']; cellTurno.numFmt = 'dd/mm/yyyy hh:mm'; } else { cellTurno.value = a['DATA HORA PROVA'] || a.TURNO; } })();
+    (()=>{ const cellTurno = wsGeral.getCell(rowGeral,5); if(a['DATA HORA PROVA OBJ']){ cellTurno.value = a['DATA HORA PROVA OBJ']; cellTurno.numFmt = 'd/m/yy h:mm;@'; } else { cellTurno.value = a['DATA HORA PROVA'] || a.TURNO; } })();
     wsGeral.getCell(rowGeral,6).value = a.SALA;
     wsGeral.getCell(rowGeral,7).value = a.ANDAR;
     wsGeral.getCell(rowGeral,8).value = a.BLOCO;
