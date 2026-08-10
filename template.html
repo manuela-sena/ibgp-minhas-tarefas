@@ -6665,6 +6665,7 @@ async function processarAlocacao(){
           const parsed = parseDataRealizacaoProva(c['DATA REALIZAÇÃO PROVA']);
           c['DATA PROVA'] = parsed.data;
           c['TURNO'] = parsed.turno;
+          c['DATA HORA PROVA'] = parsed.dataHora;
         });
 
         // ── Ler planilha de Condição Especial (aba COND ESPECIAL) — só DEFERIDA ──
@@ -6745,7 +6746,7 @@ function parseDataRealizacaoProva(valor){
   // Aceita objeto Date (quando o Excel guarda como data real) ou texto no formato
   // Date.toString() do JS ("Sun Jul 26 2026 09:15:28 GMT-0300 (Horário Padrão de Brasília)"),
   // que é como esse campo normalmente vem salvo (como texto) na planilha de candidatos.
-  if(!valor) return {data:'', turno:''};
+  if(!valor) return {data:'', turno:'', dataHora:''};
   let dt = null;
   if(valor instanceof Date){
     dt = valor;
@@ -6760,12 +6761,14 @@ function parseDataRealizacaoProva(valor){
       if(!isNaN(tentativa.getTime())) dt = tentativa;
     }
   }
-  if(!dt || isNaN(dt.getTime())) return {data:'', turno:''};
+  if(!dt || isNaN(dt.getTime())) return {data:'', turno:'', dataHora:''};
   const dd = String(dt.getDate()).padStart(2,'0');
   const mm = String(dt.getMonth()+1).padStart(2,'0');
   const yyyy = dt.getFullYear();
+  const hh = String(dt.getHours()).padStart(2,'0');
+  const min = String(dt.getMinutes()).padStart(2,'0');
   const turno = dt.getHours() < 12 ? 'MANHÃ' : 'TARDE';
-  return {data: `${dd}/${mm}/${yyyy}`, turno};
+  return {data: `${dd}/${mm}/${yyyy}`, turno, dataHora: `${dd}/${mm}/${yyyy} ${hh}:${min}`};
 }
 
 function carregarSheetJSAloc(cb){
@@ -7077,7 +7080,7 @@ function mapCandidato(c){
   return {
     INSCRIÇÃO: c['INSCRIÇÃO']||'', CANDIDATO: c['CANDIDATO']||'', CPF: c['CPF']||'',
     CONCURSO: c['CONCURSO']||'', CÓDIGO: c['CÓDIGO']||c['CODIGO']||'', CARGO: c['CARGO']||'',
-    'DATA PROVA': c['DATA PROVA']||'', TURNO: c['TURNO']||'',
+    'DATA PROVA': c['DATA PROVA']||'', TURNO: c['TURNO']||'', 'DATA HORA PROVA': c['DATA HORA PROVA']||'',
     'DATA NASCIMENTO': c['DATA NASCIMENTO']||'', CIDADE: c['CIDADE']||'', STATUS: c['STATUS']||'',
     'ATENDIMENTO ESPECIAL': (c._atendimentos && c._atendimentos.length) ? c._atendimentos.join(', ') : '-',
     JUSTIFICATIVA: c['_justificativaEspecial']||'',
@@ -7258,7 +7261,7 @@ async function gerarPlanilhaAlocacao(resultado, escolasEnviadas){
     wsGeral.getCell(rowGeral,2).value = a.CANDIDATO;
     wsGeral.getCell(rowGeral,3).value = a.CONCURSO;
     wsGeral.getCell(rowGeral,4).value = a.CARGO;
-    wsGeral.getCell(rowGeral,5).value = a.TURNO;
+    wsGeral.getCell(rowGeral,5).value = a['DATA HORA PROVA'] || a.TURNO;
     wsGeral.getCell(rowGeral,6).value = a.SALA;
     wsGeral.getCell(rowGeral,7).value = a.ANDAR;
     wsGeral.getCell(rowGeral,8).value = a.BLOCO;
