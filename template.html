@@ -7244,9 +7244,9 @@ async function gerarPlanilhaAlocacao(resultado, escolasEnviadas){
     enderecoPorEscolaGeral[nomeEsc] = esc.instituicao || {};
   });
   const wsGeral = wb.addWorksheet('Geral');
-  const colGeral = ['INSCRIÇÃO','CANDIDATO','CONCURSO','CARGO','DATA REALIZAÇÃO PROVA','SALA','ANDAR','BLOCO','ESCOLA','RUA','NUMERO','COMPLEMENTO','BAIRRO','CIDADE','UF'];
+  const colGeral = ['INSCRIÇÃO','CANDIDATO','CONCURSO','CARGO','TURNO','SALA','ANDAR','BLOCO','ESCOLA','RUA','NUMERO','COMPLEMENTO','BAIRRO','CIDADE','UF'];
   const colVerdeGeral = new Set(['INSCRIÇÃO','CANDIDATO']);
-  const colAzulGeral = new Set(['CONCURSO','CARGO','DATA REALIZAÇÃO PROVA']);
+  const colAzulGeral = new Set(['CONCURSO','CARGO','TURNO']);
   const colCinzaGeral = new Set(['SALA','ANDAR','BLOCO','ESCOLA','RUA','NUMERO','COMPLEMENTO','BAIRRO','CIDADE','UF']);
   colGeral.forEach((titulo, i)=>{
     const cell = wsGeral.getCell(1, i+1);
