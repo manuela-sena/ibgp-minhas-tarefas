@@ -5091,7 +5091,7 @@ function carregarUploadsInscricoes(input){
           return {
             INSCRICAO: normInscUp(kn['INSCRIÇÃO']),
             NOME: (kn['NOME']||'').toString().trim(),
-            URL: (kn['URL']||'').toString().trim(),
+            URL: (kn['URL']||'').toString().trim().replace('admin.ibgpconcursos.com.br','gestor.ibgpconcursos.com.br'),
           };
         }).filter(r=>r.INSCRICAO && r.INSCRICAO!=='NaN');
         const porTipo={};
@@ -5468,7 +5468,10 @@ function processarInscricoes(){
           if(lista.length){
             const linhasReserva=lista.map(r=>{
               const o=mapRow(r,rInfo.cols);
-              if(rInfo.key==='PCD') o.LINK=acharLinkUpload(o['INSCRIÇÃO'], n=>n.toUpperCase().includes('PCD'))||o.LINK;
+              if(rInfo.key==='PCD'){
+                o.LINK=acharLinkUpload(o['INSCRIÇÃO'], n=>n.toUpperCase().includes('PCD'))||o.LINK;
+                if(!o.LINK) o.RESULTADO='INDEFERIDA';
+              }
               return o;
             });
             await criarAbaExcel(wbRes,rInfo.key,rInfo.label,rInfo.cols,linhasReserva);
@@ -5484,6 +5487,7 @@ function processarInscricoes(){
           const linhasCond=cond.map(r=>{
             const o=mapRow(r,colsCond);
             o.LINK=acharLinkUpload(o['INSCRIÇÃO'], n=>n.toUpperCase().includes('CONDIÇÕES ESPECIAIS')||n.toUpperCase().includes('CONDICOES ESPECIAIS'))||o.LINK;
+            if(!o.LINK) o.RESULTADO='INDEFERIDA';
             return o;
           });
           await criarAbaExcel(wbRes,'COND.ESPECIAL','CONDIÇÃO ESPECIAL',colsCond,linhasCond);
@@ -5500,6 +5504,7 @@ function processarInscricoes(){
             const linhasJurado=jurado.map(r=>{
               const o=mapRow(r,colsJurado);
               o.LINK=acharLinkUpload(o['INSCRIÇÃO'], n=>n.toUpperCase().includes('JURADO'))||o.LINK;
+              if(!o.LINK) o.RESULTADO='INDEFERIDA';
               return o;
             });
             await criarAbaExcel(wbRes,'JURADO','JURADO',colsJurado,linhasJurado);
