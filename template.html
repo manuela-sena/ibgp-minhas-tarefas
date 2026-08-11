@@ -8063,6 +8063,11 @@ function coletarConfigAtual(){
 async function salvarConfigClassificacao(){
   const config = coletarConfigAtual();
   if(!config.nome){ alert('Dê um nome ao concurso antes de salvar.'); return; }
+  const problemasDesempate = validarDesempateConfig(config);
+  if(problemasDesempate.length){
+    alert('Corrija os critérios de desempate antes de salvar:\n\n' + problemasDesempate.join('\n'));
+    return;
+  }
   try{
     const path = `${CLF_CONFIG_DIR}/${config.nome}.json`;
     const r0 = await fetch(`https://api.github.com/repos/${GH_REPO_CLF}/contents/${path}`,
@@ -8124,10 +8129,13 @@ function renderDesempateList(){
     const camposDisp = getClfCamposDisponiveis();
     const atual = crit.campo||'';
     const opts = camposDisp.slice();
-    if(atual && !opts.includes(atual)) opts.push(atual);
-    return '<select id="clf-desemp-campo-'+i+'" class="filter-select" style="height:34px;flex:1"><option value="">Selecione o campo...</option>' +
-      opts.map(c=>'<option value="'+c.replace(/"/g,'&quot;')+'" '+(c===atual?'selected':'')+'>'+c+'</option>').join('') +
+    const orfao = !!atual && !opts.includes(atual);
+    if(orfao) opts.push(atual);
+    const semSelecao = orfao || !atual;
+    const sel = '<select id="clf-desemp-campo-'+i+'" class="filter-select" onchange="syncDesempateFromDom('+i+')" style="height:34px;flex:1'+(semSelecao?';border:1.5px solid #c0322f':'')+'"><option value="">Selecione o campo...</option>' +
+      opts.map(c=>'<option value="'+c.replace(/"/g,'&quot;')+'" '+(c===atual?'selected':'')+'>'+c+(orfao&&c===atual?' (campo não encontrado)':'')+'</option>').join('') +
       '</select>';
+    return sel + (semSelecao?'<div style="font-size:11px;color:#c0322f;margin-top:3px">⚠️ Selecione um campo válido — este critério não será aplicado até então.</div>':'');
   })() : '<div style="flex:1"></div>'}
   <button onclick="removeDesempateCriterio(${i})" style="background:none;border:none;color:#c0322f;font-size:16px;cursor:pointer;padding:4px 8px">×</button>
 </div>`).join('');
@@ -8149,6 +8157,14 @@ function removeEtapaClassificacao(idx){
 function syncClfEtapaCampos(idx, valor){
   if(!_clfConfig.etapas || !_clfConfig.etapas[idx]) return;
   _clfConfig.etapas[idx].campos = valor.split(',').map(c=>c.trim()).filter(c=>c);
+  // Se um critério de desempate apontava pra um campo que deixou de existir
+  // (renomeado/removido da etapa), limpa a seleção em vez de manter um valor
+  // órfão silenciosamente incorreto (causa raiz de bug real: 'PORTUGUÊS' vs
+  // 'LÍNGUA PORTUGUESA' ficaram dessincronizados e o desempate parou de funcionar).
+  const disponiveisAgora = new Set(getClfCamposDisponiveis());
+  (_clfConfig.desempate||[]).forEach(crit=>{
+    if(crit.tipo==='maior_nota' && crit.campo && !disponiveisAgora.has(crit.campo)) crit.campo = '';
+  });
   if(document.getElementById('clf-desempate-list')) renderDesempateList();
 }
 function syncEtapaFromDom(idx){
@@ -8440,11 +8456,27 @@ function coletarMapaEtapa(idx, tipo, campos, poolsAtivos){
 }
 
 // ── GERAR CLASSIFICAÇÃO FINAL ──────────────────────────────────────────
+function validarDesempateConfig(config){
+  const problemas = [];
+  const camposValidos = new Set();
+  (config.etapas||[]).forEach(et=>{ (et.campos||[]).forEach(c=>{ if(c) camposValidos.add(c); }); });
+  (config.desempate||[]).forEach((crit,i)=>{
+    if(crit.tipo==='maior_nota' && (!crit.campo || !camposValidos.has(crit.campo))){
+      problemas.push((i+1)+'º critério de desempate (maior nota): campo "'+(crit.campo||'(vazio)')+'" não corresponde a nenhum campo configurado nas etapas.');
+    }
+  });
+  return problemas;
+}
 async function gerarClassificacaoFinal(){
   const statusEl = document.getElementById('clf-status');
   const config = coletarConfigAtual();
   if(!config.nome){ alert('Dê um nome ao concurso.'); return; }
   if(!config.etapas.length){ alert('Adicione ao menos uma etapa.'); return; }
+  const problemasDesempate = validarDesempateConfig(config);
+  if(problemasDesempate.length){
+    alert('Corrija os critérios de desempate antes de gerar:\n\n' + problemasDesempate.join('\n') + '\n\nEsses critérios ficariam sem efeito (empate sempre) e a classificação sairia errada.');
+    return;
+  }
 
   statusEl.innerHTML = '<div class="loading"><div class="spinner"></div>Processando classificação...</div>';
 
