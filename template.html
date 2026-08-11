@@ -1253,6 +1253,12 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
           onchange="carregarArquivoInscricoes(this)">
         <div id="insc-status" style="margin-top:8px;font-size:12.5px;color:#8a9ab5"></div>
       </div>
+      <div class="card card-pad">
+        <label class="form-label">Relatório de Uploads (.xlsx) <span style="font-size:11px;color:#8a9ab5;font-weight:400">(opcional — preenche o link de PCD/Condição Especial e habilita a aba Jurado)</span></label>
+        <input type="file" id="insc-uploads-file" accept=".xlsx" class="form-input" style="padding:6px"
+          onchange="carregarUploadsInscricoes(this)">
+        <div id="insc-uploads-status" style="margin-top:8px;font-size:12.5px;color:#8a9ab5"></div>
+      </div>
       <div id="insc-sel-processo-wrap" style="display:none" class="card card-pad"></div>
       <div id="insc-conjuntos-wrap" style="display:none" class="card card-pad">
         <div style="font-size:13px;font-weight:600;color:#1f2a3d;margin-bottom:12px">Cargos com mesma prova <span style="font-size:11px;color:#8a9ab5;font-weight:400">(opcional)</span></div>
@@ -5027,6 +5033,14 @@ async function _salvarFeriasGitHub(ferias){
 
 // ── RESULTADOS: INSCRIÇÕES ────────────────────────────────────────────
 let _inscWorkbook = null;
+let _inscUploadsRows = null;
+function normInscUp(v){ const n=parseInt(v,10); return isNaN(n)?String(v||'').trim():String(n); }
+function acharLinkUpload(insc, matchFn){
+  if(!_inscUploadsRows) return '';
+  const alvo=normInscUp(insc);
+  const achado=_inscUploadsRows.find(u=>u.INSCRICAO===alvo && matchFn(u.NOME) && u.URL);
+  return achado ? achado.URL : '';
+}
 
 function carregarSheetJS(cb){
   if(typeof XLSX!=='undefined'){cb();return;}
@@ -5057,6 +5071,41 @@ function atualizarReservasInscSelecionadas(){
   window._inscReservasSelecionadas = RESERVAS_INSC_DISPONIVEIS
     .filter(r => document.getElementById('insc-reserva-'+r.key)?.checked)
     .map(r => r.key);
+}
+
+function carregarUploadsInscricoes(input){
+  const file=input.files[0]; if(!file){ _inscUploadsRows=null; return; }
+  const status=document.getElementById('insc-uploads-status');
+  status.textContent='Lendo arquivo...';
+  carregarSheetJS(()=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      try{
+        const wb=XLSX.read(e.target.result,{type:'binary',cellDates:true});
+        let rows=[];
+        for(const nome of wb.SheetNames){
+          rows=rows.concat(XLSX.utils.sheet_to_json(wb.Sheets[nome],{defval:'',range:1}));
+        }
+        _inscUploadsRows=rows.map(r=>{
+          const kn={}; Object.keys(r).forEach(k=>{ kn[k.replace(/\s+/g,' ').trim()]=r[k]; });
+          return {
+            INSCRICAO: normInscUp(kn['INSCRIÇÃO']),
+            NOME: (kn['NOME']||'').toString().trim(),
+            URL: (kn['URL']||'').toString().trim(),
+          };
+        }).filter(r=>r.INSCRICAO && r.INSCRICAO!=='NaN');
+        const porTipo={};
+        _inscUploadsRows.forEach(r=>{ porTipo[r.NOME]=(porTipo[r.NOME]||0)+1; });
+        const resumo=Object.entries(porTipo).map(([k,v])=>`${v}× ${k}`).join('<br>');
+        status.innerHTML=`✅ <strong>${file.name}</strong> carregado — ${_inscUploadsRows.length} registros<br><small style="color:#8a9ab5">${resumo}</small>`;
+      }catch(err){
+        status.innerHTML=`<div style="color:#c0322f">Erro ao ler planilha: ${err.message}</div>`;
+        console.error(err);
+        _inscUploadsRows=null;
+      }
+    };
+    reader.readAsBinaryString(file);
+  });
 }
 
 function carregarArquivoInscricoes(input){
@@ -5417,7 +5466,12 @@ function processarInscricoes(){
           const valorEsperado=(rInfo.val||'SIM').toString().trim().toUpperCase();
           const lista=todos.filter(r=>(r[rInfo.col]||'').toString().trim().toUpperCase()===valorEsperado&&STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase()));
           if(lista.length){
-            await criarAbaExcel(wbRes,rInfo.key,rInfo.label,rInfo.cols,lista.map(r=>mapRow(r,rInfo.cols)));
+            const linhasReserva=lista.map(r=>{
+              const o=mapRow(r,rInfo.cols);
+              if(rInfo.key==='PCD') o.LINK=acharLinkUpload(o['INSCRIÇÃO'], n=>n.toUpperCase().includes('PCD'))||o.LINK;
+              return o;
+            });
+            await criarAbaExcel(wbRes,rInfo.key,rInfo.label,rInfo.cols,linhasReserva);
           }
         }
 
@@ -5427,7 +5481,29 @@ function processarInscricoes(){
         });
         if(cond.length){
           const colsCond=['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO','ATENDIMENTO ESPECIAL','RESULTADO','JUSTIFICATIVA','LINK','DATA REALIZAÇÃO PROVA'];
-          await criarAbaExcel(wbRes,'COND.ESPECIAL','CONDIÇÃO ESPECIAL',colsCond,cond.map(r=>mapRow(r,colsCond)));
+          const linhasCond=cond.map(r=>{
+            const o=mapRow(r,colsCond);
+            o.LINK=acharLinkUpload(o['INSCRIÇÃO'], n=>n.toUpperCase().includes('CONDIÇÕES ESPECIAIS')||n.toUpperCase().includes('CONDICOES ESPECIAIS'))||o.LINK;
+            return o;
+          });
+          await criarAbaExcel(wbRes,'COND.ESPECIAL','CONDIÇÃO ESPECIAL',colsCond,linhasCond);
+        }
+
+        // Aba JURADO: candidatos que enviaram comprovante de "ter exercido a função de jurado"
+        // no relatório de uploads. Não existe coluna própria pra isso no Relatório Geral (diferente
+        // de PCD/PNP/etc que têm CONCORRE VAGA X), então o critério aqui é só ter enviado o arquivo.
+        if(_inscUploadsRows && _inscUploadsRows.length){
+          const inscJurado=new Set(_inscUploadsRows.filter(u=>u.NOME.toUpperCase().includes('JURADO')).map(u=>u.INSCRICAO));
+          const jurado=todos.filter(r=>inscJurado.has(normInscUp(r['INSCRIÇÃO']))&&STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase()));
+          if(jurado.length){
+            const colsJurado=['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO','RESULTADO','JUSTIFICATIVA','LINK'];
+            const linhasJurado=jurado.map(r=>{
+              const o=mapRow(r,colsJurado);
+              o.LINK=acharLinkUpload(o['INSCRIÇÃO'], n=>n.toUpperCase().includes('JURADO'))||o.LINK;
+              return o;
+            });
+            await criarAbaExcel(wbRes,'JURADO','JURADO',colsJurado,linhasJurado);
+          }
         }
 
         // ── PLANILHA ALOCAÇÃO ──────────────────────────────────────────
