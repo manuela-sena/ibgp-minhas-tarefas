@@ -7861,7 +7861,21 @@ class ClfMotor {
       const c=this.getOrCreate(l.inscricao,l.nome,l.nascimento,l.cargo);
       const ok = clfNorm(l.resultado)===clfNorm(valorAprovado);
       c.etapas[nomeEtapa] = {resultado:l.resultado, aprovado:ok, contaNoTotal:false};
-      if(gatePool) c.pools[gatePool] = ok && !!c.pools[gatePool];
+      if(gatePool){
+        c.pools[gatePool] = ok && !!c.pools[gatePool];
+        // Se essa reserva era o único caminho do candidato (ele não foi convocado
+        // pela ampla concorrência — a coluna AMPLA de convocação vem de outra etapa
+        // — e também não está em nenhuma outra reserva) e ele foi indeferido aqui,
+        // ele fica sem via nenhuma: é indeferido do concurso, não só fora dessa reserva.
+        if(!ok){
+          const poolsConfig = this.config.pools || [];
+          const semOutraVia = !c.pools.ampla && poolsConfig.every(p => p===gatePool || !c.pools[p]);
+          if(semOutraVia){
+            c.eliminado = true;
+            c.motivoEliminacao = c.motivoEliminacao || `${nomeEtapa}: indeferido e sem outra via de concorrência (não convocado pela ampla)`;
+          }
+        }
+      }
       if(eliminaDoConcurso && !ok){ c.eliminado=true; c.motivoEliminacao=c.motivoEliminacao||`${nomeEtapa}: não apto/deferido`; }
     });
   }
