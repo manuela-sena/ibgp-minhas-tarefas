@@ -8492,12 +8492,13 @@ async function gerarClassificacaoFinal(){
       console.log('[DEBUG CLF] etapa'+i+' nome='+et.nome+' tipo='+et.tipo+' | temArquivo='+(!!wbState)+' | sheets='+(wbState?.sheets?.join(',')));
       if(!wbState?.sheets?.length){ continue; }
       let naoAvancaramEtapa = 0;
-      // Etapas 'pontuacao' que não são a primeira funcionam como corte de convocação
-      // (ex: prova discursiva só é corrigida pra quem foi convocado da prova objetiva).
-      // Quem já estava ativo e não aparecer nesta planilha, mas outros do MESMO CARGO
-      // aparecem (ou seja, a etapa claramente se aplica a esse cargo), não avançou e
-      // deve ser eliminado da classificação final.
-      const candidatosAntesDestaEtapa = (et.tipo==='pontuacao' && i>0)
+      // Etapas de nota/título que não são a primeira funcionam como corte de convocação:
+      // cada planilha de etapa enviada já vem filtrada só com quem avançou (ex: prova
+      // discursiva só corrigida pra quem foi convocado; títulos só avaliado pra quem
+      // ainda está na disputa). Quem já estava ativo e não aparecer nesta planilha, mas
+      // outros do MESMO CARGO aparecem (confirmando que a etapa se aplica a esse cargo),
+      // não avançou e deve ser eliminado da classificação final.
+      const candidatosAntesDestaEtapa = ((et.tipo==='pontuacao' || et.tipo==='classificatoria') && i>0)
         ? new Set(Object.values(motor.candidatos).filter(c=>!c.eliminado).map(c=>c.inscricao))
         : null;
       const map = coletarMapaEtapa(i, et.tipo, et.campos||[], poolsAtivos);
