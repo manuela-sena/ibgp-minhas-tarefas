@@ -5399,6 +5399,29 @@ function processarInscricoes(){
         }
 
         // Aba de alocação: todas as colunas, sem formatação especial (igual planilha geral)
+        const MESES_ALOC={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+        function formatarValorAloc(val){
+          // Datas podem chegar como objeto Date real OU como texto no formato
+          // Date.toString() do JS ("Sun Aug 23 2026 09:15:28 GMT-0300 (Horário Padrão de Brasília)"),
+          // que é como esse campo normalmente vem salvo (como texto) na planilha de candidatos.
+          if(val===undefined||val===null||String(val)==='nan') return '';
+          if(val instanceof Date){
+            if(isNaN(val.getTime())) return '';
+            const dd=String(val.getDate()).padStart(2,'0');
+            const mm=String(val.getMonth()+1).padStart(2,'0');
+            const yyyy=val.getFullYear();
+            const hh=String(val.getHours()).padStart(2,'0');
+            const mi=String(val.getMinutes()).padStart(2,'0');
+            return (hh==='00'&&mi==='00')?`${dd}/${mm}/${yyyy}`:`${dd}/${mm}/${yyyy} ${hh}:${mi}`;
+          }
+          const s=String(val).trim();
+          const m=s.match(/^\w{3}\s+(\w{3})\s+(\d{1,2})\s+(\d{4})\s+(\d{2}):(\d{2}):(\d{2})/);
+          if(m && MESES_ALOC[m[1]]!==undefined){
+            const dd=m[2].padStart(2,'0'), mm=String(MESES_ALOC[m[1]]+1).padStart(2,'0'), yyyy=m[3], hh=m[4], mi=m[5];
+            return `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
+          }
+          return s;
+        }
         async function criarAbaAlocacao(wb, nomeAba, todasCols, dados){
           if(!dados.length) return;
           const ws=wb.addWorksheet(nomeAba);
@@ -5421,18 +5444,8 @@ function processarInscricoes(){
           dados.forEach((row,ri)=>{
             todasCols.forEach((col,ci)=>{
               const c=ws.getCell(ri+2,ci+1);
-              let val=row[col];
-              if(val instanceof Date){
-                const dd=String(val.getDate()).padStart(2,'0');
-                const mm=String(val.getMonth()+1).padStart(2,'0');
-                const yyyy=val.getFullYear();
-                const hh=String(val.getHours()).padStart(2,'0');
-                const mi=String(val.getMinutes()).padStart(2,'0');
-                val=(hh==='00'&&mi==='00')?`${dd}/${mm}/${yyyy}`:`${dd}/${mm}/${yyyy} ${hh}:${mi}`;
-              } else if(val===undefined||val===null||String(val)==='nan'){
-                val='';
-              }
-              c.value=String(val);
+              let val=formatarValorAloc(row[col]);
+              c.value=val;
               c.font={name:FONTE,size:9};
               c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
               c.alignment={vertical:'middle'};
