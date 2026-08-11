@@ -8491,6 +8491,15 @@ async function gerarClassificacaoFinal(){
       const wbState = _clfEtapaWb[i];
       console.log('[DEBUG CLF] etapa'+i+' nome='+et.nome+' tipo='+et.tipo+' | temArquivo='+(!!wbState)+' | sheets='+(wbState?.sheets?.join(',')));
       if(!wbState?.sheets?.length){ continue; }
+      let naoAvancaramEtapa = 0;
+      // Etapas 'pontuacao' que não são a primeira funcionam como corte de convocação
+      // (ex: prova discursiva só é corrigida pra quem foi convocado da prova objetiva).
+      // Quem já estava ativo e não aparecer nesta planilha, mas outros do MESMO CARGO
+      // aparecem (ou seja, a etapa claramente se aplica a esse cargo), não avançou e
+      // deve ser eliminado da classificação final.
+      const candidatosAntesDestaEtapa = (et.tipo==='pontuacao' && i>0)
+        ? new Set(Object.values(motor.candidatos).filter(c=>!c.eliminado).map(c=>c.inscricao))
+        : null;
       const map = coletarMapaEtapa(i, et.tipo, et.campos||[], poolsAtivos);
       console.log('[DEBUG CLF] etapa'+i+' map='+JSON.stringify(map));
       const linhasRaw = wbState.sheets.flatMap(sh=>clfLerLinhas(wbState.wb, sh));
@@ -8525,6 +8534,19 @@ async function gerarClassificacaoFinal(){
         motor.carregarEtapaPontuacao(et.nome||`Etapa ${i+1}`, linhas, et.campos||[],
           et.tipo==='pontuacao' ? (et.corte ? {notaMinimaTotal:et.corte.notaMinimaTotal, naoZerar:et.corte.naoZerar} : null) : null,
           true);
+        if(candidatosAntesDestaEtapa){
+          const presentesNestaEtapa = new Set(linhas.map(l=>l.inscricao));
+          const cargosComEstaEtapa = new Set(linhas.map(l=>l.cargo));
+          candidatosAntesDestaEtapa.forEach(insc=>{
+            if(presentesNestaEtapa.has(insc)) return;
+            const c = motor.candidatos[insc];
+            if(!c || c.eliminado) return;
+            if(!cargosComEstaEtapa.has(c.cargo)) return; // etapa não se aplica a este cargo
+            c.eliminado = true;
+            c.motivoEliminacao = c.motivoEliminacao || `${et.nome||'Etapa '+(i+1)}: não avançou para esta etapa (não constava na planilha enviada)`;
+            naoAvancaramEtapa++;
+          });
+        }
         // Flags de pool (convocação por vaga), se colunas foram mapeadas
         const linhasComPool = linhasRaw.map(r=>{
           const insc = map.inscricao ? r[map.inscricao] : null;
@@ -8542,7 +8564,7 @@ async function gerarClassificacaoFinal(){
       } else if(et.tipo==='binaria'){
         motor.carregarEtapaBinaria(et.nome||`Etapa ${i+1}`, linhas, et.valorAprovado||'DEFERIDA', et.eliminaDoConcurso||false, et.gatePool||null);
       }
-      resumoEtapas.push(`${et.nome||'Etapa '+(i+1)}: ${linhas.length}`);
+      resumoEtapas.push(`${et.nome||'Etapa '+(i+1)}: ${linhas.length}${naoAvancaramEtapa>0?' ('+naoAvancaramEtapa+' não avançaram)':''}`);
     }
 
     const {ranking, todosAptos} = motor.classificar(new Date());
