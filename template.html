@@ -8385,6 +8385,86 @@ function clfColunasUniao(wb, sheets){
   (sheets||[]).forEach(sh => clfLerColunas(wb, sh).forEach(c => set.add(c)));
   return [...set];
 }
+function clfNormalizarHeader(s){
+  return (s||'').toString().toUpperCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^A-Z0-9]+/g,' ').trim();
+}
+
+// Tenta adivinhar automaticamente pra que serve cada coluna da planilha da etapa,
+// pra reduzir a quantidade de seleções manuais. Sempre pode ser ajustado depois
+// manualmente nos seletores — isso é só um chute inicial baseado no nome da coluna.
+function clfAutoMapearEtapa(colunas, tipoEtapa){
+  const usados = new Set();
+  const escolher = (testes) => {
+    for(const teste of testes){
+      const achado = colunas.find(c => !usados.has(c) && teste(clfNormalizarHeader(c)));
+      if(achado){ usados.add(achado); return achado; }
+    }
+    return '';
+  };
+  const inscricao = escolher([n=>n==='INSCRICAO', n=>n.includes('INSCRICAO')]);
+  const nome = escolher([n=>n==='CANDIDATO', n=>n==='NOME', n=>n.includes('CANDIDATO'), n=>n.includes('NOME')]);
+  const nascimento = escolher([n=>n.includes('NASCIMENTO')]);
+  const cargo = escolher([n=>n==='CARGO', n=>n.includes('CARGO')]);
+
+  let resultado = '', total = '';
+  if(tipoEtapa==='binaria'){
+    resultado = escolher([n=>n==='RESULTADO', n=>n.includes('RESULTADO'), n=>n==='STATUS', n=>n.includes('SITUACAO')]);
+  } else {
+    total = escolher([n=>n==='TOTAL', n=>n.startsWith('TOTAL')]);
+  }
+
+  const poolCols = {};
+  if(tipoEtapa==='pontuacao' || tipoEtapa==='classificatoria'){
+    [
+      ['ampla', n=>n==='AMPLA'||n.includes('AMPLA')],
+      ['pcd', n=>n==='PCD'||n.includes('PCD')],
+      ['pnp', n=>n==='PNP'||n.includes('PNP')],
+      ['indigena', n=>n.includes('INDIGENA')],
+      ['quilombola', n=>n.includes('QUILOMBOLA')],
+    ].forEach(([pool, teste])=>{
+      const col = escolher([teste]);
+      if(col) poolCols[pool] = col;
+    });
+  }
+
+  const campos = (tipoEtapa==='pontuacao' || tipoEtapa==='classificatoria')
+    ? colunas.filter(c=>!usados.has(c))
+    : [];
+
+  return {inscricao, nome, nascimento, cargo, total, resultado, poolCols, campos};
+}
+
+// Preenche o mapeamento da etapa idx com a detecção automática, sem sobrescrever
+// nada que já tenha sido escolhido manualmente (ou salvo antes) e ainda seja válido.
+function clfPreencherMapaAutomatico(idx){
+  const state = _clfEtapaWb[idx];
+  const et = _clfConfig.etapas[idx];
+  if(!state || !et) return;
+  const colunas = state.colunas || [];
+  const auto = clfAutoMapearEtapa(colunas, et.tipo);
+  state.map = state.map || {};
+
+  ['inscricao','nome','nascimento','cargo','total','resultado'].forEach(k=>{
+    if(!state.map[k] || !colunas.includes(state.map[k])) state.map[k] = auto[k] || '';
+  });
+
+  state.map.poolCols = state.map.poolCols || {};
+  Object.keys(auto.poolCols).forEach(p=>{
+    if(!state.map.poolCols[p] || !colunas.includes(state.map.poolCols[p])) state.map.poolCols[p] = auto.poolCols[p];
+  });
+
+  if(et.tipo==='pontuacao' || et.tipo==='classificatoria'){
+    const camposValidos = (et.campos||[]).filter(c=>colunas.includes(c));
+    et.campos = camposValidos.length ? camposValidos : auto.campos;
+    state.map.camposMap = state.map.camposMap || {};
+    et.campos.forEach(c=>{
+      if(!state.map.camposMap[c] || !colunas.includes(state.map.camposMap[c])) state.map.camposMap[c] = c;
+    });
+  }
+}
+
 function onEtapaArquivo(idx, input){
   const file = input.files[0]; if(!file) return;
   carregarSheetJSClf(()=>{
@@ -8396,11 +8476,12 @@ function onEtapaArquivo(idx, input){
       const salvo = _clfConfig.etapas[idx]?.mapaColunas;
       const map = {};
       if(salvo){
-        ['inscricao','nome','nascimento','cargo','total'].forEach(k=>{ if(salvo[k] && colunas.includes(salvo[k])) map[k]=salvo[k]; });
+        ['inscricao','nome','nascimento','cargo','total','resultado'].forEach(k=>{ if(salvo[k] && colunas.includes(salvo[k])) map[k]=salvo[k]; });
         if(salvo.camposMap){ map.camposMap={}; Object.keys(salvo.camposMap).forEach(campo=>{ const v=salvo.camposMap[campo]; if(v && colunas.includes(v)) map.camposMap[campo]=v; }); }
         if(salvo.poolCols){ map.poolCols={}; Object.keys(salvo.poolCols).forEach(p=>{ const v=salvo.poolCols[p]; if(v && colunas.includes(v)) map.poolCols[p]=v; }); }
       }
       _clfEtapaWb[idx] = {wb, sheetNames, sheets: [...sheetNames], colunas, map};
+      clfPreencherMapaAutomatico(idx);
       renderEtapasList();
     };
     reader.readAsBinaryString(file);
@@ -8415,6 +8496,7 @@ function onEtapaSheetToggle(idx, sheet, checked){
   else { state.sheets = state.sheets.filter(s=>s!==sheet); }
   state.sheets = state.sheetNames.filter(s=>state.sheets.includes(s));
   state.colunas = state.sheets.length ? clfColunasUniao(state.wb, state.sheets) : [];
+  clfPreencherMapaAutomatico(idx);
   renderEtapasList();
 }
 
