@@ -5390,7 +5390,7 @@ function processarInscricoes(){
               c.value=String(val);
               c.font={name:FONTE,size:9};
               c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
-              c.alignment={vertical:'middle',horizontal:(col==='STATUS DE PAGAMENTO'||col.includes('NASC'))?'center':undefined};
+              c.alignment={vertical:'middle',horizontal:(col==='STATUS DE PAGAMENTO'||col.includes('NASC')||col==='RESULTADO')?'center':undefined};
               c.border=bordaThin;
             });
             ws.getRow(ri+3).height=30;
@@ -5422,7 +5422,16 @@ function processarInscricoes(){
             todasCols.forEach((col,ci)=>{
               const c=ws.getCell(ri+2,ci+1);
               let val=row[col];
-              if(val===undefined||val===null||String(val)==='nan') val='';
+              if(val instanceof Date){
+                const dd=String(val.getDate()).padStart(2,'0');
+                const mm=String(val.getMonth()+1).padStart(2,'0');
+                const yyyy=val.getFullYear();
+                const hh=String(val.getHours()).padStart(2,'0');
+                const mi=String(val.getMinutes()).padStart(2,'0');
+                val=(hh==='00'&&mi==='00')?`${dd}/${mm}/${yyyy}`:`${dd}/${mm}/${yyyy} ${hh}:${mi}`;
+              } else if(val===undefined||val===null||String(val)==='nan'){
+                val='';
+              }
               c.value=String(val);
               c.font={name:FONTE,size:9};
               c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
@@ -5461,6 +5470,7 @@ function processarInscricoes(){
         // Uma aba por reserva de vaga marcada pelo usuário na tela de upload
         // (antes só existiam PCD e PNP fixos no código; agora é configurável)
         const reservasSelecionadas = window._inscReservasSelecionadas || [];
+        const extrasResumo=[];
         for(const rInfo of RESERVAS_INSC_DISPONIVEIS){
           if(!reservasSelecionadas.includes(rInfo.key)) continue;
           const valorEsperado=(rInfo.val||'SIM').toString().trim().toUpperCase();
@@ -5475,6 +5485,7 @@ function processarInscricoes(){
               return o;
             });
             await criarAbaExcel(wbRes,rInfo.key,rInfo.label,rInfo.cols,linhasReserva);
+            extrasResumo.push([rInfo.label, lista.length, '#0f9bab']);
           }
         }
 
@@ -5491,6 +5502,7 @@ function processarInscricoes(){
             return o;
           });
           await criarAbaExcel(wbRes,'COND.ESPECIAL','CONDIÇÃO ESPECIAL',colsCond,linhasCond);
+          extrasResumo.push(['Condição Especial', cond.length, '#0f9bab']);
         }
 
         // Aba JURADO: candidatos que enviaram comprovante de "ter exercido a função de jurado"
@@ -5508,6 +5520,7 @@ function processarInscricoes(){
               return o;
             });
             await criarAbaExcel(wbRes,'JURADO','JURADO',colsJurado,linhasJurado);
+            extrasResumo.push(['Jurado', jurado.length, '#0f9bab']);
           }
         }
 
@@ -5551,13 +5564,14 @@ function processarInscricoes(){
         const cancelados=todos.filter(r=>r['STATUS']==='Cancelada').length;
         const retirados=retirar.size;
         document.getElementById('insc-preview-content').innerHTML=`
-<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:12px">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:12px">
   ${[['Total',todos.length,'#41506b'],
      ['Pagos',todos.filter(r=>(r['STATUS']||'').toLowerCase()==='pago').length,'#2e7d52'],
      ['Deferidos',todos.filter(r=>['deferida','deferido'].includes((r['STATUS']||'').toLowerCase())).length,'#2f6cc4'],
      ['Cancelados',cancelados,'#c0322f'],
      ['Retirados',retirados,'#a06c12'],
-     ['Alocação',aloc.length,'#7b34c1']].map(([l,v,c])=>`
+     ['Alocação',aloc.length,'#7b34c1'],
+     ...extrasResumo].map(([l,v,c])=>`
   <div style="text-align:center;background:#f7f9fc;border-radius:8px;padding:10px">
     <div style="font-size:22px;font-weight:800;color:${c}">${v}</div>
     <div style="font-size:11px;color:#8a9ab5;font-weight:600">${l}</div>
