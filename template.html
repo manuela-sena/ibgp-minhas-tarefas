@@ -8263,6 +8263,11 @@ function syncAllEtapasFromDom(){
 function renderEtapasList(){
   syncAllEtapasFromDom();
   const etapas = _clfConfig.etapas || [];
+  // Roda a detecção automática DEPOIS de sincronizar o que já estava na tela
+  // (pra não perder escolhas manuais) e ANTES de desenhar o HTML novo (pra já
+  // aparecer preenchido). É seguro chamar toda vez: só preenche o que estiver
+  // vazio ou inválido, nunca sobrescreve uma seleção manual válida.
+  etapas.forEach((et,i)=>{ if(_clfEtapaWb[i]) clfPreencherMapaAutomatico(i); });
   const el = document.getElementById('clf-etapas-list');
   if(!etapas.length){
     el.innerHTML = '<div style="font-size:12.5px;color:#8a9ab5;padding:8px 0">Nenhuma etapa configurada.</div>';
