@@ -5341,6 +5341,21 @@ function processarInscricoes(){
             return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;}
           catch(e){return v.toString();}
         }
+        function fmtDataHora(v){
+          // Igual fmtData, mas preserva a hora quando existir. Aceita objeto Date ou texto no
+          // formato Date.toString() do JS (como DATA REALIZAÇÃO PROVA normalmente vem salvo).
+          if(!v||v==='-') return '-';
+          try{
+            const d=(v instanceof Date)?v:new Date(v);
+            if(isNaN(d.getTime())) return v.toString();
+            const dd=String(d.getDate()).padStart(2,'0');
+            const mm=String(d.getMonth()+1).padStart(2,'0');
+            const yyyy=d.getFullYear();
+            const hh=String(d.getHours()).padStart(2,'0');
+            const mi=String(d.getMinutes()).padStart(2,'0');
+            return (hh==='00'&&mi==='00')?`${dd}/${mm}/${yyyy}`:`${dd}/${mm}/${yyyy} ${hh}:${mi}`;
+          }catch(e){return v.toString();}
+        }
 
         const LARG={'INSCRIÇÃO':12,'CANDIDATO':35,'CPF':14,'DATA DE NASCIMENTO':12,
           'CARGO':45,'STATUS DE PAGAMENTO':16,'CONCORRE VAGA DEFICIÊNCIA':10,
@@ -5383,6 +5398,7 @@ function processarInscricoes(){
               let val=row[col];
               if(val===undefined||val===null||String(val)==='nan') val='';
               if((col.includes('NASC'))&&val&&val!=='-') val=fmtData(val);
+              if(col==='DATA REALIZAÇÃO PROVA'&&val&&val!=='-') val=fmtDataHora(val);
               if(col==='STATUS DE PAGAMENTO'&&val!==''){
                 val=String(val).trim().toUpperCase();
                 if(val==='PENDENTE') val='PENDENTE DE PAGAMENTO';
