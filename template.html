@@ -5390,7 +5390,7 @@ function processarInscricoes(){
               c.value=String(val);
               c.font={name:FONTE,size:9};
               c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
-              c.alignment={vertical:'middle',horizontal:(col==='STATUS DE PAGAMENTO'||col.includes('NASC')||col==='RESULTADO')?'center':undefined};
+              c.alignment={vertical:'middle',horizontal:(col==='STATUS DE PAGAMENTO'||col.includes('NASC')||col==='RESULTADO'||col==='INSCRIÇÃO')?'center':undefined};
               c.border=bordaThin;
             });
             ws.getRow(ri+3).height=30;
@@ -5448,7 +5448,7 @@ function processarInscricoes(){
               c.value=val;
               c.font={name:FONTE,size:9};
               c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
-              c.alignment={vertical:'middle'};
+              c.alignment={vertical:'middle',horizontal:col==='INSCRIÇÃO'?'center':undefined};
               c.border=bordaThin;
             });
             ws.getRow(ri+2).height=14;
