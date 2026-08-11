@@ -17,11 +17,11 @@
     },
     {
       "tipo": "maior_nota",
-      "campo": "PORTUGUÊS"
+      "campo": "LÍNGUA PORTUGUESA"
     },
     {
       "tipo": "maior_nota",
-      "campo": "LEG. MUNICIPAL"
+      "campo": "LEGISLAÇÃO MUNICIPAL"
     },
     {
       "tipo": "maior_nota",
@@ -45,9 +45,9 @@
       "nome": "PROVA OBJETIVA",
       "tipo": "pontuacao",
       "campos": [
-        "PORTUGUÊS",
+        "LÍNGUA PORTUGUESA",
         "NOÇÕES DE INFORMÁTICA",
-        "LEG. MUNICIPAL",
+        "LEGISLAÇÃO MUNICIPAL",
         "CONHECIMENTOS GERAIS",
         "CONHECIMENTOS ESPECÍFICOS"
       ],
