@@ -6536,8 +6536,16 @@ async function carregarEscolas(){
       // Filtrar pelo concurso selecionado
       const nomeConcurso = (dados.concurso?.concurso||dados.concurso||'').toString();
       const nomeEscola   = (dados.concurso?.escola||dados.escola||'').toString();
+      // Normaliza acento/caixa/espaços duplicados antes de comparar: o vínculo
+      // escola↔concurso é só por texto (sem ID fixo), então pequenas diferenças de
+      // digitação (comuns quando o cronograma é recriado no Planner) não podem
+      // fazer a escola "desaparecer" da lista. Compara nos dois sentidos.
+      const normConcurso = (s) => (s||'').toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/\s+/g,' ').trim();
+      const nomeConcursoN = normConcurso(nomeConcurso);
+      const concursoNomeN = normConcurso(concursoNome);
       const matchConcurso = !concursoNome || 
-        nomeConcurso.toLowerCase().trim().includes(concursoNome.toLowerCase().trim().substring(0,15)) ||
+        nomeConcursoN.includes(concursoNomeN.substring(0,20)) ||
+        concursoNomeN.includes(nomeConcursoN.substring(0,20)) ||
         dados.token?.startsWith('DEMO');
       if(matchConcurso){
         // Buscar status
