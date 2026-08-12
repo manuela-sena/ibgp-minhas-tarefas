@@ -7245,8 +7245,15 @@ function parseDataRealizacaoProva(valor){
     const s = String(valor).trim();
     const MESES = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
     const m = s.match(/^\w{3}\s+(\w{3})\s+(\d{1,2})\s+(\d{4})\s+(\d{2}):(\d{2}):(\d{2})/);
+    // Formato brasileiro "DD/MM/AAAA[ HH:MM[:SS]]" (ex: "23/08/2026 09:15") — visto em
+    // exportações recentes da planilha de candidatos. new Date(s) sozinho NÃO reconhece
+    // esse formato (JS interpreta // como MM/DD/AAAA e falha quando o dia é >12),
+    // então precisa ser tratado explicitamente antes do fallback genérico.
+    const mBr = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
     if(m && MESES[m[1]]!==undefined){
       dt = new Date(Number(m[3]), MESES[m[1]], Number(m[2]), Number(m[4]), Number(m[5]), Number(m[6]));
+    } else if(mBr){
+      dt = new Date(Number(mBr[3]), Number(mBr[2])-1, Number(mBr[1]), Number(mBr[4]||0), Number(mBr[5]||0), Number(mBr[6]||0));
     } else {
       const tentativa = new Date(s);
       if(!isNaN(tentativa.getTime())) dt = tentativa;
