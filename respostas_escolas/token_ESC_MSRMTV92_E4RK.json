@@ -1,11 +1,142 @@
 {
   "token": "ESC_MSRMTV92_E4RK",
-  "criadoEm": "2026-08-13T14:47:27.350Z",
+  "enviadoEm": "2026-08-13T21:45:13.362Z",
+  "protocolo": "ESC_MSRMTV92_E4RK_1786657513362",
   "concurso": {
     "concurso": "BRUMADINHO - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
     "municipio": "BRUMADINHO/MG",
     "dataProva": "30/08/2026",
     "escola": "E.E. PAULO NETO ALKIMIM",
     "idEscola": "ESC_MSRMTV92_E4RK"
-  }
+  },
+  "instituicao": {
+    "nome": "CAIXA ESCOLAR PAULO NETO ALKMIM",
+    "cnpj": "19.209.881/0001-83",
+    "razao": "EE PAULO NETO ALKMIM",
+    "endereco": "RUA CORONEL ALBERTO CAMBRAIA",
+    "numero": "170",
+    "complemento": "ESCOLA",
+    "bairro": "SANTA CRUZ",
+    "cidade": "BRUMADINHO",
+    "uf": "MG",
+    "cep": "32480-170",
+    "responsavel": {
+      "nome": "ELÂNIA APARECIDA DE ASSIZ AMÁBIS",
+      "cargo": "DIRETORA",
+      "email": "elania.amabis@educacao.mg.gov.br",
+      "tel": "(31) 99670-5211"
+    },
+    "diretor": {
+      "nome": "ELÂNIA APARECIDA DE ASSIZ AMÁBIS",
+      "email": "elania.amabis@educacao.mg.gov.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "03",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "04",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA 01",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA 02",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA 03",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA 16",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA 17",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA 18",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA 19",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA 20",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    }
+  ]
 }
