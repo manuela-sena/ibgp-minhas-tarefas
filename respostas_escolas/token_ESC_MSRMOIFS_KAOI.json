@@ -1,11 +1,192 @@
 {
   "token": "ESC_MSRMOIFS_KAOI",
-  "criadoEm": "2026-08-13T14:43:17.464Z",
+  "enviadoEm": "2026-08-13T15:35:01.517Z",
+  "protocolo": "ESC_MSRMOIFS_KAOI_1786635301517",
   "concurso": {
     "concurso": "BRUMADINHO - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
     "municipio": "BRUMADINHO/MG",
     "dataProva": "30/08/2026",
     "escola": "E.E. PAULINA ALUOTTO FERREIRA",
     "idEscola": "ESC_MSRMOIFS_KAOI"
-  }
+  },
+  "instituicao": {
+    "nome": "ESCOLA 8141",
+    "cnpj": "19.209.931/0001-22",
+    "razao": "",
+    "endereco": "AV. INHOTIM",
+    "numero": "95",
+    "complemento": ",  ,  ,  ,  ,",
+    "bairro": "PROGRESSO",
+    "cidade": "BRUMADINHO",
+    "uf": "MG",
+    "cep": "32497-150",
+    "responsavel": {
+      "nome": "JOAO BATISTA NUNES DA SILVA",
+      "cargo": "DIRETOR",
+      "email": "joao.nunes@educacao.mg.gov.br",
+      "tel": "(31) 97592-0455"
+    },
+    "diretor": {
+      "nome": "JOAO BATISTA",
+      "email": "escola.8141@educacao.mg.gov.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "01",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "01",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "1",
+      "andar": "",
+      "sala": "SALA 101",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "",
+      "sala": "SALA 102",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "",
+      "sala": "SALA 103",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "2",
+      "sala": "SALA 201",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "2",
+      "sala": "SALA 202",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "2",
+      "sala": "SALA 203",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "2",
+      "sala": "SALA 203",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "2",
+      "sala": "SALA 205",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "2",
+      "sala": "SALA 206",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "2",
+      "sala": "SALA 207",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "2",
+      "sala": "SALA 208",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "2",
+      "sala": "SALA 209",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "2",
+      "sala": "SALA 210",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    }
+  ]
 }
