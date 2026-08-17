@@ -6607,28 +6607,26 @@ async function carregarEscolas(){
     // Busca o conteúdo de uma download_url com retry: o raw.githubusercontent.com
     // aplica rate-limit (HTTP 429) quando muitas requisições chegam de uma vez.
     // Isso quebrava a lista inteira quando buscávamos tudo em paralelo sem controle.
-    async function fetchTextoComRetry(url, tentativas=3){
+    async function fetchTextoComRetry(url, tentativas=5){
       for(let i=0;i<tentativas;i++){
         try{
           const resp = await fetch(url);
-          if(resp.status===429 || resp.status===403){
-            await new Promise(res=>setTimeout(res, 500*(i+1)));
-            continue;
-          }
-          if(!resp.ok) return null;
-          return await resp.text();
+          if(resp.ok) return await resp.text();
+          // raw.githubusercontent.com aplica throttling que pode vir como 429, 403
+          // ou 503 dependendo do momento — trata qualquer status não-ok como
+          // temporário e tenta de novo com backoff, em vez de desistir na 1a falha.
+          await new Promise(res=>setTimeout(res, 700*(i+1)));
         }catch(e){
-          await new Promise(res=>setTimeout(res, 400*(i+1)));
+          await new Promise(res=>setTimeout(res, 500*(i+1)));
         }
       }
       return null;
     }
 
-    // Processa uma escola (token) individual: busca, valida JSON, filtra pelo concurso e busca status
     async function processarEscola(arq){
       try{
         const texto = await fetchTextoComRetry(arq.download_url);
-        if(!texto) return null;
+        if(!texto){ window.__alocFalhas = (window.__alocFalhas||0) + 1; return null; }
 
         let dados;
         try{ dados = JSON.parse(texto); }
@@ -6668,6 +6666,7 @@ async function carregarEscolas(){
     // o rate-limit do raw.githubusercontent.com (erro 429 "Too Many Requests").
     const LOTE = 4;
     const escolas = [];
+    window.__alocFalhas = 0;
     for(let i=0; i<tokensArq.length; i+=LOTE){
       const lote = tokensArq.slice(i, i+LOTE);
       const resultados = await Promise.all(lote.map(processarEscola));
@@ -6675,7 +6674,11 @@ async function carregarEscolas(){
       if(i+LOTE < tokensArq.length) await new Promise(res=>setTimeout(res, 200));
     }
 
-    renderEscolas(escolas, concursoNome);
+    if(escolas.length===0 && tokensArq.length>0 && window.__alocFalhas>0){
+      el.innerHTML=`<div class="card card-pad" style="color:#c0322f">Não foi possível carregar as escolas agora (o GitHub bloqueou temporariamente as requisições). Aguarde um minuto e clique em Buscar de novo.</div>`;
+    } else {
+      renderEscolas(escolas, concursoNome);
+    }
   }catch(e){
     el.innerHTML=`<div class="card card-pad" style="color:#c0322f">Erro ao carregar: ${e.message}</div>`;
   }
