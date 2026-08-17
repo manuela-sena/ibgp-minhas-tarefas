@@ -6585,7 +6585,7 @@ function initAlocacao(){
 async function carregarEscolas(){
   const concursoNome= (document.getElementById('inp-aloc-concurso')?.value || '').trim();
   const el = document.getElementById('aloc-content');
-  if(!concursoNome){ el.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Digite ou selecione um concurso</div></div>'; return; }
+  if(!concursoNome){ el.innerHTML='<div class="empty-state"><div class="empty-icon">\u{1F50D}</div><div class="empty-title">Digite ou selecione um concurso</div></div>'; return; }
   
   el.innerHTML='<div class="loading"><div class="spinner"></div>Carregando escolas...</div>';
   
@@ -6601,17 +6601,38 @@ async function carregarEscolas(){
     const tokensArq = arquivos.filter(a=>a.name.startsWith('token_')&&a.name.endsWith('.json'));
     const statusArq = arquivos.filter(a=>a.name.startsWith('status_')&&a.name.endsWith('.json'));
     
-    // Carregar dados de cada escola (em paralelo — bem mais rápido que sequencial)
     const normConcurso = (s) => (s||'').toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/\s+/g,' ').trim();
     const concursoNomeN = normConcurso(concursoNome);
 
-    const promessas = tokensArq.map(async (arq)=>{
+    // Busca o conteúdo de uma download_url com retry: o raw.githubusercontent.com
+    // aplica rate-limit (HTTP 429) quando muitas requisições chegam de uma vez.
+    // Isso quebrava a lista inteira quando buscávamos tudo em paralelo sem controle.
+    async function fetchTextoComRetry(url, tentativas=3){
+      for(let i=0;i<tentativas;i++){
+        try{
+          const resp = await fetch(url);
+          if(resp.status===429 || resp.status===403){
+            await new Promise(res=>setTimeout(res, 500*(i+1)));
+            continue;
+          }
+          if(!resp.ok) return null;
+          return await resp.text();
+        }catch(e){
+          await new Promise(res=>setTimeout(res, 400*(i+1)));
+        }
+      }
+      return null;
+    }
+
+    // Processa uma escola (token) individual: busca, valida JSON, filtra pelo concurso e busca status
+    async function processarEscola(arq){
       try{
-        const rd = await fetch(arq.download_url);
-        const texto = await rd.text();
+        const texto = await fetchTextoComRetry(arq.download_url);
+        if(!texto) return null;
+
         let dados;
         try{ dados = JSON.parse(texto); }
-        catch(parseErr){ console.warn(`Escola com JSON inválido, ignorada: ${arq.name}`, parseErr); return null; }
+        catch(parseErr){ console.warn(`Escola com JSON inv\u00e1lido, ignorada: ${arq.name}`, parseErr); return null; }
 
         const nomeConcurso = (dados.concurso?.concurso||dados.concurso||'').toString();
         // Normaliza acento/caixa/espaços duplicados antes de comparar: o vínculo
@@ -6628,11 +6649,11 @@ async function carregarEscolas(){
         const statusFile = statusArq.find(s=>s.name==='status_'+dados.token+'.json');
         let status = {acessos:0, enviado:false};
         if(statusFile){
-          try{
-            const rs = await fetch(statusFile.download_url);
-            const textoStatus = await rs.text();
-            status = JSON.parse(textoStatus);
-          }catch(e){ console.warn(`Status inválido para ${dados.token}, usando padrão`, e); }
+          const textoStatus = await fetchTextoComRetry(statusFile.download_url);
+          if(textoStatus){
+            try{ status = JSON.parse(textoStatus); }
+            catch(e){ console.warn(`Status inv\u00e1lido para ${dados.token}, usando padr\u00e3o`, e); }
+          }
         }
         if(dados.enviadoEm) status.enviado = true;
         status.enviado = status.enviado === true || status.enviado === 'true';
@@ -6641,10 +6662,18 @@ async function carregarEscolas(){
         console.warn(`Erro ao carregar escola ${arq.name}, ignorada:`, e);
         return null;
       }
-    });
+    }
 
-    const resultados = await Promise.all(promessas);
-    const escolas = resultados.filter(Boolean);
+    // Processa em lotes pequenos (em vez de todos de uma vez) para não disparar
+    // o rate-limit do raw.githubusercontent.com (erro 429 "Too Many Requests").
+    const LOTE = 4;
+    const escolas = [];
+    for(let i=0; i<tokensArq.length; i+=LOTE){
+      const lote = tokensArq.slice(i, i+LOTE);
+      const resultados = await Promise.all(lote.map(processarEscola));
+      escolas.push(...resultados.filter(Boolean));
+      if(i+LOTE < tokensArq.length) await new Promise(res=>setTimeout(res, 200));
+    }
 
     renderEscolas(escolas, concursoNome);
   }catch(e){
