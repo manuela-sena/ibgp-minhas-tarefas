@@ -6602,11 +6602,24 @@ async function carregarEscolas(){
     const tokensArq = arquivos.filter(a=>a.name.startsWith('token_')&&a.name.endsWith('.json'));
     const statusArq = arquivos.filter(a=>a.name.startsWith('status_')&&a.name.endsWith('.json'));
     
-    // Carregar dados de cada escola
+    // Carregar dados de cada escola (blindado: um arquivo com falha nao derruba a lista inteira)
     const escolas = [];
+    async function fetchJsonSeguro(url){
+      for(let tentativa=0; tentativa<2; tentativa++){
+        try{
+          const resp = await fetch(url);
+          if(!resp.ok) throw new Error('HTTP '+resp.status);
+          return await resp.json();
+        }catch(e){
+          if(tentativa===0){ await new Promise(res=>setTimeout(res,700)); }
+          else { console.warn('Falha ao carregar arquivo de escola, ignorando:', url, e); return null; }
+        }
+      }
+      return null;
+    }
     for(const arq of tokensArq){
-      const rd = await fetch(arq.download_url);
-      const dados = await rd.json();
+      const dados = await fetchJsonSeguro(arq.download_url);
+      if(!dados) continue;
       // Filtrar pelo concurso selecionado
       const nomeConcurso = (dados.concurso?.concurso||dados.concurso||'').toString();
       const nomeEscola   = (dados.concurso?.escola||dados.escola||'').toString();
@@ -6626,8 +6639,8 @@ async function carregarEscolas(){
         const statusFile = statusArq.find(s=>s.name==='status_'+dados.token+'.json');
         let status = {acessos:0, enviado:false};
         if(statusFile){
-          const rs = await fetch(statusFile.download_url);
-          status = await rs.json();
+          const statusDados = await fetchJsonSeguro(statusFile.download_url);
+          if(statusDados) status = statusDados;
         }
         // Garantir que enviado está correto — checar tanto no status quanto no token
         if(dados.enviadoEm) status.enviado = true;
