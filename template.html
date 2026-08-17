@@ -6606,29 +6606,41 @@ async function carregarEscolas(){
     const concursoNomeN = normConcurso(concursoNome);
 
     const promessas = tokensArq.map(async (arq)=>{
-      const rd = await fetch(arq.download_url);
-      const dados = await rd.json();
-      const nomeConcurso = (dados.concurso?.concurso||dados.concurso||'').toString();
-      // Normaliza acento/caixa/espaços duplicados antes de comparar: o vínculo
-      // escola↔concurso é só por texto (sem ID fixo), então pequenas diferenças de
-      // digitação (comuns quando o cronograma é recriado no Planner) não podem
-      // fazer a escola "desaparecer" da lista. Compara nos dois sentidos.
-      const nomeConcursoN = normConcurso(nomeConcurso);
-      const matchConcurso = !concursoNome ||
-        nomeConcursoN.includes(concursoNomeN.substring(0,20)) ||
-        concursoNomeN.includes(nomeConcursoN.substring(0,20)) ||
-        dados.token?.startsWith('DEMO');
-      if(!matchConcurso) return null;
+      try{
+        const rd = await fetch(arq.download_url);
+        const texto = await rd.text();
+        let dados;
+        try{ dados = JSON.parse(texto); }
+        catch(parseErr){ console.warn(`Escola com JSON inválido, ignorada: ${arq.name}`, parseErr); return null; }
 
-      const statusFile = statusArq.find(s=>s.name==='status_'+dados.token+'.json');
-      let status = {acessos:0, enviado:false};
-      if(statusFile){
-        const rs = await fetch(statusFile.download_url);
-        status = await rs.json();
+        const nomeConcurso = (dados.concurso?.concurso||dados.concurso||'').toString();
+        // Normaliza acento/caixa/espaços duplicados antes de comparar: o vínculo
+        // escola↔concurso é só por texto (sem ID fixo), então pequenas diferenças de
+        // digitação (comuns quando o cronograma é recriado no Planner) não podem
+        // fazer a escola "desaparecer" da lista. Compara nos dois sentidos.
+        const nomeConcursoN = normConcurso(nomeConcurso);
+        const matchConcurso = !concursoNome ||
+          nomeConcursoN.includes(concursoNomeN.substring(0,20)) ||
+          concursoNomeN.includes(nomeConcursoN.substring(0,20)) ||
+          dados.token?.startsWith('DEMO');
+        if(!matchConcurso) return null;
+
+        const statusFile = statusArq.find(s=>s.name==='status_'+dados.token+'.json');
+        let status = {acessos:0, enviado:false};
+        if(statusFile){
+          try{
+            const rs = await fetch(statusFile.download_url);
+            const textoStatus = await rs.text();
+            status = JSON.parse(textoStatus);
+          }catch(e){ console.warn(`Status inválido para ${dados.token}, usando padrão`, e); }
+        }
+        if(dados.enviadoEm) status.enviado = true;
+        status.enviado = status.enviado === true || status.enviado === 'true';
+        return {...dados, _status: status};
+      }catch(e){
+        console.warn(`Erro ao carregar escola ${arq.name}, ignorada:`, e);
+        return null;
       }
-      if(dados.enviadoEm) status.enviado = true;
-      status.enviado = status.enviado === true || status.enviado === 'true';
-      return {...dados, _status: status};
     });
 
     const resultados = await Promise.all(promessas);
