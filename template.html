@@ -1728,6 +1728,7 @@ function renderTaskRow(t, showP){
   const nota=_notas[t.id];
   const temNota = nota!==undefined ? !!nota : !!t.hasNota;
   const notaPreview = nota || (t.hasNota ? 'Carregando observação…' : '');
+  const rk = t.rowKey || t.id; // rowKey identifica a linha; id é o task real do Planner
   return `
 <div>
 <div class="t-row" style="display:grid;grid-template-columns:180px 1fr 120px 210px;gap:0;align-items:center">
@@ -1743,28 +1744,28 @@ function renderTaskRow(t, showP){
   <div>${t.responsavel?chipP(t.responsavel):''}</div>
   <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px">
     ${chipD(t.dias,t.data,t._pendenteForcado)}
-    <button class="act-quick" onclick="concluir('${t.id}')" title="Concluir tarefa" style="width:30px;height:30px;border-radius:8px;border:1px solid #cfe8d9;background:#e4f3ea;color:#2e7d52;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;transition:background .14s">
+    <button class="act-quick" onclick="concluir('${rk}')" title="Concluir tarefa" style="width:30px;height:30px;border-radius:8px;border:1px solid #cfe8d9;background:#e4f3ea;color:#2e7d52;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;transition:background .14s">
       <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 8.5 7 11.5 12 4.5"/></svg>
     </button>
     <div class="act-wrap">
-      <button class="act-trigger" onclick="toggleMenu('${t.id}',this)" title="Ações">···</button>
-    <div class="act-menu" id="menu-${t.id}">
-      <button class="act-item" onclick="openNota('${t.id}');closeMenu('${t.id}')">
+      <button class="act-trigger" onclick="toggleMenu('${rk}',this)" title="Ações">···</button>
+    <div class="act-menu" id="menu-${rk}">
+      <button class="act-item" onclick="openNota('${t.id}');closeMenu('${rk}')">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-edit"/></svg>
         Editar observação
       </button>
-      <button class="act-item" onclick="concluir('${t.id}');closeMenu('${t.id}')">
+      <button class="act-item" onclick="concluir('${rk}');closeMenu('${rk}')">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-check"/></svg>
         Concluir tarefa
       </button>
       ${typeof IS_GESTORA!=='undefined'&&IS_GESTORA?`
       <div class="act-sep"></div>
-      <button class="act-item" onclick="alterarResponsavel('${t.id}');closeMenu('${t.id}')">
+      <button class="act-item" onclick="alterarResponsavel('${t.id}');closeMenu('${rk}')">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-user-edit"/></svg>
         Alterar responsável
       </button>`:''}
       <div class="act-sep"></div>
-      <button class="act-item" onclick="verDetalhes('${t.id}');closeMenu('${t.id}')">
+      <button class="act-item" onclick="verDetalhes('${t.id}');closeMenu('${rk}')">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ico-info"/></svg>
         Visualizar detalhes
       </button>
@@ -1839,17 +1840,61 @@ async function saveNota(id){
 }
 
 // ── CONCLUIR ────────────────────────────────────────────────────────
-async function concluir(id){
-  if(!confirm('Marcar esta tarefa como concluída no Planner?')) return;
-  const t=_allTasks.find(x=>x.id===id);
-  await apiPatch(`https://graph.microsoft.com/v1.0/planner/tasks/${id}`,{percentComplete:100});
-  _allTasks=_allTasks.filter(t=>t.id!==id);
-  _concluidasSessao.unshift(t);
-  addMov(`Concluída: "${t?.tarefa||id}" · ${t?.municipio||''}`, '#2e7d52');
-  addNotif(`✅ "${t?.tarefa||'Tarefa'}" marcada como concluída.`);
+async function concluir(rowKey){
+  const t = _allTasks.find(x=>(x.rowKey||x.id)===rowKey);
+  if(!t) return;
+
+  if(!t.multiResp){
+    // Tarefa com responsável único — comportamento original (Planner)
+    if(!confirm('Marcar esta tarefa como concluída no Planner?')) return;
+    await apiPatch(`https://graph.microsoft.com/v1.0/planner/tasks/${t.id}`,{percentComplete:100});
+    _allTasks=_allTasks.filter(x=>(x.rowKey||x.id)!==rowKey);
+    _concluidasSessao.unshift(t);
+    addMov(`Concluída: "${t.tarefa}" · ${t.municipio}`, '#2e7d52');
+    addNotif(`✅ "${t.tarefa}" marcada como concluída.`);
+  } else {
+    // Tarefa com múltiplos responsáveis — conclusão independente por pessoa.
+    // Não mexe no Planner (compartilhado); grava só para esta pessoa.
+    if(!confirm(`Marcar esta tarefa como concluída apenas para ${t.responsavel}? A tarefa continuará aparecendo para os demais responsáveis até que também concluam.`)) return;
+    try{
+      await _salvarConclusaoIndividualGitHub(t.id, t.responsavel);
+    }catch(e){
+      alert('Erro ao salvar conclusão: '+e.message); return;
+    }
+    _allTasks=_allTasks.filter(x=>(x.rowKey||x.id)!==rowKey);
+    _concluidasSessao.unshift({...t, completedAt: new Date().toISOString(), concluida:true});
+    addMov(`Concluída (individual): "${t.tarefa}" · ${t.municipio} · ${t.responsavel}`, '#2e7d52');
+    addNotif(`✅ "${t.tarefa}" concluída para ${t.responsavel}.`);
+  }
+
   applyFilters();
   renderDashboard();
   renderConcluidas();
+}
+
+// Grava a conclusão individual desta pessoa para esta tarefa no GitHub.
+// Usa merge (não sobrescreve outras pessoas/tarefas já registradas).
+async function _salvarConclusaoIndividualGitHub(taskId, pessoa){
+  const repo = 'manuela-sena/ibgp-minhas-tarefas';
+  const path = 'conclusoes_individuais.json';
+  const r1 = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`,
+    {headers:{'Authorization':'Bearer '+GH_TOKEN_ALOC}});
+  let dados = {}, sha;
+  if(r1.ok){
+    const d1 = await r1.json();
+    sha = d1.sha;
+    dados = JSON.parse(decodeURIComponent(escape(atob(d1.content.replace(/\n/g,'')))));
+  }
+  if(!dados[taskId]) dados[taskId] = {};
+  dados[taskId][pessoa] = new Date().toISOString();
+
+  const conteudo = btoa(unescape(encodeURIComponent(JSON.stringify(dados, null, 2))));
+  const payload = {message:`chore: conclusão individual - ${pessoa}`, content:conteudo};
+  if(sha) payload.sha = sha;
+  const r2 = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`,
+    {method:'PUT', headers:{'Authorization':'Bearer '+GH_TOKEN_ALOC,'Content-Type':'application/json'},
+     body:JSON.stringify(payload)});
+  if(!r2.ok) throw new Error('Falha ao gravar no GitHub');
 }
 
 // ── ALTERAR RESPONSÁVEL ─────────────────────────────────────────────
