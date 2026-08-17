@@ -109,6 +109,18 @@
       ],
       "perfil": "equipe",
       "ativo": true
+    },
+    {
+      "nome_interno": "Amílcar",
+      "aliases": [
+        "amilcar",
+        "amílcar"
+      ],
+      "perfil": "operacional",
+      "auth_tipo": "local",
+      "senha_hash": "",
+      "primeiro_acesso": true,
+      "ativo": true
     }
   ]
 }
