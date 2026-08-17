@@ -72,6 +72,16 @@ def carregar_ferias():
     except Exception:
         return []
 
+def carregar_conclusoes_individuais():
+    # Tarefas com múltiplos responsáveis (ex: "Natália, Amílcar") precisam de
+    # conclusão independente por pessoa, já que o Planner só guarda 1 status
+    # de conclusão por tarefa. Esse arquivo registra {task_id: {pessoa: dataISO}}.
+    try:
+        with open("/mount/src/ibgp-minhas-tarefas/conclusoes_individuais.json", "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
 st.set_page_config(page_title="IBGP · Minhas Tarefas", page_icon="✅", layout="wide")
 
 st.markdown("""<style>
@@ -293,10 +303,11 @@ def g_all(url, tok=None):
     return res
 
 @st.cache_data(ttl=180, show_spinner=False)
-def buscar_tarefas(token, ferias_json="[]"):
+def buscar_tarefas(token, ferias_json="[]", conclusoes_json="{}"):
     # Usuário local sem token Microsoft — retorna vazio
     if not token: return [], [], [], {}, None
     _ferias_registradas = json.loads(ferias_json)
+    _conclusoes_individuais = json.loads(conclusoes_json)
     from datetime import timezone, timedelta
     def _g(url): return g(url, token)
     def _g_all(url): return g_all(url, token)
@@ -321,10 +332,11 @@ def buscar_tarefas(token, ferias_json="[]"):
         if not resp_raw: continue
         # Suporta múltiplos responsáveis na mesma tarefa: "Fulano, Beltrano"
         responsaveis = [r.strip() for r in resp_raw.split(",") if r.strip()]
+        eh_multi = len(responsaveis) > 1
         due = t.get("dueDateTime") or ""
         due_date = due[:10] if due else ""
 
-        for resp_original in responsaveis:
+        for idx, resp_original in enumerate(responsaveis):
             # Verificar se há férias que cobrem esta tarefa
             resp = resp_original
             hoje = date.today().isoformat()
@@ -337,16 +349,30 @@ def buscar_tarefas(token, ferias_json="[]"):
                     resp = f.get("para", resp_original)
                     break
 
+            # rowKey identifica esta linha de forma única — em tarefas com um
+            # único responsável é igual ao id do Planner (comportamento antigo
+            # preservado); em tarefas duais, cada pessoa tem sua própria linha
+            row_key = f"{t['id']}__{idx}" if eh_multi else t["id"]
+
+            # Em tarefas duais, a conclusão de cada pessoa é independente e
+            # não usa o percentComplete do Planner (que é compartilhado)
+            individual_completed_at = None
+            if eh_multi:
+                individual_completed_at = _conclusoes_individuais.get(t["id"], {}).get(resp_original)
+            efetivamente_concluida = (t.get("percentComplete",0) == 100) or (individual_completed_at is not None)
+
             item = {
                 "id": t["id"],
+                "rowKey": row_key,
+                "multiResp": eh_multi,
                 "municipio": buckets.get(t.get("bucketId",""),"—"),
                 "tarefa": nome,
                 "responsavel": resp,
                 "due": due,
                 "hasNota": bool(t.get("hasDescription", False)),
             }
-            if t.get("percentComplete",0) == 100:
-                completed_at = t.get("completedDateTime","")
+            if efetivamente_concluida:
+                completed_at = individual_completed_at or t.get("completedDateTime","")
                 item_concl = {**item, "completedAt": completed_at, "concluida": True}
                 # Histórico completo (usado na Agenda, sem limite de tempo)
                 concluidas_todas.append(item_concl)
@@ -366,7 +392,8 @@ def buscar_tarefas(token, ferias_json="[]"):
 
 with st.spinner("Carregando tarefas..."):
     _ferias_json = json.dumps(carregar_ferias())
-    tarefas, concluidas, concluidas_todas, buckets, plano_id = buscar_tarefas(token or "", _ferias_json)
+    _conclusoes_json = json.dumps(carregar_conclusoes_individuais())
+    tarefas, concluidas, concluidas_todas, buckets, plano_id = buscar_tarefas(token or "", _ferias_json, _conclusoes_json)
 
 # ── MONTAR DADOS_INICIAIS ─────────────────────────────────────────────
 cron_result  = st.session_state.pop("cron_result", None)
