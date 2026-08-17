@@ -7911,67 +7911,272 @@ async function gerarPlanilhaAlocacao(resultado, escolasEnviadas){
   });
   wsGeral.autoFilter = {from: {row:1, column:1}, to: {row: Math.max(1, resultado.alocados.length+1), column:colGeral.length}};
 
-  // ── EQUIPE (cálculo de equipe de aplicação por escola/turno) ────────
-  const diariaPorPessoa = calcularDiariaPorPessoa();
-  const linhasEquipe = calcularEquipe(resultado, diariaPorPessoa);
+  // ââ EQUIPE (cÃ¡lculo de equipe de aplicaÃ§Ã£o por escola/turno) ââââââââ
+  const linhasEquipe = calcularEquipe(resultado, enderecoPorEscolaGeral);
   if(linhasEquipe.length){
     const wsEquipe = wb.addWorksheet('EQUIPE');
-    const colsEquipe = ['TURNO','ESCOLA','SALAS','CANDIDATOS','FISCAL','CORREDOR','VISTORIADOR','PORTEIRO',
+    const colLetraEq = (n)=>{ let s=''; while(n>0){ const m=(n-1)%26; s=String.fromCharCode(65+m)+s; n=Math.floor((n-1)/26); } return s; };
+
+    // ââ Bloco de diÃ¡ria (editÃ¡vel) ââââââââââââââââââââââââââââââââââ
+    const dataIdaStr = document.getElementById('aloc-eq-data-ida')?.value;
+    const horaSaidaStr = document.getElementById('aloc-eq-hora-saida')?.value || '';
+    const dataChegadaStr = document.getElementById('aloc-eq-data-chegada')?.value;
+    const horaChegadaStr = document.getElementById('aloc-eq-hora-chegada')?.value || '';
+    const valorDiariaNum = parseFloat(document.getElementById('aloc-eq-valor-diaria')?.value) || 0;
+    const fracaoHoraEq = (hhmm)=>{
+      if(!hhmm) return null;
+      const partes = hhmm.split(':').map(Number);
+      const hh = partes[0], mm = partes[1];
+      return (hh*3600+(mm||0)*60)/86400;
+    };
+    const dataOuNullEq = (ymd)=>{
+      if(!ymd) return null;
+      const partes = ymd.split('-').map(Number);
+      return new Date(partes[0], partes[1]-1, partes[2]);
+    };
+
+    wsEquipe.getCell('A1').value = 'PLANEJAMENTO ALOCAÃÃO';
+    wsEquipe.getCell('A1').font = {bold:true, name:FONTE, size:12};
+
+    wsEquipe.getCell('B3').value = 'ALTERAR';
+    wsEquipe.getCell('B3').font = {bold:true, color:{argb:'FFC0322F'}, name:FONTE, size:10};
+
+    wsEquipe.getCell('B5').value = 'DATA IDA'; wsEquipe.getCell('B5').font = {bold:true,name:FONTE,size:9};
+    wsEquipe.getCell('C5').value = 'HORA SAÃDA'; wsEquipe.getCell('C5').font = {bold:true,name:FONTE,size:9};
+    const dIdaEq = dataOuNullEq(dataIdaStr);
+    if(dIdaEq){ wsEquipe.getCell('B6').value = dIdaEq; wsEquipe.getCell('B6').numFmt = 'dd/mm/yyyy'; }
+    const fSaidaEq = fracaoHoraEq(horaSaidaStr);
+    if(fSaidaEq!=null){ wsEquipe.getCell('C6').value = fSaidaEq; wsEquipe.getCell('C6').numFmt = 'hh:mm'; }
+
+    wsEquipe.getCell('B7').value = 'DATA CHEGADA'; wsEquipe.getCell('B7').font = {bold:true,name:FONTE,size:9};
+    wsEquipe.getCell('C7').value = 'HORA CHEGADA'; wsEquipe.getCell('C7').font = {bold:true,name:FONTE,size:9};
+    const dChegadaEq = dataOuNullEq(dataChegadaStr);
+    if(dChegadaEq){ wsEquipe.getCell('B8').value = dChegadaEq; wsEquipe.getCell('B8').numFmt = 'dd/mm/yyyy'; }
+    const fChegadaEq = fracaoHoraEq(horaChegadaStr);
+    if(fChegadaEq!=null){ wsEquipe.getCell('C8').value = fChegadaEq; wsEquipe.getCell('C8').numFmt = 'hh:mm'; }
+
+    wsEquipe.getCell('B10').value = 'VALOR DIÃRIA'; wsEquipe.getCell('B10').font = {bold:true,name:FONTE,size:9};
+    wsEquipe.getCell('B11').value = valorDiariaNum;
+    wsEquipe.getCell('B11').numFmt = '"R$" #,##0.00';
+
+    // nÂº de turnos usado nas tarifas â 1 cÃ©lula editÃ¡vel, usada por TODAS as
+    // linhas da planilha (troque aqui se o concurso mudar de nÂº de turnos)
+    const turnosContagemEq = {};
+    linhasEquipe.forEach(l=>{ turnosContagemEq[l.nTurnosEscola] = (turnosContagemEq[l.nTurnosEscola]||0)+1; });
+    const nTurnosPadraoEq = Number(Object.entries(turnosContagemEq).sort((a,b)=>b[1]-a[1])[0]?.[0]) || 1;
+    wsEquipe.getCell('E5').value = 'NÂº DE TURNOS (tarifa)';
+    wsEquipe.getCell('E5').font = {bold:true,name:FONTE,size:9};
+    wsEquipe.getCell('E6').value = nTurnosPadraoEq;
+    wsEquipe.getCell('E6').numFmt = '0';
+    wsEquipe.getCell('E6').font = {bold:true,name:FONTE,size:10};
+    wsEquipe.getCell('E6').fill = {type:'pattern',pattern:'solid',fgColor:{argb:'FFFFF2CC'}};
+
+    wsEquipe.getCell('B13').value = 'NÃO ALTERAR';
+    wsEquipe.getCell('B13').font = {bold:true, color:{argb:'FFC0322F'}, name:FONTE, size:10};
+
+    ['B14','C14','D14'].forEach((ref,i)=>{
+      const rotulo = ['DiÃ¡rias','Quantidade','Valor'][i];
+      wsEquipe.getCell(ref).value = rotulo;
+      wsEquipe.getCell(ref).font = {bold:true,name:FONTE,size:9};
+      wsEquipe.getCell(ref).fill = {type:'pattern',pattern:'solid',fgColor:{argb:'FFE2E7EF'}};
+    });
+    wsEquipe.getCell('B15').value = 'Inteiras'; wsEquipe.getCell('B15').font={name:FONTE,size:9};
+    wsEquipe.getCell('C15').value = {formula:'B8-B6'}; wsEquipe.getCell('C15').numFmt='0';
+    wsEquipe.getCell('D15').value = {formula:'C15*$B$11'}; wsEquipe.getCell('D15').numFmt='"R$" #,##0.00';
+    wsEquipe.getCell('B16').value = 'ProporÃ§Ã£o'; wsEquipe.getCell('B16').font={name:FONTE,size:9};
+    wsEquipe.getCell('C16').value = {formula:'C8-C6'}; wsEquipe.getCell('C16').numFmt='hh:mm';
+    wsEquipe.getCell('C17').value = 1; wsEquipe.getCell('C17').numFmt='hh:mm:ss';
+    wsEquipe.getCell('C18').value = {formula:'C16/C17'}; wsEquipe.getCell('C18').numFmt='0.0000';
+    wsEquipe.getCell('D16').value = {formula:'$B$11*C18'}; wsEquipe.getCell('D16').numFmt='"R$" #,##0.00';
+    wsEquipe.getCell('B19').value = 'Valor Total'; wsEquipe.getCell('B19').font={bold:true,name:FONTE,size:9};
+    wsEquipe.getCell('D19').value = {formula:'SUM(D15:D16)'}; wsEquipe.getCell('D19').numFmt='"R$" #,##0.00';
+    wsEquipe.getCell('D19').font = {bold:true,name:FONTE,size:9};
+    wsEquipe.getCell('D19').fill = {type:'pattern',pattern:'solid',fgColor:{argb:'FFFFE699'}};
+
+    // ââ Tabela de tarifas (editÃ¡vel â usada pelas fÃ³rmulas de VALOR) ââ
+    wsEquipe.getCell('U5').value = 'VALORES PROVA OBJETIVA';
+    wsEquipe.getCell('U5').font = {bold:true,color:{argb:'FFFFFFFF'},name:FONTE,size:10};
+    wsEquipe.getCell('U5').fill = {type:'pattern',pattern:'solid',fgColor:{argb:'FF548235'}};
+    wsEquipe.mergeCells('U5:Y5');
+    wsEquipe.getCell('U5').alignment = {horizontal:'center'};
+
+    const cabTarifaEq = ['FUNÃÃO','1 TURNO','2 TURNOS','3 TURNOS','4 TURNOS'];
+    cabTarifaEq.forEach((h,i)=>{
+      const cell = wsEquipe.getCell(7,21+i);
+      cell.value = h;
+      cell.font = {bold:true,name:FONTE,size:9};
+      cell.fill = {type:'pattern',pattern:'solid',fgColor:{argb:'FFE2E7EF'}};
+      cell.alignment = {horizontal:'center'};
+    });
+    const TAB_TARIFA_EQ = [
+      ['Fiscal',120,218,298,396],
+      ['Corredor',100,198,268,338],
+      ['Vistoriador',100,198,268,338],
+      ['Porteiro',100,198,268,338],
+      ['Faxineiro',100,198,268,338],
+      ['Encarregado',300,500,700,900],
+      ['Apoio',280,500,700,900],
+      ['Coordenador',430,700,1000,1300],
+    ];
+    TAB_TARIFA_EQ.forEach((linha,i)=>{
+      const r = 8+i;
+      linha.forEach((v,ci)=>{
+        const cell = wsEquipe.getCell(r,21+ci);
+        cell.value = v;
+        cell.font = {name:FONTE,size:9};
+        if(ci>0) cell.numFmt='"R$" #,##0.00';
+      });
+    });
+
+    // ââ Tabela PRÃTICA E TAF (referÃªncia â nÃ£o usada nas fÃ³rmulas abaixo) ââ
+    wsEquipe.getCell('AA5').value = 'PRÃTICA E TAF';
+    wsEquipe.getCell('AA5').font = {bold:true,color:{argb:'FFFFFFFF'},name:FONTE,size:10};
+    wsEquipe.getCell('AA5').fill = {type:'pattern',pattern:'solid',fgColor:{argb:'FF548235'}};
+    wsEquipe.mergeCells('AA5:AE5');
+    wsEquipe.getCell('AA5').alignment = {horizontal:'center'};
+    ['FUNÃÃO','1 TURNO','2 TURNOS','3 TURNOS','4 TURNOS'].forEach((h,i)=>{
+      const cell = wsEquipe.getCell(7,27+i);
+      cell.value = h;
+      cell.font = {bold:true,name:FONTE,size:9};
+      cell.fill = {type:'pattern',pattern:'solid',fgColor:{argb:'FFE2E7EF'}};
+      cell.alignment = {horizontal:'center'};
+    });
+    const linhasPraticaEq = [
+      ['APOIO', 400,650,850,1050],
+      ['AVALIADOR PRÃTICA', 450,700,{formula:'AC9+300'},{formula:'AD9+300'}],
+      ['AVALIADOR TAF', 600,{formula:'AB10*1.5'},{formula:'AC10+300'},{formula:'AD10+300'}],
+      ['COORDENADOR TAF', 700,1000,{formula:'AC11+300'},{formula:'AD11+300'}],
+      ['COORDENADOR IBGP', 700,1000,{formula:'AC12+300'},{formula:'AD12+300'}],
+    ];
+    linhasPraticaEq.forEach((linha,i)=>{
+      const r = 8+i;
+      linha.forEach((v,ci)=>{
+        const cell = wsEquipe.getCell(r,27+ci);
+        cell.value = v;
+        cell.font = {name:FONTE,size:9};
+        if(ci>0) cell.numFmt='"R$" #,##0.00';
+      });
+    });
+
+    // ââ Tabela principal ââââââââââââââââââââââââââââââââââââââââââ
+    const linhaResumoEq = 21;
+    wsEquipe.getCell(linhaResumoEq,2).value = 'TOTAL CANDIDATOS';
+    wsEquipe.getCell(linhaResumoEq,2).font = {bold:true,name:FONTE,size:9};
+    wsEquipe.getCell(linhaResumoEq,6).value = 'TOTAL LANCHE';
+    wsEquipe.getCell(linhaResumoEq,6).font = {bold:true,name:FONTE,size:9};
+    wsEquipe.getCell(linhaResumoEq,6).fill = {type:'pattern',pattern:'solid',fgColor:{argb:'FFF4B183'}};
+
+    const linhaHeaderEq = 24;
+    const colsEquipe = ['CIDADE','DATA PROVA','TURNO','ESCOLA','SALAS','CANDIDATOS','FISCAL','CORREDOR','VISTORIADOR','PORTEIRO',
       'FAXINEIRO','ENCARREGADO','APOIO','COORDENADOR','TOTAL','LANCHE',
       'VALOR FISCAL','VALOR VOLANTES','VALOR ENCAR.','VALOR APOIO','VALOR COOR.','VALOR TOTAL'];
-    const LARG_EQUIPE = {TURNO:9,ESCOLA:34,SALAS:8,CANDIDATOS:11,FISCAL:8,CORREDOR:9,VISTORIADOR:11,
+    const LARG_EQUIPE = {CIDADE:16,'DATA PROVA':14,TURNO:9,ESCOLA:34,SALAS:8,CANDIDATOS:11,FISCAL:8,CORREDOR:9,VISTORIADOR:11,
       PORTEIRO:9,FAXINEIRO:10,ENCARREGADO:11,APOIO:8,COORDENADOR:12,TOTAL:8,LANCHE:8,
       'VALOR FISCAL':13,'VALOR VOLANTES':14,'VALOR ENCAR.':13,'VALOR APOIO':12,'VALOR COOR.':12,'VALOR TOTAL':14};
     const colsMoeda = new Set(['VALOR FISCAL','VALOR VOLANTES','VALOR ENCAR.','VALOR APOIO','VALOR COOR.','VALOR TOTAL']);
+    const idxCol = {};
 
     colsEquipe.forEach((c,ci)=>{
-      const cell = wsEquipe.getCell(1,ci+1);
+      const colIdx = ci+2;
+      idxCol[c] = colIdx;
+      const cell = wsEquipe.getCell(linhaHeaderEq,colIdx);
       cell.value = c;
       cell.font = {bold:true,color:{argb:'FFFFFFFF'},name:FONTE,size:9};
       cell.fill = {type:'pattern',pattern:'solid',fgColor:{argb:'FF1F4E8C'}};
       cell.alignment = {horizontal:'center',vertical:'middle',wrapText:true};
       cell.border = BORDA;
-      wsEquipe.getColumn(ci+1).width = LARG_EQUIPE[c]||12;
+      wsEquipe.getColumn(colIdx).width = LARG_EQUIPE[c]||12;
     });
-    wsEquipe.getRow(1).height = 26;
+    wsEquipe.getRow(linhaHeaderEq).height = 26;
 
     let corIdxEq=0, escolaAtualEq='';
-    linhasEquipe.forEach((row,ri)=>{
-      if(row.ESCOLA !== escolaAtualEq){ escolaAtualEq = row.ESCOLA; corIdxEq=(corIdxEq+1)%2; }
+    linhasEquipe.forEach((g,ri)=>{
+      const r = linhaHeaderEq+1+ri;
+      if(g.escola !== escolaAtualEq){ escolaAtualEq = g.escola; corIdxEq=(corIdxEq+1)%2; }
       const cor = corIdxEq===0?'FFFFFFFF':'FFF0F4FF';
-      colsEquipe.forEach((c,ci)=>{
-        const cell = wsEquipe.getCell(ri+2,ci+1);
-        cell.value = row[c];
-        cell.font = {name:FONTE,size:9};
+
+      wsEquipe.getCell(r, idxCol['CIDADE']).value = g.cidade || '';
+      const cData = wsEquipe.getCell(r, idxCol['DATA PROVA']);
+      if(g.dataProva instanceof Date && !isNaN(g.dataProva.getTime())){ cData.value = g.dataProva; cData.numFmt = 'dd/mm/yyyy hh:mm'; }
+      else { cData.value = g.turno; }
+      wsEquipe.getCell(r, idxCol['TURNO']).value = g.turno;
+      wsEquipe.getCell(r, idxCol['ESCOLA']).value = g.escola;
+      wsEquipe.getCell(r, idxCol['SALAS']).value = g.salas;
+      wsEquipe.getCell(r, idxCol['CANDIDATOS']).value = g.candidatos;
+      wsEquipe.getCell(r, idxCol['FISCAL']).value = g.fiscal;
+
+      const refCand = colLetraEq(idxCol['CANDIDATOS'])+r;
+      const refFiscal = colLetraEq(idxCol['FISCAL'])+r;
+      const refCorredor = colLetraEq(idxCol['CORREDOR'])+r;
+      const refVistoriador = colLetraEq(idxCol['VISTORIADOR'])+r;
+      const refPorteiro = colLetraEq(idxCol['PORTEIRO'])+r;
+      const refFaxineiro = colLetraEq(idxCol['FAXINEIRO'])+r;
+      const refEncarregado = colLetraEq(idxCol['ENCARREGADO'])+r;
+      const refApoio = colLetraEq(idxCol['APOIO'])+r;
+      const refCoordenador = colLetraEq(idxCol['COORDENADOR'])+r;
+      const refTotal = colLetraEq(idxCol['TOTAL'])+r;
+
+      wsEquipe.getCell(r, idxCol['CORREDOR']).value = {formula:'IF(ROUND('+refCand+'/180,0)=0,1,ROUND('+refCand+'/180,0))'};
+      wsEquipe.getCell(r, idxCol['VISTORIADOR']).value = {formula:'IF(ROUND('+refCand+'/250,0)=0,1,ROUND('+refCand+'/250,0))'};
+      wsEquipe.getCell(r, idxCol['PORTEIRO']).value = 1;
+      wsEquipe.getCell(r, idxCol['FAXINEIRO']).value = {formula:'IF(ROUND('+refCand+'/300,0)=0,1,ROUND('+refCand+'/300,0))'};
+      wsEquipe.getCell(r, idxCol['ENCARREGADO']).value = 1;
+      wsEquipe.getCell(r, idxCol['APOIO']).value = {formula:'IF(('+refCand+'/350)<1,0,ROUND('+refCand+'/350,0))'};
+      wsEquipe.getCell(r, idxCol['COORDENADOR']).value = 1;
+      wsEquipe.getCell(r, idxCol['TOTAL']).value = {formula:'SUM('+refFiscal+':'+refCoordenador+')'};
+      wsEquipe.getCell(r, idxCol['LANCHE']).value = {formula:'ROUND('+refTotal+'*1.07,0)'};
+
+      const refValorFiscal = colLetraEq(idxCol['VALOR FISCAL'])+r;
+      const refValorVolantes = colLetraEq(idxCol['VALOR VOLANTES'])+r;
+      const refValorEncar = colLetraEq(idxCol['VALOR ENCAR.'])+r;
+      const refValorApoio = colLetraEq(idxCol['VALOR APOIO'])+r;
+      const refValorCoor = colLetraEq(idxCol['VALOR COOR.'])+r;
+
+      wsEquipe.getCell(r, idxCol['VALOR FISCAL']).value   = {formula:refFiscal+'*CHOOSE($E$6,$V$8,$W$8,$X$8,$Y$8)'};
+      wsEquipe.getCell(r, idxCol['VALOR VOLANTES']).value = {formula:'('+refCorredor+'+'+refVistoriador+'+'+refPorteiro+'+'+refFaxineiro+')*CHOOSE($E$6,$V$9,$W$9,$X$9,$Y$9)'};
+      wsEquipe.getCell(r, idxCol['VALOR ENCAR.']).value   = {formula:refEncarregado+'*CHOOSE($E$6,$V$13,$W$13,$X$13,$Y$13)'};
+      wsEquipe.getCell(r, idxCol['VALOR APOIO']).value    = {formula:refApoio+'*CHOOSE($E$6,$V$14,$W$14,$X$14,$Y$14)+$D$19*'+refApoio};
+      wsEquipe.getCell(r, idxCol['VALOR COOR.']).value    = {formula:'CHOOSE($E$6,$V$15,$W$15,$X$15,$Y$15)+$D$19'};
+      wsEquipe.getCell(r, idxCol['VALOR TOTAL']).value    = {formula:'SUM('+refValorFiscal+':'+refValorCoor+')'};
+
+      colsEquipe.forEach(c=>{
+        const cell = wsEquipe.getCell(r, idxCol[c]);
+        cell.font = cell.font || {name:FONTE,size:9};
         cell.fill = {type:'pattern',pattern:'solid',fgColor:{argb:cor}};
-        cell.alignment = {vertical:'middle',horizontal:(c==='ESCOLA'||c==='TURNO')?'left':'center'};
+        cell.alignment = {vertical:'middle',horizontal:(c==='ESCOLA')?'left':'center'};
         cell.border = BORDA;
         if(colsMoeda.has(c)) cell.numFmt = '"R$" #,##0.00';
       });
     });
 
     // Linha de totais
-    const rTotal = linhasEquipe.length+2;
-    const somaCols = ['SALAS','CANDIDATOS','FISCAL','CORREDOR','VISTORIADOR','PORTEIRO','FAXINEIRO','ENCARREGADO','APOIO','COORDENADOR','TOTAL','LANCHE',
+    const rTotalEq = linhaHeaderEq+1+linhasEquipe.length;
+    const somaColsEq = ['SALAS','CANDIDATOS','FISCAL','CORREDOR','VISTORIADOR','PORTEIRO','FAXINEIRO','ENCARREGADO','APOIO','COORDENADOR','TOTAL','LANCHE',
       'VALOR FISCAL','VALOR VOLANTES','VALOR ENCAR.','VALOR APOIO','VALOR COOR.','VALOR TOTAL'];
-    colsEquipe.forEach((c,ci)=>{
-      const cell = wsEquipe.getCell(rTotal,ci+1);
+    colsEquipe.forEach(c=>{
+      const cell = wsEquipe.getCell(rTotalEq, idxCol[c]);
       if(c==='ESCOLA'){ cell.value='TOTAL GERAL'; }
-      else if(somaCols.includes(c)){ cell.value = linhasEquipe.reduce((s,r)=>s+(r[c]||0),0); if(colsMoeda.has(c)) cell.numFmt='"R$" #,##0.00'; }
+      else if(somaColsEq.includes(c)){
+        const colLetra = colLetraEq(idxCol[c]);
+        cell.value = {formula:'SUM('+colLetra+(linhaHeaderEq+1)+':'+colLetra+(rTotalEq-1)+')'};
+        if(colsMoeda.has(c)) cell.numFmt='"R$" #,##0.00';
+      }
       cell.font = {bold:true,name:FONTE,size:9};
       cell.fill = {type:'pattern',pattern:'solid',fgColor:{argb:'FFE2E7EF'}};
       cell.alignment = {vertical:'middle',horizontal:c==='ESCOLA'?'left':'center'};
       cell.border = BORDA;
     });
-    if(diariaPorPessoa>0){
-      const rInfo = rTotal+2;
-      wsEquipe.getCell(rInfo,1).value = `Diária calculada: R$ ${diariaPorPessoa.toFixed(2)} por pessoa (já somada ao Apoio e Coordenador)`;
-      wsEquipe.getCell(rInfo,1).font = {italic:true,size:9,color:{argb:'FF8A9AB5'}};
-    }
-    wsEquipe.views = [{state:'frozen',xSplit:0,ySplit:1}];
-  }
 
-  const buf = await wb.xlsx.writeBuffer();
+    const colCandLetraEq = colLetraEq(idxCol['CANDIDATOS']);
+    const colLancheLetraEq = colLetraEq(idxCol['LANCHE']);
+    wsEquipe.getCell(linhaResumoEq,3).value = {formula:colCandLetraEq+rTotalEq};
+    wsEquipe.getCell(linhaResumoEq,3).font = {bold:true,name:FONTE,size:10};
+    wsEquipe.getCell(linhaResumoEq,7).value = {formula:colLancheLetraEq+rTotalEq};
+    wsEquipe.getCell(linhaResumoEq,7).font = {bold:true,name:FONTE,size:10};
+
+    wsEquipe.views = [{state:'frozen',xSplit:0,ySplit:linhaHeaderEq}];
+  }
+const buf = await wb.xlsx.writeBuffer();
   const blob = new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -8003,21 +8208,15 @@ function atualizarPreviewDiaria(){
     : '';
 }
 
-// Calcula a equipe necessária por ESCOLA + TURNO a partir do resultado da alocação.
-// Regras de headcount (confirmadas pela Manuela):
-//  - FISCAL: somado por sala — até 29 cand.=1, 30-44=2, 45-64=3, 65+=4
-//  - CORREDOR    = max(1, round(candidatos/180))
-//  - VISTORIADOR = max(1, round(candidatos/250))
-//  - FAXINEIRO   = max(1, round(candidatos/300))
-//  - PORTEIRO, ENCARREGADO, COORDENADOR = sempre 1 por escola/turno
-//  - APOIO = 0 se candidatos/350 < 1, senão round(candidatos/350)
-// Tarifas: FISCAL varia conforme nº de turnos que a escola atende no dia
-// (1=120, 2=218, 3=298, 4=396); as demais funções usam sempre a tarifa de
-// 1 turno. Apoio e Coordenador somam a diária (por pessoa) ao valor.
-function calcularEquipe(resultado, diariaPorPessoa){
+// Calcula a equipe necessÃ¡ria por ESCOLA + TURNO a partir do resultado da alocaÃ§Ã£o.
+// FISCAL Ã© a Ãºnica contagem calculada aqui em JS (depende do agrupamento por
+// sala e do tier de capacidade â nÃ£o cabe numa fÃ³rmula simples de 1 cÃ©lula).
+// Todas as outras contagens e todos os valores em R$ saem como FÃRMULA na
+// planilha (usando a tabela de tarifas e o nÂº de turnos, ambos editÃ¡veis),
+// para dar pra ajustar datas de diÃ¡ria e tarifas depois de gerar a planilha.
+function calcularEquipe(resultado, enderecoPorEscola){
   function salaBase(s){ return String(s||'').split(' - ')[0]; }
 
-  // Agrupar por ESCOLA+TURNO+SALA para o tier de fiscal por sala
   const porSalaTurno = {};
   resultado.alocados.forEach(a=>{
     const chave = a.ESCOLA+'|'+a.TURNO+'|'+salaBase(a.SALA);
@@ -8031,7 +8230,6 @@ function calcularEquipe(resultado, diariaPorPessoa){
     return 4;
   }
 
-  // Agrupar por ESCOLA+TURNO (uma linha por combinação)
   const porEscolaTurno = {};
   resultado.alocados.forEach(a=>{
     const chave = a.ESCOLA+'|'+a.TURNO;
@@ -8040,18 +8238,11 @@ function calcularEquipe(resultado, diariaPorPessoa){
     porEscolaTurno[chave].salas.add(salaBase(a.SALA));
   });
 
-  // Nº de turnos distintos por escola (define a tarifa do fiscal)
   const turnosPorEscola = {};
   Object.values(porEscolaTurno).forEach(g=>{
     if(!turnosPorEscola[g.escola]) turnosPorEscola[g.escola] = new Set();
     turnosPorEscola[g.escola].add(g.turno);
   });
-
-  const TARIFA_FISCAL = {1:120, 2:218, 3:298, 4:396};
-  const TARIFA_VOLANTE = 100;
-  const TARIFA_ENCARREGADO = 300;
-  const TARIFA_APOIO = 280;
-  const TARIFA_COORDENADOR = 430;
 
   const linhas = Object.values(porEscolaTurno).map(g=>{
     const candidatos = g.candidatos.length;
@@ -8062,35 +8253,18 @@ function calcularEquipe(resultado, diariaPorPessoa){
       fiscal += tierFiscal(qtdSala);
     });
 
-    const corredor    = Math.max(1, Math.round(candidatos/180));
-    const vistoriador = Math.max(1, Math.round(candidatos/250));
-    const faxineiro   = Math.max(1, Math.round(candidatos/300));
-    const porteiro = 1, encarregado = 1, coordenador = 1;
-    const apoio = (candidatos/350) < 1 ? 0 : Math.round(candidatos/350);
-    const total  = fiscal+corredor+vistoriador+porteiro+faxineiro+encarregado+apoio+coordenador;
-    const lanche = total + corredor;
-
-    const nTurnosEscola = turnosPorEscola[g.escola].size;
-    const tarifaFiscal = TARIFA_FISCAL[Math.min(nTurnosEscola,4)] || TARIFA_FISCAL[1];
-
-    const valorFiscal   = fiscal*tarifaFiscal;
-    const valorVolantes = (corredor+vistoriador+porteiro+faxineiro)*TARIFA_VOLANTE;
-    const valorEncar    = encarregado*TARIFA_ENCARREGADO;
-    const valorApoio    = apoio>0 ? apoio*(TARIFA_APOIO+diariaPorPessoa) : 0;
-    const valorCoor     = coordenador*(TARIFA_COORDENADOR+diariaPorPessoa);
-    const valorTotal    = valorFiscal+valorVolantes+valorEncar+valorApoio+valorCoor;
+    const end = (enderecoPorEscola||{})[g.escola] || {};
+    const primeiraData = g.candidatos.find(c=>c['DATA HORA PROVA OBJ'] instanceof Date && !isNaN(c['DATA HORA PROVA OBJ'].getTime()));
 
     return {
-      TURNO: g.turno, ESCOLA: g.escola, SALAS: g.salas.size, CANDIDATOS: candidatos,
-      FISCAL: fiscal, CORREDOR: corredor, VISTORIADOR: vistoriador, PORTEIRO: porteiro,
-      FAXINEIRO: faxineiro, ENCARREGADO: encarregado, APOIO: apoio, COORDENADOR: coordenador,
-      TOTAL: total, LANCHE: lanche,
-      'VALOR FISCAL': valorFiscal, 'VALOR VOLANTES': valorVolantes, 'VALOR ENCAR.': valorEncar,
-      'VALOR APOIO': valorApoio, 'VALOR COOR.': valorCoor, 'VALOR TOTAL': valorTotal,
+      turno: g.turno, escola: g.escola, cidade: end.cidade || '',
+      dataProva: primeiraData ? primeiraData['DATA HORA PROVA OBJ'] : null,
+      salas: g.salas.size, candidatos, fiscal,
+      nTurnosEscola: turnosPorEscola[g.escola].size,
     };
   });
 
-  linhas.sort((a,b)=>a.ESCOLA.localeCompare(b.ESCOLA)||a.TURNO.localeCompare(b.TURNO));
+  linhas.sort((a,b)=>a.escola.localeCompare(b.escola)||a.turno.localeCompare(b.turno));
   return linhas;
 }
 
