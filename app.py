@@ -317,45 +317,48 @@ def buscar_tarefas(token, ferias_json="[]"):
     limite_48h = datetime.utcnow().replace(tzinfo=timezone.utc) - timedelta(hours=48)
     for t in _g_all(f"https://graph.microsoft.com/v1.0/planner/plans/{plano_id}/tasks"):
         nome = (t.get("title") or "").strip()
-        resp_original = ATRIBUICOES.get(nome)
-        if not resp_original: continue
+        resp_raw = ATRIBUICOES.get(nome)
+        if not resp_raw: continue
+        # Suporta múltiplos responsáveis na mesma tarefa: "Fulano, Beltrano"
+        responsaveis = [r.strip() for r in resp_raw.split(",") if r.strip()]
         due = t.get("dueDateTime") or ""
         due_date = due[:10] if due else ""
 
-        # Verificar se há férias que cobrem esta tarefa
-        resp = resp_original
-        hoje = date.today().isoformat()
-        for f in _ferias_registradas:
-            if not f.get("ativo", True): continue
-            if f.get("de","") != resp_original: continue
-            if hoje > f.get("fim","0000"): continue  # já terminou
-            # Tarefa vence no período das férias
-            if due_date and f.get("inicio","") <= due_date <= f.get("fim","9999"):
-                resp = f.get("para", resp_original)
-                break
+        for resp_original in responsaveis:
+            # Verificar se há férias que cobrem esta tarefa
+            resp = resp_original
+            hoje = date.today().isoformat()
+            for f in _ferias_registradas:
+                if not f.get("ativo", True): continue
+                if f.get("de","") != resp_original: continue
+                if hoje > f.get("fim","0000"): continue  # já terminou
+                # Tarefa vence no período das férias
+                if due_date and f.get("inicio","") <= due_date <= f.get("fim","9999"):
+                    resp = f.get("para", resp_original)
+                    break
 
-        item = {
-            "id": t["id"],
-            "municipio": buckets.get(t.get("bucketId",""),"—"),
-            "tarefa": nome,
-            "responsavel": resp,
-            "due": due,
-            "hasNota": bool(t.get("hasDescription", False)),
-        }
-        if t.get("percentComplete",0) == 100:
-            completed_at = t.get("completedDateTime","")
-            item_concl = {**item, "completedAt": completed_at, "concluida": True}
-            # Histórico completo (usado na Agenda, sem limite de tempo)
-            concluidas_todas.append(item_concl)
-            # Só inclui no painel de sessão as concluídas das últimas 48h
-            if completed_at:
-                try:
-                    dt = datetime.fromisoformat(completed_at.replace("Z","+00:00"))
-                    if dt >= limite_48h:
-                        concluidas.append(item_concl)
-                except Exception: pass
-        else:
-            tarefas.append(item)
+            item = {
+                "id": t["id"],
+                "municipio": buckets.get(t.get("bucketId",""),"—"),
+                "tarefa": nome,
+                "responsavel": resp,
+                "due": due,
+                "hasNota": bool(t.get("hasDescription", False)),
+            }
+            if t.get("percentComplete",0) == 100:
+                completed_at = t.get("completedDateTime","")
+                item_concl = {**item, "completedAt": completed_at, "concluida": True}
+                # Histórico completo (usado na Agenda, sem limite de tempo)
+                concluidas_todas.append(item_concl)
+                # Só inclui no painel de sessão as concluídas das últimas 48h
+                if completed_at:
+                    try:
+                        dt = datetime.fromisoformat(completed_at.replace("Z","+00:00"))
+                        if dt >= limite_48h:
+                            concluidas.append(item_concl)
+                    except Exception: pass
+            else:
+                tarefas.append(item)
     # Ordenar concluídas da mais recente para a mais antiga
     concluidas.sort(key=lambda x: x.get("completedAt",""), reverse=True)
     concluidas_todas.sort(key=lambda x: x.get("completedAt",""), reverse=True)
