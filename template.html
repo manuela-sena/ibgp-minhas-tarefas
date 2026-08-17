@@ -6583,10 +6583,9 @@ function initAlocacao(){
 }
 
 async function carregarEscolas(){
-  const concursoId  = document.getElementById('sel-aloc-concurso')?.value;
   const concursoNome= (document.getElementById('inp-aloc-concurso')?.value || '').trim();
   const el = document.getElementById('aloc-content');
-  if(!concursoId){ el.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Selecione um concurso</div></div>'; return; }
+  if(!concursoNome){ el.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Digite ou selecione um concurso</div></div>'; return; }
   
   el.innerHTML='<div class="loading"><div class="spinner"></div>Carregando escolas...</div>';
   
