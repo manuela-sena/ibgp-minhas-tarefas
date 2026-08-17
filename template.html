@@ -1166,7 +1166,36 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
         </div>
         <div id="aloc-processamento-status" style="margin-top:14px"></div>
       </div>
+
+      <div class="card card-pad" style="margin-top:20px;display:none" id="aloc-equipe-wrap">
+        <div style="font-size:14px;font-weight:700;color:#1f2a3d;margin-bottom:4px">👥 Cálculo de Equipe de Aplicação</div>
+        <div style="font-size:12.5px;color:#8a9ab5;margin-bottom:16px">Informe os dados de viagem da equipe para calcular a diária. Isso será somado ao valor do Apoio e do Coordenador. A aba EQUIPE será incluída na planilha de Alocação.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:12px;align-items:end">
+          <div>
+            <label class="form-label">Data ida</label>
+            <input type="date" id="aloc-eq-data-ida" class="form-input" style="height:36px" oninput="atualizarPreviewDiaria()">
+          </div>
+          <div>
+            <label class="form-label">Hora saída</label>
+            <input type="time" id="aloc-eq-hora-saida" class="form-input" style="height:36px" value="12:00" oninput="atualizarPreviewDiaria()">
+          </div>
+          <div>
+            <label class="form-label">Data chegada</label>
+            <input type="date" id="aloc-eq-data-chegada" class="form-input" style="height:36px" oninput="atualizarPreviewDiaria()">
+          </div>
+          <div>
+            <label class="form-label">Hora chegada</label>
+            <input type="time" id="aloc-eq-hora-chegada" class="form-input" style="height:36px" value="19:00" oninput="atualizarPreviewDiaria()">
+          </div>
+          <div>
+            <label class="form-label">Valor diária (R$/dia)</label>
+            <input type="number" id="aloc-eq-valor-diaria" class="form-input" style="height:36px" value="130" step="0.01" oninput="atualizarPreviewDiaria()">
+          </div>
+        </div>
+        <div id="aloc-eq-preview" style="margin-top:12px;font-size:12.5px;color:#41506b"></div>
+      </div>
     </div>
+
 
 
     <!-- PÁGINA CLASSIFICAÇÃO FINAL -->
@@ -6626,6 +6655,8 @@ function renderEscolas(escolas, concursoNome){
   // Mostrar área de ações se tiver escolas
   const acoesWrap = document.getElementById('aloc-acoes-wrap');
   if(acoesWrap) acoesWrap.style.display = escolas.length ? 'block' : 'none';
+  const equipeWrap = document.getElementById('aloc-equipe-wrap');
+  if(equipeWrap) equipeWrap.style.display = escolas.length ? 'block' : 'none';
   
   const nTotal    = escolas.length;
   const nEnviado  = escolas.filter(e=>e._status?.enviado||e.enviadoEm).length;
@@ -7839,12 +7870,187 @@ async function gerarPlanilhaAlocacao(resultado, escolasEnviadas){
   });
   wsGeral.autoFilter = {from: {row:1, column:1}, to: {row: Math.max(1, resultado.alocados.length+1), column:colGeral.length}};
 
+  // ── EQUIPE (cálculo de equipe de aplicação por escola/turno) ────────
+  const diariaPorPessoa = calcularDiariaPorPessoa();
+  const linhasEquipe = calcularEquipe(resultado, diariaPorPessoa);
+  if(linhasEquipe.length){
+    const wsEquipe = wb.addWorksheet('EQUIPE');
+    const colsEquipe = ['TURNO','ESCOLA','SALAS','CANDIDATOS','FISCAL','CORREDOR','VISTORIADOR','PORTEIRO',
+      'FAXINEIRO','ENCARREGADO','APOIO','COORDENADOR','TOTAL','LANCHE',
+      'VALOR FISCAL','VALOR VOLANTES','VALOR ENCAR.','VALOR APOIO','VALOR COOR.','VALOR TOTAL'];
+    const LARG_EQUIPE = {TURNO:9,ESCOLA:34,SALAS:8,CANDIDATOS:11,FISCAL:8,CORREDOR:9,VISTORIADOR:11,
+      PORTEIRO:9,FAXINEIRO:10,ENCARREGADO:11,APOIO:8,COORDENADOR:12,TOTAL:8,LANCHE:8,
+      'VALOR FISCAL':13,'VALOR VOLANTES':14,'VALOR ENCAR.':13,'VALOR APOIO':12,'VALOR COOR.':12,'VALOR TOTAL':14};
+    const colsMoeda = new Set(['VALOR FISCAL','VALOR VOLANTES','VALOR ENCAR.','VALOR APOIO','VALOR COOR.','VALOR TOTAL']);
+
+    colsEquipe.forEach((c,ci)=>{
+      const cell = wsEquipe.getCell(1,ci+1);
+      cell.value = c;
+      cell.font = {bold:true,color:{argb:'FFFFFFFF'},name:FONTE,size:9};
+      cell.fill = {type:'pattern',pattern:'solid',fgColor:{argb:'FF1F4E8C'}};
+      cell.alignment = {horizontal:'center',vertical:'middle',wrapText:true};
+      cell.border = BORDA;
+      wsEquipe.getColumn(ci+1).width = LARG_EQUIPE[c]||12;
+    });
+    wsEquipe.getRow(1).height = 26;
+
+    let corIdxEq=0, escolaAtualEq='';
+    linhasEquipe.forEach((row,ri)=>{
+      if(row.ESCOLA !== escolaAtualEq){ escolaAtualEq = row.ESCOLA; corIdxEq=(corIdxEq+1)%2; }
+      const cor = corIdxEq===0?'FFFFFFFF':'FFF0F4FF';
+      colsEquipe.forEach((c,ci)=>{
+        const cell = wsEquipe.getCell(ri+2,ci+1);
+        cell.value = row[c];
+        cell.font = {name:FONTE,size:9};
+        cell.fill = {type:'pattern',pattern:'solid',fgColor:{argb:cor}};
+        cell.alignment = {vertical:'middle',horizontal:(c==='ESCOLA'||c==='TURNO')?'left':'center'};
+        cell.border = BORDA;
+        if(colsMoeda.has(c)) cell.numFmt = '"R$" #,##0.00';
+      });
+    });
+
+    // Linha de totais
+    const rTotal = linhasEquipe.length+2;
+    const somaCols = ['SALAS','CANDIDATOS','FISCAL','CORREDOR','VISTORIADOR','PORTEIRO','FAXINEIRO','ENCARREGADO','APOIO','COORDENADOR','TOTAL','LANCHE',
+      'VALOR FISCAL','VALOR VOLANTES','VALOR ENCAR.','VALOR APOIO','VALOR COOR.','VALOR TOTAL'];
+    colsEquipe.forEach((c,ci)=>{
+      const cell = wsEquipe.getCell(rTotal,ci+1);
+      if(c==='ESCOLA'){ cell.value='TOTAL GERAL'; }
+      else if(somaCols.includes(c)){ cell.value = linhasEquipe.reduce((s,r)=>s+(r[c]||0),0); if(colsMoeda.has(c)) cell.numFmt='"R$" #,##0.00'; }
+      cell.font = {bold:true,name:FONTE,size:9};
+      cell.fill = {type:'pattern',pattern:'solid',fgColor:{argb:'FFE2E7EF'}};
+      cell.alignment = {vertical:'middle',horizontal:c==='ESCOLA'?'left':'center'};
+      cell.border = BORDA;
+    });
+    if(diariaPorPessoa>0){
+      const rInfo = rTotal+2;
+      wsEquipe.getCell(rInfo,1).value = `Diária calculada: R$ ${diariaPorPessoa.toFixed(2)} por pessoa (já somada ao Apoio e Coordenador)`;
+      wsEquipe.getCell(rInfo,1).font = {italic:true,size:9,color:{argb:'FF8A9AB5'}};
+    }
+    wsEquipe.views = [{state:'frozen',xSplit:0,ySplit:1}];
+  }
+
   const buf = await wb.xlsx.writeBuffer();
   const blob = new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'ALOCACAO_CANDIDATOS.xlsx';
   a.click();
+}
+
+// ── CÁLCULO DE EQUIPE DE APLICAÇÃO ────────────────────────────────────
+function calcularDiariaPorPessoa(){
+  const dataIda = document.getElementById('aloc-eq-data-ida')?.value;
+  const horaSaida = document.getElementById('aloc-eq-hora-saida')?.value || '00:00';
+  const dataChegada = document.getElementById('aloc-eq-data-chegada')?.value;
+  const horaChegada = document.getElementById('aloc-eq-hora-chegada')?.value || '00:00';
+  const valorDiaria = parseFloat(document.getElementById('aloc-eq-valor-diaria')?.value) || 0;
+  if(!dataIda || !dataChegada || !valorDiaria) return 0;
+  const ini = new Date(`${dataIda}T${horaSaida}:00`);
+  const fim = new Date(`${dataChegada}T${horaChegada}:00`);
+  const horas = (fim-ini)/3600000;
+  if(!(horas>0)) return 0;
+  return (horas/24)*valorDiaria;
+}
+
+function atualizarPreviewDiaria(){
+  const diaria = calcularDiariaPorPessoa();
+  const el = document.getElementById('aloc-eq-preview');
+  if(!el) return;
+  el.innerHTML = diaria>0
+    ? `💰 Diária calculada: <strong>R$ ${diaria.toFixed(2).replace('.',',')}</strong> por pessoa — será somada ao valor do Apoio e do Coordenador.`
+    : '';
+}
+
+// Calcula a equipe necessária por ESCOLA + TURNO a partir do resultado da alocação.
+// Regras de headcount (confirmadas pela Manuela):
+//  - FISCAL: somado por sala — até 29 cand.=1, 30-44=2, 45-64=3, 65+=4
+//  - CORREDOR    = max(1, round(candidatos/180))
+//  - VISTORIADOR = max(1, round(candidatos/250))
+//  - FAXINEIRO   = max(1, round(candidatos/300))
+//  - PORTEIRO, ENCARREGADO, COORDENADOR = sempre 1 por escola/turno
+//  - APOIO = 0 se candidatos/350 < 1, senão round(candidatos/350)
+// Tarifas: FISCAL varia conforme nº de turnos que a escola atende no dia
+// (1=120, 2=218, 3=298, 4=396); as demais funções usam sempre a tarifa de
+// 1 turno. Apoio e Coordenador somam a diária (por pessoa) ao valor.
+function calcularEquipe(resultado, diariaPorPessoa){
+  function salaBase(s){ return String(s||'').split(' - ')[0]; }
+
+  // Agrupar por ESCOLA+TURNO+SALA para o tier de fiscal por sala
+  const porSalaTurno = {};
+  resultado.alocados.forEach(a=>{
+    const chave = a.ESCOLA+'|'+a.TURNO+'|'+salaBase(a.SALA);
+    (porSalaTurno[chave]=porSalaTurno[chave]||[]).push(a);
+  });
+
+  function tierFiscal(qtd){
+    if(qtd<=29) return 1;
+    if(qtd<=44) return 2;
+    if(qtd<=64) return 3;
+    return 4;
+  }
+
+  // Agrupar por ESCOLA+TURNO (uma linha por combinação)
+  const porEscolaTurno = {};
+  resultado.alocados.forEach(a=>{
+    const chave = a.ESCOLA+'|'+a.TURNO;
+    if(!porEscolaTurno[chave]) porEscolaTurno[chave] = {escola:a.ESCOLA, turno:a.TURNO, candidatos:[], salas:new Set()};
+    porEscolaTurno[chave].candidatos.push(a);
+    porEscolaTurno[chave].salas.add(salaBase(a.SALA));
+  });
+
+  // Nº de turnos distintos por escola (define a tarifa do fiscal)
+  const turnosPorEscola = {};
+  Object.values(porEscolaTurno).forEach(g=>{
+    if(!turnosPorEscola[g.escola]) turnosPorEscola[g.escola] = new Set();
+    turnosPorEscola[g.escola].add(g.turno);
+  });
+
+  const TARIFA_FISCAL = {1:120, 2:218, 3:298, 4:396};
+  const TARIFA_VOLANTE = 100;
+  const TARIFA_ENCARREGADO = 300;
+  const TARIFA_APOIO = 280;
+  const TARIFA_COORDENADOR = 430;
+
+  const linhas = Object.values(porEscolaTurno).map(g=>{
+    const candidatos = g.candidatos.length;
+
+    let fiscal = 0;
+    g.salas.forEach(sala=>{
+      const qtdSala = (porSalaTurno[g.escola+'|'+g.turno+'|'+sala]||[]).length;
+      fiscal += tierFiscal(qtdSala);
+    });
+
+    const corredor    = Math.max(1, Math.round(candidatos/180));
+    const vistoriador = Math.max(1, Math.round(candidatos/250));
+    const faxineiro   = Math.max(1, Math.round(candidatos/300));
+    const porteiro = 1, encarregado = 1, coordenador = 1;
+    const apoio = (candidatos/350) < 1 ? 0 : Math.round(candidatos/350);
+    const total  = fiscal+corredor+vistoriador+porteiro+faxineiro+encarregado+apoio+coordenador;
+    const lanche = total + corredor;
+
+    const nTurnosEscola = turnosPorEscola[g.escola].size;
+    const tarifaFiscal = TARIFA_FISCAL[Math.min(nTurnosEscola,4)] || TARIFA_FISCAL[1];
+
+    const valorFiscal   = fiscal*tarifaFiscal;
+    const valorVolantes = (corredor+vistoriador+porteiro+faxineiro)*TARIFA_VOLANTE;
+    const valorEncar    = encarregado*TARIFA_ENCARREGADO;
+    const valorApoio    = apoio>0 ? apoio*(TARIFA_APOIO+diariaPorPessoa) : 0;
+    const valorCoor     = coordenador*(TARIFA_COORDENADOR+diariaPorPessoa);
+    const valorTotal    = valorFiscal+valorVolantes+valorEncar+valorApoio+valorCoor;
+
+    return {
+      TURNO: g.turno, ESCOLA: g.escola, SALAS: g.salas.size, CANDIDATOS: candidatos,
+      FISCAL: fiscal, CORREDOR: corredor, VISTORIADOR: vistoriador, PORTEIRO: porteiro,
+      FAXINEIRO: faxineiro, ENCARREGADO: encarregado, APOIO: apoio, COORDENADOR: coordenador,
+      TOTAL: total, LANCHE: lanche,
+      'VALOR FISCAL': valorFiscal, 'VALOR VOLANTES': valorVolantes, 'VALOR ENCAR.': valorEncar,
+      'VALOR APOIO': valorApoio, 'VALOR COOR.': valorCoor, 'VALOR TOTAL': valorTotal,
+    };
+  });
+
+  linhas.sort((a,b)=>a.ESCOLA.localeCompare(b.ESCOLA)||a.TURNO.localeCompare(b.TURNO));
+  return linhas;
 }
 
 
