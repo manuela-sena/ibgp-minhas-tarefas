@@ -1,11 +1,192 @@
 {
   "token": "ESC_MSRMQX70_YHNA",
-  "criadoEm": "2026-08-13T14:45:09.900Z",
+  "enviadoEm": "2026-08-19T12:29:48.502Z",
+  "protocolo": "ESC_MSRMQX70_YHNA_1787142588502",
   "concurso": {
     "concurso": "BRUMADINHO - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
     "municipio": "BRUMADINHO/MG",
     "dataProva": "30/08/2026",
     "escola": "E.M. BEATRIZ PAMPULINE",
     "idEscola": "ESC_MSRMQX70_YHNA"
-  }
+  },
+  "instituicao": {
+    "nome": "E.M. BEATRIZ PAMPULINE",
+    "cnpj": "01.197.271/0001-41",
+    "razao": "CAIXA ESCOLAR LIDIMANHA AUGUSTA MAIA",
+    "endereco": "RUA BELO HORIZONTE",
+    "numero": "143",
+    "complemento": "ESCOLA AZUL",
+    "bairro": "SÃO SEBASTIÃO",
+    "cidade": "BRUMADINHO",
+    "uf": "MG",
+    "cep": "32480-098",
+    "responsavel": {
+      "nome": "MAURICIO OLIVEIRA CHAVES",
+      "cargo": "DIRETOR",
+      "email": "mauruth@gmail.com",
+      "tel": "(31) 98844-2254"
+    },
+    "diretor": {
+      "nome": "MAURICIO OLIVEIRA CHAVES",
+      "email": "mauruth@gmail.com"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": true,
+      "arcond": true,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "2",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "2",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "A",
+      "andar": "2º ANDAR",
+      "sala": "SALA 01",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "2º ANDAR",
+      "sala": "SALA 02",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "2º ANDAR",
+      "sala": "SALA 03",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "2º ANDAR",
+      "sala": "SALA 04",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "2º ANDAR",
+      "sala": "SALA 05",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "2º ANDAR",
+      "sala": "SALA 06",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "2º ANDAR",
+      "sala": "SALA 07",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "2º ANDAR",
+      "sala": "SALA 08",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "1º ANDAR",
+      "sala": "SALA 09",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "1º ANDAR",
+      "sala": "SALA 10",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "1º ANDAR",
+      "sala": "SALA 11",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "1º ANDAR",
+      "sala": "SALA 12",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "C",
+      "andar": "1º ANDAR",
+      "sala": "SALA AUDITÓRIO",
+      "capacidade": 150,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": true
+    }
+  ]
 }
