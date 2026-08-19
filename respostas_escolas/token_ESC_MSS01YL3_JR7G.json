@@ -1,11 +1,92 @@
 {
   "token": "ESC_MSS01YL3_JR7G",
-  "criadoEm": "2026-08-13T20:57:39.927Z",
+  "enviadoEm": "2026-08-19T19:35:46.167Z",
+  "protocolo": "ESC_MSS01YL3_JR7G_1787168146167",
   "concurso": {
     "concurso": "ARAXÁ - EDITAL Nº 01/2026 - PROCESSO SELETIVO PÚBLICO",
     "municipio": "ARAXA/MG",
     "dataProva": "06/09/2026",
     "escola": "ESCOLA ESTADUAL DOUTOR EDUARDO MONTANDON",
     "idEscola": "ESC_MSS01YL3_JR7G"
-  }
+  },
+  "instituicao": {
+    "nome": "ESCOLA MUNICIPAL  DOUTOR EDUARDO MONTANDON",
+    "cnpj": "50.103.762/0001-91",
+    "razao": "COOPERATIVA ESCOLAR DR. EDUARDO MONTANDON",
+    "endereco": "VEREADOR JOÃO SENA",
+    "numero": "473",
+    "complemento": "",
+    "bairro": "CENTRO",
+    "cidade": "ARAXÁ",
+    "uf": "MG",
+    "cep": "38183-042",
+    "responsavel": {
+      "nome": "ELAINE APARECIDA SILVA DE OLIVEIRA",
+      "cargo": "DIRETOR",
+      "email": "elaineapoliveira@yahoo.com.br",
+      "tel": "(34) 99946-1974"
+    },
+    "diretor": {
+      "nome": "ELAINE APARECIDA SILVA DE OLIVEIRA",
+      "email": "elaineapoliveira@yahoo.com.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": true,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "1",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "1",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "1",
+      "andar": "2º ANDAR",
+      "sala": "SALA 03",
+      "capacidade": 25,
+      "turno": "MANHA",
+      "arcond": true,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "2",
+      "andar": "2º ANDAR",
+      "sala": "SALA 05",
+      "capacidade": 25,
+      "turno": "MANHA",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "3",
+      "andar": "1º ANDAR",
+      "sala": "SALA 04",
+      "capacidade": 25,
+      "turno": "MANHA",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    }
+  ]
 }
