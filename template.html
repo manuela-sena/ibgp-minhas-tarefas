@@ -7486,88 +7486,180 @@ function avalLinkFoto(fotoPath){
   return fotoPath ? `https://raw.githubusercontent.com/${GH_REPO_ALOC}/main/${fotoPath}` : '';
 }
 
+// ── Largura de coluna e estilo padrão das planilhas de Resultado ──────
+function avalLarguraColuna(headerRaw){
+  const h = avalNormalizarCabecalho(headerRaw);
+  if(h.includes('INSCRICAO')) return 12;
+  if(h==='CANDIDATO') return 32;
+  if(h.includes('NASCIMENTO')) return 14;
+  if(h==='CARGO') return 32;
+  if(h==='PCD'||h==='PNP'||h==='SEXO') return 8;
+  if(h.includes('HORARIO')) return 11;
+  if(h==='DATA') return 12;
+  if(h.includes('TOTAL')) return 10;
+  if(h.includes('EMAIL')||h.startsWith('COLUNA')) return 28;
+  if(h.includes('CORRIDA')) return 14;
+  if(h.includes('ABDOMINAL')) return 16;
+  if(h.includes('BARRA')) return 14;
+  if(h==='RESULTADO') return 14;
+  if(h==='NOTA') return 10;
+  if(h.includes('LINK')) return 45;
+  return 18; // notas de disciplinas (Português, Matemática, etc.) e demais colunas
+}
+
+const AVAL_CORES_RESULTADO = { APTO:'FFC6E0B4', INAPTO:'FFF2C6C2', AUSENTE:'FFD0CECE', VERIFICAR:'FFFCE4B4' };
+
+// Escreve uma aba já com cabeçalho estilizado (negrito, fundo cinza, borda,
+// autofiltro, largura de coluna) e o RESULTADO colorido — mesmo padrão visual
+// usado nas outras planilhas de Resultado do app.
+function avalCriarPlanilhaResultado(wb, nomeAba, cols, linhas){
+  const ws = wb.addWorksheet((nomeAba||'Resultado').substring(0,31));
+  const BORDA = {top:{style:'thin',color:{argb:'FF000000'}},bottom:{style:'thin',color:{argb:'FF000000'}},left:{style:'thin',color:{argb:'FF000000'}},right:{style:'thin',color:{argb:'FF000000'}}};
+  const FONTE = 'Times New Roman';
+  const idxResultado = cols.findIndex(c=>avalNormalizarCabecalho(c)==='RESULTADO');
+
+  cols.forEach((col,ci)=>{
+    const c = ws.getCell(1, ci+1);
+    c.value = col;
+    c.font = {bold:true, color:{argb:'FF000000'}, name:FONTE, size:9};
+    c.fill = {type:'pattern', pattern:'solid', fgColor:{argb:'FFD9D9D9'}};
+    c.alignment = {horizontal:'center', vertical:'middle', wrapText:true};
+    c.border = BORDA;
+    ws.getColumn(ci+1).width = avalLarguraColuna(col);
+  });
+  ws.getRow(1).height = 30;
+
+  linhas.forEach((linha, ri)=>{
+    cols.forEach((col, ci)=>{
+      const c = ws.getCell(ri+2, ci+1);
+      let val = linha[ci];
+      if(val===undefined || val===null) val = '';
+      const ehNumero = typeof val === 'number';
+      c.value = ehNumero ? val : String(val);
+      const corResultado = (ci===idxResultado) ? AVAL_CORES_RESULTADO[val] : null;
+      c.font = {name:FONTE, size:9, bold:!!corResultado};
+      c.fill = {type:'pattern', pattern:'solid', fgColor:{argb: corResultado || 'FFFFFFFF'}};
+      c.alignment = {vertical:'middle', horizontal:(ehNumero || ci===idxResultado || avalNormalizarCabecalho(col).includes('INSCRICAO') || avalNormalizarCabecalho(col).includes('HORARIO') || avalNormalizarCabecalho(col)==='DATA') ? 'center' : undefined};
+      c.border = BORDA;
+    });
+    ws.getRow(ri+2).height = 20;
+  });
+
+  ws.views = [{state:'frozen', xSplit:0, ySplit:1}];
+  if(linhas.length) ws.autoFilter = {from:{row:1,column:1}, to:{row:1+linhas.length, column:cols.length}};
+}
+
+// Para abas sem coluna INSCRIÇÃO (ex.: resumo de quantidade por cargo) —
+// só replica os valores, sem estilo especial, pra não perder informação.
+function avalCopiarAbaSimples(wb, nomeAba, aoa){
+  const ws = wb.addWorksheet((nomeAba||'Aba').substring(0,31));
+  aoa.forEach((row,ri)=>{
+    (row||[]).forEach((val,ci)=>{
+      if(val===undefined || val===null || val==='') return;
+      ws.getCell(ri+1, ci+1).value = val;
+    });
+  });
+}
+
+// Acha a linha de cabeçalho (coluna INSCRIÇÃO) e devolve o cabeçalho já sem o
+// padding de colunas vazias que sobra das linhas de banner da convocação
+// original (senão as colunas novas apareciam ~20 colunas à direita do fim
+// real da tabela, em vez de logo após a última coluna preenchida).
+function avalLerCabecalhoReal(aoa){
+  const idxHeader = aoa.findIndex(row => Array.isArray(row) && row.some(c => avalNormalizarCabecalho(c)==='INSCRICAO'));
+  if(idxHeader < 0) return {idxHeader};
+  let headerLen = aoa[idxHeader].length;
+  while(headerLen>0 && String(aoa[idxHeader][headerLen-1]==null?'':aoa[idxHeader][headerLen-1]).trim()==='') headerLen--;
+  const headerOriginal = aoa[idxHeader].slice(0, headerLen).map(h=>String(h||'').replace(/\s+/g,' ').trim());
+  const headersNorm = headerOriginal.map(avalNormalizarCabecalho);
+  return {idxHeader, headerOriginal, headersNorm};
+}
+
 function gerarResultadoTaf(input){
   const file = input.files[0]; if(!file) return;
   const status = document.getElementById('aval-resultado-status');
   status.textContent = 'Lendo planilha...';
-  carregarSheetJS(async ()=>{
-    try{
-      const cfg = window._avalConfig;
-      const buf = await file.arrayBuffer();
-      const wbIn = XLSX.read(buf, {type:'array'});
+  carregarSheetJS(()=>{
+    carregarExcelJS(async ()=>{
+      try{
+        const cfg = window._avalConfig;
+        const buf = await file.arrayBuffer();
+        const wbIn = XLSX.read(buf, {type:'array'});
 
-      status.textContent = 'Buscando respostas salvas...';
-      const respostas = await avalCarregarRespostas(`taf_resp_${cfg.token}_`, status);
+        status.textContent = 'Buscando respostas salvas...';
+        const respostas = await avalCarregarRespostas(`taf_resp_${cfg.token}_`, status);
 
-      // agrupa por inscrição → { corrida:resp, abdominal:resp, barra:resp }, mantendo o envio mais recente em caso de reenvio
-      const porInscricao = new Map();
-      for(const resp of respostas){
-        const insc = String(resp?.candidato?.inscricao || '').trim();
-        const prova = resp?.prova;
-        if(!insc || !prova) continue;
-        if(!porInscricao.has(insc)) porInscricao.set(insc, {});
-        const grupo = porInscricao.get(insc);
-        const atual = grupo[prova];
-        if(!atual || new Date(resp.enviadoEm||0) > new Date(atual.enviadoEm||0)) grupo[prova] = resp;
-      }
-
-      const provasOrdem = ['corrida','abdominal','barra'];
-      const provasTitulos = {corrida:'CORRIDA (nota)', abdominal:'ABDOMINAL (nota)', barra:'BARRA (nota)'};
-
-      const wbOut = XLSX.utils.book_new();
-      let totalCandidatos = 0;
-
-      for(const nomeAba of wbIn.SheetNames){
-        const aoa = XLSX.utils.sheet_to_json(wbIn.Sheets[nomeAba], {header:1, defval:''});
-        const idxHeader = aoa.findIndex(row => Array.isArray(row) && row.some(c => avalNormalizarCabecalho(c)==='INSCRICAO'));
-        if(idxHeader < 0){
-          XLSX.utils.book_append_sheet(wbOut, XLSX.utils.aoa_to_sheet(aoa), nomeAba.substring(0,31));
-          continue;
+        // agrupa por inscrição → { corrida:resp, abdominal:resp, barra:resp }, mantendo o envio mais recente em caso de reenvio
+        const porInscricao = new Map();
+        for(const resp of respostas){
+          const insc = String(resp?.candidato?.inscricao || '').trim();
+          const prova = resp?.prova;
+          if(!insc || !prova) continue;
+          if(!porInscricao.has(insc)) porInscricao.set(insc, {});
+          const grupo = porInscricao.get(insc);
+          const atual = grupo[prova];
+          if(!atual || new Date(resp.enviadoEm||0) > new Date(atual.enviadoEm||0)) grupo[prova] = resp;
         }
-        const headers = aoa[idxHeader].map(avalNormalizarCabecalho);
-        const colInsc = headers.findIndex(h=>h.includes('INSCRICAO'));
 
-        const novoCabecalho = [...aoa[idxHeader], ...provasOrdem.map(p=>provasTitulos[p]), 'RESULTADO', 'LINK FOTO'];
-        const novasLinhas = [];
-        for(let r=idxHeader+1; r<aoa.length; r++){
-          const row = aoa[r]; if(!Array.isArray(row)) continue;
-          const inscricao = colInsc>=0 ? String(row[colInsc]||'').trim() : '';
-          if(!inscricao){ novasLinhas.push(row); continue; }
-          totalCandidatos++;
+        const provasOrdem = ['corrida','abdominal','barra'];
+        const provasTitulos = {corrida:'CORRIDA (NOTA)', abdominal:'ABDOMINAL (NOTA)', barra:'BARRA (NOTA)'};
 
-          const respsCandidato = porInscricao.get(inscricao) || {};
-          const encontrados = provasOrdem.filter(p=>respsCandidato[p]);
-          const notas = provasOrdem.map(p=>{
-            const resp = respsCandidato[p];
-            if(!resp) return '';
-            return resp.eliminado ? 'ELIMINADO' : resp.pontos;
-          });
-          const algumEliminado = encontrados.some(p=>respsCandidato[p].eliminado);
+        const wbOut = new ExcelJS.Workbook();
+        let totalCandidatos = 0;
 
-          let resultado;
-          if(encontrados.length === 0) resultado = 'AUSENTE';
-          else if(algumEliminado) resultado = 'INAPTO';
-          else if(encontrados.length === provasOrdem.length) resultado = 'APTO';
-          else resultado = 'VERIFICAR'; // sem eliminação registrada, mas faltam provas — não presuma, confira manualmente
+        for(const nomeAba of wbIn.SheetNames){
+          const aoa = XLSX.utils.sheet_to_json(wbIn.Sheets[nomeAba], {header:1, defval:''});
+          const {idxHeader, headerOriginal, headersNorm} = avalLerCabecalhoReal(aoa);
+          if(idxHeader < 0){ avalCopiarAbaSimples(wbOut, nomeAba, aoa); continue; }
+          const colInsc = headersNorm.findIndex(h=>h.includes('INSCRICAO'));
 
-          let fotoMaisRecente = null;
-          for(const p of encontrados){
-            const resp = respsCandidato[p];
-            if(resp.fotoPath && (!fotoMaisRecente || new Date(resp.enviadoEm||0) > new Date(fotoMaisRecente.enviadoEm||0))) fotoMaisRecente = resp;
+          const cols = [...headerOriginal, ...provasOrdem.map(p=>provasTitulos[p]), 'RESULTADO', 'LINK FOTO'];
+          const linhas = [];
+          for(let r=idxHeader+1; r<aoa.length; r++){
+            const row = aoa[r]; if(!Array.isArray(row)) continue;
+            const inscricao = colInsc>=0 ? String(row[colInsc]||'').trim() : '';
+            if(!inscricao) continue; // linha vazia/rodapé — não faz parte da tabela
+            totalCandidatos++;
+
+            const respsCandidato = porInscricao.get(inscricao) || {};
+            const encontrados = provasOrdem.filter(p=>respsCandidato[p]);
+            const notas = provasOrdem.map(p=>{
+              const resp = respsCandidato[p];
+              if(!resp) return '';
+              return resp.eliminado ? 'ELIMINADO' : resp.pontos;
+            });
+            const algumEliminado = encontrados.some(p=>respsCandidato[p].eliminado);
+
+            let resultado;
+            if(encontrados.length === 0) resultado = 'AUSENTE';
+            else if(algumEliminado) resultado = 'INAPTO';
+            else if(encontrados.length === provasOrdem.length) resultado = 'APTO';
+            else resultado = 'VERIFICAR'; // sem eliminação registrada, mas faltam provas — não presuma, confira manualmente
+
+            let fotoMaisRecente = null;
+            for(const p of encontrados){
+              const resp = respsCandidato[p];
+              if(resp.fotoPath && (!fotoMaisRecente || new Date(resp.enviadoEm||0) > new Date(fotoMaisRecente.enviadoEm||0))) fotoMaisRecente = resp;
+            }
+
+            const valoresOriginais = headerOriginal.map((_,ci)=> row[ci]===undefined ? '' : row[ci]);
+            linhas.push([...valoresOriginais, ...notas, resultado, avalLinkFoto(fotoMaisRecente?.fotoPath)]);
           }
-
-          novasLinhas.push([...row, ...notas, resultado, avalLinkFoto(fotoMaisRecente?.fotoPath)]);
+          avalCriarPlanilhaResultado(wbOut, nomeAba, cols, linhas);
         }
-        const aoaFinal = [...aoa.slice(0, idxHeader), novoCabecalho, ...novasLinhas];
-        XLSX.utils.book_append_sheet(wbOut, XLSX.utils.aoa_to_sheet(aoaFinal), nomeAba.substring(0,31));
-      }
 
-      const nomeArquivo = `RESULTADO_TAF_${(cfg.concursoNome||'concurso').replace(/[^\w-]+/g,'_')}.xlsx`;
-      XLSX.writeFile(wbOut, nomeArquivo);
-      status.innerHTML = `✅ Resultado gerado — ${totalCandidatos} candidato(s) processado(s) (baixado como <strong>${nomeArquivo}</strong>).`;
-    }catch(e){
-      status.innerHTML = '❌ Erro ao gerar o resultado: '+e.message;
-    }
+        const nomeArquivo = `RESULTADO_TAF_${(cfg.concursoNome||'concurso').replace(/[^\w-]+/g,'_')}.xlsx`;
+        const bufOut = await wbOut.xlsx.writeBuffer();
+        const blob = new Blob([bufOut], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = nomeArquivo;
+        a.click();
+        status.innerHTML = `✅ Resultado gerado — ${totalCandidatos} candidato(s) processado(s) (baixado como <strong>${nomeArquivo}</strong>).`;
+      }catch(e){
+        status.innerHTML = '❌ Erro ao gerar o resultado: '+e.message;
+      }
+    });
   });
 }
 
@@ -7575,70 +7667,73 @@ function gerarResultadoPratica(input){
   const file = input.files[0]; if(!file) return;
   const status = document.getElementById('aval-resultado-status-pratica');
   status.textContent = 'Lendo planilha...';
-  carregarSheetJS(async ()=>{
-    try{
-      const cfg = window._avalConfigPratica;
-      const buf = await file.arrayBuffer();
-      const wbIn = XLSX.read(buf, {type:'array'});
+  carregarSheetJS(()=>{
+    carregarExcelJS(async ()=>{
+      try{
+        const cfg = window._avalConfigPratica;
+        const buf = await file.arrayBuffer();
+        const wbIn = XLSX.read(buf, {type:'array'});
 
-      status.textContent = 'Buscando respostas salvas...';
-      const respostas = await avalCarregarRespostas(`pratica_resp_${cfg.token}_`, status);
+        status.textContent = 'Buscando respostas salvas...';
+        const respostas = await avalCarregarRespostas(`pratica_resp_${cfg.token}_`, status);
 
-      // chave = inscrição + cargo (cada modalidade tem sua própria inscrição — ver Prova Prática)
-      const porChave = new Map();
-      for(const resp of respostas){
-        const insc = String(resp?.candidato?.inscricao || '').trim();
-        const cargoTipo = resp?.cargo;
-        if(!insc || !cargoTipo) continue;
-        const chave = insc+'|'+cargoTipo;
-        const atual = porChave.get(chave);
-        if(!atual || new Date(resp.enviadoEm||0) > new Date(atual.enviadoEm||0)) porChave.set(chave, resp);
-      }
-
-      const wbOut = XLSX.utils.book_new();
-      let totalCandidatos = 0;
-
-      for(const nomeAba of wbIn.SheetNames){
-        const aoa = XLSX.utils.sheet_to_json(wbIn.Sheets[nomeAba], {header:1, defval:''});
-        const idxHeader = aoa.findIndex(row => Array.isArray(row) && row.some(c => avalNormalizarCabecalho(c)==='INSCRICAO'));
-        if(idxHeader < 0){
-          XLSX.utils.book_append_sheet(wbOut, XLSX.utils.aoa_to_sheet(aoa), nomeAba.substring(0,31));
-          continue;
+        // chave = inscrição + cargo (cada modalidade tem sua própria inscrição — ver Prova Prática)
+        const porChave = new Map();
+        for(const resp of respostas){
+          const insc = String(resp?.candidato?.inscricao || '').trim();
+          const cargoTipo = resp?.cargo;
+          if(!insc || !cargoTipo) continue;
+          const chave = insc+'|'+cargoTipo;
+          const atual = porChave.get(chave);
+          if(!atual || new Date(resp.enviadoEm||0) > new Date(atual.enviadoEm||0)) porChave.set(chave, resp);
         }
-        const headers = aoa[idxHeader].map(avalNormalizarCabecalho);
-        const colInsc = headers.findIndex(h=>h.includes('INSCRICAO'));
-        const colCargo = headers.findIndex(h=>h==='CARGO');
 
-        const novoCabecalho = [...aoa[idxHeader], 'RESULTADO', 'NOTA', 'LINK FOTO'];
-        const novasLinhas = [];
-        for(let r=idxHeader+1; r<aoa.length; r++){
-          const row = aoa[r]; if(!Array.isArray(row)) continue;
-          const inscricao = colInsc>=0 ? String(row[colInsc]||'').trim() : '';
-          if(!inscricao){ novasLinhas.push(row); continue; }
-          totalCandidatos++;
+        const wbOut = new ExcelJS.Workbook();
+        let totalCandidatos = 0;
 
-          const cargoRaw = colCargo>=0 ? row[colCargo] : '';
-          const cargoTipo = avalClassificarCargo(cargoRaw);
-          const resp = porChave.get(inscricao+'|'+cargoTipo);
+        for(const nomeAba of wbIn.SheetNames){
+          const aoa = XLSX.utils.sheet_to_json(wbIn.Sheets[nomeAba], {header:1, defval:''});
+          const {idxHeader, headerOriginal, headersNorm} = avalLerCabecalhoReal(aoa);
+          if(idxHeader < 0){ avalCopiarAbaSimples(wbOut, nomeAba, aoa); continue; }
+          const colInsc = headersNorm.findIndex(h=>h.includes('INSCRICAO'));
+          const colCargo = headersNorm.findIndex(h=>h==='CARGO');
 
-          let resultado = 'AUSENTE', nota = '', linkFoto = '';
-          if(resp){
-            resultado = resp.apto ? 'APTO' : 'INAPTO';
-            nota = resp.apto ? '' : resp.pontos;
-            linkFoto = avalLinkFoto(resp.fotoPath);
+          const cols = [...headerOriginal, 'RESULTADO', 'NOTA', 'LINK FOTO'];
+          const linhas = [];
+          for(let r=idxHeader+1; r<aoa.length; r++){
+            const row = aoa[r]; if(!Array.isArray(row)) continue;
+            const inscricao = colInsc>=0 ? String(row[colInsc]||'').trim() : '';
+            if(!inscricao) continue;
+            totalCandidatos++;
+
+            const cargoRaw = colCargo>=0 ? row[colCargo] : '';
+            const cargoTipo = avalClassificarCargo(cargoRaw);
+            const resp = porChave.get(inscricao+'|'+cargoTipo);
+
+            let resultado = 'AUSENTE', nota = '', linkFoto = '';
+            if(resp){
+              resultado = resp.apto ? 'APTO' : 'INAPTO';
+              nota = resp.apto ? '' : resp.pontos;
+              linkFoto = avalLinkFoto(resp.fotoPath);
+            }
+            const valoresOriginais = headerOriginal.map((_,ci)=> row[ci]===undefined ? '' : row[ci]);
+            linhas.push([...valoresOriginais, resultado, nota, linkFoto]);
           }
-          novasLinhas.push([...row, resultado, nota, linkFoto]);
+          avalCriarPlanilhaResultado(wbOut, nomeAba, cols, linhas);
         }
-        const aoaFinal = [...aoa.slice(0, idxHeader), novoCabecalho, ...novasLinhas];
-        XLSX.utils.book_append_sheet(wbOut, XLSX.utils.aoa_to_sheet(aoaFinal), nomeAba.substring(0,31));
-      }
 
-      const nomeArquivo = `RESULTADO_PROVA_PRATICA_${(cfg.concursoNome||'concurso').replace(/[^\w-]+/g,'_')}.xlsx`;
-      XLSX.writeFile(wbOut, nomeArquivo);
-      status.innerHTML = `✅ Resultado gerado — ${totalCandidatos} candidato(s) processado(s) (baixado como <strong>${nomeArquivo}</strong>).`;
-    }catch(e){
-      status.innerHTML = '❌ Erro ao gerar o resultado: '+e.message;
-    }
+        const nomeArquivo = `RESULTADO_PROVA_PRATICA_${(cfg.concursoNome||'concurso').replace(/[^\w-]+/g,'_')}.xlsx`;
+        const bufOut = await wbOut.xlsx.writeBuffer();
+        const blob = new Blob([bufOut], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = nomeArquivo;
+        a.click();
+        status.innerHTML = `✅ Resultado gerado — ${totalCandidatos} candidato(s) processado(s) (baixado como <strong>${nomeArquivo}</strong>).`;
+      }catch(e){
+        status.innerHTML = '❌ Erro ao gerar o resultado: '+e.message;
+      }
+    });
   });
 }
 
