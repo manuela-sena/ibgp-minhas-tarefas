@@ -222,13 +222,6 @@
       <div class="card-body">
         <div id="checklist-wrap"></div>
         <div id="preview-pontos" class="preview-pontos neutro" style="margin:6px 0 16px">10,0 pontos — nenhuma falta marcada</div>
-        <div id="resultado-wrap" style="display:none;margin-bottom:16px">
-          <label>Resultado final<span class="req">*</span></label>
-          <div class="radio-row" style="margin-top:6px">
-            <div class="radio-opt" id="resultado-APTO" onclick="selecionarResultado(true)">APTO</div>
-            <div class="radio-opt" id="resultado-INAPTO" onclick="selecionarResultado(false)">INAPTO</div>
-          </div>
-        </div>
         <div class="form-group" style="margin-bottom:0">
           <label>Observações <span style="color:var(--muted);font-weight:400">(opcional)</span></label>
           <textarea id="f-obs" placeholder="Alguma ocorrência a registrar?"></textarea>
@@ -264,7 +257,6 @@ let CONFIG = null;
 let CANDIDATOS_TURMA = [];
 let CANDIDATO_SEL = null; // {nome, cargos:[{tipo, raw, inscricao, data, horario}, ...]}
 let CNH_SEL = null; // true | false | null (não respondido) — usado só para MOTORISTA/OPERADOR
-let RESULTADO_SEL = null; // true (APTO) | false (INAPTO) | null (não respondido) — usado só para os cargos de escala NR/RI/RS
 let FOTO_DATA_URL = null; // dataURL jpeg comprimido, ou null
 
 window.onload = async function(){
@@ -413,30 +405,14 @@ function ativarFluxoAvaliacao(){
   const isLikert = LIKERT_CARGOS.includes(CARGO_ATIVO);
   document.getElementById('card-avaliacao-sub').textContent =
     CARGO_ATIVO === 'OPERADOR' ? 'Marque apenas os itens do checklist que NÃO foram atendidos pelo candidato.' :
-    isLikert ? 'Avalie cada item conforme o nível apresentado pelo candidato (NR = não realizado, RI = realizado insatisfatoriamente, RS = realizado satisfatoriamente) e defina o resultado final.' :
+    isLikert ? 'Avalie cada item conforme o nível apresentado pelo candidato (NR = não realizado, RI = realizado insatisfatoriamente, RS = realizado satisfatoriamente). O resultado final (APTO/INAPTO) é calculado automaticamente pela pontuação.' :
     'Marque as faltas cometidas pelo candidato durante o teste de direção.';
   resetarCnh();
-  resetarResultado();
   resetarFoto();
   document.getElementById('card-foto').style.display='block';
   document.getElementById('card-cnh').style.display = isLikert ? 'none' : 'block';
-  document.getElementById('resultado-wrap').style.display = isLikert ? 'block' : 'none';
   document.getElementById('card-avaliacao').style.display='block';
   renderChecklist();
-  atualizarBotaoEnviar();
-}
-
-function resetarResultado(){
-  RESULTADO_SEL = null;
-  document.getElementById('resultado-APTO').classList.remove('active');
-  document.getElementById('resultado-INAPTO').classList.remove('active');
-}
-
-function selecionarResultado(valor){
-  RESULTADO_SEL = valor;
-  document.getElementById('resultado-APTO').classList.toggle('active', valor===true);
-  document.getElementById('resultado-INAPTO').classList.toggle('active', valor===false);
-  atualizarPreview();
   atualizarBotaoEnviar();
 }
 
@@ -452,10 +428,8 @@ function limparCandidato(){
   document.getElementById('card-foto').style.display='none';
   document.getElementById('card-cnh').style.display='none';
   document.getElementById('card-avaliacao').style.display='none';
-  document.getElementById('resultado-wrap').style.display='none';
   document.getElementById('header-cargo').textContent = '';
   resetarCnh();
-  resetarResultado();
   resetarFoto();
   atualizarBotaoEnviar();
 }
@@ -623,7 +597,7 @@ function calcularPontos(){
       const checked = row.querySelector('.lk-radio:checked');
       if(checked){ pontos += parseFloat(checked.getAttribute('data-valor')) || 0; respondidas++; }
     });
-    return {pontos, eliminado:false, apto: RESULTADO_SEL === true, faltas:0, respondidas, totalItens: linhas.length, motivo:'likert'};
+    return {pontos, eliminado:false, apto: pontos >= 5, faltas:0, respondidas, totalItens: linhas.length, motivo:'likert'};
   } else {
     const gravissimas = document.querySelectorAll('.chk-falta[data-nivel="gravissima"]:checked').length;
     if(gravissimas > 0) return {pontos:0, eliminado:true, apto:false, faltas: gravissimas};
@@ -644,15 +618,15 @@ function atualizarPreview(){
     box.textContent='⚠️ ELIMINADO — não apresentou a CNH exigida';
   } else if(r.motivo === 'likert'){
     const faltam = r.totalItens - r.respondidas;
-    if(RESULTADO_SEL === null){
+    if(faltam > 0){
       box.className='preview-pontos neutro';
-      box.textContent = fmtPontos(r.pontos) + ' pontos' + (faltam ? ` — ${faltam} item(ns) sem resposta` : ' — selecione o resultado final');
-    } else if(RESULTADO_SEL){
+      box.textContent = fmtPontos(r.pontos) + ` pontos — ${faltam} item(ns) sem resposta`;
+    } else if(r.apto){
       box.className='preview-pontos ok';
       box.textContent = fmtPontos(r.pontos) + ' pontos — APTO';
     } else {
       box.className='preview-pontos elim';
-      box.textContent = fmtPontos(r.pontos) + ' pontos — INAPTO';
+      box.textContent = fmtPontos(r.pontos) + ' pontos — INAPTO (abaixo de 5,0)';
     }
   } else if(r.eliminado){
     box.className='preview-pontos elim';
@@ -671,7 +645,8 @@ function atualizarBotaoEnviar(){
   if(CARGO_ATIVO === 'MOTORISTA' || CARGO_ATIVO === 'OPERADOR'){
     extraOk = CNH_SEL !== null;
   } else if(LIKERT_CARGOS.includes(CARGO_ATIVO)){
-    extraOk = RESULTADO_SEL !== null;
+    const r = calcularPontos();
+    extraOk = r.totalItens > 0 && r.respondidas === r.totalItens;
   }
   const ok = document.getElementById('f-avaliador').value && CANDIDATO_SEL && CARGO_ATIVO && extraOk && !!FOTO_DATA_URL;
   document.getElementById('btn-enviar').disabled = !ok;
@@ -725,13 +700,13 @@ async function enviarAvaliacao(){
 
   const isLikert = LIKERT_CARGOS.includes(CARGO_ATIVO);
   const faltaCnh = !isLikert && CNH_SEL === null;
-  const faltaResultado = isLikert && RESULTADO_SEL === null;
-  if(!avaliador || !CANDIDATO_SEL || !CARGO_ATIVO || !CARGO_ENTRY_ATIVO || !FOTO_DATA_URL || faltaCnh || faltaResultado){
+  const calc = calcularPontos();
+  const faltaItensLikert = isLikert && (calc.totalItens === 0 || calc.respondidas < calc.totalItens);
+  if(!avaliador || !CANDIDATO_SEL || !CARGO_ATIVO || !CARGO_ENTRY_ATIVO || !FOTO_DATA_URL || faltaCnh || faltaItensLikert){
     alertEl.className='alert alert-error'; alertEl.style.display='block';
-    alertEl.textContent='Preencha todos os campos obrigatórios antes de enviar (inclusive a modalidade, a foto e o resultado da avaliação).';
+    alertEl.textContent='Preencha todos os campos obrigatórios antes de enviar (inclusive a modalidade, a foto e todos os itens da avaliação).';
     return;
   }
-  const calc = calcularPontos();
 
   const btn = document.getElementById('btn-enviar');
   btn.disabled = true; btn.textContent = 'Enviando...';
@@ -749,7 +724,7 @@ async function enviarAvaliacao(){
       turma: [CARGO_ENTRY_ATIVO.data, CARGO_ENTRY_ATIVO.horario].filter(Boolean).join(' · '),
       candidato: {inscricao: inscricaoAtiva, nome: CANDIDATO_SEL.nome, cargo: CARGO_ENTRY_ATIVO.raw||'', data: CARGO_ENTRY_ATIVO.data||'', horario: CARGO_ENTRY_ATIVO.horario||''},
       cnhApresentada: CNH_SEL,
-      resultadoFinal: isLikert ? (RESULTADO_SEL ? 'APTO' : 'INAPTO') : null,
+      resultadoFinal: isLikert ? (calc.apto ? 'APTO' : 'INAPTO') : null,
       fotoPath,
       itensMarcados: itensMarcadosResumo(),
       pontos: calc.pontos,
