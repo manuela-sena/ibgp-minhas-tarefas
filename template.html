@@ -7339,6 +7339,14 @@ ${linkAtivo ? `
   </button>
 </div>
 <div id="aval-salvar-status" style="margin-top:10px;text-align:right;font-size:12.5px"></div>
+
+${cfg.token ? `
+<div class="card card-pad" style="margin-top:20px">
+  <div style="font-size:13px;font-weight:700;color:#1f2a3d;margin-bottom:4px">4. Gerar Resultado</div>
+  <div style="font-size:12px;color:#8a9ab5;margin-bottom:10px">Envie de novo a planilha de convocação — o app busca todas as respostas já enviadas pelos avaliadores e baixa uma planilha igual à convocação, com uma coluna de nota para cada prova (corrida, abdominal, barra), o resultado final (APTO / INAPTO / AUSENTE / VERIFICAR) e o link da foto do candidato.</div>
+  <input type="file" id="aval-file-resultado" accept=".xlsx" class="form-input" style="padding:6px" onchange="gerarResultadoTaf(this)">
+  <div id="aval-resultado-status" style="margin-top:8px;font-size:12.5px;color:#8a9ab5"></div>
+</div>` : ''}
 `;
 
   renderListaAvaliadores();
@@ -7431,6 +7439,207 @@ function avalRestaurarPadrao(provaKey){
 function avalNormalizarCabecalho(s){
   return String(s==null?'':s).normalize('NFD').replace(/[̀-ͯ]/g,'')
     .replace(/\n/g,' ').replace(/\s+/g,' ').trim().toUpperCase();
+}
+
+// ── GERAÇÃO DE RESULTADO (TAF + PROVA PRÁTICA) ────────────────────────
+// Lê as respostas já salvas em respostas_avaliacao/ em lotes pequenos, para
+// não disparar o rate-limit (429) do raw.githubusercontent.com — mesmo
+// padrão já usado em carregarEscolas().
+async function avalFetchJsonComRetry(url, tentativas=5){
+  for(let i=0;i<tentativas;i++){
+    try{
+      const resp = await fetch(url);
+      if(resp.ok) return await resp.json();
+      await new Promise(res=>setTimeout(res, 700*(i+1)));
+    }catch(e){
+      await new Promise(res=>setTimeout(res, 500*(i+1)));
+    }
+  }
+  return null;
+}
+
+async function avalListarArquivosResposta(prefixo){
+  const r = await fetch(
+    `https://api.github.com/repos/${GH_REPO_ALOC}/contents/respostas_avaliacao`,
+    {headers:{'Authorization':'Bearer '+GH_TOKEN_ALOC}}
+  );
+  if(!r.ok) throw new Error('Não foi possível listar as respostas salvas.');
+  const lista = await r.json();
+  return (Array.isArray(lista)?lista:[]).filter(a=>a.name.startsWith(prefixo) && a.name.endsWith('.json'));
+}
+
+async function avalCarregarRespostas(prefixo, statusEl){
+  const arquivos = await avalListarArquivosResposta(prefixo);
+  const respostas = [];
+  const LOTE = 4;
+  for(let i=0; i<arquivos.length; i+=LOTE){
+    const lote = arquivos.slice(i, i+LOTE);
+    if(statusEl) statusEl.textContent = `Lendo respostas salvas... (${Math.min(i+LOTE,arquivos.length)}/${arquivos.length})`;
+    const resultados = await Promise.all(lote.map(a=>avalFetchJsonComRetry(a.download_url)));
+    respostas.push(...resultados.filter(Boolean));
+    if(i+LOTE < arquivos.length) await new Promise(res=>setTimeout(res, 200));
+  }
+  return respostas;
+}
+
+function avalLinkFoto(fotoPath){
+  return fotoPath ? `https://raw.githubusercontent.com/${GH_REPO_ALOC}/main/${fotoPath}` : '';
+}
+
+function gerarResultadoTaf(input){
+  const file = input.files[0]; if(!file) return;
+  const status = document.getElementById('aval-resultado-status');
+  status.textContent = 'Lendo planilha...';
+  carregarSheetJS(async ()=>{
+    try{
+      const cfg = window._avalConfig;
+      const buf = await file.arrayBuffer();
+      const wbIn = XLSX.read(buf, {type:'array'});
+
+      status.textContent = 'Buscando respostas salvas...';
+      const respostas = await avalCarregarRespostas(`taf_resp_${cfg.token}_`, status);
+
+      // agrupa por inscrição → { corrida:resp, abdominal:resp, barra:resp }, mantendo o envio mais recente em caso de reenvio
+      const porInscricao = new Map();
+      for(const resp of respostas){
+        const insc = String(resp?.candidato?.inscricao || '').trim();
+        const prova = resp?.prova;
+        if(!insc || !prova) continue;
+        if(!porInscricao.has(insc)) porInscricao.set(insc, {});
+        const grupo = porInscricao.get(insc);
+        const atual = grupo[prova];
+        if(!atual || new Date(resp.enviadoEm||0) > new Date(atual.enviadoEm||0)) grupo[prova] = resp;
+      }
+
+      const provasOrdem = ['corrida','abdominal','barra'];
+      const provasTitulos = {corrida:'CORRIDA (nota)', abdominal:'ABDOMINAL (nota)', barra:'BARRA (nota)'};
+
+      const wbOut = XLSX.utils.book_new();
+      let totalCandidatos = 0;
+
+      for(const nomeAba of wbIn.SheetNames){
+        const aoa = XLSX.utils.sheet_to_json(wbIn.Sheets[nomeAba], {header:1, defval:''});
+        const idxHeader = aoa.findIndex(row => Array.isArray(row) && row.some(c => avalNormalizarCabecalho(c)==='INSCRICAO'));
+        if(idxHeader < 0){
+          XLSX.utils.book_append_sheet(wbOut, XLSX.utils.aoa_to_sheet(aoa), nomeAba.substring(0,31));
+          continue;
+        }
+        const headers = aoa[idxHeader].map(avalNormalizarCabecalho);
+        const colInsc = headers.findIndex(h=>h.includes('INSCRICAO'));
+
+        const novoCabecalho = [...aoa[idxHeader], ...provasOrdem.map(p=>provasTitulos[p]), 'RESULTADO', 'LINK FOTO'];
+        const novasLinhas = [];
+        for(let r=idxHeader+1; r<aoa.length; r++){
+          const row = aoa[r]; if(!Array.isArray(row)) continue;
+          const inscricao = colInsc>=0 ? String(row[colInsc]||'').trim() : '';
+          if(!inscricao){ novasLinhas.push(row); continue; }
+          totalCandidatos++;
+
+          const respsCandidato = porInscricao.get(inscricao) || {};
+          const encontrados = provasOrdem.filter(p=>respsCandidato[p]);
+          const notas = provasOrdem.map(p=>{
+            const resp = respsCandidato[p];
+            if(!resp) return '';
+            return resp.eliminado ? 'ELIMINADO' : resp.pontos;
+          });
+          const algumEliminado = encontrados.some(p=>respsCandidato[p].eliminado);
+
+          let resultado;
+          if(encontrados.length === 0) resultado = 'AUSENTE';
+          else if(algumEliminado) resultado = 'INAPTO';
+          else if(encontrados.length === provasOrdem.length) resultado = 'APTO';
+          else resultado = 'VERIFICAR'; // sem eliminação registrada, mas faltam provas — não presuma, confira manualmente
+
+          let fotoMaisRecente = null;
+          for(const p of encontrados){
+            const resp = respsCandidato[p];
+            if(resp.fotoPath && (!fotoMaisRecente || new Date(resp.enviadoEm||0) > new Date(fotoMaisRecente.enviadoEm||0))) fotoMaisRecente = resp;
+          }
+
+          novasLinhas.push([...row, ...notas, resultado, avalLinkFoto(fotoMaisRecente?.fotoPath)]);
+        }
+        const aoaFinal = [...aoa.slice(0, idxHeader), novoCabecalho, ...novasLinhas];
+        XLSX.utils.book_append_sheet(wbOut, XLSX.utils.aoa_to_sheet(aoaFinal), nomeAba.substring(0,31));
+      }
+
+      const nomeArquivo = `RESULTADO_TAF_${(cfg.concursoNome||'concurso').replace(/[^\w-]+/g,'_')}.xlsx`;
+      XLSX.writeFile(wbOut, nomeArquivo);
+      status.innerHTML = `✅ Resultado gerado — ${totalCandidatos} candidato(s) processado(s) (baixado como <strong>${nomeArquivo}</strong>).`;
+    }catch(e){
+      status.innerHTML = '❌ Erro ao gerar o resultado: '+e.message;
+    }
+  });
+}
+
+function gerarResultadoPratica(input){
+  const file = input.files[0]; if(!file) return;
+  const status = document.getElementById('aval-resultado-status-pratica');
+  status.textContent = 'Lendo planilha...';
+  carregarSheetJS(async ()=>{
+    try{
+      const cfg = window._avalConfigPratica;
+      const buf = await file.arrayBuffer();
+      const wbIn = XLSX.read(buf, {type:'array'});
+
+      status.textContent = 'Buscando respostas salvas...';
+      const respostas = await avalCarregarRespostas(`pratica_resp_${cfg.token}_`, status);
+
+      // chave = inscrição + cargo (cada modalidade tem sua própria inscrição — ver Prova Prática)
+      const porChave = new Map();
+      for(const resp of respostas){
+        const insc = String(resp?.candidato?.inscricao || '').trim();
+        const cargoTipo = resp?.cargo;
+        if(!insc || !cargoTipo) continue;
+        const chave = insc+'|'+cargoTipo;
+        const atual = porChave.get(chave);
+        if(!atual || new Date(resp.enviadoEm||0) > new Date(atual.enviadoEm||0)) porChave.set(chave, resp);
+      }
+
+      const wbOut = XLSX.utils.book_new();
+      let totalCandidatos = 0;
+
+      for(const nomeAba of wbIn.SheetNames){
+        const aoa = XLSX.utils.sheet_to_json(wbIn.Sheets[nomeAba], {header:1, defval:''});
+        const idxHeader = aoa.findIndex(row => Array.isArray(row) && row.some(c => avalNormalizarCabecalho(c)==='INSCRICAO'));
+        if(idxHeader < 0){
+          XLSX.utils.book_append_sheet(wbOut, XLSX.utils.aoa_to_sheet(aoa), nomeAba.substring(0,31));
+          continue;
+        }
+        const headers = aoa[idxHeader].map(avalNormalizarCabecalho);
+        const colInsc = headers.findIndex(h=>h.includes('INSCRICAO'));
+        const colCargo = headers.findIndex(h=>h==='CARGO');
+
+        const novoCabecalho = [...aoa[idxHeader], 'RESULTADO', 'NOTA', 'LINK FOTO'];
+        const novasLinhas = [];
+        for(let r=idxHeader+1; r<aoa.length; r++){
+          const row = aoa[r]; if(!Array.isArray(row)) continue;
+          const inscricao = colInsc>=0 ? String(row[colInsc]||'').trim() : '';
+          if(!inscricao){ novasLinhas.push(row); continue; }
+          totalCandidatos++;
+
+          const cargoRaw = colCargo>=0 ? row[colCargo] : '';
+          const cargoTipo = avalClassificarCargo(cargoRaw);
+          const resp = porChave.get(inscricao+'|'+cargoTipo);
+
+          let resultado = 'AUSENTE', nota = '', linkFoto = '';
+          if(resp){
+            resultado = resp.apto ? 'APTO' : 'INAPTO';
+            nota = resp.apto ? '' : resp.pontos;
+            linkFoto = avalLinkFoto(resp.fotoPath);
+          }
+          novasLinhas.push([...row, resultado, nota, linkFoto]);
+        }
+        const aoaFinal = [...aoa.slice(0, idxHeader), novoCabecalho, ...novasLinhas];
+        XLSX.utils.book_append_sheet(wbOut, XLSX.utils.aoa_to_sheet(aoaFinal), nomeAba.substring(0,31));
+      }
+
+      const nomeArquivo = `RESULTADO_PROVA_PRATICA_${(cfg.concursoNome||'concurso').replace(/[^\w-]+/g,'_')}.xlsx`;
+      XLSX.writeFile(wbOut, nomeArquivo);
+      status.innerHTML = `✅ Resultado gerado — ${totalCandidatos} candidato(s) processado(s) (baixado como <strong>${nomeArquivo}</strong>).`;
+    }catch(e){
+      status.innerHTML = '❌ Erro ao gerar o resultado: '+e.message;
+    }
+  });
 }
 
 function parseConvocacaoTAF(input){
@@ -7785,6 +7994,14 @@ ${cfg.token ? `
   </button>
 </div>
 <div id="aval-salvar-status-pratica" style="margin-top:10px;text-align:right;font-size:12.5px"></div>
+
+${cfg.token ? `
+<div class="card card-pad" style="margin-top:20px">
+  <div style="font-size:13px;font-weight:700;color:#1f2a3d;margin-bottom:4px">4. Gerar Resultado</div>
+  <div style="font-size:12px;color:#8a9ab5;margin-bottom:10px">Envie de novo a planilha de convocação — o app busca todas as respostas já enviadas pelos avaliadores e baixa uma planilha igual à convocação, com o resultado (APTO / INAPTO / AUSENTE), a nota (mostrada apenas quando o candidato for INAPTO) e o link da foto do candidato.</div>
+  <input type="file" id="aval-file-resultado-pratica" accept=".xlsx" class="form-input" style="padding:6px" onchange="gerarResultadoPratica(this)">
+  <div id="aval-resultado-status-pratica" style="margin-top:8px;font-size:12.5px;color:#8a9ab5"></div>
+</div>` : ''}
 `;
 
   renderListaAvaliadoresPratica();
