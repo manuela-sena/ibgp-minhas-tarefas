@@ -1,0 +1,1025 @@
+{
+  "token": "PRAT_MT1S6QIU_IE5J",
+  "criadoEm": "2026-08-20T17:15:07.590Z",
+  "atualizadoEm": "2026-08-20T17:15:07.590Z",
+  "concursoNome": "INIMUTABA - EDITAL Nº 01/2025 - CONCURSO PÚBLICO",
+  "avaliadores": [
+    "ÉGON",
+    "MARCIO BISPO",
+    "FELIPE CORRÊA",
+    "GIOVANNI HOTT"
+  ],
+  "candidatos": [
+    {
+      "inscricao": "16287806",
+      "nome": "ALDAIR JOSE RIBEIRO",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16299777",
+      "nome": "ÂNGELO SANTOS DE PAULA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16277502",
+      "nome": "AROLDO ROCHA SANTANA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16303574",
+      "nome": "BRUNO RIBEIRO DA SILVA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16293891",
+      "nome": "CARLOS MAGNO DINIZ GOMES",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16287765",
+      "nome": "CHARLES GIAN SILVA MOURA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16301409",
+      "nome": "DELMIR DE FREITAS DIAS",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16304778",
+      "nome": "DILCIMAURO APARECIDO PINTO SANTANA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16278533",
+      "nome": "ELBERT EDUARDO RIBEIRO SILVA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16276382",
+      "nome": "ELIAS ALVES DE FREITAS",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16288981",
+      "nome": "ELTON VALADARES DOS SANTOS",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16299554",
+      "nome": "ERASMO JOSÉ DOS SANTOS MARTINS",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16300217",
+      "nome": "FILLIPI DE CASTRO MIRANDA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16277764",
+      "nome": "GABRIEL DOS SANTOS AZEVEDO",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16304932",
+      "nome": "GEOVANI CESAR GOMES FILHO",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16304316",
+      "nome": "GERALDO APARECIDO DA SILVA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16305780",
+      "nome": "GERALDO APARECIDO VIEIRA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16278722",
+      "nome": "GERALDO PEREIRA DE ALMEIDA JUNIOR",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16290941",
+      "nome": "GILSON FERREIRA COSTA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16278883",
+      "nome": "GRACIELMA MUNIZ BARRETO PEREIRA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16304054",
+      "nome": "ISAEL DINIZ GOMES",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16293653",
+      "nome": "IVAN CAMPOS",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16305411",
+      "nome": "JOSÉ RAIMUNDO MOREIRA GUIMARÃES",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16305322",
+      "nome": "JUSSARA DE ÁVILA AZEVEDO",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16276186",
+      "nome": "LEDIR DE ALMEIDA COSTA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16304589",
+      "nome": "LINDOMAR APARECIDO PEREIRA DA COSTA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16305631",
+      "nome": "LUAN CARVALHO PEREIRA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16304011",
+      "nome": "LUCAS FAGUNDES VAZ DE OLIVEIRA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16283200",
+      "nome": "LUCAS SILVA DOS SANTOS",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16305682",
+      "nome": "MARCELO DE FREITAS PINTO",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16276159",
+      "nome": "MARCELO LEANDRO PEREIRA LOPES",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16293543",
+      "nome": "RONE ALVES CORREIA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16281064",
+      "nome": "THIAGO DE SOUZA OLIVEIRA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16279035",
+      "nome": "VALDECI DA ROCHA SANTANA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16304747",
+      "nome": "VINICIUS DE ARAUJO SILVA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16294724",
+      "nome": "WESLEY FREIRE DA SILVA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16304725",
+      "nome": "ALAN LEONARDO RODRIGUES",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16304276",
+      "nome": "ALESSANDRO RIBEIRO",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16291600",
+      "nome": "ALEX LEONARDO RODRIGUES",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16290077",
+      "nome": "ALEX RODRIGUES DE ALMEIDA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16277752",
+      "nome": "ARCEBIADES CUSTODIO DA SILVA JUNIOR",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16275334",
+      "nome": "ARLINDO RODRIGUES DA SILVA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16276036",
+      "nome": "CAIO FERNANDES DOS SANTOS",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16305586",
+      "nome": "CARLOS LOPES DURAES NETO",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16304670",
+      "nome": "EULER GIOVANNI DE OLIVEIRA SOUSA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16286460",
+      "nome": "GILVAN MENDES PEREIRA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16289617",
+      "nome": "GUILHERME LINCES MARTINS",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16284183",
+      "nome": "GUSTAVO PERACIO DAMASCENO",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16305551",
+      "nome": "HELVECIO JOSE DA SILVA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16277273",
+      "nome": "HENRIQUE ALVES LOPES",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16277933",
+      "nome": "ISTANISLAU JÚNIOR BERNARDES",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16305886",
+      "nome": "JAIRO JOSE DE OLIVEIRA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16304776",
+      "nome": "JEREMIAS GOMES TRINDADE",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16305137",
+      "nome": "JHONATAN APARECIDO AQUINO",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16275383",
+      "nome": "JOAO CESAR ALIPIO",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16304928",
+      "nome": "JOÃO PAULO TRINDADE PEREIRA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16276877",
+      "nome": "JOSÉ SARAIVA MARTINS",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16277307",
+      "nome": "JÚLIO CÉSAR SANTANA OLIVEIRA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16301963",
+      "nome": "LEANDRO DE OLIVEIRA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16275293",
+      "nome": "LUCAS GOMES MONTEIRO",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16275476",
+      "nome": "ORLANDO JÚNIOR SALDANHA DE MATOS",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16304525",
+      "nome": "OSVALDO FERNANDES LEITE",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16304644",
+      "nome": "OSVALDO LEANDRO DA CRUZ FILHO",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16304487",
+      "nome": "RAFAEL VELOSO DE SOUZA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16278482",
+      "nome": "RAQUEL DO AMARAL GOMES",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16284891",
+      "nome": "RENATA GONÇALVES",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16304860",
+      "nome": "RICARDO SANTOS SABINO DE ARAUJO",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16297110",
+      "nome": "THIAGO RODRIGUES XAVIER",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16290682",
+      "nome": "THIAGO SILVA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16292783",
+      "nome": "VALDEIR GONCALVES SANTOS",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16305643",
+      "nome": "VANDER MARQUES DOS SANTOS",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16288626",
+      "nome": "WASHINGTON OLIVEIRA DINIZ",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16286667",
+      "nome": "ALAFE DE LIMA RODRIGUES",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16287608",
+      "nome": "CLAUDENEYPEREIRA DASILVA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16287698",
+      "nome": "CLESIO ALVES GUIMARAES",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16304203",
+      "nome": "ÉDER LÚCIO SANTANA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16276341",
+      "nome": "EDMILSON RIBAS",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16305379",
+      "nome": "FABRICIO LOPES",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16302420",
+      "nome": "GERALDO HENRIQUE COELHO DE FREITAS",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16279698",
+      "nome": "JOAO VICTOR GOMES FERREIRA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16278439",
+      "nome": "JOSE GERALDO LEITE SILVA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16304396",
+      "nome": "JULIO CESAR ALVES COELHO",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16277023",
+      "nome": "LUCAS SILVEIRA VIEIRA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16301679",
+      "nome": "LUCIANO CAMPELO",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16276839",
+      "nome": "MALHONE ARAUJO LEAL DA SILVA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16305520",
+      "nome": "MARCELO MARQUES DOS SANTOS",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16303629",
+      "nome": "MARCUS VINÍCIUS FERNANDES BARBOSA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16304141",
+      "nome": "MARLON HUDSON DINIZ",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16296522",
+      "nome": "MIGUEL JOSE TELES",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16295629",
+      "nome": "MILSON FERREIRA GONDIM",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16305677",
+      "nome": "OLAVO BARBOSA DE ALMEIDA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16296203",
+      "nome": "ROBSON SOUZA SILVA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16305726",
+      "nome": "RODRIGO AGMAR DOS SANTOS RIBEIRO",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16305196",
+      "nome": "RYAN JUNIO SANTOS RIBEIRO",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16280116",
+      "nome": "THIAGO CABRAL DA SILVA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16277420",
+      "nome": "TIAGO JOSÉ FREITAS NOVAES",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16298250",
+      "nome": "VINICIUS DE MOURA FONSECA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16277368",
+      "nome": "WAGNER BISPO VIEIRA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16291535",
+      "nome": "WILLIAN ERIVELTO ALVES DA SILVA",
+      "cargoRaw": "103 - MOTORISTA",
+      "cargoTipo": "MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30"
+    },
+    {
+      "inscricao": "16275160",
+      "nome": "CARLOS EDUARDO RIBEIRO DE FREITAS",
+      "cargoRaw": "104 - OPERADOR DE MÁQUINA PESADA",
+      "cargoTipo": "OPERADOR",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16304296",
+      "nome": "EDSON COSTA DINIZ JUNIOR",
+      "cargoRaw": "104 - OPERADOR DE MÁQUINA PESADA",
+      "cargoTipo": "OPERADOR",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16305836",
+      "nome": "JHONES LEITE SOUZA",
+      "cargoRaw": "104 - OPERADOR DE MÁQUINA PESADA",
+      "cargoTipo": "OPERADOR",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16305086",
+      "nome": "LEIDIANE SANTOS OLIVEIRA",
+      "cargoRaw": "104 - OPERADOR DE MÁQUINA PESADA",
+      "cargoTipo": "OPERADOR",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16287400",
+      "nome": "NEYBERT CORNELIO DE ASSIS",
+      "cargoRaw": "104 - OPERADOR DE MÁQUINA PESADA",
+      "cargoTipo": "OPERADOR",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16285572",
+      "nome": "RAMON MOURA OLIVEIRA",
+      "cargoRaw": "104 - OPERADOR DE MÁQUINA PESADA",
+      "cargoTipo": "OPERADOR",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16304098",
+      "nome": "WIVER GABRIEL",
+      "cargoRaw": "104 - OPERADOR DE MÁQUINA PESADA",
+      "cargoTipo": "OPERADOR",
+      "data": "23.08.2026",
+      "horario": "07h00"
+    },
+    {
+      "inscricao": "16286147",
+      "nome": "ADELSON JOSÉ DOS SANTOS PEREIRA",
+      "cargoRaw": "104 - OPERADOR DE MÁQUINA PESADA",
+      "cargoTipo": "OPERADOR",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16305181",
+      "nome": "ANDR LUIZ MARQUES LÚCIO",
+      "cargoRaw": "104 - OPERADOR DE MÁQUINA PESADA",
+      "cargoTipo": "OPERADOR",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16277748",
+      "nome": "CARLOS MAGNO DINIZ GOMES",
+      "cargoRaw": "104 - OPERADOR DE MÁQUINA PESADA",
+      "cargoTipo": "OPERADOR",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16287761",
+      "nome": "CHARLES GIAN SILVA MOURA",
+      "cargoRaw": "104 - OPERADOR DE MÁQUINA PESADA",
+      "cargoTipo": "OPERADOR",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16293654",
+      "nome": "IVAN CAMPOS",
+      "cargoRaw": "104 - OPERADOR DE MÁQUINA PESADA",
+      "cargoTipo": "OPERADOR",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16304588",
+      "nome": "LINDOMAR APARECIDO PEREIRA DA COSTA",
+      "cargoRaw": "104 - OPERADOR DE MÁQUINA PESADA",
+      "cargoTipo": "OPERADOR",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    },
+    {
+      "inscricao": "16289102",
+      "nome": "OLACIR GUEDES",
+      "cargoRaw": "104 - OPERADOR DE MÁQUINA PESADA",
+      "cargoTipo": "OPERADOR",
+      "data": "23.08.2026",
+      "horario": "10h00"
+    }
+  ],
+  "criterios": {
+    "motorista": {
+      "gravissima": [
+        "Não executar o teste em sua totalidade do percurso preestabelecido.",
+        "Haver colisão com outro veículo, ou objeto presente no percurso.",
+        "Subir com o veículo no meio fio.",
+        "Colocar em risco a vida do passageiro/avaliador e de transeuntes."
+      ],
+      "grave": [
+        "Não respeitar as placas de sinalização.",
+        "Não respeitar os limites de velocidade.",
+        "Uso incorreto do cinto de segurança.",
+        "Provocar movimentos irregulares durante o teste, sem motivo justificado, ou interromper o funcionamento do motor sem justa razão, após o início do teste."
+      ],
+      "media": [
+        "Uso de marcha desapropriada para a velocidade.",
+        "Apoio do pé no pedal da embreagem com o veículo engrenado e em movimento.",
+        "Arrancar o veículo sem soltar o freio de mão.",
+        "Controle incorreto de embreagem."
+      ],
+      "leve": [
+        "Regulagem incorreta dos retrovisores.",
+        "Uso incorreto da seta.",
+        "Mudança incorreta de marchas.",
+        "Manobra incorreta de baliza (uma tentativa)."
+      ]
+    },
+    "operador": {
+      "categorias": [
+        {
+          "titulo": "I – Checagem da máquina (pré-uso)",
+          "itens": [
+            "Estrutura da máquina — lataria, chassi, pneus e material rodante.",
+            "Vazamentos.",
+            "Peças.",
+            "Conchas, borda cortante, dentes e escarificadores.",
+            "Faróis, faroletes, luz de ré, luzes de freio, lanternas indicativas de direção e retrovisores."
+          ]
+        },
+        {
+          "titulo": "II – Checagem dos níveis da máquina",
+          "itens": [
+            "Nível do óleo do motor.",
+            "Nível do óleo da transmissão.",
+            "Nível do óleo hidráulico.",
+            "Nível do óleo de freio.",
+            "Nível da água — sistema de arrefecimento."
+          ]
+        },
+        {
+          "titulo": "III – Identificação e checagem do painel de instrumentos",
+          "itens": [
+            "Indicador da temperatura da água do motor.",
+            "Indicador da pressão do óleo do motor.",
+            "Indicador da temperatura da transmissão.",
+            "Indicador de pressão da transmissão.",
+            "Indicador da carga da bateria.",
+            "Indicador do nível de combustível.",
+            "Indicador da pressão do freio.",
+            "Indicador da temperatura do óleo hidráulico."
+          ]
+        },
+        {
+          "titulo": "IV – Checagem de comandos",
+          "itens": [
+            "Alavancas do freio de estacionamento.",
+            "Alavancas do comando hidráulico da concha.",
+            "Alavanca do comando de reversão.",
+            "Alavanca do comando da transmissão.",
+            "Pedais de freio / neutralizador.",
+            "Botão de buzina."
+          ]
+        },
+        {
+          "titulo": "V – Procedimentos de partida",
+          "itens": [
+            "Transmissão em neutro.",
+            "Freio de estacionamento aplicado.",
+            "Concha baixa no solo.",
+            "Acionamento da chave de partida.",
+            "Aquecimento do motor.",
+            "Checagem do painel."
+          ]
+        },
+        {
+          "titulo": "VI – Teste de operação",
+          "itens": [
+            "Escavação.",
+            "Carga.",
+            "Transporte.",
+            "Descarga.",
+            "Retorno.",
+            "Estacionamento."
+          ]
+        },
+        {
+          "titulo": "VII – Procedimento de parada",
+          "itens": [
+            "Transmissão em neutro.",
+            "Freio de estacionamento aplicado.",
+            "Concha no solo.",
+            "Arrefecimento do motor."
+          ]
+        }
+      ]
+    }
+  }
+}
