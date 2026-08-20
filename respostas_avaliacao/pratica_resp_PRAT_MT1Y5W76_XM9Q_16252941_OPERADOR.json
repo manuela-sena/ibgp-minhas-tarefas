@@ -1,0 +1,27 @@
+{
+  "token": "PRAT_MT1Y5W76_XM9Q",
+  "concursoNome": "PRESIDENTE JUSCELINO - EDITAL Nº 01/2025 - CONCURSO PÚBLICO",
+  "cargo": "OPERADOR",
+  "avaliador": "TESTE MANU",
+  "turma": "16.08.2026 · 07H00MIN",
+  "candidato": {
+    "inscricao": "16252941",
+    "nome": "MARCOS ANTONIO DOS REIS CRUZ",
+    "cargo": "104 - OPERADOR DE PÁ CARREGADEIRA",
+    "data": "16.08.2026",
+    "horario": "07H00MIN"
+  },
+  "cnhApresentada": true,
+  "resultadoFinal": null,
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MT1Y5W76_XM9Q_16252941_OPERADOR.jpg",
+  "itensMarcados": [
+    "Não atendido: Vazamentos.",
+    "Não atendido: Faróis, faroletes, luz de ré, luzes de freio, lanternas indicativas de direção e retrovisores.",
+    "Não atendido: Nível do óleo da transmissão."
+  ],
+  "pontos": 8.5,
+  "eliminado": false,
+  "apto": true,
+  "observacoes": "Teusjs jansn",
+  "enviadoEm": "2026-08-20T20:22:27.182Z"
+}
