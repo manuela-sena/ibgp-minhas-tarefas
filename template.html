@@ -7646,23 +7646,16 @@ function renderAvaliacaoPraticaContent(){
   const cfg = window._avalConfigPratica;
   const el = document.getElementById('aval-subcontent');
   if(!el || !cfg) return;
-  const linkMotorista = cfg.token ? `${AVAL_PRATICA_FORM_URL}?token=${cfg.token}&cargo=motorista` : '';
-  const linkOperador  = cfg.token ? `${AVAL_PRATICA_FORM_URL}?token=${cfg.token}&cargo=operador`  : '';
+  const linkAtivo = cfg.token ? `${AVAL_PRATICA_FORM_URL}?token=${cfg.token}` : '';
 
   el.innerHTML = `
 ${cfg.token ? `
 <div class="card card-pad" style="margin-bottom:14px;background:#eef6ef;border-color:#b9e0c2">
-  <div style="font-size:13px;font-weight:700;color:#1f2a3d;margin-bottom:6px">🔗 Links do formulário de Prova Prática já estão ativos</div>
-  <div style="font-size:12px;color:#5a7a63;margin-bottom:8px">São dois links separados — um para cada cargo. Cada um mostra só os candidatos e o checklist daquele cargo.</div>
-  <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-    <div style="width:90px;font-size:12px;font-weight:700;color:#1f2a3d">Motorista</div>
-    <input class="form-input" value="${linkMotorista}" readonly style="height:34px;font-size:12.5px;flex:1">
-    <button class="btn-secondary" style="height:34px;padding:0 14px;font-size:12.5px" onclick="copiarLinkPratica('motorista')">Copiar</button>
-  </div>
+  <div style="font-size:13px;font-weight:700;color:#1f2a3d;margin-bottom:6px">🔗 Link do formulário de Prova Prática já está ativo</div>
+  <div style="font-size:12px;color:#5a7a63;margin-bottom:8px">Um único link para Motorista e Operador — o formulário identifica o cargo pelo candidato buscado. Se o candidato estiver nas duas modalidades, o avaliador escolhe qual vai avaliar.</div>
   <div style="display:flex;gap:8px;align-items:center">
-    <div style="width:90px;font-size:12px;font-weight:700;color:#1f2a3d">Operador</div>
-    <input class="form-input" value="${linkOperador}" readonly style="height:34px;font-size:12.5px;flex:1">
-    <button class="btn-secondary" style="height:34px;padding:0 14px;font-size:12.5px" onclick="copiarLinkPratica('operador')">Copiar</button>
+    <input id="aval-link-pratica-ativo" class="form-input" value="${linkAtivo}" readonly style="height:34px;font-size:12.5px;flex:1">
+    <button class="btn-secondary" style="height:34px;padding:0 14px;font-size:12.5px" onclick="copiarLinkPratica()">Copiar</button>
   </div>
 </div>` : ''}
 
@@ -7775,14 +7768,16 @@ function parseConvocacaoPratica(input){
           const inscricao = String(row[colInsc]||'').trim();
           if(!inscricao) continue;
           const cargoRaw = String(colCargo>=0 ? row[colCargo] : '').trim();
-          porInscricao.set(inscricao, {
-            inscricao,
-            nome: String(colNome>=0 ? row[colNome] : '').trim(),
-            cargoRaw,
-            cargoTipo: avalClassificarCargo(cargoRaw),
-            data: String(colData>=0 ? row[colData] : '').trim(),
-            horario: String(colHora>=0 ? row[colHora] : '').trim()
-          });
+          const cargoTipo = avalClassificarCargo(cargoRaw);
+          const nome = String(colNome>=0 ? row[colNome] : '').trim();
+          const data = String(colData>=0 ? row[colData] : '').trim();
+          const horario = String(colHora>=0 ? row[colHora] : '').trim();
+          if(porInscricao.has(inscricao)){
+            const existente = porInscricao.get(inscricao);
+            if(!existente.cargos.some(c=>c.tipo===cargoTipo)) existente.cargos.push({tipo:cargoTipo, raw:cargoRaw});
+          } else {
+            porInscricao.set(inscricao, { inscricao, nome, data, horario, cargos:[{tipo:cargoTipo, raw:cargoRaw}] });
+          }
         }
       }
       const candidatos = Array.from(porInscricao.values());
@@ -7791,10 +7786,13 @@ function parseConvocacaoPratica(input){
         return;
       }
       window._avalConfigPratica.candidatos = candidatos;
-      const nMotorista = candidatos.filter(c=>c.cargoTipo==='MOTORISTA').length;
-      const nOperador = candidatos.filter(c=>c.cargoTipo==='OPERADOR').length;
-      const nOutro = candidatos.length - nMotorista - nOperador;
-      status.innerHTML = `✅ ${candidatos.length} candidato(s) carregado(s) — ${nMotorista} motorista(s), ${nOperador} operador(es)` + (nOutro ? `, ${nOutro} não identificado(s) pelo texto do cargo` : '') + '.';
+      const nMotorista = candidatos.filter(c=>c.cargos.some(g=>g.tipo==='MOTORISTA')).length;
+      const nOperador = candidatos.filter(c=>c.cargos.some(g=>g.tipo==='OPERADOR')).length;
+      const nAmbos = candidatos.filter(c=>c.cargos.length>1).length;
+      const nOutro = candidatos.filter(c=>c.cargos.every(g=>g.tipo==='OUTRO')).length;
+      status.innerHTML = `✅ ${candidatos.length} candidato(s) carregado(s) — ${nMotorista} motorista(s), ${nOperador} operador(es)` +
+        (nAmbos ? `, ${nAmbos} nas duas modalidades` : '') +
+        (nOutro ? `, ${nOutro} não identificado(s) pelo texto do cargo` : '') + '.';
     }catch(e){
       status.innerHTML = '❌ Erro ao ler a planilha: '+e.message;
     }
@@ -7844,10 +7842,8 @@ async function salvarConfigPratica(){
   }
 }
 
-function copiarLinkPratica(cargo){
-  const links = document.querySelectorAll('#aval-subcontent input[readonly]');
-  const idx = cargo === 'motorista' ? 0 : 1;
-  const inp = links[idx];
+function copiarLinkPratica(){
+  const inp = document.getElementById('aval-link-pratica-ativo');
   if(!inp) return;
   inp.select();
   navigator.clipboard?.writeText(inp.value);

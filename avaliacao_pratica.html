@@ -158,9 +158,22 @@
       </div>
     </div>
 
+    <div class="card" id="card-modalidade" style="display:none">
+      <div class="card-header">
+        <div class="card-title">3. Modalidade</div>
+        <div class="card-sub">Este candidato está nas duas modalidades — escolha qual vai avaliar agora.</div>
+      </div>
+      <div class="card-body">
+        <div class="radio-row">
+          <div class="radio-opt" id="modalidade-MOTORISTA" onclick="selecionarModalidade('MOTORISTA')">Motorista</div>
+          <div class="radio-opt" id="modalidade-OPERADOR" onclick="selecionarModalidade('OPERADOR')">Operador de Máquina Pesada</div>
+        </div>
+      </div>
+    </div>
+
     <div class="card" id="card-foto" style="display:none">
       <div class="card-header">
-        <div class="card-title">3. Foto do candidato</div>
+        <div class="card-title">4. Foto do candidato</div>
         <div class="card-sub">Tire uma foto do candidato antes de iniciar a prova.</div>
       </div>
       <div class="card-body">
@@ -179,7 +192,7 @@
 
     <div class="card" id="card-cnh" style="display:none">
       <div class="card-header">
-        <div class="card-title">4. Documentação</div>
+        <div class="card-title">5. Documentação</div>
         <div class="card-sub">Confirme antes de iniciar a prova.</div>
       </div>
       <div class="card-body">
@@ -195,7 +208,7 @@
 
     <div class="card" id="card-avaliacao" style="display:none">
       <div class="card-header">
-        <div class="card-title">5. Avaliação</div>
+        <div class="card-title">6. Avaliação</div>
         <div class="card-sub" id="card-avaliacao-sub"></div>
       </div>
       <div class="card-body">
@@ -228,7 +241,7 @@ const GITHUB_REPO = 'manuela-sena/ibgp-minhas-tarefas';
 const GH_WRITE_TOKEN = ['ghp_iwsiJT','m95ck1QUPJZ4dth','7MqYB6dCU1sU7fu'].join('');
 
 let TOKEN = '';
-let CARGO = ''; // 'MOTORISTA' | 'OPERADOR'
+let CARGO_ATIVO = null; // 'MOTORISTA' | 'OPERADOR' | null (ainda não definido para este candidato)
 let CONFIG = null;
 let CANDIDATOS_TURMA = [];
 let CANDIDATO_SEL = null;
@@ -238,8 +251,7 @@ let FOTO_DATA_URL = null; // dataURL jpeg comprimido, ou null
 window.onload = async function(){
   const params = new URLSearchParams(window.location.search);
   TOKEN = params.get('token') || '';
-  CARGO = (params.get('cargo') || '').trim().toUpperCase();
-  if(!TOKEN || !CARGO){ mostrarErro('Link inválido — falta o token ou o cargo do formulário. Confirme o link com quem organizou a prova.'); return; }
+  if(!TOKEN){ mostrarErro('Link inválido — falta o token do formulário. Confirme o link com quem organizou a prova.'); return; }
   await carregarConfig();
 };
 
@@ -265,13 +277,12 @@ function mostrarErro(msg){
   el.style.display='block';
 }
 
-function labelCargo(){
-  return CARGO === 'OPERADOR' ? 'Operador de Máquina Pesada' : 'Motorista';
+function labelCargo(tipo){
+  return tipo === 'OPERADOR' ? 'Operador de Máquina Pesada' : 'Motorista';
 }
 
 function montarForm(){
   document.getElementById('header-concurso').textContent = CONFIG.concursoNome || '';
-  document.getElementById('header-cargo').textContent = labelCargo();
 
   const selAval = document.getElementById('f-avaliador');
   (CONFIG.avaliadores||[]).forEach(nome=>{
@@ -279,14 +290,7 @@ function montarForm(){
     selAval.appendChild(op);
   });
 
-  CANDIDATOS_TURMA = (CONFIG.candidatos||[]).filter(c=>(c.cargoTipo||'').toUpperCase()===CARGO);
-
-  document.getElementById('card-avaliacao-sub').textContent =
-    CARGO === 'OPERADOR'
-      ? 'Marque apenas os itens do checklist que NÃO foram atendidos pelo candidato.'
-      : 'Marque as faltas cometidas pelo candidato durante o teste de direção.';
-
-  renderChecklist();
+  CANDIDATOS_TURMA = CONFIG.candidatos||[];
 
   document.getElementById('loading-inicial').style.display='none';
   document.getElementById('form-wrap').style.display='block';
@@ -317,28 +321,63 @@ function selecionarCandidato(inscricao){
   document.getElementById('search-results').style.display='none';
   document.getElementById('busca-wrap').style.display='none';
   const chip = document.getElementById('candidato-selecionado');
+  CARGO_ATIVO = null;
+  document.getElementById('modalidade-MOTORISTA').classList.remove('active');
+  document.getElementById('modalidade-OPERADOR').classList.remove('active');
+  document.getElementById('card-modalidade').style.display='none';
+  document.getElementById('card-foto').style.display='none';
+  document.getElementById('card-cnh').style.display='none';
+  document.getElementById('card-avaliacao').style.display='none';
+  document.getElementById('header-cargo').textContent = '';
   if(CANDIDATO_SEL){
     document.getElementById('cand-nome').textContent = CANDIDATO_SEL.nome;
     document.getElementById('cand-insc').textContent = 'Inscrição '+CANDIDATO_SEL.inscricao;
     chip.style.display='flex';
-    resetarCnh();
-    resetarFoto();
-    document.getElementById('card-foto').style.display='block';
-    document.getElementById('card-cnh').style.display='block';
-    document.getElementById('card-avaliacao').style.display='block';
+    const cargos = CANDIDATO_SEL.cargos || [];
+    if(cargos.length > 1){
+      document.getElementById('card-modalidade').style.display='block';
+    } else if(cargos.length === 1){
+      CARGO_ATIVO = cargos[0].tipo;
+      ativarFluxoAvaliacao();
+    }
   }
+  atualizarBotaoEnviar();
+}
+
+function selecionarModalidade(tipo){
+  CARGO_ATIVO = tipo;
+  document.getElementById('modalidade-MOTORISTA').classList.toggle('active', tipo==='MOTORISTA');
+  document.getElementById('modalidade-OPERADOR').classList.toggle('active', tipo==='OPERADOR');
+  ativarFluxoAvaliacao();
+}
+
+function ativarFluxoAvaliacao(){
+  document.getElementById('header-cargo').textContent = labelCargo(CARGO_ATIVO);
+  document.getElementById('card-avaliacao-sub').textContent =
+    CARGO_ATIVO === 'OPERADOR'
+      ? 'Marque apenas os itens do checklist que NÃO foram atendidos pelo candidato.'
+      : 'Marque as faltas cometidas pelo candidato durante o teste de direção.';
+  resetarCnh();
+  resetarFoto();
+  document.getElementById('card-foto').style.display='block';
+  document.getElementById('card-cnh').style.display='block';
+  document.getElementById('card-avaliacao').style.display='block';
+  renderChecklist();
   atualizarBotaoEnviar();
 }
 
 function limparCandidato(){
   CANDIDATO_SEL = null;
+  CARGO_ATIVO = null;
   document.getElementById('candidato-selecionado').style.display='none';
   document.getElementById('busca-wrap').style.display='block';
   document.getElementById('f-busca-candidato').value = '';
   document.getElementById('search-results').style.display='none';
+  document.getElementById('card-modalidade').style.display='none';
   document.getElementById('card-foto').style.display='none';
   document.getElementById('card-cnh').style.display='none';
   document.getElementById('card-avaliacao').style.display='none';
+  document.getElementById('header-cargo').textContent = '';
   resetarCnh();
   resetarFoto();
   atualizarBotaoEnviar();
@@ -400,7 +439,7 @@ function selecionarCnh(valor){
 function renderChecklist(){
   const wrap = document.getElementById('checklist-wrap');
   const crit = CONFIG.criterios || {};
-  if(CARGO === 'OPERADOR'){
+  if(CARGO_ATIVO === 'OPERADOR'){
     const categorias = (crit.operador && crit.operador.categorias) || [];
     wrap.innerHTML = categorias.map((cat, ci) => `
       <div class="op-categoria">
@@ -467,7 +506,7 @@ function calcularPontos(){
   if(CNH_SEL === false){
     return {pontos:0, eliminado:true, apto:false, faltas:0, motivo:'cnh'};
   }
-  if(CARGO === 'OPERADOR'){
+  if(CARGO_ATIVO === 'OPERADOR'){
     const marcados = document.querySelectorAll('.chk-op:checked').length;
     const pontos = Math.max(0, 10 - marcados*0.5);
     return {pontos, eliminado:false, apto: pontos >= 5, faltas: marcados};
@@ -502,12 +541,12 @@ function atualizarPreview(){
 }
 
 function atualizarBotaoEnviar(){
-  const ok = document.getElementById('f-avaliador').value && CANDIDATO_SEL && CNH_SEL !== null && !!FOTO_DATA_URL;
+  const ok = document.getElementById('f-avaliador').value && CANDIDATO_SEL && CARGO_ATIVO && CNH_SEL !== null && !!FOTO_DATA_URL;
   document.getElementById('btn-enviar').disabled = !ok;
 }
 
 function itensMarcadosResumo(){
-  if(CARGO === 'OPERADOR'){
+  if(CARGO_ATIVO === 'OPERADOR'){
     return Array.from(document.querySelectorAll('.chk-op:checked')).map(chk=>{
       const label = chk.closest('.falta-item').textContent.trim();
       return label;
@@ -544,9 +583,9 @@ async function enviarAvaliacao(){
   const obs = document.getElementById('f-obs').value.trim();
   const alertEl = document.getElementById('alert-envio');
 
-  if(!avaliador || !CANDIDATO_SEL || CNH_SEL === null || !FOTO_DATA_URL){
+  if(!avaliador || !CANDIDATO_SEL || !CARGO_ATIVO || CNH_SEL === null || !FOTO_DATA_URL){
     alertEl.className='alert alert-error'; alertEl.style.display='block';
-    alertEl.textContent='Preencha todos os campos obrigatórios antes de enviar (inclusive a foto e se apresentou a CNH).';
+    alertEl.textContent='Preencha todos os campos obrigatórios antes de enviar (inclusive a modalidade, a foto e se apresentou a CNH).';
     return;
   }
   const calc = calcularPontos();
@@ -555,16 +594,17 @@ async function enviarAvaliacao(){
   btn.disabled = true; btn.textContent = 'Enviando...';
 
   try{
-    const fotoPath = `respostas_avaliacao/fotos/pratica_${TOKEN}_${CANDIDATO_SEL.inscricao}.jpg`;
+    const cargoRaw = (CANDIDATO_SEL.cargos||[]).find(c=>c.tipo===CARGO_ATIVO)?.raw || '';
+    const fotoPath = `respostas_avaliacao/fotos/pratica_${TOKEN}_${CANDIDATO_SEL.inscricao}_${CARGO_ATIVO}.jpg`;
     await enviarFoto(fotoPath, FOTO_DATA_URL);
 
     const payload = {
       token: TOKEN,
       concursoNome: CONFIG.concursoNome,
-      cargo: CARGO,
+      cargo: CARGO_ATIVO,
       avaliador,
       turma: [CANDIDATO_SEL.data, CANDIDATO_SEL.horario].filter(Boolean).join(' · '),
-      candidato: {inscricao: CANDIDATO_SEL.inscricao, nome: CANDIDATO_SEL.nome, cargo: CANDIDATO_SEL.cargoRaw||'', data: CANDIDATO_SEL.data||'', horario: CANDIDATO_SEL.horario||''},
+      candidato: {inscricao: CANDIDATO_SEL.inscricao, nome: CANDIDATO_SEL.nome, cargo: cargoRaw, data: CANDIDATO_SEL.data||'', horario: CANDIDATO_SEL.horario||''},
       cnhApresentada: CNH_SEL,
       fotoPath,
       itensMarcados: itensMarcadosResumo(),
@@ -575,12 +615,12 @@ async function enviarAvaliacao(){
       enviadoEm: new Date().toISOString()
     };
 
-    const path = `respostas_avaliacao/pratica_resp_${TOKEN}_${CANDIDATO_SEL.inscricao}.json`;
+    const path = `respostas_avaliacao/pratica_resp_${TOKEN}_${CANDIDATO_SEL.inscricao}_${CARGO_ATIVO}.json`;
     const r0 = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`,
       {headers:{'Authorization':'Bearer '+GH_WRITE_TOKEN}});
     let sha; if(r0.ok){ const d0 = await r0.json(); sha = d0.sha; }
 
-    const body = {message:`resposta Prova Prática: ${CANDIDATO_SEL.inscricao} · ${CARGO}`,
+    const body = {message:`resposta Prova Prática: ${CANDIDATO_SEL.inscricao} · ${CARGO_ATIVO}`,
       content: btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))))};
     if(sha) body.sha = sha;
 
@@ -589,7 +629,7 @@ async function enviarAvaliacao(){
     if(!r.ok){ const err = await r.json().catch(()=>({})); throw new Error(err.message||'Erro ao enviar'); }
 
     document.getElementById('success-resumo').textContent =
-      `${CANDIDATO_SEL.nome} — ${labelCargo()} — ` + (calc.eliminado ? 'ELIMINADO' : (calc.apto ? 'APTO' : 'INAPTO') + ' ('+calc.pontos.toFixed(1).replace('.0',',0')+' pts)');
+      `${CANDIDATO_SEL.nome} — ${labelCargo(CARGO_ATIVO)} — ` + (calc.eliminado ? 'ELIMINADO' : (calc.apto ? 'APTO' : 'INAPTO') + ' ('+calc.pontos.toFixed(1).replace('.0',',0')+' pts)');
     document.getElementById('form-wrap').style.display='none';
     document.getElementById('page-success').style.display='block';
     window.scrollTo({top:0, behavior:'smooth'});
