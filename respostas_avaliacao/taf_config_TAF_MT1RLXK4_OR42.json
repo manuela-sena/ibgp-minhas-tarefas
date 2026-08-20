@@ -1,0 +1,1073 @@
+{
+  "token": "TAF_MT1RLXK4_OR42",
+  "criadoEm": "2026-08-20T16:58:56.932Z",
+  "atualizadoEm": "2026-08-20T16:58:56.932Z",
+  "concursoNome": "INIMUTABA - EDITAL Nº 01/2025 - CONCURSO PÚBLICO",
+  "avaliadores": [
+    "ÉGON ARIEL",
+    "MARCIO BISPO",
+    "FELIPE CORRÊA",
+    "CRISTIAN"
+  ],
+  "candidatos": [
+    {
+      "inscricao": "16287806",
+      "nome": "ALDAIR JOSE RIBEIRO",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16299777",
+      "nome": "ÂNGELO SANTOS DE PAULA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16277502",
+      "nome": "AROLDO ROCHA SANTANA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16303574",
+      "nome": "BRUNO RIBEIRO DA SILVA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16293891",
+      "nome": "CARLOS MAGNO DINIZ GOMES",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16287765",
+      "nome": "CHARLES GIAN SILVA MOURA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16301409",
+      "nome": "DELMIR DE FREITAS DIAS",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16304778",
+      "nome": "DILCIMAURO APARECIDO PINTO SANTANA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16278533",
+      "nome": "ELBERT EDUARDO RIBEIRO SILVA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16276382",
+      "nome": "ELIAS ALVES DE FREITAS",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16288981",
+      "nome": "ELTON VALADARES DOS SANTOS",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16299554",
+      "nome": "ERASMO JOSÉ DOS SANTOS MARTINS",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16300217",
+      "nome": "FILLIPI DE CASTRO MIRANDA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16277764",
+      "nome": "GABRIEL DOS SANTOS AZEVEDO",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16304932",
+      "nome": "GEOVANI CESAR GOMES FILHO",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16304316",
+      "nome": "GERALDO APARECIDO DA SILVA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16305780",
+      "nome": "GERALDO APARECIDO VIEIRA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16278722",
+      "nome": "GERALDO PEREIRA DE ALMEIDA JUNIOR",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16290941",
+      "nome": "GILSON FERREIRA COSTA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16278883",
+      "nome": "GRACIELMA MUNIZ BARRETO PEREIRA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16304054",
+      "nome": "ISAEL DINIZ GOMES",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16293653",
+      "nome": "IVAN CAMPOS",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16305411",
+      "nome": "JOSÉ RAIMUNDO MOREIRA GUIMARÃES",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16305322",
+      "nome": "JUSSARA DE ÁVILA AZEVEDO",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16276186",
+      "nome": "LEDIR DE ALMEIDA COSTA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16304589",
+      "nome": "LINDOMAR APARECIDO PEREIRA DA COSTA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16305631",
+      "nome": "LUAN CARVALHO PEREIRA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16304011",
+      "nome": "LUCAS FAGUNDES VAZ DE OLIVEIRA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16283200",
+      "nome": "LUCAS SILVA DOS SANTOS",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16305682",
+      "nome": "MARCELO DE FREITAS PINTO",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16276159",
+      "nome": "MARCELO LEANDRO PEREIRA LOPES",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16293543",
+      "nome": "RONE ALVES CORREIA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16281064",
+      "nome": "THIAGO DE SOUZA OLIVEIRA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16279035",
+      "nome": "VALDECI DA ROCHA SANTANA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16304747",
+      "nome": "VINICIUS DE ARAUJO SILVA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16294724",
+      "nome": "WESLEY FREIRE DA SILVA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16304725",
+      "nome": "ALAN LEONARDO RODRIGUES",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16304276",
+      "nome": "ALESSANDRO RIBEIRO",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16291600",
+      "nome": "ALEX LEONARDO RODRIGUES",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16290077",
+      "nome": "ALEX RODRIGUES DE ALMEIDA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16277752",
+      "nome": "ARCEBIADES CUSTODIO DA SILVA JUNIOR",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16275334",
+      "nome": "ARLINDO RODRIGUES DA SILVA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16276036",
+      "nome": "CAIO FERNANDES DOS SANTOS",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16305586",
+      "nome": "CARLOS LOPES DURAES NETO",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16304670",
+      "nome": "EULER GIOVANNI DE OLIVEIRA SOUSA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16286460",
+      "nome": "GILVAN MENDES PEREIRA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16289617",
+      "nome": "GUILHERME LINCES MARTINS",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16284183",
+      "nome": "GUSTAVO PERACIO DAMASCENO",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16305551",
+      "nome": "HELVECIO JOSE DA SILVA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16277273",
+      "nome": "HENRIQUE ALVES LOPES",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16277933",
+      "nome": "ISTANISLAU JÚNIOR BERNARDES",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16305886",
+      "nome": "JAIRO JOSE DE OLIVEIRA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16304776",
+      "nome": "JEREMIAS GOMES TRINDADE",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16305137",
+      "nome": "JHONATAN APARECIDO AQUINO",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16275383",
+      "nome": "JOAO CESAR ALIPIO",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16304928",
+      "nome": "JOÃO PAULO TRINDADE PEREIRA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16276877",
+      "nome": "JOSÉ SARAIVA MARTINS",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16277307",
+      "nome": "JÚLIO CÉSAR SANTANA OLIVEIRA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16301963",
+      "nome": "LEANDRO DE OLIVEIRA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16275293",
+      "nome": "LUCAS GOMES MONTEIRO",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16275476",
+      "nome": "ORLANDO JÚNIOR SALDANHA DE MATOS",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16304525",
+      "nome": "OSVALDO FERNANDES LEITE",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16304644",
+      "nome": "OSVALDO LEANDRO DA CRUZ FILHO",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16304487",
+      "nome": "RAFAEL VELOSO DE SOUZA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16278482",
+      "nome": "RAQUEL DO AMARAL GOMES",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16284891",
+      "nome": "RENATA GONÇALVES",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16304860",
+      "nome": "RICARDO SANTOS SABINO DE ARAUJO",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16297110",
+      "nome": "THIAGO RODRIGUES XAVIER",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16290682",
+      "nome": "THIAGO SILVA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16292783",
+      "nome": "VALDEIR GONCALVES SANTOS",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16305643",
+      "nome": "VANDER MARQUES DOS SANTOS",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16288626",
+      "nome": "WASHINGTON OLIVEIRA DINIZ",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16286667",
+      "nome": "ALAFE DE LIMA RODRIGUES",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16287608",
+      "nome": "CLAUDENEYPEREIRA DASILVA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16287698",
+      "nome": "CLESIO ALVES GUIMARAES",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16304203",
+      "nome": "ÉDER LÚCIO SANTANA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16276341",
+      "nome": "EDMILSON RIBAS",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16305379",
+      "nome": "FABRICIO LOPES",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16302420",
+      "nome": "GERALDO HENRIQUE COELHO DE FREITAS",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16279698",
+      "nome": "JOAO VICTOR GOMES FERREIRA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16278439",
+      "nome": "JOSE GERALDO LEITE SILVA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16304396",
+      "nome": "JULIO CESAR ALVES COELHO",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16277023",
+      "nome": "LUCAS SILVEIRA VIEIRA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16301679",
+      "nome": "LUCIANO CAMPELO",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16276839",
+      "nome": "MALHONE ARAUJO LEAL DA SILVA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16305520",
+      "nome": "MARCELO MARQUES DOS SANTOS",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16303629",
+      "nome": "MARCUS VINÍCIUS FERNANDES BARBOSA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16304141",
+      "nome": "MARLON HUDSON DINIZ",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16296522",
+      "nome": "MIGUEL JOSE TELES",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16295629",
+      "nome": "MILSON FERREIRA GONDIM",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16305677",
+      "nome": "OLAVO BARBOSA DE ALMEIDA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16296203",
+      "nome": "ROBSON SOUZA SILVA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16305726",
+      "nome": "RODRIGO AGMAR DOS SANTOS RIBEIRO",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16305196",
+      "nome": "RYAN JUNIO SANTOS RIBEIRO",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16280116",
+      "nome": "THIAGO CABRAL DA SILVA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16277420",
+      "nome": "TIAGO JOSÉ FREITAS NOVAES",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16298250",
+      "nome": "VINICIUS DE MOURA FONSECA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16277368",
+      "nome": "WAGNER BISPO VIEIRA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16291535",
+      "nome": "WILLIAN ERIVELTO ALVES DA SILVA",
+      "cargo": "103 - MOTORISTA",
+      "data": "23.08.2026",
+      "horario": "13h30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16275160",
+      "nome": "CARLOS EDUARDO RIBEIRO DE FREITAS",
+      "cargo": "104 - OPERADOR DE MÁQUINA PESADA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16304296",
+      "nome": "EDSON COSTA DINIZ JUNIOR",
+      "cargo": "104 - OPERADOR DE MÁQUINA PESADA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16305836",
+      "nome": "JHONES LEITE SOUZA",
+      "cargo": "104 - OPERADOR DE MÁQUINA PESADA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16305086",
+      "nome": "LEIDIANE SANTOS OLIVEIRA",
+      "cargo": "104 - OPERADOR DE MÁQUINA PESADA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16287400",
+      "nome": "NEYBERT CORNELIO DE ASSIS",
+      "cargo": "104 - OPERADOR DE MÁQUINA PESADA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16285572",
+      "nome": "RAMON MOURA OLIVEIRA",
+      "cargo": "104 - OPERADOR DE MÁQUINA PESADA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16304098",
+      "nome": "WIVER GABRIEL",
+      "cargo": "104 - OPERADOR DE MÁQUINA PESADA",
+      "data": "23.08.2026",
+      "horario": "07h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16286147",
+      "nome": "ADELSON JOSÉ DOS SANTOS PEREIRA",
+      "cargo": "104 - OPERADOR DE MÁQUINA PESADA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16305181",
+      "nome": "ANDR LUIZ MARQUES LÚCIO",
+      "cargo": "104 - OPERADOR DE MÁQUINA PESADA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16277748",
+      "nome": "CARLOS MAGNO DINIZ GOMES",
+      "cargo": "104 - OPERADOR DE MÁQUINA PESADA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16287761",
+      "nome": "CHARLES GIAN SILVA MOURA",
+      "cargo": "104 - OPERADOR DE MÁQUINA PESADA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16293654",
+      "nome": "IVAN CAMPOS",
+      "cargo": "104 - OPERADOR DE MÁQUINA PESADA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16304588",
+      "nome": "LINDOMAR APARECIDO PEREIRA DA COSTA",
+      "cargo": "104 - OPERADOR DE MÁQUINA PESADA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16289102",
+      "nome": "OLACIR GUEDES",
+      "cargo": "104 - OPERADOR DE MÁQUINA PESADA",
+      "data": "23.08.2026",
+      "horario": "10h00",
+      "turma": ""
+    }
+  ],
+  "tabelaPontos": {
+    "corrida": {
+      "unidadeM": "metros",
+      "unidadeF": "metros",
+      "linhas": [
+        {
+          "pontos": 30,
+          "m": 2400,
+          "f": 2000
+        },
+        {
+          "pontos": 32,
+          "m": 2500,
+          "f": 2100
+        },
+        {
+          "pontos": 34,
+          "m": 2600,
+          "f": 2200
+        },
+        {
+          "pontos": 36,
+          "m": 2700,
+          "f": 2300
+        },
+        {
+          "pontos": 38,
+          "m": 2800,
+          "f": 2400
+        },
+        {
+          "pontos": 40,
+          "m": 2900,
+          "f": 2500
+        },
+        {
+          "pontos": 44,
+          "m": 3000,
+          "f": 2600
+        },
+        {
+          "pontos": 46,
+          "m": 3100,
+          "f": 2700
+        },
+        {
+          "pontos": 50,
+          "m": 3200,
+          "f": 2800
+        }
+      ]
+    },
+    "abdominal": {
+      "unidadeM": "repetições",
+      "unidadeF": "repetições",
+      "linhas": [
+        {
+          "pontos": 30,
+          "m": 16,
+          "f": 16
+        },
+        {
+          "pontos": 32,
+          "m": 18,
+          "f": 18
+        },
+        {
+          "pontos": 34,
+          "m": 20,
+          "f": 20
+        },
+        {
+          "pontos": 36,
+          "m": 22,
+          "f": 22
+        },
+        {
+          "pontos": 38,
+          "m": 24,
+          "f": 24
+        },
+        {
+          "pontos": 40,
+          "m": 26,
+          "f": 26
+        },
+        {
+          "pontos": 44,
+          "m": 28,
+          "f": 28
+        },
+        {
+          "pontos": 46,
+          "m": 30,
+          "f": 30
+        },
+        {
+          "pontos": 50,
+          "m": 31,
+          "f": 31
+        }
+      ]
+    },
+    "barra": {
+      "unidadeM": "repetições",
+      "unidadeF": "segundos",
+      "linhas": [
+        {
+          "pontos": 30,
+          "m": 2,
+          "f": 5
+        },
+        {
+          "pontos": 32,
+          "m": 3,
+          "f": 10
+        },
+        {
+          "pontos": 34,
+          "m": 4,
+          "f": 14
+        },
+        {
+          "pontos": 36,
+          "m": 5,
+          "f": 18
+        },
+        {
+          "pontos": 38,
+          "m": 6,
+          "f": 22
+        },
+        {
+          "pontos": 40,
+          "m": 7,
+          "f": 26
+        },
+        {
+          "pontos": 44,
+          "m": 8,
+          "f": 30
+        },
+        {
+          "pontos": 46,
+          "m": 9,
+          "f": 34
+        },
+        {
+          "pontos": 50,
+          "m": 10,
+          "f": 38
+        }
+      ]
+    }
+  }
+}
