@@ -588,6 +588,10 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
         Alocação
       </button>
+      <button class="nav-btn" data-page="avaliacao" onclick="goPage('avaliacao')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>
+        Avaliação
+      </button>
     </nav>
 
     <div class="nav-section" style="margin-top:4px">Configurações</div>
@@ -1198,7 +1202,46 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
 
 
 
-    <!-- PÁGINA CLASSIFICAÇÃO FINAL -->
+        <!-- PÁGINA AVALIAÇÃO (TAF / PROVA PRÁTICA) -->
+    <div id="page-avaliacao" class="page">
+      <div class="page-header">
+        <div class="page-title-h1">
+          <svg width="20" height="20" fill="none" stroke="#1f4e8c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>
+          Avaliação · TAF e Prova Prática
+        </div>
+        <div class="page-sub">Gere o link do formulário de avaliação para os avaliadores preencherem no dia da prova, e depois gere o resultado.</div>
+      </div>
+
+      <!-- Filtro por concurso -->
+      <div class="card card-pad" style="margin-bottom:14px;overflow:visible">
+        <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end">
+          <div>
+            <label class="form-label">Concurso</label>
+            <div style="position:relative">
+              <input id="inp-aval-concurso" class="filter-select" type="text" placeholder="Buscar concurso..." autocomplete="off"
+                oninput="dropdownOpen('aval-concurso')" onfocus="dropdownOpen('aval-concurso')" style="width:100%">
+              <div id="drop-aval-concurso" style="display:none;position:absolute;left:0;right:0;z-index:9999;background:#fff;border:1px solid #e2e7ef;border-radius:9px;box-shadow:0 8px 24px rgba(16,30,54,0.18);max-height:260px;overflow-y:auto;margin-top:2px"></div>
+              <input type="hidden" id="sel-aval-concurso">
+            </div>
+          </div>
+          <button class="btn-secondary" onclick="carregarAvaliacao()" style="height:36px;padding:0 16px;font-size:13px">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Buscar
+          </button>
+        </div>
+      </div>
+
+      <div id="aval-content">
+        <div class="empty-state">
+          <div class="empty-icon">🏃</div>
+          <div class="empty-title">Selecione um concurso</div>
+          <div class="empty-desc">Escolha o concurso para configurar a avaliação do TAF.</div>
+        </div>
+      </div>
+    </div>
+
+
+<!-- PÁGINA CLASSIFICAÇÃO FINAL -->
     <div id="page-classificacao" class="page">
       <div class="page-header">
         <div class="page-title-h1">🏆 Classificação Final</div>
@@ -1524,6 +1567,7 @@ function goPage(id) {
   if(id==='indicadores') renderIndicadores();
   if(id==='agenda') initAgenda();
   if(id==='alocacao') initAlocacao();
+  if(id==='avaliacao') initAvaliacao();
   if(id==='classificacao') initClassificacao();
 }
 function goPageTab(page, tab) { goPage(page); setTab(tab); }
@@ -7153,6 +7197,321 @@ function carregarExcelJSAloc(cb){
   s.src='https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js';
   s.onload=cb; document.head.appendChild(s);
 }
+
+// ── AVALIAÇÃO: TAF (GESTÃO + LINK PÚBLICO) ───────────────────────────
+const AVAL_TAF_FORM_URL = 'https://manuela-sena.github.io/ibgp-minhas-tarefas/avaliacao_taf.html';
+
+const AVAL_TABELA_DEFAULT = {
+  corrida:   { unidadeM:'metros', unidadeF:'metros', linhas:[
+    {pontos:30,m:2400,f:2000},{pontos:32,m:2500,f:2100},{pontos:34,m:2600,f:2200},
+    {pontos:36,m:2700,f:2300},{pontos:38,m:2800,f:2400},{pontos:40,m:2900,f:2500},
+    {pontos:44,m:3000,f:2600},{pontos:46,m:3100,f:2700},{pontos:50,m:3200,f:2800}
+  ]},
+  abdominal: { unidadeM:'repetições', unidadeF:'repetições', linhas:[
+    {pontos:30,m:16,f:16},{pontos:32,m:18,f:18},{pontos:34,m:20,f:20},
+    {pontos:36,m:22,f:22},{pontos:38,m:24,f:24},{pontos:40,m:26,f:26},
+    {pontos:44,m:28,f:28},{pontos:46,m:30,f:30},{pontos:50,m:31,f:31}
+  ]},
+  barra:     { unidadeM:'repetições', unidadeF:'segundos', linhas:[
+    {pontos:30,m:2,f:5},{pontos:32,m:3,f:10},{pontos:34,m:4,f:14},
+    {pontos:36,m:5,f:18},{pontos:38,m:6,f:22},{pontos:40,m:7,f:26},
+    {pontos:44,m:8,f:30},{pontos:46,m:9,f:34},{pontos:50,m:10,f:38}
+  ]}
+};
+const AVAL_PROVAS = [
+  {key:'corrida',   titulo:'Corrida de Resistência (12 minutos)', tituloM:'Distância percorrida — masculino', tituloF:'Distância percorrida — feminino'},
+  {key:'abdominal', titulo:'Flexão Abdominal',                    tituloM:'Repetições — masculino',           tituloF:'Repetições — feminino'},
+  {key:'barra',     titulo:'Barra Fixa (masc.) / Isometria (fem.)',tituloM:'Flexões na barra — masculino',     tituloF:'Tempo em sustentação — feminino'}
+];
+
+window._avalConfig = null; // config atual (existente ou em criação) do concurso selecionado
+
+function initAvaliacao(){
+  dropdownInit('aval-concurso',
+    ()=>Object.entries(_buckets||{}).sort((a,b)=>a[1].localeCompare(b[1])).map(([id,nome])=>({label:nome,value:id})),
+    ()=>{ carregarAvaliacao(); },
+    {allOption:false}
+  );
+}
+
+async function carregarAvaliacao(){
+  const concursoNome = (document.getElementById('inp-aval-concurso')?.value || '').trim();
+  const el = document.getElementById('aval-content');
+  if(!concursoNome){ el.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Digite ou selecione um concurso</div></div>'; return; }
+
+  el.innerHTML = '<div class="loading"><div class="spinner"></div>Carregando...</div>';
+
+  let configExistente = null;
+  try{
+    const r = await fetch(
+      `https://api.github.com/repos/${GH_REPO_ALOC}/contents/respostas_avaliacao`,
+      {headers:{'Authorization':'Bearer '+GH_TOKEN_ALOC}}
+    );
+    if(r.ok){
+      const arquivos = await r.json();
+      const configs = (Array.isArray(arquivos)?arquivos:[]).filter(a=>a.name.startsWith('taf_config_') && a.name.endsWith('.json'));
+      for(const arq of configs){
+        try{
+          const rc = await fetch(arq.url, {headers:{'Authorization':'Bearer '+GH_TOKEN_ALOC}});
+          if(!rc.ok) continue;
+          const dc = await rc.json();
+          const conteudo = JSON.parse(decodeURIComponent(escape(atob(dc.content.replace(/\n/g,'')))));
+          if((conteudo.concursoNome||'').trim().toLowerCase() === concursoNome.toLowerCase()){
+            configExistente = {...conteudo, _sha: dc.sha};
+            break;
+          }
+        }catch(e){ /* ignora arquivo com problema e segue */ }
+      }
+    }
+  }catch(e){ /* segue sem config existente */ }
+
+  window._avalConfig = configExistente || {
+    token: null, _sha: null, criadoEm: null, concursoNome,
+    avaliadores: [], candidatos: [],
+    tabelaPontos: JSON.parse(JSON.stringify(AVAL_TABELA_DEFAULT))
+  };
+  renderAvaliacaoContent();
+}
+
+function renderAvaliacaoContent(){
+  const cfg = window._avalConfig;
+  const el = document.getElementById('aval-content');
+  const linkAtivo = cfg.token ? `${AVAL_TAF_FORM_URL}?token=${cfg.token}` : '';
+
+  el.innerHTML = `
+${linkAtivo ? `
+<div class="card card-pad" style="margin-bottom:14px;background:#eef6ef;border-color:#b9e0c2">
+  <div style="font-size:13px;font-weight:700;color:#1f2a3d;margin-bottom:6px">🔗 Link do formulário TAF já está ativo</div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <input id="aval-link-ativo" class="form-input" value="${linkAtivo}" readonly style="height:34px;font-size:12.5px;flex:1">
+    <button class="btn-secondary" style="height:34px;padding:0 14px;font-size:12.5px" onclick="copiarLinkAvaliacao()">Copiar</button>
+  </div>
+  <div style="font-size:11.5px;color:#5a7a63;margin-top:6px">Qualquer alteração abaixo (avaliadores, tabela, convocação) é salva no mesmo link — não precisa gerar de novo.</div>
+</div>` : ''}
+
+<div class="card card-pad" style="margin-bottom:14px">
+  <div style="font-size:13px;font-weight:700;color:#1f2a3d;margin-bottom:4px">1. Convocação do TAF (.xlsx)</div>
+  <div style="font-size:12px;color:#8a9ab5;margin-bottom:10px">Envie a planilha de convocação — o app puxa automaticamente inscrição, nome, cargo, data, horário e a cor da turma de cada candidato.</div>
+  <input type="file" id="aval-file-convocacao" accept=".xlsx" class="form-input" style="padding:6px" onchange="parseConvocacaoTAF(this)">
+  <div id="aval-convocacao-status" style="margin-top:8px;font-size:12.5px;color:#8a9ab5">${cfg.candidatos.length ? `✅ ${cfg.candidatos.length} candidato(s) carregado(s).` : ''}</div>
+</div>
+
+<div class="card card-pad" style="margin-bottom:14px">
+  <div style="font-size:13px;font-weight:700;color:#1f2a3d;margin-bottom:4px">2. Avaliadores</div>
+  <div style="font-size:12px;color:#8a9ab5;margin-bottom:10px">Nomes que vão aparecer para o avaliador escolher no formulário.</div>
+  <div style="display:flex;gap:8px;margin-bottom:10px">
+    <input id="aval-novo-avaliador" class="form-input" placeholder="Nome do avaliador" style="height:34px" onkeydown="if(event.key==='Enter'){event.preventDefault();avalAddAvaliador();}">
+    <button class="btn-secondary" style="height:34px;padding:0 14px;font-size:12.5px" onclick="avalAddAvaliador()">+ Adicionar</button>
+  </div>
+  <div id="aval-lista-avaliadores" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+</div>
+
+<div class="card card-pad" style="margin-bottom:14px">
+  <div style="font-size:13px;font-weight:700;color:#1f2a3d;margin-bottom:4px">3. Tabela de pontos do TAF</div>
+  <div style="font-size:12px;color:#8a9ab5;margin-bottom:14px">Pré-carregada com um modelo — ajuste os valores conforme o anexo do edital deste concurso. Quem ficar abaixo da primeira faixa é eliminado.</div>
+  <div id="aval-tabelas-pontos"></div>
+</div>
+
+<div style="display:flex;justify-content:flex-end;gap:10px;margin-top:4px">
+  <button class="btn-primary" onclick="salvarConfigAvaliacao()" style="padding:10px 20px;font-size:13px">
+    ${cfg.token ? '💾 Salvar alterações' : '🔗 Gerar link do formulário'}
+  </button>
+</div>
+<div id="aval-salvar-status" style="margin-top:10px;text-align:right;font-size:12.5px"></div>
+`;
+
+  renderListaAvaliadores();
+  AVAL_PROVAS.forEach(p=>renderTabelaPontos(p.key));
+}
+
+function renderListaAvaliadores(){
+  const cfg = window._avalConfig;
+  const el = document.getElementById('aval-lista-avaliadores');
+  if(!el) return;
+  if(!cfg.avaliadores.length){
+    el.innerHTML = '<div style="font-size:12px;color:#8a9ab5;font-style:italic">Nenhum avaliador cadastrado ainda.</div>';
+    return;
+  }
+  el.innerHTML = cfg.avaliadores.map((nome,i)=>`
+    <div style="display:flex;align-items:center;gap:6px;background:#f4f6fa;border:1px solid #e2e7ef;border-radius:20px;padding:6px 12px;font-size:12.5px;color:#1f2a3d">
+      ${nome}
+      <button onclick="avalRemoverAvaliador(${i})" style="background:none;border:none;color:#c0322f;cursor:pointer;font-size:14px;line-height:1;padding:0">×</button>
+    </div>`).join('');
+}
+
+function avalAddAvaliador(){
+  const inp = document.getElementById('aval-novo-avaliador');
+  const nome = (inp?.value||'').trim();
+  if(!nome) return;
+  window._avalConfig.avaliadores.push(nome);
+  inp.value='';
+  renderListaAvaliadores();
+}
+
+function avalRemoverAvaliador(i){
+  window._avalConfig.avaliadores.splice(i,1);
+  renderListaAvaliadores();
+}
+
+function renderTabelaPontos(provaKey){
+  const p = AVAL_PROVAS.find(x=>x.key===provaKey);
+  const tab = window._avalConfig.tabelaPontos[provaKey];
+  const wrap = document.getElementById('aval-tabelas-pontos');
+  if(!wrap) return;
+  let box = document.getElementById('aval-tabela-'+provaKey);
+  if(!box){
+    box = document.createElement('div');
+    box.id = 'aval-tabela-'+provaKey;
+    box.style.marginBottom = '20px';
+    wrap.appendChild(box);
+  }
+  box.innerHTML = `
+    <div style="font-size:12.5px;font-weight:700;color:#1f2a3d;margin-bottom:8px">${p.titulo}</div>
+    <table style="width:100%;border-collapse:collapse;font-size:12.5px">
+      <thead>
+        <tr style="border-bottom:1.5px solid #e2e7ef">
+          <th style="text-align:left;padding:6px 8px;color:#8a9ab5;font-weight:600">Pontos</th>
+          <th style="text-align:left;padding:6px 8px;color:#8a9ab5;font-weight:600">${p.tituloM} (${tab.unidadeM})</th>
+          <th style="text-align:left;padding:6px 8px;color:#8a9ab5;font-weight:600">${p.tituloF} (${tab.unidadeF})</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        ${tab.linhas.map((l,i)=>`
+          <tr>
+            <td style="padding:4px 8px"><input type="number" step="0.5" value="${l.pontos}" style="width:70px;padding:5px 7px;border:1px solid #e2e7ef;border-radius:6px" onchange="avalAtualizarLinha('${provaKey}',${i},'pontos',this.value)"></td>
+            <td style="padding:4px 8px"><input type="number" step="0.01" value="${l.m}" style="width:90px;padding:5px 7px;border:1px solid #e2e7ef;border-radius:6px" onchange="avalAtualizarLinha('${provaKey}',${i},'m',this.value)"></td>
+            <td style="padding:4px 8px"><input type="number" step="0.01" value="${l.f}" style="width:90px;padding:5px 7px;border:1px solid #e2e7ef;border-radius:6px" onchange="avalAtualizarLinha('${provaKey}',${i},'f',this.value)"></td>
+            <td style="padding:4px 8px"><button onclick="avalRemoverLinha('${provaKey}',${i})" style="background:none;border:none;color:#c0322f;cursor:pointer;font-size:15px">×</button></td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+    <button class="btn-secondary" style="margin-top:8px;font-size:12px;padding:6px 12px" onclick="avalAddLinha('${provaKey}')">+ Adicionar faixa</button>
+    <button class="btn-secondary" style="margin-top:8px;margin-left:8px;font-size:12px;padding:6px 12px" onclick="avalRestaurarPadrao('${provaKey}')">Restaurar padrão</button>
+  `;
+}
+
+function avalAtualizarLinha(provaKey, i, campo, valor){
+  window._avalConfig.tabelaPontos[provaKey].linhas[i][campo] = parseFloat(valor)||0;
+}
+function avalAddLinha(provaKey){
+  window._avalConfig.tabelaPontos[provaKey].linhas.push({pontos:0,m:0,f:0});
+  renderTabelaPontos(provaKey);
+}
+function avalRemoverLinha(provaKey, i){
+  window._avalConfig.tabelaPontos[provaKey].linhas.splice(i,1);
+  renderTabelaPontos(provaKey);
+}
+function avalRestaurarPadrao(provaKey){
+  window._avalConfig.tabelaPontos[provaKey] = JSON.parse(JSON.stringify(AVAL_TABELA_DEFAULT[provaKey]));
+  renderTabelaPontos(provaKey);
+}
+
+function avalNormalizarCabecalho(s){
+  return String(s==null?'':s).normalize('NFD').replace(/[̀-ͯ]/g,'')
+    .replace(/\n/g,' ').replace(/\s+/g,' ').trim().toUpperCase();
+}
+
+function parseConvocacaoTAF(input){
+  const file = input.files[0]; if(!file) return;
+  const status = document.getElementById('aval-convocacao-status');
+  status.textContent = 'Lendo planilha...';
+  carregarSheetJS(async ()=>{
+    try{
+      const buf = await file.arrayBuffer();
+      const wb = XLSX.read(buf, {type:'array'});
+      const porInscricao = new Map();
+      for(const nomeAba of wb.SheetNames){
+        const aoa = XLSX.utils.sheet_to_json(wb.Sheets[nomeAba], {header:1, defval:''});
+        const idxHeader = aoa.findIndex(row => Array.isArray(row) && row.some(c => avalNormalizarCabecalho(c)==='INSCRICAO'));
+        if(idxHeader < 0) continue;
+        const headers = aoa[idxHeader].map(avalNormalizarCabecalho);
+        const colInsc  = headers.findIndex(h=>h.includes('INSCRICAO'));
+        const colNome  = headers.findIndex(h=>h==='CANDIDATO');
+        const colCargo = headers.findIndex(h=>h==='CARGO');
+        const colData  = headers.findIndex(h=>h==='DATA');
+        const colHora  = headers.findIndex(h=>h.includes('HORARIO'));
+        const colCor   = headers.findIndex(h=>h.includes('COR'));
+        if(colInsc < 0) continue;
+        for(let r=idxHeader+1; r<aoa.length; r++){
+          const row = aoa[r]; if(!Array.isArray(row)) continue;
+          const inscricao = String(row[colInsc]||'').trim();
+          if(!inscricao) continue;
+          porInscricao.set(inscricao, {
+            inscricao,
+            nome:   String(colNome>=0  ? row[colNome]  : '').trim(),
+            cargo:  String(colCargo>=0 ? row[colCargo] : '').trim(),
+            data:   String(colData>=0  ? row[colData]  : '').trim(),
+            horario:String(colHora>=0  ? row[colHora]  : '').trim(),
+            turma:  String(colCor>=0   ? row[colCor]   : '').trim()
+          });
+        }
+      }
+      const candidatos = Array.from(porInscricao.values());
+      if(!candidatos.length){
+        status.innerHTML = '⚠️ Não encontrei a coluna INSCRIÇÃO nesta planilha. Confirme se é o arquivo de convocação certo.';
+        return;
+      }
+      window._avalConfig.candidatos = candidatos;
+      const turmas = new Set(candidatos.map(c=>[c.data,c.horario,c.turma].filter(Boolean).join(' · ')));
+      status.innerHTML = `✅ ${candidatos.length} candidato(s) carregado(s), em ${turmas.size} turma(s).`;
+    }catch(e){
+      status.innerHTML = '❌ Erro ao ler a planilha: '+e.message;
+    }
+  });
+}
+
+async function salvarConfigAvaliacao(){
+  const cfg = window._avalConfig;
+  const statusEl = document.getElementById('aval-salvar-status');
+
+  if(!cfg.avaliadores.length){ statusEl.innerHTML='<span style="color:#c0322f">Cadastre ao menos um avaliador.</span>'; return; }
+  if(!cfg.candidatos.length){ statusEl.innerHTML='<span style="color:#c0322f">Envie a planilha de convocação primeiro.</span>'; return; }
+
+  statusEl.innerHTML = '<span style="color:#8a9ab5">Salvando...</span>';
+
+  const isNovo = !cfg.token;
+  if(isNovo){
+    cfg.token = 'TAF_' + Date.now().toString(36).toUpperCase() + '_' + Math.random().toString(36).substring(2,6).toUpperCase();
+    cfg.criadoEm = new Date().toISOString();
+  }
+
+  const payload = {
+    token: cfg.token,
+    criadoEm: cfg.criadoEm,
+    atualizadoEm: new Date().toISOString(),
+    concursoNome: cfg.concursoNome,
+    avaliadores: cfg.avaliadores,
+    candidatos: cfg.candidatos,
+    tabelaPontos: cfg.tabelaPontos
+  };
+
+  try{
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+    const body = {message:(isNovo?'feat: novo':'chore: atualiza')+' formulário TAF — '+cfg.concursoNome, content};
+    if(cfg._sha) body.sha = cfg._sha;
+    const r = await fetch(
+      `https://api.github.com/repos/${GH_REPO_ALOC}/contents/respostas_avaliacao/taf_config_${cfg.token}.json`,
+      {method:'PUT', headers:{'Authorization':'Bearer '+GH_TOKEN_ALOC,'Content-Type':'application/json'}, body:JSON.stringify(body)}
+    );
+    if(!r.ok){ const err=await r.json().catch(()=>({})); throw new Error(err.message||'Erro ao salvar'); }
+    const d = await r.json();
+    cfg._sha = d.content.sha;
+    statusEl.innerHTML = '<span style="color:#2e7d52">✅ Salvo com sucesso.</span>';
+    renderAvaliacaoContent();
+  }catch(e){
+    statusEl.innerHTML = '<span style="color:#c0322f">Erro ao salvar: '+e.message+'</span>';
+  }
+}
+
+function copiarLinkAvaliacao(){
+  const inp = document.getElementById('aval-link-ativo');
+  if(!inp) return;
+  inp.select();
+  navigator.clipboard?.writeText(inp.value);
+  document.execCommand && document.execCommand('copy');
+}
+
 
 // ── MOTOR DE ALOCAÇÃO ─────────────────────────────────────────────────
 const SALA_INDIVIDUAL = ['LEDOR','TRANSCRITOR','TRANSCRIÇÃO','SOFTWARE','SALA INDIVIDUAL','LIBRAS'];
