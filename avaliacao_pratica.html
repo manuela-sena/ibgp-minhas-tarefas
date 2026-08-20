@@ -248,7 +248,9 @@
 const GITHUB_REPO = 'manuela-sena/ibgp-minhas-tarefas';
 const GH_WRITE_TOKEN = ['ghp_iwsiJT','m95ck1QUPJZ4dth','7MqYB6dCU1sU7fu'].join('');
 
-const LIKERT_CARGOS = ['BOMBEIRO_HIDRAULICO','ELETRICISTA','PEDREIRO']; // avaliados por escala NR/RI/RS, sem CNH, com resultado manual
+const LIKERT_CARGOS_OBRA = ['BOMBEIRO_HIDRAULICO','ELETRICISTA','PEDREIRO']; // usam criterios.obra (pontos por nível compartilhados dentro do grupo)
+const LIKERT_CARGOS_ITEM = ['OPERADOR_ETA']; // usam criterios.operador_eta (cada item tem seu próprio NR/RI/RS)
+const LIKERT_CARGOS = [...LIKERT_CARGOS_OBRA, ...LIKERT_CARGOS_ITEM]; // avaliados por escala NR/RI/RS, sem CNH, resultado calculado pela pontuação
 
 let TOKEN = '';
 let CARGO_ATIVO = null; // 'MOTORISTA' | 'OPERADOR' | 'BOMBEIRO_HIDRAULICO' | 'ELETRICISTA' | 'PEDREIRO' | null (ainda não definido para este candidato)
@@ -292,6 +294,7 @@ function labelCargo(tipo){
   const labels = {
     MOTORISTA: 'Motorista',
     OPERADOR: 'Operador de Máquina Pesada',
+    OPERADOR_ETA: 'Operador de ETA',
     BOMBEIRO_HIDRAULICO: 'Bombeiro Hidráulico',
     ELETRICISTA: 'Eletricista',
     PEDREIRO: 'Pedreiro'
@@ -501,7 +504,7 @@ function renderChecklist(){
             <span>Não atendido: ${item}</span>
           </label>`).join('')}
       </div>`).join('');
-  } else if(LIKERT_CARGOS.includes(CARGO_ATIVO)){
+  } else if(LIKERT_CARGOS_OBRA.includes(CARGO_ATIVO)){
     const obra = crit.obra || {atitudinais:{pontosPorNivel:{NR:0,RI:0,RS:0},itens:[]}, tecnicasGerais:{pontosPorNivel:{NR:0,RI:0,RS:0},itens:[]}, tecnicasEspecificas:{pontosPorNivel:{NR:0,RI:0,RS:0},itens:[]}};
     const grupos = [
       {key:'atitudinais', titulo:'Habilidades atitudinais e comportamentais', g:obra.atitudinais},
@@ -520,6 +523,24 @@ function renderChecklist(){
               <label class="lk-opcao"><input type="radio" name="lk-${grupo.key}-${ii}" class="lk-radio" data-nivel="NR" data-valor="${p.NR||0}" onchange="onChecklistChange(this)"><span>NR (${fmtPontos(p.NR||0)})</span></label>
               <label class="lk-opcao"><input type="radio" name="lk-${grupo.key}-${ii}" class="lk-radio" data-nivel="RI" data-valor="${p.RI||0}" onchange="onChecklistChange(this)"><span>RI (${fmtPontos(p.RI||0)})</span></label>
               <label class="lk-opcao"><input type="radio" name="lk-${grupo.key}-${ii}" class="lk-radio" data-nivel="RS" data-valor="${p.RS||0}" onchange="onChecklistChange(this)"><span>RS (${fmtPontos(p.RS||0)})</span></label>
+            </div>
+          </div>`).join('')}
+      </div>`;
+    }).join('');
+  } else if(LIKERT_CARGOS_ITEM.includes(CARGO_ATIVO)){
+    const rub = (crit.operador_eta && crit.operador_eta.grupos) || [];
+    wrap.innerHTML = rub.map((grupo, gi) => {
+      const maxGrupo = (grupo.itens||[]).reduce((s,it)=>s+(it.rs||0), 0);
+      return `
+      <div class="lk-grupo">
+        <div class="lk-grupo-titulo">${grupo.titulo}<span class="peso">máx. ${fmtPontos(maxGrupo)} pts</span></div>
+        ${(grupo.itens||[]).map((item, ii) => `
+          <div class="lk-item-row" data-grupo="g${gi}">
+            <div class="lk-item-texto">${item.texto}</div>
+            <div class="lk-opcoes">
+              <label class="lk-opcao"><input type="radio" name="lk-eta-${gi}-${ii}" class="lk-radio" data-nivel="NR" data-valor="${item.nr||0}" onchange="onChecklistChange(this)"><span>NR (${fmtPontos(item.nr||0)})</span></label>
+              <label class="lk-opcao"><input type="radio" name="lk-eta-${gi}-${ii}" class="lk-radio" data-nivel="RI" data-valor="${item.ri||0}" onchange="onChecklistChange(this)"><span>RI (${fmtPontos(item.ri||0)})</span></label>
+              <label class="lk-opcao"><input type="radio" name="lk-eta-${gi}-${ii}" class="lk-radio" data-nivel="RS" data-valor="${item.rs||0}" onchange="onChecklistChange(this)"><span>RS (${fmtPontos(item.rs||0)})</span></label>
             </div>
           </div>`).join('')}
       </div>`;
