@@ -1,11 +1,172 @@
 {
   "token": "ESC_MSXIYDCB_AA19",
-  "criadoEm": "2026-08-17T17:45:36.011Z",
+  "enviadoEm": "2026-08-20T12:39:48.357Z",
+  "protocolo": "ESC_MSXIYDCB_AA19_1787229588358",
   "concurso": {
     "concurso": "BRUMADINHO - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
     "municipio": "BRUMADINHO/MG",
     "dataProva": "30/08/2026",
     "escola": "Semear",
     "idEscola": "ESC_MSXIYDCB_AA19"
-  }
+  },
+  "instituicao": {
+    "nome": "SISTEMA PEDAGOGICO SEMEAR",
+    "cnpj": "02.595.407/0001-34",
+    "razao": "SISTEMA PEDAGOGICO SEMEAR LTDA",
+    "endereco": "RUA MAESTRO GERALDO CORDEIRO DOS SANTOS,",
+    "numero": "133",
+    "complemento": "ESCOLA",
+    "bairro": "IPIRANGA",
+    "cidade": "BRUMADINHO",
+    "uf": "MG",
+    "cep": "32480-075",
+    "responsavel": {
+      "nome": "TANIA APARECIDA CAMPOS MARTINS",
+      "cargo": "DIRETORA",
+      "email": "TACSEMEANDO@YHAOOU.COM.BR",
+      "tel": "(31) 99618-8889"
+    },
+    "diretor": {
+      "nome": "TANIA CAMPOS",
+      "email": "TACSEMEANDO@YHAOOU.COM.BR"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": true,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "6",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "6",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "A",
+      "andar": "2° ANDAR",
+      "sala": "SALA 05",
+      "capacidade": 19,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "2° ANDAR",
+      "sala": "SALA 06",
+      "capacidade": 16,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "3° ANDAR",
+      "sala": "SALA 07",
+      "capacidade": 11,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "B",
+      "andar": "3° ANDAR",
+      "sala": "SALA 08",
+      "capacidade": 19,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "B",
+      "andar": "3° ANDAR",
+      "sala": "SALA 09",
+      "capacidade": 18,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "B",
+      "andar": "3° ANDAR",
+      "sala": "SALA 10",
+      "capacidade": 24,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "B",
+      "andar": "3° ANDAR",
+      "sala": "SALA 11",
+      "capacidade": 21,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "C",
+      "andar": "4° ANDAR",
+      "sala": "SALA 12",
+      "capacidade": 31,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "4° ANDAR",
+      "sala": "SALA 13",
+      "capacidade": 28,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "4° ANDAR",
+      "sala": "SALA 14",
+      "capacidade": 28,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "4° ANDAR",
+      "sala": "SALA 15",
+      "capacidade": 32,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    }
+  ]
 }
