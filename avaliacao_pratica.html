@@ -43,7 +43,7 @@
   }
   select:focus, input:focus, textarea:focus { outline: none; border-color: var(--azul-med); }
   textarea { resize: vertical; min-height: 60px; }
-  .radio-row { display: flex; gap: 10px; }
+  .radio-row { display: flex; gap: 10px; flex-wrap: wrap; }
   .radio-opt {
     flex: 1; border: 1.5px solid var(--borda); border-radius: 8px; padding: 12px; text-align: center;
     font-size: 13.5px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all .15s;
@@ -97,6 +97,17 @@
   .qtd-valor { min-width:18px; text-align:center; font-weight:700; font-size:14px; color: var(--texto); }
   .op-categoria { margin-bottom: 16px; }
   .op-categoria-titulo { font-size: 12.5px; font-weight: 700; color: var(--azul); margin-bottom: 8px; }
+  .lk-grupo { margin-bottom: 18px; }
+  .lk-grupo-titulo { font-size: 12.5px; font-weight: 700; color: var(--azul); margin-bottom: 4px; padding-bottom:6px; border-bottom: 1px solid var(--borda); }
+  .lk-grupo-titulo .peso { font-weight: 600; color: var(--muted); margin-left: 6px; font-size: 11.5px; }
+  .lk-item-row { padding: 10px 0; border-bottom: 1px solid #f3f5f9; }
+  .lk-item-row:last-child { border-bottom: none; }
+  .lk-item-texto { font-size: 13px; color: var(--texto); margin-bottom: 8px; }
+  .lk-opcoes { display:flex; gap:8px; }
+  .lk-opcao { flex:1; display:flex; align-items:center; justify-content:center; gap:5px; border:1.5px solid var(--borda);
+    border-radius:8px; padding:8px 4px; font-size:12px; font-weight:600; color:var(--muted); cursor:pointer; }
+  .lk-opcao input { margin:0; }
+  .lk-opcao.checked { border-color: var(--azul-med); background: var(--azul-claro); color: var(--azul); }
 </style>
 </head>
 <body>
@@ -164,10 +175,7 @@
         <div class="card-sub">Este candidato está nas duas modalidades — escolha qual vai avaliar agora.</div>
       </div>
       <div class="card-body">
-        <div class="radio-row">
-          <div class="radio-opt" id="modalidade-MOTORISTA" onclick="selecionarModalidade('MOTORISTA')">Motorista</div>
-          <div class="radio-opt" id="modalidade-OPERADOR" onclick="selecionarModalidade('OPERADOR')">Operador de Máquina Pesada</div>
-        </div>
+        <div class="radio-row" id="modalidade-opcoes"></div>
       </div>
     </div>
 
@@ -214,6 +222,13 @@
       <div class="card-body">
         <div id="checklist-wrap"></div>
         <div id="preview-pontos" class="preview-pontos neutro" style="margin:6px 0 16px">10,0 pontos — nenhuma falta marcada</div>
+        <div id="resultado-wrap" style="display:none;margin-bottom:16px">
+          <label>Resultado final<span class="req">*</span></label>
+          <div class="radio-row" style="margin-top:6px">
+            <div class="radio-opt" id="resultado-APTO" onclick="selecionarResultado(true)">APTO</div>
+            <div class="radio-opt" id="resultado-INAPTO" onclick="selecionarResultado(false)">INAPTO</div>
+          </div>
+        </div>
         <div class="form-group" style="margin-bottom:0">
           <label>Observações <span style="color:var(--muted);font-weight:400">(opcional)</span></label>
           <textarea id="f-obs" placeholder="Alguma ocorrência a registrar?"></textarea>
@@ -240,13 +255,16 @@
 const GITHUB_REPO = 'manuela-sena/ibgp-minhas-tarefas';
 const GH_WRITE_TOKEN = ['ghp_iwsiJT','m95ck1QUPJZ4dth','7MqYB6dCU1sU7fu'].join('');
 
+const LIKERT_CARGOS = ['BOMBEIRO_HIDRAULICO','ELETRICISTA','PEDREIRO']; // avaliados por escala NR/RI/RS, sem CNH, com resultado manual
+
 let TOKEN = '';
-let CARGO_ATIVO = null; // 'MOTORISTA' | 'OPERADOR' | null (ainda não definido para este candidato)
+let CARGO_ATIVO = null; // 'MOTORISTA' | 'OPERADOR' | 'BOMBEIRO_HIDRAULICO' | 'ELETRICISTA' | 'PEDREIRO' | null (ainda não definido para este candidato)
 let CARGO_ENTRY_ATIVO = null; // {tipo, raw, inscricao, data, horario} do cargo escolhido — cada cargo tem sua própria inscrição
 let CONFIG = null;
 let CANDIDATOS_TURMA = [];
 let CANDIDATO_SEL = null; // {nome, cargos:[{tipo, raw, inscricao, data, horario}, ...]}
-let CNH_SEL = null; // true | false | null (não respondido)
+let CNH_SEL = null; // true | false | null (não respondido) — usado só para MOTORISTA/OPERADOR
+let RESULTADO_SEL = null; // true (APTO) | false (INAPTO) | null (não respondido) — usado só para os cargos de escala NR/RI/RS
 let FOTO_DATA_URL = null; // dataURL jpeg comprimido, ou null
 
 window.onload = async function(){
@@ -279,7 +297,18 @@ function mostrarErro(msg){
 }
 
 function labelCargo(tipo){
-  return tipo === 'OPERADOR' ? 'Operador de Máquina Pesada' : 'Motorista';
+  const labels = {
+    MOTORISTA: 'Motorista',
+    OPERADOR: 'Operador de Máquina Pesada',
+    BOMBEIRO_HIDRAULICO: 'Bombeiro Hidráulico',
+    ELETRICISTA: 'Eletricista',
+    PEDREIRO: 'Pedreiro'
+  };
+  return labels[tipo] || tipo || '';
+}
+
+function fmtPontos(n){
+  return (Math.round(n*10)/10).toFixed(1).replace('.', ',');
 }
 
 function montarForm(){
@@ -330,8 +359,6 @@ function selecionarCandidato(idx){
   const chip = document.getElementById('candidato-selecionado');
   CARGO_ATIVO = null;
   CARGO_ENTRY_ATIVO = null;
-  document.getElementById('modalidade-MOTORISTA').classList.remove('active');
-  document.getElementById('modalidade-OPERADOR').classList.remove('active');
   document.getElementById('card-modalidade').style.display='none';
   document.getElementById('card-foto').style.display='none';
   document.getElementById('card-cnh').style.display='none';
@@ -343,6 +370,7 @@ function selecionarCandidato(idx){
     chip.style.display='flex';
     const cargos = CANDIDATO_SEL.cargos || [];
     if(cargos.length > 1){
+      renderOpcoesModalidade(cargos);
       document.getElementById('card-modalidade').style.display='block';
     } else if(cargos.length === 1){
       CARGO_ATIVO = cargos[0].tipo;
@@ -352,6 +380,14 @@ function selecionarCandidato(idx){
     }
   }
   atualizarBotaoEnviar();
+}
+
+function renderOpcoesModalidade(cargos){
+  const wrap = document.getElementById('modalidade-opcoes');
+  if(!wrap) return;
+  wrap.innerHTML = cargos.map(c=>
+    `<div class="radio-opt" id="modalidade-${c.tipo}" onclick="selecionarModalidade('${c.tipo}')">${labelCargo(c.tipo)}</div>`
+  ).join('');
 }
 
 function atualizarChipCandidato(){
@@ -365,24 +401,42 @@ function atualizarChipCandidato(){
 function selecionarModalidade(tipo){
   CARGO_ATIVO = tipo;
   CARGO_ENTRY_ATIVO = (CANDIDATO_SEL.cargos||[]).find(c=>c.tipo===tipo) || null;
-  document.getElementById('modalidade-MOTORISTA').classList.toggle('active', tipo==='MOTORISTA');
-  document.getElementById('modalidade-OPERADOR').classList.toggle('active', tipo==='OPERADOR');
+  document.querySelectorAll('#modalidade-opcoes .radio-opt').forEach(el=>{
+    el.classList.toggle('active', el.id === 'modalidade-'+tipo);
+  });
   atualizarChipCandidato();
   ativarFluxoAvaliacao();
 }
 
 function ativarFluxoAvaliacao(){
   document.getElementById('header-cargo').textContent = labelCargo(CARGO_ATIVO);
+  const isLikert = LIKERT_CARGOS.includes(CARGO_ATIVO);
   document.getElementById('card-avaliacao-sub').textContent =
-    CARGO_ATIVO === 'OPERADOR'
-      ? 'Marque apenas os itens do checklist que NÃO foram atendidos pelo candidato.'
-      : 'Marque as faltas cometidas pelo candidato durante o teste de direção.';
+    CARGO_ATIVO === 'OPERADOR' ? 'Marque apenas os itens do checklist que NÃO foram atendidos pelo candidato.' :
+    isLikert ? 'Avalie cada item conforme o nível apresentado pelo candidato (NR = não realizado, RI = realizado insatisfatoriamente, RS = realizado satisfatoriamente) e defina o resultado final.' :
+    'Marque as faltas cometidas pelo candidato durante o teste de direção.';
   resetarCnh();
+  resetarResultado();
   resetarFoto();
   document.getElementById('card-foto').style.display='block';
-  document.getElementById('card-cnh').style.display='block';
+  document.getElementById('card-cnh').style.display = isLikert ? 'none' : 'block';
+  document.getElementById('resultado-wrap').style.display = isLikert ? 'block' : 'none';
   document.getElementById('card-avaliacao').style.display='block';
   renderChecklist();
+  atualizarBotaoEnviar();
+}
+
+function resetarResultado(){
+  RESULTADO_SEL = null;
+  document.getElementById('resultado-APTO').classList.remove('active');
+  document.getElementById('resultado-INAPTO').classList.remove('active');
+}
+
+function selecionarResultado(valor){
+  RESULTADO_SEL = valor;
+  document.getElementById('resultado-APTO').classList.toggle('active', valor===true);
+  document.getElementById('resultado-INAPTO').classList.toggle('active', valor===false);
+  atualizarPreview();
   atualizarBotaoEnviar();
 }
 
@@ -398,8 +452,10 @@ function limparCandidato(){
   document.getElementById('card-foto').style.display='none';
   document.getElementById('card-cnh').style.display='none';
   document.getElementById('card-avaliacao').style.display='none';
+  document.getElementById('resultado-wrap').style.display='none';
   document.getElementById('header-cargo').textContent = '';
   resetarCnh();
+  resetarResultado();
   resetarFoto();
   atualizarBotaoEnviar();
 }
@@ -471,6 +527,29 @@ function renderChecklist(){
             <span>Não atendido: ${item}</span>
           </label>`).join('')}
       </div>`).join('');
+  } else if(LIKERT_CARGOS.includes(CARGO_ATIVO)){
+    const obra = crit.obra || {atitudinais:{pontosPorNivel:{NR:0,RI:0,RS:0},itens:[]}, tecnicasGerais:{pontosPorNivel:{NR:0,RI:0,RS:0},itens:[]}, tecnicasEspecificas:{pontosPorNivel:{NR:0,RI:0,RS:0},itens:[]}};
+    const grupos = [
+      {key:'atitudinais', titulo:'Habilidades atitudinais e comportamentais', g:obra.atitudinais},
+      {key:'tecnicasGerais', titulo:'Habilidades técnicas gerais', g:obra.tecnicasGerais},
+      {key:'tecnicasEspecificas', titulo:'Habilidades técnicas específicas', g:obra.tecnicasEspecificas}
+    ];
+    wrap.innerHTML = grupos.map(grupo => {
+      const p = grupo.g.pontosPorNivel || {NR:0,RI:0,RS:0};
+      return `
+      <div class="lk-grupo">
+        <div class="lk-grupo-titulo">${grupo.titulo}<span class="peso">máx. ${fmtPontos((p.RS||0)*(grupo.g.itens||[]).length)} pts</span></div>
+        ${(grupo.g.itens||[]).map((item, ii) => `
+          <div class="lk-item-row" data-grupo="${grupo.key}">
+            <div class="lk-item-texto">${item}</div>
+            <div class="lk-opcoes">
+              <label class="lk-opcao"><input type="radio" name="lk-${grupo.key}-${ii}" class="lk-radio" data-nivel="NR" data-valor="${p.NR||0}" onchange="onChecklistChange(this)"><span>NR (${fmtPontos(p.NR||0)})</span></label>
+              <label class="lk-opcao"><input type="radio" name="lk-${grupo.key}-${ii}" class="lk-radio" data-nivel="RI" data-valor="${p.RI||0}" onchange="onChecklistChange(this)"><span>RI (${fmtPontos(p.RI||0)})</span></label>
+              <label class="lk-opcao"><input type="radio" name="lk-${grupo.key}-${ii}" class="lk-radio" data-nivel="RS" data-valor="${p.RS||0}" onchange="onChecklistChange(this)"><span>RS (${fmtPontos(p.RS||0)})</span></label>
+            </div>
+          </div>`).join('')}
+      </div>`;
+    }).join('');
   } else {
     const m = crit.motorista || {gravissima:[],grave:[],media:[],leve:[]};
     const grupos = [
@@ -503,6 +582,12 @@ function renderChecklist(){
 function onChecklistChange(chk){
   const item = chk.closest('.falta-item');
   if(item) item.classList.toggle('checked', chk.checked);
+  const lkRow = chk.closest('.lk-item-row');
+  if(lkRow){
+    lkRow.querySelectorAll('.lk-opcao').forEach(op=>op.classList.remove('checked'));
+    const opcao = chk.closest('.lk-opcao');
+    if(opcao) opcao.classList.add('checked');
+  }
   atualizarPreview();
   atualizarBotaoEnviar();
 }
@@ -531,6 +616,14 @@ function calcularPontos(){
     const marcados = document.querySelectorAll('.chk-op:checked').length;
     const pontos = Math.max(0, 10 - marcados*0.5);
     return {pontos, eliminado:false, apto: pontos >= 5, faltas: marcados};
+  } else if(LIKERT_CARGOS.includes(CARGO_ATIVO)){
+    const linhas = Array.from(document.querySelectorAll('.lk-item-row'));
+    let pontos = 0, respondidas = 0;
+    linhas.forEach(row=>{
+      const checked = row.querySelector('.lk-radio:checked');
+      if(checked){ pontos += parseFloat(checked.getAttribute('data-valor')) || 0; respondidas++; }
+    });
+    return {pontos, eliminado:false, apto: RESULTADO_SEL === true, faltas:0, respondidas, totalItens: linhas.length, motivo:'likert'};
   } else {
     const gravissimas = document.querySelectorAll('.chk-falta[data-nivel="gravissima"]:checked').length;
     if(gravissimas > 0) return {pontos:0, eliminado:true, apto:false, faltas: gravissimas};
@@ -549,20 +642,38 @@ function atualizarPreview(){
   if(r.motivo === 'cnh'){
     box.className='preview-pontos elim';
     box.textContent='⚠️ ELIMINADO — não apresentou a CNH exigida';
+  } else if(r.motivo === 'likert'){
+    const faltam = r.totalItens - r.respondidas;
+    if(RESULTADO_SEL === null){
+      box.className='preview-pontos neutro';
+      box.textContent = fmtPontos(r.pontos) + ' pontos' + (faltam ? ` — ${faltam} item(ns) sem resposta` : ' — selecione o resultado final');
+    } else if(RESULTADO_SEL){
+      box.className='preview-pontos ok';
+      box.textContent = fmtPontos(r.pontos) + ' pontos — APTO';
+    } else {
+      box.className='preview-pontos elim';
+      box.textContent = fmtPontos(r.pontos) + ' pontos — INAPTO';
+    }
   } else if(r.eliminado){
     box.className='preview-pontos elim';
     box.textContent='⚠️ ELIMINADO — falta gravíssima registrada';
   } else if(r.apto){
     box.className='preview-pontos ok';
-    box.textContent = r.pontos.toFixed(1).replace('.0',',0') + ' pontos — APTO';
+    box.textContent = fmtPontos(r.pontos) + ' pontos — APTO';
   } else {
     box.className='preview-pontos elim';
-    box.textContent = r.pontos.toFixed(1).replace('.0',',0') + ' pontos — INAPTO (abaixo de 5,0)';
+    box.textContent = fmtPontos(r.pontos) + ' pontos — INAPTO (abaixo de 5,0)';
   }
 }
 
 function atualizarBotaoEnviar(){
-  const ok = document.getElementById('f-avaliador').value && CANDIDATO_SEL && CARGO_ATIVO && CNH_SEL !== null && !!FOTO_DATA_URL;
+  let extraOk = true;
+  if(CARGO_ATIVO === 'MOTORISTA' || CARGO_ATIVO === 'OPERADOR'){
+    extraOk = CNH_SEL !== null;
+  } else if(LIKERT_CARGOS.includes(CARGO_ATIVO)){
+    extraOk = RESULTADO_SEL !== null;
+  }
+  const ok = document.getElementById('f-avaliador').value && CANDIDATO_SEL && CARGO_ATIVO && extraOk && !!FOTO_DATA_URL;
   document.getElementById('btn-enviar').disabled = !ok;
 }
 
@@ -571,6 +682,14 @@ function itensMarcadosResumo(){
     return Array.from(document.querySelectorAll('.chk-op:checked')).map(chk=>{
       const label = chk.closest('.falta-item').textContent.trim();
       return label;
+    });
+  }
+  if(LIKERT_CARGOS.includes(CARGO_ATIVO)){
+    return Array.from(document.querySelectorAll('.lk-item-row')).map(row=>{
+      const texto = row.querySelector('.lk-item-texto').textContent.trim();
+      const checked = row.querySelector('.lk-radio:checked');
+      if(!checked) return `${texto} — não respondido`;
+      return `${texto} — ${checked.getAttribute('data-nivel')} (${checked.getAttribute('data-valor')} pts)`;
     });
   }
   const gravissimas = Array.from(document.querySelectorAll('.chk-falta[data-nivel="gravissima"]:checked')).map(chk=>
@@ -604,9 +723,12 @@ async function enviarAvaliacao(){
   const obs = document.getElementById('f-obs').value.trim();
   const alertEl = document.getElementById('alert-envio');
 
-  if(!avaliador || !CANDIDATO_SEL || !CARGO_ATIVO || !CARGO_ENTRY_ATIVO || CNH_SEL === null || !FOTO_DATA_URL){
+  const isLikert = LIKERT_CARGOS.includes(CARGO_ATIVO);
+  const faltaCnh = !isLikert && CNH_SEL === null;
+  const faltaResultado = isLikert && RESULTADO_SEL === null;
+  if(!avaliador || !CANDIDATO_SEL || !CARGO_ATIVO || !CARGO_ENTRY_ATIVO || !FOTO_DATA_URL || faltaCnh || faltaResultado){
     alertEl.className='alert alert-error'; alertEl.style.display='block';
-    alertEl.textContent='Preencha todos os campos obrigatórios antes de enviar (inclusive a modalidade, a foto e se apresentou a CNH).';
+    alertEl.textContent='Preencha todos os campos obrigatórios antes de enviar (inclusive a modalidade, a foto e o resultado da avaliação).';
     return;
   }
   const calc = calcularPontos();
@@ -627,6 +749,7 @@ async function enviarAvaliacao(){
       turma: [CARGO_ENTRY_ATIVO.data, CARGO_ENTRY_ATIVO.horario].filter(Boolean).join(' · '),
       candidato: {inscricao: inscricaoAtiva, nome: CANDIDATO_SEL.nome, cargo: CARGO_ENTRY_ATIVO.raw||'', data: CARGO_ENTRY_ATIVO.data||'', horario: CARGO_ENTRY_ATIVO.horario||''},
       cnhApresentada: CNH_SEL,
+      resultadoFinal: isLikert ? (RESULTADO_SEL ? 'APTO' : 'INAPTO') : null,
       fotoPath,
       itensMarcados: itensMarcadosResumo(),
       pontos: calc.pontos,
@@ -650,7 +773,7 @@ async function enviarAvaliacao(){
     if(!r.ok){ const err = await r.json().catch(()=>({})); throw new Error(err.message||'Erro ao enviar'); }
 
     document.getElementById('success-resumo').textContent =
-      `${CANDIDATO_SEL.nome} — ${labelCargo(CARGO_ATIVO)} — ` + (calc.eliminado ? 'ELIMINADO' : (calc.apto ? 'APTO' : 'INAPTO') + ' ('+calc.pontos.toFixed(1).replace('.0',',0')+' pts)');
+      `${CANDIDATO_SEL.nome} — ${labelCargo(CARGO_ATIVO)} — ` + (calc.eliminado ? 'ELIMINADO' : (calc.apto ? 'APTO' : 'INAPTO') + ' ('+fmtPontos(calc.pontos)+' pts)');
     document.getElementById('form-wrap').style.display='none';
     document.getElementById('page-success').style.display='block';
     window.scrollTo({top:0, behavior:'smooth'});
@@ -671,6 +794,8 @@ function registrarOutro(){
     el.querySelector('.qtd-valor').textContent = '0';
     el.classList.remove('checked');
   });
+  document.querySelectorAll('.lk-radio').forEach(chk=>{ chk.checked = false; });
+  document.querySelectorAll('.lk-opcao').forEach(op=>op.classList.remove('checked'));
   document.getElementById('f-obs').value = '';
   document.getElementById('alert-envio').style.display='none';
   const btn = document.getElementById('btn-enviar');
