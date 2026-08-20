@@ -128,25 +128,13 @@
 
     <div class="card">
       <div class="card-header">
-        <div class="card-title">2. Data / horário</div>
-      </div>
-      <div class="card-body">
-        <div class="form-group" style="margin-bottom:0">
-          <label>Turma / horário<span class="req">*</span></label>
-          <select id="f-turma" onchange="onTurmaChange()"><option value="">Selecione...</option></select>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">3. Candidato(a)</div>
-        <div class="card-sub">Busque pelo nome ou número de inscrição.</div>
+        <div class="card-title">2. Candidato(a)</div>
+        <div class="card-sub">Busque pelo nome ou número de inscrição — a data e o horário vêm junto com o candidato.</div>
       </div>
       <div class="card-body">
         <div id="busca-wrap">
           <div class="search-wrap">
-            <input type="text" id="f-busca-candidato" placeholder="Digite o nome ou a inscrição..." oninput="buscarCandidato()" autocomplete="off" disabled>
+            <input type="text" id="f-busca-candidato" placeholder="Digite o nome ou a inscrição..." oninput="buscarCandidato()" autocomplete="off">
             <div id="search-results" class="search-results" style="display:none"></div>
           </div>
         </div>
@@ -162,7 +150,7 @@
 
     <div class="card" id="card-avaliacao" style="display:none">
       <div class="card-header">
-        <div class="card-title">4. Avaliação</div>
+        <div class="card-title">3. Avaliação</div>
         <div class="card-sub" id="card-avaliacao-sub"></div>
       </div>
       <div class="card-body">
@@ -244,14 +232,7 @@ function montarForm(){
     selAval.appendChild(op);
   });
 
-  const candidatosCargo = (CONFIG.candidatos||[]).filter(c=>(c.cargoTipo||'').toUpperCase()===CARGO);
-  const turmas = turmasUnicas(candidatosCargo);
-  const selTurma = document.getElementById('f-turma');
-  turmas.forEach(t=>{
-    const op = document.createElement('option'); op.value = t.key;
-    op.textContent = [t.data, t.horario].filter(Boolean).join(' · ');
-    selTurma.appendChild(op);
-  });
+  CANDIDATOS_TURMA = (CONFIG.candidatos||[]).filter(c=>(c.cargoTipo||'').toUpperCase()===CARGO);
 
   document.getElementById('card-avaliacao-sub').textContent =
     CARGO === 'OPERADOR'
@@ -264,25 +245,6 @@ function montarForm(){
   document.getElementById('form-wrap').style.display='block';
 }
 
-function turmasUnicas(lista){
-  const map = new Map();
-  lista.forEach(c=>{
-    const key = [c.data,c.horario].filter(Boolean).join(' · ');
-    if(key && !map.has(key)) map.set(key, {key, data:c.data, horario:c.horario});
-  });
-  return Array.from(map.values());
-}
-
-function onTurmaChange(){
-  const key = document.getElementById('f-turma').value;
-  const candidatosCargo = (CONFIG.candidatos||[]).filter(c=>(c.cargoTipo||'').toUpperCase()===CARGO);
-  CANDIDATOS_TURMA = candidatosCargo.filter(c=>[c.data,c.horario].filter(Boolean).join(' · ')===key);
-  limparCandidato();
-  document.getElementById('f-busca-candidato').value = '';
-  document.getElementById('f-busca-candidato').disabled = !key;
-  atualizarBotaoEnviar();
-}
-
 function buscarCandidato(){
   const termo = document.getElementById('f-busca-candidato').value.trim().toLowerCase();
   const box = document.getElementById('search-results');
@@ -291,13 +253,13 @@ function buscarCandidato(){
     c.nome.toLowerCase().includes(termo) || c.inscricao.toLowerCase().includes(termo)
   ).slice(0,8);
   if(!achados.length){
-    box.innerHTML = '<div class="search-item" style="color:var(--muted)">Nenhum candidato encontrado nesta turma</div>';
+    box.innerHTML = '<div class="search-item" style="color:var(--muted)">Nenhum candidato encontrado</div>';
     box.style.display='block';
     return;
   }
   box.innerHTML = achados.map(c=>
     `<div class="search-item" onclick='selecionarCandidato(${JSON.stringify(c.inscricao)})'>
-      <strong>${c.inscricao}</strong> — ${c.nome}
+      <strong>${c.inscricao}</strong> — ${c.nome}${c.data||c.horario? ' <span style="color:var(--muted)">('+[c.data,c.horario].filter(Boolean).join(' · ')+')</span>':''}
     </div>`
   ).join('');
   box.style.display='block';
@@ -427,9 +389,7 @@ function atualizarPreview(){
 }
 
 function atualizarBotaoEnviar(){
-  const ok = document.getElementById('f-avaliador').value &&
-             document.getElementById('f-turma').value &&
-             CANDIDATO_SEL;
+  const ok = document.getElementById('f-avaliador').value && CANDIDATO_SEL;
   document.getElementById('btn-enviar').disabled = !ok;
 }
 
@@ -456,11 +416,10 @@ function itensMarcadosResumo(){
 
 async function enviarAvaliacao(){
   const avaliador = document.getElementById('f-avaliador').value;
-  const turmaKey = document.getElementById('f-turma').value;
   const obs = document.getElementById('f-obs').value.trim();
   const alertEl = document.getElementById('alert-envio');
 
-  if(!avaliador || !turmaKey || !CANDIDATO_SEL){
+  if(!avaliador || !CANDIDATO_SEL){
     alertEl.className='alert alert-error'; alertEl.style.display='block';
     alertEl.textContent='Preencha todos os campos obrigatórios antes de enviar.';
     return;
@@ -474,8 +433,9 @@ async function enviarAvaliacao(){
     token: TOKEN,
     concursoNome: CONFIG.concursoNome,
     cargo: CARGO,
-    avaliador, turma: turmaKey,
-    candidato: {inscricao: CANDIDATO_SEL.inscricao, nome: CANDIDATO_SEL.nome, cargo: CANDIDATO_SEL.cargoRaw||''},
+    avaliador,
+    turma: [CANDIDATO_SEL.data, CANDIDATO_SEL.horario].filter(Boolean).join(' · '),
+    candidato: {inscricao: CANDIDATO_SEL.inscricao, nome: CANDIDATO_SEL.nome, cargo: CANDIDATO_SEL.cargoRaw||'', data: CANDIDATO_SEL.data||'', horario: CANDIDATO_SEL.horario||''},
     itensMarcados: itensMarcadosResumo(),
     pontos: calc.pontos,
     eliminado: calc.eliminado,
