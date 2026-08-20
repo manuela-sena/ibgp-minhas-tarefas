@@ -1,0 +1,30 @@
+{
+  "token": "PRAT_MT1Y5W76_XM9Q",
+  "concursoNome": "PRESIDENTE JUSCELINO - EDITAL Nº 01/2025 - CONCURSO PÚBLICO",
+  "cargo": "MOTORISTA",
+  "avaliador": "TESTE MANU",
+  "turma": "16.08.2026 · 07H00MIN",
+  "candidato": {
+    "inscricao": "16250052",
+    "nome": "CARLOS AUGUSTO DE OLIVEIRA",
+    "cargo": "202 - MOTORISTA",
+    "data": "16.08.2026",
+    "horario": "07H00MIN"
+  },
+  "cnhApresentada": true,
+  "resultadoFinal": null,
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MT1Y5W76_XM9Q_16250052_MOTORISTA.jpg",
+  "itensMarcados": [
+    "[grave] Não respeitar as placas de sinalização. (x1)",
+    "[media] Arrancar o veículo sem soltar o freio de mão. (x1)",
+    "[leve] Regulagem incorreta dos retrovisores. (x1)",
+    "[leve] Uso incorreto da seta. (x1)",
+    "[leve] Mudança incorreta de marchas. (x1)",
+    "[leve] Manobra incorreta de baliza (uma tentativa). (x2)"
+  ],
+  "pontos": 4.5,
+  "eliminado": false,
+  "apto": false,
+  "observacoes": "",
+  "enviadoEm": "2026-08-20T20:54:37.127Z"
+}
