@@ -7242,6 +7242,7 @@ async function carregarAvaliacao(){
   el.innerHTML = '<div class="loading"><div class="spinner"></div>Carregando...</div>';
 
   let configExistente = null;
+  let configPraticaExistente = null;
   try{
     const r = await fetch(
       `https://api.github.com/repos/${GH_REPO_ALOC}/contents/respostas_avaliacao`,
@@ -7249,8 +7250,10 @@ async function carregarAvaliacao(){
     );
     if(r.ok){
       const arquivos = await r.json();
-      const configs = (Array.isArray(arquivos)?arquivos:[]).filter(a=>a.name.startsWith('taf_config_') && a.name.endsWith('.json'));
-      for(const arq of configs){
+      const lista = Array.isArray(arquivos) ? arquivos : [];
+      const configsTaf = lista.filter(a=>a.name.startsWith('taf_config_') && a.name.endsWith('.json'));
+      const configsPratica = lista.filter(a=>a.name.startsWith('pratica_config_') && a.name.endsWith('.json'));
+      for(const arq of configsTaf){
         try{
           const rc = await fetch(arq.url, {headers:{'Authorization':'Bearer '+GH_TOKEN_ALOC}});
           if(!rc.ok) continue;
@@ -7258,6 +7261,18 @@ async function carregarAvaliacao(){
           const conteudo = JSON.parse(decodeURIComponent(escape(atob(dc.content.replace(/\n/g,'')))));
           if((conteudo.concursoNome||'').trim().toLowerCase() === concursoNome.toLowerCase()){
             configExistente = {...conteudo, _sha: dc.sha};
+            break;
+          }
+        }catch(e){ /* ignora arquivo com problema e segue */ }
+      }
+      for(const arq of configsPratica){
+        try{
+          const rc = await fetch(arq.url, {headers:{'Authorization':'Bearer '+GH_TOKEN_ALOC}});
+          if(!rc.ok) continue;
+          const dc = await rc.json();
+          const conteudo = JSON.parse(decodeURIComponent(escape(atob(dc.content.replace(/\n/g,'')))));
+          if((conteudo.concursoNome||'').trim().toLowerCase() === concursoNome.toLowerCase()){
+            configPraticaExistente = {...conteudo, _sha: dc.sha};
             break;
           }
         }catch(e){ /* ignora arquivo com problema e segue */ }
@@ -7270,12 +7285,18 @@ async function carregarAvaliacao(){
     avaliadores: [], candidatos: [],
     tabelaPontos: JSON.parse(JSON.stringify(AVAL_TABELA_DEFAULT))
   };
-  renderAvaliacaoContent();
+  window._avalConfigPratica = configPraticaExistente || {
+    token: null, _sha: null, criadoEm: null, concursoNome,
+    avaliadores: [], candidatos: [],
+    criterios: JSON.parse(JSON.stringify(PRATICA_CRITERIOS_DEFAULT))
+  };
+  window._avalTab = 'taf';
+  renderAvaliacaoShell();
 }
 
 function renderAvaliacaoContent(){
   const cfg = window._avalConfig;
-  const el = document.getElementById('aval-content');
+  const el = document.getElementById('aval-subcontent');
   const linkAtivo = cfg.token ? `${AVAL_TAF_FORM_URL}?token=${cfg.token}` : '';
 
   el.innerHTML = `
@@ -7512,6 +7533,326 @@ function copiarLinkAvaliacao(){
   document.execCommand && document.execCommand('copy');
 }
 
+
+
+// ── AVALIAÇÃO: PROVA PRÁTICA (MOTORISTA / OPERADOR) ──────────────────
+const AVAL_PRATICA_FORM_URL = 'https://manuela-sena.github.io/ibgp-minhas-tarefas/avaliacao_pratica.html';
+
+const PRATICA_CRITERIOS_DEFAULT = {
+  motorista: {
+    gravissima: [
+      'Não executar o teste em sua totalidade do percurso preestabelecido.',
+      'Haver colisão com outro veículo, ou objeto presente no percurso.',
+      'Subir com o veículo no meio fio.',
+      'Colocar em risco a vida do passageiro/avaliador e de transeuntes.'
+    ],
+    grave: [
+      'Não respeitar as placas de sinalização.',
+      'Não respeitar os limites de velocidade.',
+      'Uso incorreto do cinto de segurança.',
+      'Provocar movimentos irregulares durante o teste, sem motivo justificado, ou interromper o funcionamento do motor sem justa razão, após o início do teste.'
+    ],
+    media: [
+      'Uso de marcha desapropriada para a velocidade.',
+      'Apoio do pé no pedal da embreagem com o veículo engrenado e em movimento.',
+      'Arrancar o veículo sem soltar o freio de mão.',
+      'Controle incorreto de embreagem.'
+    ],
+    leve: [
+      'Regulagem incorreta dos retrovisores.',
+      'Uso incorreto da seta.',
+      'Mudança incorreta de marchas.',
+      'Manobra incorreta de baliza (uma tentativa).'
+    ]
+  },
+  operador: {
+    categorias: [
+      {titulo:'I – Checagem da máquina (pré-uso)', itens:[
+        'Estrutura da máquina — lataria, chassi, pneus e material rodante.',
+        'Vazamentos.',
+        'Peças.',
+        'Conchas, borda cortante, dentes e escarificadores.',
+        'Faróis, faroletes, luz de ré, luzes de freio, lanternas indicativas de direção e retrovisores.'
+      ]},
+      {titulo:'II – Checagem dos níveis da máquina', itens:[
+        'Nível do óleo do motor.',
+        'Nível do óleo da transmissão.',
+        'Nível do óleo hidráulico.',
+        'Nível do óleo de freio.',
+        'Nível da água — sistema de arrefecimento.'
+      ]},
+      {titulo:'III – Identificação e checagem do painel de instrumentos', itens:[
+        'Indicador da temperatura da água do motor.',
+        'Indicador da pressão do óleo do motor.',
+        'Indicador da temperatura da transmissão.',
+        'Indicador de pressão da transmissão.',
+        'Indicador da carga da bateria.',
+        'Indicador do nível de combustível.',
+        'Indicador da pressão do freio.',
+        'Indicador da temperatura do óleo hidráulico.'
+      ]},
+      {titulo:'IV – Checagem de comandos', itens:[
+        'Alavancas do freio de estacionamento.',
+        'Alavancas do comando hidráulico da concha.',
+        'Alavanca do comando de reversão.',
+        'Alavanca do comando da transmissão.',
+        'Pedais de freio / neutralizador.',
+        'Botão de buzina.'
+      ]},
+      {titulo:'V – Procedimentos de partida', itens:[
+        'Transmissão em neutro.',
+        'Freio de estacionamento aplicado.',
+        'Concha baixa no solo.',
+        'Acionamento da chave de partida.',
+        'Aquecimento do motor.',
+        'Checagem do painel.'
+      ]},
+      {titulo:'VI – Teste de operação', itens:[
+        'Escavação.','Carga.','Transporte.','Descarga.','Retorno.','Estacionamento.'
+      ]},
+      {titulo:'VII – Procedimento de parada', itens:[
+        'Transmissão em neutro.',
+        'Freio de estacionamento aplicado.',
+        'Concha no solo.',
+        'Arrefecimento do motor.'
+      ]}
+    ]
+  }
+};
+
+window._avalConfigPratica = window._avalConfigPratica || null;
+window._avalTab = window._avalTab || 'taf';
+
+function avalSetTab(tab){
+  window._avalTab = tab;
+  renderAvaliacaoShell();
+}
+
+function renderAvaliacaoShell(){
+  const el = document.getElementById('aval-content');
+  if(!el || !window._avalConfig) return;
+  el.innerHTML = `
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <button class="btn-secondary" style="padding:8px 18px;font-size:12.5px;${window._avalTab==='taf'?'background:#1f4e8c;color:#fff;border-color:#1f4e8c':''}" onclick="avalSetTab('taf')">TAF</button>
+      <button class="btn-secondary" style="padding:8px 18px;font-size:12.5px;${window._avalTab==='pratica'?'background:#1f4e8c;color:#fff;border-color:#1f4e8c':''}" onclick="avalSetTab('pratica')">Prova Prática</button>
+    </div>
+    <div id="aval-subcontent"></div>
+  `;
+  if(window._avalTab === 'taf') renderAvaliacaoContent();
+  else renderAvaliacaoPraticaContent();
+}
+
+function renderAvaliacaoPraticaContent(){
+  const cfg = window._avalConfigPratica;
+  const el = document.getElementById('aval-subcontent');
+  if(!el || !cfg) return;
+  const linkMotorista = cfg.token ? `${AVAL_PRATICA_FORM_URL}?token=${cfg.token}&cargo=motorista` : '';
+  const linkOperador  = cfg.token ? `${AVAL_PRATICA_FORM_URL}?token=${cfg.token}&cargo=operador`  : '';
+
+  el.innerHTML = `
+${cfg.token ? `
+<div class="card card-pad" style="margin-bottom:14px;background:#eef6ef;border-color:#b9e0c2">
+  <div style="font-size:13px;font-weight:700;color:#1f2a3d;margin-bottom:6px">🔗 Links do formulário de Prova Prática já estão ativos</div>
+  <div style="font-size:12px;color:#5a7a63;margin-bottom:8px">São dois links separados — um para cada cargo. Cada um mostra só os candidatos e o checklist daquele cargo.</div>
+  <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+    <div style="width:90px;font-size:12px;font-weight:700;color:#1f2a3d">Motorista</div>
+    <input class="form-input" value="${linkMotorista}" readonly style="height:34px;font-size:12.5px;flex:1">
+    <button class="btn-secondary" style="height:34px;padding:0 14px;font-size:12.5px" onclick="copiarLinkPratica('motorista')">Copiar</button>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <div style="width:90px;font-size:12px;font-weight:700;color:#1f2a3d">Operador</div>
+    <input class="form-input" value="${linkOperador}" readonly style="height:34px;font-size:12.5px;flex:1">
+    <button class="btn-secondary" style="height:34px;padding:0 14px;font-size:12.5px" onclick="copiarLinkPratica('operador')">Copiar</button>
+  </div>
+</div>` : ''}
+
+<div class="card card-pad" style="margin-bottom:14px">
+  <div style="font-size:13px;font-weight:700;color:#1f2a3d;margin-bottom:4px">1. Convocação da Prova Prática (.xlsx)</div>
+  <div style="font-size:12px;color:#8a9ab5;margin-bottom:10px">Envie a planilha de convocação — o app puxa automaticamente inscrição, nome, cargo, data e horário de cada candidato, e separa quem é Motorista e quem é Operador de Máquina Pesada.</div>
+  <input type="file" id="aval-file-convocacao-pratica" accept=".xlsx" class="form-input" style="padding:6px" onchange="parseConvocacaoPratica(this)">
+  <div id="aval-convocacao-pratica-status" style="margin-top:8px;font-size:12.5px;color:#8a9ab5">${cfg.candidatos.length ? `✅ ${cfg.candidatos.length} candidato(s) carregado(s).` : ''}</div>
+</div>
+
+<div class="card card-pad" style="margin-bottom:14px">
+  <div style="font-size:13px;font-weight:700;color:#1f2a3d;margin-bottom:4px">2. Avaliadores</div>
+  <div style="font-size:12px;color:#8a9ab5;margin-bottom:10px">Nomes que vão aparecer para o avaliador escolher no formulário.</div>
+  <div style="display:flex;gap:8px;margin-bottom:10px">
+    <input id="aval-novo-avaliador-pratica" class="form-input" placeholder="Nome do avaliador" style="height:34px" onkeydown="if(event.key==='Enter'){event.preventDefault();avalAddAvaliadorPratica();}">
+    <button class="btn-secondary" style="height:34px;padding:0 14px;font-size:12.5px" onclick="avalAddAvaliadorPratica()">+ Adicionar</button>
+  </div>
+  <div id="aval-lista-avaliadores-pratica" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+</div>
+
+<div class="card card-pad" style="margin-bottom:14px">
+  <div style="font-size:13px;font-weight:700;color:#1f2a3d;margin-bottom:4px">3. Critérios de avaliação</div>
+  <div style="font-size:12px;color:#8a9ab5;margin-bottom:10px">Critérios padrão do IBGP para Motorista e Operador de Máquina Pesada (mesmo modelo usado em Piumhi e Inimutaba). Se o anexo deste edital for diferente, me avise para eu ajustar.</div>
+  <details style="margin-bottom:8px">
+    <summary style="cursor:pointer;font-size:12.5px;font-weight:600;color:#1f4e8c">Ver critérios — Motorista</summary>
+    <div style="margin-top:8px;font-size:12px;color:#41506b;line-height:1.6">
+      ${['gravissima','grave','media','leve'].map(k=>{
+        const labels={gravissima:'Gravíssima (eliminado)',grave:'Grave (-2,0)',media:'Média (-1,0)',leve:'Leve (-0,5)'};
+        return `<div style="margin-bottom:8px"><strong>${labels[k]}</strong><br>${cfg.criterios.motorista[k].map(t=>'• '+t).join('<br>')}</div>`;
+      }).join('')}
+    </div>
+  </details>
+  <details>
+    <summary style="cursor:pointer;font-size:12.5px;font-weight:600;color:#1f4e8c">Ver critérios — Operador de Máquina Pesada</summary>
+    <div style="margin-top:8px;font-size:12px;color:#41506b;line-height:1.6">
+      ${cfg.criterios.operador.categorias.map(c=>`<div style="margin-bottom:8px"><strong>${c.titulo}</strong><br>${c.itens.map(t=>'• '+t).join('<br>')}</div>`).join('')}
+    </div>
+  </details>
+</div>
+
+<div style="display:flex;justify-content:flex-end;gap:10px;margin-top:4px">
+  <button class="btn-primary" onclick="salvarConfigPratica()" style="padding:10px 20px;font-size:13px">
+    ${cfg.token ? '💾 Salvar alterações' : '🔗 Gerar links do formulário'}
+  </button>
+</div>
+<div id="aval-salvar-status-pratica" style="margin-top:10px;text-align:right;font-size:12.5px"></div>
+`;
+
+  renderListaAvaliadoresPratica();
+}
+
+function renderListaAvaliadoresPratica(){
+  const cfg = window._avalConfigPratica;
+  const el = document.getElementById('aval-lista-avaliadores-pratica');
+  if(!el) return;
+  if(!cfg.avaliadores.length){
+    el.innerHTML = '<div style="font-size:12px;color:#8a9ab5;font-style:italic">Nenhum avaliador cadastrado ainda.</div>';
+    return;
+  }
+  el.innerHTML = cfg.avaliadores.map((nome,i)=>`
+    <div style="display:flex;align-items:center;gap:6px;background:#f4f6fa;border:1px solid #e2e7ef;border-radius:20px;padding:6px 12px;font-size:12.5px;color:#1f2a3d">
+      ${nome}
+      <button onclick="avalRemoverAvaliadorPratica(${i})" style="background:none;border:none;color:#c0322f;cursor:pointer;font-size:14px;line-height:1;padding:0">×</button>
+    </div>`).join('');
+}
+
+function avalAddAvaliadorPratica(){
+  const inp = document.getElementById('aval-novo-avaliador-pratica');
+  const nome = (inp?.value||'').trim();
+  if(!nome) return;
+  window._avalConfigPratica.avaliadores.push(nome);
+  inp.value='';
+  renderListaAvaliadoresPratica();
+}
+
+function avalRemoverAvaliadorPratica(i){
+  window._avalConfigPratica.avaliadores.splice(i,1);
+  renderListaAvaliadoresPratica();
+}
+
+function avalClassificarCargo(raw){
+  const s = avalNormalizarCabecalho(raw);
+  if(s.includes('OPERADOR')) return 'OPERADOR';
+  if(s.includes('MOTORISTA')) return 'MOTORISTA';
+  return 'OUTRO';
+}
+
+function parseConvocacaoPratica(input){
+  const file = input.files[0]; if(!file) return;
+  const status = document.getElementById('aval-convocacao-pratica-status');
+  status.textContent = 'Lendo planilha...';
+  carregarSheetJS(async ()=>{
+    try{
+      const buf = await file.arrayBuffer();
+      const wb = XLSX.read(buf, {type:'array'});
+      const porInscricao = new Map();
+      for(const nomeAba of wb.SheetNames){
+        const aoa = XLSX.utils.sheet_to_json(wb.Sheets[nomeAba], {header:1, defval:''});
+        const idxHeader = aoa.findIndex(row => Array.isArray(row) && row.some(c => avalNormalizarCabecalho(c)==='INSCRICAO'));
+        if(idxHeader < 0) continue;
+        const headers = aoa[idxHeader].map(avalNormalizarCabecalho);
+        const colInsc  = headers.findIndex(h=>h.includes('INSCRICAO'));
+        const colNome  = headers.findIndex(h=>h==='CANDIDATO');
+        const colCargo = headers.findIndex(h=>h==='CARGO');
+        const colData  = headers.findIndex(h=>h==='DATA');
+        const colHora  = headers.findIndex(h=>h.includes('HORARIO'));
+        if(colInsc < 0) continue;
+        for(let r=idxHeader+1; r<aoa.length; r++){
+          const row = aoa[r]; if(!Array.isArray(row)) continue;
+          const inscricao = String(row[colInsc]||'').trim();
+          if(!inscricao) continue;
+          const cargoRaw = String(colCargo>=0 ? row[colCargo] : '').trim();
+          porInscricao.set(inscricao, {
+            inscricao,
+            nome: String(colNome>=0 ? row[colNome] : '').trim(),
+            cargoRaw,
+            cargoTipo: avalClassificarCargo(cargoRaw),
+            data: String(colData>=0 ? row[colData] : '').trim(),
+            horario: String(colHora>=0 ? row[colHora] : '').trim()
+          });
+        }
+      }
+      const candidatos = Array.from(porInscricao.values());
+      if(!candidatos.length){
+        status.innerHTML = '⚠️ Não encontrei a coluna INSCRIÇÃO nesta planilha. Confirme se é o arquivo de convocação certo.';
+        return;
+      }
+      window._avalConfigPratica.candidatos = candidatos;
+      const nMotorista = candidatos.filter(c=>c.cargoTipo==='MOTORISTA').length;
+      const nOperador = candidatos.filter(c=>c.cargoTipo==='OPERADOR').length;
+      const nOutro = candidatos.length - nMotorista - nOperador;
+      status.innerHTML = `✅ ${candidatos.length} candidato(s) carregado(s) — ${nMotorista} motorista(s), ${nOperador} operador(es)` + (nOutro ? `, ${nOutro} não identificado(s) pelo texto do cargo` : '') + '.';
+    }catch(e){
+      status.innerHTML = '❌ Erro ao ler a planilha: '+e.message;
+    }
+  });
+}
+
+async function salvarConfigPratica(){
+  const cfg = window._avalConfigPratica;
+  const statusEl = document.getElementById('aval-salvar-status-pratica');
+
+  if(!cfg.avaliadores.length){ statusEl.innerHTML='<span style="color:#c0322f">Cadastre ao menos um avaliador.</span>'; return; }
+  if(!cfg.candidatos.length){ statusEl.innerHTML='<span style="color:#c0322f">Envie a planilha de convocação primeiro.</span>'; return; }
+
+  statusEl.innerHTML = '<span style="color:#8a9ab5">Salvando...</span>';
+
+  const isNovo = !cfg.token;
+  if(isNovo){
+    cfg.token = 'PRAT_' + Date.now().toString(36).toUpperCase() + '_' + Math.random().toString(36).substring(2,6).toUpperCase();
+    cfg.criadoEm = new Date().toISOString();
+  }
+
+  const payload = {
+    token: cfg.token,
+    criadoEm: cfg.criadoEm,
+    atualizadoEm: new Date().toISOString(),
+    concursoNome: cfg.concursoNome,
+    avaliadores: cfg.avaliadores,
+    candidatos: cfg.candidatos,
+    criterios: cfg.criterios
+  };
+
+  try{
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+    const body = {message:(isNovo?'feat: novo':'chore: atualiza')+' formulário Prova Prática — '+cfg.concursoNome, content};
+    if(cfg._sha) body.sha = cfg._sha;
+    const r = await fetch(
+      `https://api.github.com/repos/${GH_REPO_ALOC}/contents/respostas_avaliacao/pratica_config_${cfg.token}.json`,
+      {method:'PUT', headers:{'Authorization':'Bearer '+GH_TOKEN_ALOC,'Content-Type':'application/json'}, body:JSON.stringify(body)}
+    );
+    if(!r.ok){ const err=await r.json().catch(()=>({})); throw new Error(err.message||'Erro ao salvar'); }
+    const d = await r.json();
+    cfg._sha = d.content.sha;
+    statusEl.innerHTML = '<span style="color:#2e7d52">✅ Salvo com sucesso.</span>';
+    renderAvaliacaoPraticaContent();
+  }catch(e){
+    statusEl.innerHTML = '<span style="color:#c0322f">Erro ao salvar: '+e.message+'</span>';
+  }
+}
+
+function copiarLinkPratica(cargo){
+  const links = document.querySelectorAll('#aval-subcontent input[readonly]');
+  const idx = cargo === 'motorista' ? 0 : 1;
+  const inp = links[idx];
+  if(!inp) return;
+  inp.select();
+  navigator.clipboard?.writeText(inp.value);
+  document.execCommand && document.execCommand('copy');
+}
 
 // ── MOTOR DE ALOCAÇÃO ─────────────────────────────────────────────────
 const SALA_INDIVIDUAL = ['LEDOR','TRANSCRITOR','TRANSCRIÇÃO','SOFTWARE','SALA INDIVIDUAL','LIBRAS'];

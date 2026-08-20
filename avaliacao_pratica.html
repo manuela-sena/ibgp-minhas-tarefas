@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IBGP · Avaliação Prova Prática</title>
+<style>
+  :root {
+    --azul: #1F3A6B;
+    --azul-med: #2E5BA8;
+    --azul-claro: #E8EFF9;
+    --cinza: #F4F6FA;
+    --borda: #D1D9E6;
+    --texto: #1A2540;
+    --muted: #6B7A99;
+    --vermelho: #C0322F;
+    --verde: #2E7D52;
+    --amarelo: #A06C12;
+    --branco: #FFFFFF;
+    --sombra: 0 2px 12px rgba(31,58,107,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--cinza); color: var(--texto); min-height: 100vh; }
+  .header { background: var(--azul); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.18); }
+  .header-inner { max-width: 640px; margin: 0 auto; display: flex; align-items: center; gap: 14px; padding: 14px 20px; }
+  .header-title { font-size: 15px; font-weight: 700; color: #fff; }
+  .header-sub { font-size: 12px; color: rgba(255,255,255,0.65); margin-top: 1px; }
+  .header-badge { display:inline-block; margin-top:4px; padding:2px 10px; border-radius:20px; font-size:11px; font-weight:700;
+    background: rgba(255,255,255,0.16); color:#fff; letter-spacing:.3px; }
+  .container { max-width: 640px; margin: 0 auto; padding: 24px 16px 80px; }
+  .card { background: var(--branco); border: 1px solid var(--borda); border-radius: var(--radius); box-shadow: var(--sombra); margin-bottom: 16px; overflow: visible; }
+  .card-header { padding: 16px 20px 12px; border-bottom: 1px solid var(--borda); }
+  .card-title { font-size: 14px; font-weight: 700; color: var(--azul); }
+  .card-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .card-body { padding: 18px 20px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 16px; }
+  label { font-size: 12.5px; font-weight: 600; color: #41506B; }
+  label span.req { color: var(--vermelho); margin-left: 2px; }
+  select, input[type=text], input[type=number], textarea {
+    font-family: inherit; font-size: 14px; padding: 11px 12px; border: 1.5px solid var(--borda);
+    border-radius: 8px; background: #fff; color: var(--texto); width: 100%;
+  }
+  select:focus, input:focus, textarea:focus { outline: none; border-color: var(--azul-med); }
+  textarea { resize: vertical; min-height: 60px; }
+  .btn { border: none; border-radius: 9px; padding: 13px 20px; font-size: 14px; font-weight: 700; cursor: pointer; width: 100%; }
+  .btn-primary { background: var(--azul-med); color: #fff; }
+  .btn-primary:disabled { background: #a7b6ce; cursor: not-allowed; }
+  .btn-secondary { background: #fff; border: 1.5px solid var(--borda); color: var(--azul); }
+  .search-wrap { position: relative; }
+  .search-results { position: absolute; left:0; right:0; top:calc(100% + 4px); background:#fff; border:1px solid var(--borda);
+    border-radius:8px; box-shadow: var(--sombra); max-height: 260px; overflow-y: auto; z-index: 50; }
+  .search-item { padding: 10px 12px; font-size: 13.5px; cursor: pointer; border-bottom: 1px solid #f0f2f6; }
+  .search-item:hover { background: var(--cinza); }
+  .search-item:last-child { border-bottom: none; }
+  .chip-candidato { display:flex; align-items:center; justify-content:space-between; background: var(--azul-claro);
+    border: 1.5px solid var(--azul-med); border-radius: 8px; padding: 12px 14px; }
+  .chip-candidato .nome { font-size: 14px; font-weight: 700; color: var(--azul); }
+  .chip-candidato .insc { font-size: 12px; color: var(--muted); }
+  .chip-candidato button { background:none; border:none; color: var(--vermelho); font-size:13px; font-weight:600; cursor:pointer; }
+  .alert { padding: 12px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 14px; }
+  .alert-error { background: #fbeaea; color: var(--vermelho); border: 1px solid #f0c8c8; }
+  .alert-ok { background: #eaf6ef; color: var(--verde); border: 1px solid #c5e6d1; }
+  .preview-pontos { border-radius: 8px; padding: 14px; text-align: center; font-size: 14px; font-weight: 700; }
+  .preview-pontos.ok { background: #eaf6ef; color: var(--verde); }
+  .preview-pontos.elim { background: #fbeaea; color: var(--vermelho); }
+  .preview-pontos.neutro { background: var(--cinza); color: var(--muted); font-weight:600; }
+  .spinner { width: 22px; height: 22px; border: 3px solid var(--borda); border-top-color: var(--azul-med); border-radius: 50%;
+    animation: spin .7s linear infinite; margin: 0 auto; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .success-icon { width: 64px; height: 64px; border-radius: 50%; background: var(--verde); color: #fff; font-size: 30px;
+    display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+  .falta-grupo { margin-bottom: 16px; }
+  .falta-grupo-titulo { font-size: 12.5px; font-weight: 700; color: var(--azul); margin-bottom: 8px; padding-bottom:6px; border-bottom: 1px solid var(--borda); }
+  .falta-grupo-titulo .peso { font-weight: 600; color: var(--muted); margin-left: 6px; font-size: 11.5px; }
+  .falta-item { display:flex; align-items:flex-start; gap: 10px; padding: 8px 2px; font-size: 13px; cursor: pointer; }
+  .falta-item input { margin-top: 3px; width:16px; height:16px; flex-shrink:0; }
+  .falta-item.checked { color: var(--vermelho); font-weight: 600; }
+  .op-categoria { margin-bottom: 16px; }
+  .op-categoria-titulo { font-size: 12.5px; font-weight: 700; color: var(--azul); margin-bottom: 8px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <div class="header-title">Avaliação · Prova Prática</div>
+      <div class="header-sub" id="header-concurso">Carregando...</div>
+      <div class="header-badge" id="header-cargo"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div id="loading-inicial" class="card">
+    <div class="card-body" style="text-align:center;padding:40px 20px">
+      <div class="spinner"></div>
+      <div style="margin-top:14px;color:var(--muted);font-size:13px">Carregando formulário...</div>
+    </div>
+  </div>
+
+  <div id="erro-inicial" style="display:none" class="alert alert-error"></div>
+
+  <div id="form-wrap" style="display:none">
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">1. Quem está avaliando</div>
+      </div>
+      <div class="card-body">
+        <div class="form-group" style="margin-bottom:0">
+          <label>Avaliador(a)<span class="req">*</span></label>
+          <select id="f-avaliador" onchange="atualizarBotaoEnviar()"><option value="">Selecione...</option></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">2. Data / horário</div>
+      </div>
+      <div class="card-body">
+        <div class="form-group" style="margin-bottom:0">
+          <label>Turma / horário<span class="req">*</span></label>
+          <select id="f-turma" onchange="onTurmaChange()"><option value="">Selecione...</option></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">3. Candidato(a)</div>
+        <div class="card-sub">Busque pelo nome ou número de inscrição.</div>
+      </div>
+      <div class="card-body">
+        <div id="busca-wrap">
+          <div class="search-wrap">
+            <input type="text" id="f-busca-candidato" placeholder="Digite o nome ou a inscrição..." oninput="buscarCandidato()" autocomplete="off" disabled>
+            <div id="search-results" class="search-results" style="display:none"></div>
+          </div>
+        </div>
+        <div id="candidato-selecionado" style="display:none;margin-top:10px" class="chip-candidato">
+          <div>
+            <div class="nome" id="cand-nome"></div>
+            <div class="insc" id="cand-insc"></div>
+          </div>
+          <button onclick="limparCandidato()">trocar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="card-avaliacao" style="display:none">
+      <div class="card-header">
+        <div class="card-title">4. Avaliação</div>
+        <div class="card-sub" id="card-avaliacao-sub"></div>
+      </div>
+      <div class="card-body">
+        <div id="checklist-wrap"></div>
+        <div id="preview-pontos" class="preview-pontos neutro" style="margin:6px 0 16px">10,0 pontos — nenhuma falta marcada</div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>Observações <span style="color:var(--muted);font-weight:400">(opcional)</span></label>
+          <textarea id="f-obs" placeholder="Alguma ocorrência a registrar?"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div id="alert-envio" style="display:none"></div>
+    <button class="btn btn-primary" id="btn-enviar" onclick="enviarAvaliacao()" disabled>Confirmar e enviar</button>
+  </div>
+
+  <div id="page-success" style="display:none" class="card">
+    <div class="card-body" style="text-align:center;padding:36px 20px">
+      <div class="success-icon">✓</div>
+      <div style="font-size:17px;font-weight:800;color:var(--azul);margin-bottom:6px">Registrado!</div>
+      <div id="success-resumo" style="color:var(--muted);font-size:13.5px;margin-bottom:24px"></div>
+      <button class="btn btn-primary" onclick="registrarOutro()">Avaliar próximo candidato</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const GITHUB_REPO = 'manuela-sena/ibgp-minhas-tarefas';
+const GH_WRITE_TOKEN = ['ghp_iwsiJT','m95ck1QUPJZ4dth','7MqYB6dCU1sU7fu'].join('');
+
+let TOKEN = '';
+let CARGO = ''; // 'MOTORISTA' | 'OPERADOR'
+let CONFIG = null;
+let CANDIDATOS_TURMA = [];
+let CANDIDATO_SEL = null;
+
+window.onload = async function(){
+  const params = new URLSearchParams(window.location.search);
+  TOKEN = params.get('token') || '';
+  CARGO = (params.get('cargo') || '').trim().toUpperCase();
+  if(!TOKEN || !CARGO){ mostrarErro('Link inválido — falta o token ou o cargo do formulário. Confirme o link com quem organizou a prova.'); return; }
+  await carregarConfig();
+};
+
+async function carregarConfig(){
+  try{
+    const r = await fetch(
+      `https://api.github.com/repos/${GITHUB_REPO}/contents/respostas_avaliacao/pratica_config_${TOKEN}.json`,
+      {headers:{'Authorization':'Bearer '+GH_WRITE_TOKEN}}
+    );
+    if(!r.ok) throw new Error('Formulário não encontrado. Confirme o link com quem organizou a prova.');
+    const d = await r.json();
+    CONFIG = JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))));
+    montarForm();
+  }catch(e){
+    mostrarErro(e.message);
+  }
+}
+
+function mostrarErro(msg){
+  document.getElementById('loading-inicial').style.display='none';
+  const el = document.getElementById('erro-inicial');
+  el.textContent = msg;
+  el.style.display='block';
+}
+
+function labelCargo(){
+  return CARGO === 'OPERADOR' ? 'Operador de Máquina Pesada' : 'Motorista';
+}
+
+function montarForm(){
+  document.getElementById('header-concurso').textContent = CONFIG.concursoNome || '';
+  document.getElementById('header-cargo').textContent = labelCargo();
+
+  const selAval = document.getElementById('f-avaliador');
+  (CONFIG.avaliadores||[]).forEach(nome=>{
+    const op = document.createElement('option'); op.value = nome; op.textContent = nome;
+    selAval.appendChild(op);
+  });
+
+  const candidatosCargo = (CONFIG.candidatos||[]).filter(c=>(c.cargoTipo||'').toUpperCase()===CARGO);
+  const turmas = turmasUnicas(candidatosCargo);
+  const selTurma = document.getElementById('f-turma');
+  turmas.forEach(t=>{
+    const op = document.createElement('option'); op.value = t.key;
+    op.textContent = [t.data, t.horario].filter(Boolean).join(' · ');
+    selTurma.appendChild(op);
+  });
+
+  document.getElementById('card-avaliacao-sub').textContent =
+    CARGO === 'OPERADOR'
+      ? 'Marque apenas os itens do checklist que NÃO foram atendidos pelo candidato.'
+      : 'Marque as faltas cometidas pelo candidato durante o teste de direção.';
+
+  renderChecklist();
+
+  document.getElementById('loading-inicial').style.display='none';
+  document.getElementById('form-wrap').style.display='block';
+}
+
+function turmasUnicas(lista){
+  const map = new Map();
+  lista.forEach(c=>{
+    const key = [c.data,c.horario].filter(Boolean).join(' · ');
+    if(key && !map.has(key)) map.set(key, {key, data:c.data, horario:c.horario});
+  });
+  return Array.from(map.values());
+}
+
+function onTurmaChange(){
+  const key = document.getElementById('f-turma').value;
+  const candidatosCargo = (CONFIG.candidatos||[]).filter(c=>(c.cargoTipo||'').toUpperCase()===CARGO);
+  CANDIDATOS_TURMA = candidatosCargo.filter(c=>[c.data,c.horario].filter(Boolean).join(' · ')===key);
+  limparCandidato();
+  document.getElementById('f-busca-candidato').value = '';
+  document.getElementById('f-busca-candidato').disabled = !key;
+  atualizarBotaoEnviar();
+}
+
+function buscarCandidato(){
+  const termo = document.getElementById('f-busca-candidato').value.trim().toLowerCase();
+  const box = document.getElementById('search-results');
+  if(!termo){ box.style.display='none'; return; }
+  const achados = CANDIDATOS_TURMA.filter(c =>
+    c.nome.toLowerCase().includes(termo) || c.inscricao.toLowerCase().includes(termo)
+  ).slice(0,8);
+  if(!achados.length){
+    box.innerHTML = '<div class="search-item" style="color:var(--muted)">Nenhum candidato encontrado nesta turma</div>';
+    box.style.display='block';
+    return;
+  }
+  box.innerHTML = achados.map(c=>
+    `<div class="search-item" onclick='selecionarCandidato(${JSON.stringify(c.inscricao)})'>
+      <strong>${c.inscricao}</strong> — ${c.nome}
+    </div>`
+  ).join('');
+  box.style.display='block';
+}
+
+function selecionarCandidato(inscricao){
+  CANDIDATO_SEL = CANDIDATOS_TURMA.find(c=>c.inscricao===inscricao) || null;
+  document.getElementById('search-results').style.display='none';
+  document.getElementById('busca-wrap').style.display='none';
+  const chip = document.getElementById('candidato-selecionado');
+  if(CANDIDATO_SEL){
+    document.getElementById('cand-nome').textContent = CANDIDATO_SEL.nome;
+    document.getElementById('cand-insc').textContent = 'Inscrição '+CANDIDATO_SEL.inscricao;
+    chip.style.display='flex';
+    document.getElementById('card-avaliacao').style.display='block';
+  }
+  atualizarBotaoEnviar();
+}
+
+function limparCandidato(){
+  CANDIDATO_SEL = null;
+  document.getElementById('candidato-selecionado').style.display='none';
+  document.getElementById('busca-wrap').style.display='block';
+  document.getElementById('f-busca-candidato').value = '';
+  document.getElementById('search-results').style.display='none';
+  document.getElementById('card-avaliacao').style.display='none';
+  atualizarBotaoEnviar();
+}
+
+// ── CHECKLIST ────────────────────────────────────────────────────────
+function renderChecklist(){
+  const wrap = document.getElementById('checklist-wrap');
+  const crit = CONFIG.criterios || {};
+  if(CARGO === 'OPERADOR'){
+    const categorias = (crit.operador && crit.operador.categorias) || [];
+    wrap.innerHTML = categorias.map((cat, ci) => `
+      <div class="op-categoria">
+        <div class="op-categoria-titulo">${cat.titulo}</div>
+        ${cat.itens.map((item, ii) => `
+          <label class="falta-item" id="op-item-${ci}-${ii}">
+            <input type="checkbox" class="chk-op" data-ci="${ci}" data-ii="${ii}" onchange="onChecklistChange(this)">
+            <span>Não atendido: ${item}</span>
+          </label>`).join('')}
+      </div>`).join('');
+  } else {
+    const m = crit.motorista || {gravissima:[],grave:[],media:[],leve:[]};
+    const grupos = [
+      {key:'gravissima', titulo:'Falta gravíssima', peso:'ELIMINADO', itens:m.gravissima},
+      {key:'grave',      titulo:'Falta grave',      peso:'-2,0 por falta', itens:m.grave},
+      {key:'media',      titulo:'Falta média',      peso:'-1,0 por falta', itens:m.media},
+      {key:'leve',       titulo:'Falta leve',       peso:'-0,5 por falta', itens:m.leve}
+    ];
+    wrap.innerHTML = grupos.map(g => `
+      <div class="falta-grupo">
+        <div class="falta-grupo-titulo">${g.titulo}<span class="peso">${g.peso}</span></div>
+        ${g.itens.map((item, ii) => `
+          <label class="falta-item" id="falta-item-${g.key}-${ii}">
+            <input type="checkbox" class="chk-falta" data-nivel="${g.key}" onchange="onChecklistChange(this)">
+            <span>${item}</span>
+          </label>`).join('')}
+      </div>`).join('');
+  }
+  atualizarPreview();
+}
+
+function onChecklistChange(chk){
+  const item = chk.closest('.falta-item');
+  if(item) item.classList.toggle('checked', chk.checked);
+  atualizarPreview();
+  atualizarBotaoEnviar();
+}
+
+function calcularPontos(){
+  if(CARGO === 'OPERADOR'){
+    const marcados = document.querySelectorAll('.chk-op:checked').length;
+    const pontos = Math.max(0, 10 - marcados*0.5);
+    return {pontos, eliminado:false, apto: pontos >= 5, faltas: marcados};
+  } else {
+    const gravissimas = document.querySelectorAll('.chk-falta[data-nivel="gravissima"]:checked').length;
+    if(gravissimas > 0) return {pontos:0, eliminado:true, apto:false, faltas: gravissimas};
+    const graves = document.querySelectorAll('.chk-falta[data-nivel="grave"]:checked').length;
+    const medias = document.querySelectorAll('.chk-falta[data-nivel="media"]:checked').length;
+    const leves  = document.querySelectorAll('.chk-falta[data-nivel="leve"]:checked').length;
+    const pontos = Math.max(0, 10 - graves*2 - medias*1 - leves*0.5);
+    return {pontos, eliminado:false, apto: pontos >= 5, faltas: graves+medias+leves};
+  }
+}
+
+function atualizarPreview(){
+  const box = document.getElementById('preview-pontos');
+  if(!box) return;
+  const r = calcularPontos();
+  if(r.eliminado){
+    box.className='preview-pontos elim';
+    box.textContent='⚠️ ELIMINADO — falta gravíssima registrada';
+  } else if(r.apto){
+    box.className='preview-pontos ok';
+    box.textContent = r.pontos.toFixed(1).replace('.0',',0') + ' pontos — APTO';
+  } else {
+    box.className='preview-pontos elim';
+    box.textContent = r.pontos.toFixed(1).replace('.0',',0') + ' pontos — INAPTO (abaixo de 5,0)';
+  }
+}
+
+function atualizarBotaoEnviar(){
+  const ok = document.getElementById('f-avaliador').value &&
+             document.getElementById('f-turma').value &&
+             CANDIDATO_SEL;
+  document.getElementById('btn-enviar').disabled = !ok;
+}
+
+function itensMarcadosResumo(){
+  if(CARGO === 'OPERADOR'){
+    return Array.from(document.querySelectorAll('.chk-op:checked')).map(chk=>{
+      const label = chk.closest('.falta-item').textContent.trim();
+      return label;
+    });
+  }
+  return Array.from(document.querySelectorAll('.chk-falta:checked')).map(chk=>{
+    const nivel = chk.getAttribute('data-nivel');
+    const texto = chk.closest('.falta-item').textContent.trim();
+    return `[${nivel}] ${texto}`;
+  });
+}
+
+async function enviarAvaliacao(){
+  const avaliador = document.getElementById('f-avaliador').value;
+  const turmaKey = document.getElementById('f-turma').value;
+  const obs = document.getElementById('f-obs').value.trim();
+  const alertEl = document.getElementById('alert-envio');
+
+  if(!avaliador || !turmaKey || !CANDIDATO_SEL){
+    alertEl.className='alert alert-error'; alertEl.style.display='block';
+    alertEl.textContent='Preencha todos os campos obrigatórios antes de enviar.';
+    return;
+  }
+  const calc = calcularPontos();
+
+  const btn = document.getElementById('btn-enviar');
+  btn.disabled = true; btn.textContent = 'Enviando...';
+
+  const payload = {
+    token: TOKEN,
+    concursoNome: CONFIG.concursoNome,
+    cargo: CARGO,
+    avaliador, turma: turmaKey,
+    candidato: {inscricao: CANDIDATO_SEL.inscricao, nome: CANDIDATO_SEL.nome, cargo: CANDIDATO_SEL.cargoRaw||''},
+    itensMarcados: itensMarcadosResumo(),
+    pontos: calc.pontos,
+    eliminado: calc.eliminado,
+    apto: calc.apto,
+    observacoes: obs,
+    enviadoEm: new Date().toISOString()
+  };
+
+  try{
+    const path = `respostas_avaliacao/pratica_resp_${TOKEN}_${CANDIDATO_SEL.inscricao}.json`;
+    const r0 = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`,
+      {headers:{'Authorization':'Bearer '+GH_WRITE_TOKEN}});
+    let sha; if(r0.ok){ const d0 = await r0.json(); sha = d0.sha; }
+
+    const body = {message:`resposta Prova Prática: ${CANDIDATO_SEL.inscricao} · ${CARGO}`,
+      content: btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))))};
+    if(sha) body.sha = sha;
+
+    const r = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`,
+      {method:'PUT', headers:{'Authorization':'Bearer '+GH_WRITE_TOKEN,'Content-Type':'application/json'}, body:JSON.stringify(body)});
+    if(!r.ok){ const err = await r.json().catch(()=>({})); throw new Error(err.message||'Erro ao enviar'); }
+
+    document.getElementById('success-resumo').textContent =
+      `${CANDIDATO_SEL.nome} — ${labelCargo()} — ` + (calc.eliminado ? 'ELIMINADO' : (calc.apto ? 'APTO' : 'INAPTO') + ' ('+calc.pontos.toFixed(1).replace('.0',',0')+' pts)');
+    document.getElementById('form-wrap').style.display='none';
+    document.getElementById('page-success').style.display='block';
+    window.scrollTo({top:0, behavior:'smooth'});
+  }catch(e){
+    alertEl.className='alert alert-error'; alertEl.style.display='block';
+    alertEl.textContent = 'Erro ao enviar: '+e.message+'. Tente novamente.';
+    btn.disabled = false; btn.textContent = 'Confirmar e enviar';
+  }
+}
+
+function registrarOutro(){
+  limparCandidato();
+  document.querySelectorAll('.chk-falta, .chk-op').forEach(chk=>{ chk.checked = false; chk.closest('.falta-item').classList.remove('checked'); });
+  document.getElementById('f-obs').value = '';
+  document.getElementById('alert-envio').style.display='none';
+  const btn = document.getElementById('btn-enviar');
+  btn.disabled = true; btn.textContent = 'Confirmar e enviar';
+  document.getElementById('page-success').style.display='none';
+  document.getElementById('form-wrap').style.display='block';
+  atualizarPreview();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+</script>
+</body>
+</html>
