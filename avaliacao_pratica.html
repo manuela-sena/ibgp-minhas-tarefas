@@ -248,7 +248,7 @@
 const GITHUB_REPO = 'manuela-sena/ibgp-minhas-tarefas';
 const GH_WRITE_TOKEN = ['ghp_iwsiJT','m95ck1QUPJZ4dth','7MqYB6dCU1sU7fu'].join('');
 
-const LIKERT_CARGOS_OBRA = ['BOMBEIRO_HIDRAULICO','ELETRICISTA','PEDREIRO']; // usam criterios.obra (pontos por nível compartilhados dentro do grupo)
+const LIKERT_CARGOS_OBRA = ['BOMBEIRO_HIDRAULICO','ENCANADOR','ELETRICISTA','PEDREIRO']; // usam criterios.obra (pontos por nível compartilhados dentro do grupo)
 const LIKERT_CARGOS_ITEM = ['OPERADOR_ETA']; // usam criterios.operador_eta (cada item tem seu próprio NR/RI/RS)
 const LIKERT_CARGOS = [...LIKERT_CARGOS_OBRA, ...LIKERT_CARGOS_ITEM]; // avaliados por escala NR/RI/RS, sem CNH, resultado calculado pela pontuação
 
@@ -296,6 +296,7 @@ function labelCargo(tipo){
     OPERADOR: 'Operador de Máquina Pesada',
     OPERADOR_ETA: 'Operador de ETA',
     BOMBEIRO_HIDRAULICO: 'Bombeiro Hidráulico',
+    ENCANADOR: 'Encanador',
     ELETRICISTA: 'Eletricista',
     PEDREIRO: 'Pedreiro'
   };

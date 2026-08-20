@@ -7885,7 +7885,7 @@ const PRATICA_CRITERIOS_DEFAULT = {
   }
 };
 
-const PRATICA_CARGOS_OBRA = ['BOMBEIRO_HIDRAULICO','ELETRICISTA','PEDREIRO'];
+const PRATICA_CARGOS_OBRA = ['BOMBEIRO_HIDRAULICO','ENCANADOR','ELETRICISTA','PEDREIRO'];
 
 window._avalConfigPratica = window._avalConfigPratica || null;
 window._avalTab = window._avalTab || 'taf';
@@ -7919,7 +7919,7 @@ function renderAvaliacaoPraticaContent(){
 ${cfg.token ? `
 <div class="card card-pad" style="margin-bottom:14px;background:#eef6ef;border-color:#b9e0c2">
   <div style="font-size:13px;font-weight:700;color:#1f2a3d;margin-bottom:6px">🔗 Link do formulário de Prova Prática já está ativo</div>
-  <div style="font-size:12px;color:#5a7a63;margin-bottom:8px">Um único link para todos os cargos de Prova Prática (Motorista, Operador, Bombeiro Hidráulico, Eletricista e Pedreiro) — o formulário identifica o cargo pelo candidato buscado. Se o candidato estiver em mais de uma modalidade, o avaliador escolhe qual vai avaliar.</div>
+  <div style="font-size:12px;color:#5a7a63;margin-bottom:8px">Um único link para todos os cargos de Prova Prática (Motorista, Operador, Bombeiro Hidráulico, Encanador, Eletricista e Pedreiro) — o formulário identifica o cargo pelo candidato buscado. Se o candidato estiver em mais de uma modalidade, o avaliador escolhe qual vai avaliar.</div>
   <div style="display:flex;gap:8px;align-items:center">
     <input id="aval-link-pratica-ativo" class="form-input" value="${linkAtivo}" readonly style="height:34px;font-size:12.5px;flex:1">
     <button class="btn-secondary" style="height:34px;padding:0 14px;font-size:12.5px" onclick="copiarLinkPratica()">Copiar</button>
@@ -7928,7 +7928,7 @@ ${cfg.token ? `
 
 <div class="card card-pad" style="margin-bottom:14px">
   <div style="font-size:13px;font-weight:700;color:#1f2a3d;margin-bottom:4px">1. Convocação da Prova Prática (.xlsx)</div>
-  <div style="font-size:12px;color:#8a9ab5;margin-bottom:10px">Envie a planilha de convocação — o app puxa automaticamente inscrição, nome, cargo, data e horário de cada candidato, e identifica o cargo (Motorista, Operador de Máquina Pesada, Bombeiro Hidráulico, Eletricista ou Pedreiro).</div>
+  <div style="font-size:12px;color:#8a9ab5;margin-bottom:10px">Envie a planilha de convocação — o app puxa automaticamente inscrição, nome, cargo, data e horário de cada candidato, e identifica o cargo (Motorista, Operador de Máquina Pesada, Bombeiro Hidráulico, Encanador, Eletricista ou Pedreiro).</div>
   <input type="file" id="aval-file-convocacao-pratica" accept=".xlsx" class="form-input" style="padding:6px" onchange="parseConvocacaoPratica(this)">
   <div id="aval-convocacao-pratica-status" style="margin-top:8px;font-size:12.5px;color:#8a9ab5">${cfg.candidatos.length ? `✅ ${cfg.candidatos.length} candidato(s) carregado(s).` : ''}</div>
 </div>
@@ -7962,7 +7962,7 @@ ${cfg.token ? `
     </div>
   </details>
   <details style="margin-bottom:8px">
-    <summary style="cursor:pointer;font-size:12.5px;font-weight:600;color:#1f4e8c">Ver critérios — Bombeiro Hidráulico / Eletricista / Pedreiro</summary>
+    <summary style="cursor:pointer;font-size:12.5px;font-weight:600;color:#1f4e8c">Ver critérios — Bombeiro Hidráulico / Encanador / Eletricista / Pedreiro</summary>
     <div style="margin-top:8px;font-size:12px;color:#41506b;line-height:1.6">
       ${(()=>{
         const o = cfg.criterios.obra || {atitudinais:{pontosPorNivel:{},itens:[]},tecnicasGerais:{pontosPorNivel:{},itens:[]},tecnicasEspecificas:{pontosPorNivel:{},itens:[]}};
@@ -8042,6 +8042,7 @@ function avalClassificarCargo(raw){
   if(s.includes('OPERADOR')) return 'OPERADOR';
   if(s.includes('MOTORISTA')) return 'MOTORISTA';
   if(s.includes('BOMBEIRO')) return 'BOMBEIRO_HIDRAULICO';
+  if(s.includes('ENCANADOR')) return 'ENCANADOR';
   if(s.includes('ELETRICISTA')) return 'ELETRICISTA';
   if(s.includes('PEDREIRO')) return 'PEDREIRO';
   return 'OUTRO';
@@ -8053,6 +8054,7 @@ function avalLabelCargo(tipo){
     OPERADOR: 'Operador de Máquina Pesada',
     OPERADOR_ETA: 'Operador de ETA',
     BOMBEIRO_HIDRAULICO: 'Bombeiro Hidráulico',
+    ENCANADOR: 'Encanador',
     ELETRICISTA: 'Eletricista',
     PEDREIRO: 'Pedreiro'
   };
@@ -8111,10 +8113,10 @@ function parseConvocacaoPratica(input){
         return;
       }
       window._avalConfigPratica.candidatos = candidatos;
-      const tiposConhecidos = ['MOTORISTA','OPERADOR','OPERADOR_ETA','BOMBEIRO_HIDRAULICO','ELETRICISTA','PEDREIRO'];
+      const tiposConhecidos = ['MOTORISTA','OPERADOR','OPERADOR_ETA','BOMBEIRO_HIDRAULICO','ENCANADOR','ELETRICISTA','PEDREIRO'];
       const labelsPlural = {
         MOTORISTA:'motorista(s)', OPERADOR:'operador(es)', OPERADOR_ETA:'operador(es) de ETA', BOMBEIRO_HIDRAULICO:'bombeiro(s) hidráulico(s)',
-        ELETRICISTA:'eletricista(s)', PEDREIRO:'pedreiro(s)'
+        ENCANADOR:'encanador(es)', ELETRICISTA:'eletricista(s)', PEDREIRO:'pedreiro(s)'
       };
       const contagens = tiposConhecidos.map(t=>{
         const n = candidatos.filter(c=>c.cargos.some(g=>g.tipo===t)).length;
