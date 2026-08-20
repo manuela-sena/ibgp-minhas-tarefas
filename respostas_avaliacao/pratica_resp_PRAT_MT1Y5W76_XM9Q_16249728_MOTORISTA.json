@@ -1,0 +1,27 @@
+{
+  "token": "PRAT_MT1Y5W76_XM9Q",
+  "concursoNome": "PRESIDENTE JUSCELINO - EDITAL Nº 01/2025 - CONCURSO PÚBLICO",
+  "cargo": "MOTORISTA",
+  "avaliador": "TESTE MANU",
+  "turma": "16.08.2026 · 07H00MIN",
+  "candidato": {
+    "inscricao": "16249728",
+    "nome": "FABIANO LOPES CARDOZO MENDES",
+    "cargo": "202 - MOTORISTA",
+    "data": "16.08.2026",
+    "horario": "07H00MIN"
+  },
+  "cnhApresentada": true,
+  "resultadoFinal": null,
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MT1Y5W76_XM9Q_16249728_MOTORISTA.jpg",
+  "itensMarcados": [
+    "[grave] Não respeitar as placas de sinalização. (x1)",
+    "[media] Apoio do pé no pedal da embreagem com o veículo engrenado e em movimento. (x1)",
+    "[media] Controle incorreto de embreagem. (x1)"
+  ],
+  "pontos": 6,
+  "eliminado": false,
+  "apto": true,
+  "observacoes": "",
+  "enviadoEm": "2026-08-20T20:03:42.589Z"
+}
