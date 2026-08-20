@@ -76,6 +76,15 @@
   .falta-item { display:flex; align-items:flex-start; gap: 10px; padding: 8px 2px; font-size: 13px; cursor: pointer; }
   .falta-item input { margin-top: 3px; width:16px; height:16px; flex-shrink:0; }
   .falta-item.checked { color: var(--vermelho); font-weight: 600; }
+  .falta-item-qtd { display:flex; align-items:center; justify-content:space-between; gap: 10px; padding: 9px 2px; font-size: 13px; border-bottom: 1px solid #f3f5f9; }
+  .falta-item-qtd:last-child { border-bottom: none; }
+  .falta-item-qtd .item-texto { flex:1; }
+  .falta-item-qtd.checked .item-texto { color: var(--vermelho); font-weight: 600; }
+  .qtd-control { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+  .qtd-btn { width:28px; height:28px; border-radius:7px; border:1.5px solid var(--borda); background:#fff; font-size:16px; font-weight:700;
+    color: var(--azul-med); cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; line-height:1; }
+  .qtd-btn:active { background: var(--cinza); }
+  .qtd-valor { min-width:18px; text-align:center; font-weight:700; font-size:14px; color: var(--texto); }
   .op-categoria { margin-bottom: 16px; }
   .op-categoria-titulo { font-size: 12.5px; font-weight: 700; color: var(--azul); margin-bottom: 8px; }
 </style>
@@ -336,19 +345,27 @@ function renderChecklist(){
   } else {
     const m = crit.motorista || {gravissima:[],grave:[],media:[],leve:[]};
     const grupos = [
-      {key:'gravissima', titulo:'Falta gravíssima', peso:'ELIMINADO', itens:m.gravissima},
-      {key:'grave',      titulo:'Falta grave',      peso:'-2,0 por falta', itens:m.grave},
-      {key:'media',      titulo:'Falta média',      peso:'-1,0 por falta', itens:m.media},
-      {key:'leve',       titulo:'Falta leve',       peso:'-0,5 por falta', itens:m.leve}
+      {key:'gravissima', titulo:'Falta gravíssima', peso:'ELIMINADO',      itens:m.gravissima, tipo:'checkbox'},
+      {key:'grave',      titulo:'Falta grave',      peso:'-2,0 por falta', itens:m.grave,      tipo:'qtd'},
+      {key:'media',      titulo:'Falta média',      peso:'-1,0 por falta', itens:m.media,      tipo:'qtd'},
+      {key:'leve',       titulo:'Falta leve',       peso:'-0,5 por falta', itens:m.leve,       tipo:'qtd'}
     ];
     wrap.innerHTML = grupos.map(g => `
       <div class="falta-grupo">
         <div class="falta-grupo-titulo">${g.titulo}<span class="peso">${g.peso}</span></div>
-        ${g.itens.map((item, ii) => `
+        ${g.tipo === 'checkbox' ? g.itens.map((item, ii) => `
           <label class="falta-item" id="falta-item-${g.key}-${ii}">
             <input type="checkbox" class="chk-falta" data-nivel="${g.key}" onchange="onChecklistChange(this)">
             <span>${item}</span>
-          </label>`).join('')}
+          </label>`).join('') : g.itens.map((item, ii) => `
+          <div class="falta-item-qtd" data-nivel="${g.key}" data-qtd="0" id="falta-item-${g.key}-${ii}">
+            <span class="item-texto">${item}</span>
+            <div class="qtd-control">
+              <button type="button" class="qtd-btn" onclick="qtdAlterar(this,-1)">−</button>
+              <span class="qtd-valor">0</span>
+              <button type="button" class="qtd-btn" onclick="qtdAlterar(this,1)">+</button>
+            </div>
+          </div>`).join('')}
       </div>`).join('');
   }
   atualizarPreview();
@@ -361,6 +378,22 @@ function onChecklistChange(chk){
   atualizarBotaoEnviar();
 }
 
+function qtdAlterar(btn, delta){
+  const row = btn.closest('.falta-item-qtd');
+  let qtd = parseInt(row.getAttribute('data-qtd') || '0', 10);
+  qtd = Math.max(0, qtd + delta);
+  row.setAttribute('data-qtd', qtd);
+  row.querySelector('.qtd-valor').textContent = qtd;
+  row.classList.toggle('checked', qtd > 0);
+  atualizarPreview();
+  atualizarBotaoEnviar();
+}
+
+function somaQtd(nivel){
+  return Array.from(document.querySelectorAll(`.falta-item-qtd[data-nivel="${nivel}"]`))
+    .reduce((acc, el) => acc + (parseInt(el.getAttribute('data-qtd') || '0', 10)), 0);
+}
+
 function calcularPontos(){
   if(CARGO === 'OPERADOR'){
     const marcados = document.querySelectorAll('.chk-op:checked').length;
@@ -369,9 +402,9 @@ function calcularPontos(){
   } else {
     const gravissimas = document.querySelectorAll('.chk-falta[data-nivel="gravissima"]:checked').length;
     if(gravissimas > 0) return {pontos:0, eliminado:true, apto:false, faltas: gravissimas};
-    const graves = document.querySelectorAll('.chk-falta[data-nivel="grave"]:checked').length;
-    const medias = document.querySelectorAll('.chk-falta[data-nivel="media"]:checked').length;
-    const leves  = document.querySelectorAll('.chk-falta[data-nivel="leve"]:checked').length;
+    const graves = somaQtd('grave');
+    const medias = somaQtd('media');
+    const leves  = somaQtd('leve');
     const pontos = Math.max(0, 10 - graves*2 - medias*1 - leves*0.5);
     return {pontos, eliminado:false, apto: pontos >= 5, faltas: graves+medias+leves};
   }
@@ -407,11 +440,18 @@ function itensMarcadosResumo(){
       return label;
     });
   }
-  return Array.from(document.querySelectorAll('.chk-falta:checked')).map(chk=>{
-    const nivel = chk.getAttribute('data-nivel');
-    const texto = chk.closest('.falta-item').textContent.trim();
-    return `[${nivel}] ${texto}`;
+  const gravissimas = Array.from(document.querySelectorAll('.chk-falta[data-nivel="gravissima"]:checked')).map(chk=>
+    `[gravissima] ${chk.closest('.falta-item').textContent.trim()}`
+  );
+  const comQtd = Array.from(document.querySelectorAll('.falta-item-qtd')).filter(el =>
+    parseInt(el.getAttribute('data-qtd') || '0', 10) > 0
+  ).map(el => {
+    const nivel = el.getAttribute('data-nivel');
+    const qtd = el.getAttribute('data-qtd');
+    const texto = el.querySelector('.item-texto').textContent.trim();
+    return `[${nivel}] ${texto} (x${qtd})`;
   });
+  return [...gravissimas, ...comQtd];
 }
 
 async function enviarAvaliacao(){
@@ -473,6 +513,11 @@ async function enviarAvaliacao(){
 function registrarOutro(){
   limparCandidato();
   document.querySelectorAll('.chk-falta, .chk-op').forEach(chk=>{ chk.checked = false; chk.closest('.falta-item').classList.remove('checked'); });
+  document.querySelectorAll('.falta-item-qtd').forEach(el=>{
+    el.setAttribute('data-qtd', '0');
+    el.querySelector('.qtd-valor').textContent = '0';
+    el.classList.remove('checked');
+  });
   document.getElementById('f-obs').value = '';
   document.getElementById('alert-envio').style.display='none';
   const btn = document.getElementById('btn-enviar');
