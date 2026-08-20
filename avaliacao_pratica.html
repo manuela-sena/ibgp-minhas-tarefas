@@ -49,6 +49,10 @@
     font-size: 13.5px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all .15s;
   }
   .radio-opt.active { border-color: var(--azul-med); background: var(--azul-claro); color: var(--azul); }
+  .foto-btn { display:block; width:100%; text-align:center; background:#fff; border:1.5px dashed var(--azul-med);
+    border-radius:9px; padding:26px 14px; color:var(--azul-med); font-weight:700; font-size:14px; cursor:pointer; }
+  .foto-preview-wrap { text-align:center; }
+  .foto-preview-wrap img { max-width:100%; max-height:280px; border-radius:8px; border:1.5px solid var(--borda); }
   .btn { border: none; border-radius: 9px; padding: 13px 20px; font-size: 14px; font-weight: 700; cursor: pointer; width: 100%; }
   .btn-primary { background: var(--azul-med); color: #fff; }
   .btn-primary:disabled { background: #a7b6ce; cursor: not-allowed; }
@@ -154,9 +158,28 @@
       </div>
     </div>
 
+    <div class="card" id="card-foto" style="display:none">
+      <div class="card-header">
+        <div class="card-title">3. Foto do candidato</div>
+        <div class="card-sub">Tire uma foto do candidato antes de iniciar a prova.</div>
+      </div>
+      <div class="card-body">
+        <div id="foto-wrap">
+          <label class="foto-btn" for="f-foto-input">📷 Tirar foto</label>
+          <input type="file" id="f-foto-input" accept="image/*" capture="environment" style="display:none" onchange="onFotoSelecionada(this)">
+        </div>
+        <div id="foto-preview-wrap" class="foto-preview-wrap" style="display:none">
+          <img id="foto-preview" alt="Foto do candidato">
+          <div style="margin-top:10px">
+            <button type="button" class="btn-secondary" style="width:auto;padding:8px 16px;font-size:12.5px" onclick="retirarFoto()">Tirar novamente</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="card" id="card-cnh" style="display:none">
       <div class="card-header">
-        <div class="card-title">3. Documentação</div>
+        <div class="card-title">4. Documentação</div>
         <div class="card-sub">Confirme antes de iniciar a prova.</div>
       </div>
       <div class="card-body">
@@ -172,7 +195,7 @@
 
     <div class="card" id="card-avaliacao" style="display:none">
       <div class="card-header">
-        <div class="card-title">4. Avaliação</div>
+        <div class="card-title">5. Avaliação</div>
         <div class="card-sub" id="card-avaliacao-sub"></div>
       </div>
       <div class="card-body">
@@ -210,6 +233,7 @@ let CONFIG = null;
 let CANDIDATOS_TURMA = [];
 let CANDIDATO_SEL = null;
 let CNH_SEL = null; // true | false | null (não respondido)
+let FOTO_DATA_URL = null; // dataURL jpeg comprimido, ou null
 
 window.onload = async function(){
   const params = new URLSearchParams(window.location.search);
@@ -298,6 +322,8 @@ function selecionarCandidato(inscricao){
     document.getElementById('cand-insc').textContent = 'Inscrição '+CANDIDATO_SEL.inscricao;
     chip.style.display='flex';
     resetarCnh();
+    resetarFoto();
+    document.getElementById('card-foto').style.display='block';
     document.getElementById('card-cnh').style.display='block';
     document.getElementById('card-avaliacao').style.display='block';
   }
@@ -310,9 +336,49 @@ function limparCandidato(){
   document.getElementById('busca-wrap').style.display='block';
   document.getElementById('f-busca-candidato').value = '';
   document.getElementById('search-results').style.display='none';
+  document.getElementById('card-foto').style.display='none';
   document.getElementById('card-cnh').style.display='none';
   document.getElementById('card-avaliacao').style.display='none';
   resetarCnh();
+  resetarFoto();
+  atualizarBotaoEnviar();
+}
+
+function resetarFoto(){
+  FOTO_DATA_URL = null;
+  const inp = document.getElementById('f-foto-input');
+  if(inp) inp.value = '';
+  document.getElementById('foto-wrap').style.display = 'block';
+  document.getElementById('foto-preview-wrap').style.display = 'none';
+}
+
+function onFotoSelecionada(input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      const maxDim = 900;
+      let w = img.width, h = img.height;
+      if(w >= h && w > maxDim){ h = Math.round(h * maxDim / w); w = maxDim; }
+      else if(h > w && h > maxDim){ w = Math.round(w * maxDim / h); h = maxDim; }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      FOTO_DATA_URL = canvas.toDataURL('image/jpeg', 0.6);
+      document.getElementById('foto-preview').src = FOTO_DATA_URL;
+      document.getElementById('foto-wrap').style.display = 'none';
+      document.getElementById('foto-preview-wrap').style.display = 'block';
+      atualizarBotaoEnviar();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function retirarFoto(){
+  resetarFoto();
   atualizarBotaoEnviar();
 }
 
@@ -436,7 +502,7 @@ function atualizarPreview(){
 }
 
 function atualizarBotaoEnviar(){
-  const ok = document.getElementById('f-avaliador').value && CANDIDATO_SEL && CNH_SEL !== null;
+  const ok = document.getElementById('f-avaliador').value && CANDIDATO_SEL && CNH_SEL !== null && !!FOTO_DATA_URL;
   document.getElementById('btn-enviar').disabled = !ok;
 }
 
@@ -461,14 +527,26 @@ function itensMarcadosResumo(){
   return [...gravissimas, ...comQtd];
 }
 
+async function enviarFoto(path, dataUrl){
+  const base64 = dataUrl.split(',')[1];
+  const r0 = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`,
+    {headers:{'Authorization':'Bearer '+GH_WRITE_TOKEN}});
+  let sha; if(r0.ok){ const d0 = await r0.json(); sha = d0.sha; }
+  const body = {message:`foto: ${path.split('/').pop()}`, content: base64};
+  if(sha) body.sha = sha;
+  const r = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`,
+    {method:'PUT', headers:{'Authorization':'Bearer '+GH_WRITE_TOKEN,'Content-Type':'application/json'}, body:JSON.stringify(body)});
+  if(!r.ok){ const err = await r.json().catch(()=>({})); throw new Error('Erro ao enviar foto: '+(err.message||'')); }
+}
+
 async function enviarAvaliacao(){
   const avaliador = document.getElementById('f-avaliador').value;
   const obs = document.getElementById('f-obs').value.trim();
   const alertEl = document.getElementById('alert-envio');
 
-  if(!avaliador || !CANDIDATO_SEL || CNH_SEL === null){
+  if(!avaliador || !CANDIDATO_SEL || CNH_SEL === null || !FOTO_DATA_URL){
     alertEl.className='alert alert-error'; alertEl.style.display='block';
-    alertEl.textContent='Preencha todos os campos obrigatórios antes de enviar (inclusive se apresentou a CNH).';
+    alertEl.textContent='Preencha todos os campos obrigatórios antes de enviar (inclusive a foto e se apresentou a CNH).';
     return;
   }
   const calc = calcularPontos();
@@ -476,23 +554,27 @@ async function enviarAvaliacao(){
   const btn = document.getElementById('btn-enviar');
   btn.disabled = true; btn.textContent = 'Enviando...';
 
-  const payload = {
-    token: TOKEN,
-    concursoNome: CONFIG.concursoNome,
-    cargo: CARGO,
-    avaliador,
-    turma: [CANDIDATO_SEL.data, CANDIDATO_SEL.horario].filter(Boolean).join(' · '),
-    candidato: {inscricao: CANDIDATO_SEL.inscricao, nome: CANDIDATO_SEL.nome, cargo: CANDIDATO_SEL.cargoRaw||'', data: CANDIDATO_SEL.data||'', horario: CANDIDATO_SEL.horario||''},
-    cnhApresentada: CNH_SEL,
-    itensMarcados: itensMarcadosResumo(),
-    pontos: calc.pontos,
-    eliminado: calc.eliminado,
-    apto: calc.apto,
-    observacoes: obs,
-    enviadoEm: new Date().toISOString()
-  };
-
   try{
+    const fotoPath = `respostas_avaliacao/fotos/pratica_${TOKEN}_${CANDIDATO_SEL.inscricao}.jpg`;
+    await enviarFoto(fotoPath, FOTO_DATA_URL);
+
+    const payload = {
+      token: TOKEN,
+      concursoNome: CONFIG.concursoNome,
+      cargo: CARGO,
+      avaliador,
+      turma: [CANDIDATO_SEL.data, CANDIDATO_SEL.horario].filter(Boolean).join(' · '),
+      candidato: {inscricao: CANDIDATO_SEL.inscricao, nome: CANDIDATO_SEL.nome, cargo: CANDIDATO_SEL.cargoRaw||'', data: CANDIDATO_SEL.data||'', horario: CANDIDATO_SEL.horario||''},
+      cnhApresentada: CNH_SEL,
+      fotoPath,
+      itensMarcados: itensMarcadosResumo(),
+      pontos: calc.pontos,
+      eliminado: calc.eliminado,
+      apto: calc.apto,
+      observacoes: obs,
+      enviadoEm: new Date().toISOString()
+    };
+
     const path = `respostas_avaliacao/pratica_resp_${TOKEN}_${CANDIDATO_SEL.inscricao}.json`;
     const r0 = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`,
       {headers:{'Authorization':'Bearer '+GH_WRITE_TOKEN}});
@@ -521,6 +603,7 @@ async function enviarAvaliacao(){
 function registrarOutro(){
   limparCandidato();
   resetarCnh();
+  resetarFoto();
   document.querySelectorAll('.chk-falta, .chk-op').forEach(chk=>{ chk.checked = false; chk.closest('.falta-item').classList.remove('checked'); });
   document.querySelectorAll('.falta-item-qtd').forEach(el=>{
     el.setAttribute('data-qtd', '0');
