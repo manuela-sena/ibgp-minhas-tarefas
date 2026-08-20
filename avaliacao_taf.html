@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IBGP · Avaliação TAF</title>
+<style>
+  :root {
+    --azul: #1F3A6B;
+    --azul-med: #2E5BA8;
+    --azul-claro: #E8EFF9;
+    --cinza: #F4F6FA;
+    --borda: #D1D9E6;
+    --texto: #1A2540;
+    --muted: #6B7A99;
+    --vermelho: #C0322F;
+    --verde: #2E7D52;
+    --amarelo: #A06C12;
+    --branco: #FFFFFF;
+    --sombra: 0 2px 12px rgba(31,58,107,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--cinza); color: var(--texto); min-height: 100vh; }
+  .header { background: var(--azul); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.18); }
+  .header-inner { max-width: 640px; margin: 0 auto; display: flex; align-items: center; gap: 14px; padding: 14px 20px; }
+  .header-title { font-size: 15px; font-weight: 700; color: #fff; }
+  .header-sub { font-size: 12px; color: rgba(255,255,255,0.65); margin-top: 1px; }
+  .container { max-width: 640px; margin: 0 auto; padding: 24px 16px 80px; }
+  .card { background: var(--branco); border: 1px solid var(--borda); border-radius: var(--radius); box-shadow: var(--sombra); margin-bottom: 16px; overflow: visible; }
+  .card-header { padding: 16px 20px 12px; border-bottom: 1px solid var(--borda); }
+  .card-title { font-size: 14px; font-weight: 700; color: var(--azul); }
+  .card-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .card-body { padding: 18px 20px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 16px; }
+  label { font-size: 12.5px; font-weight: 600; color: #41506B; }
+  label span.req { color: var(--vermelho); margin-left: 2px; }
+  select, input[type=text], input[type=number], textarea {
+    font-family: inherit; font-size: 14px; padding: 11px 12px; border: 1.5px solid var(--borda);
+    border-radius: 8px; background: #fff; color: var(--texto); width: 100%;
+  }
+  select:focus, input:focus, textarea:focus { outline: none; border-color: var(--azul-med); }
+  textarea { resize: vertical; min-height: 60px; }
+  .radio-row { display: flex; gap: 10px; }
+  .radio-opt {
+    flex: 1; border: 1.5px solid var(--borda); border-radius: 8px; padding: 12px; text-align: center;
+    font-size: 13.5px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all .15s;
+  }
+  .radio-opt.active { border-color: var(--azul-med); background: var(--azul-claro); color: var(--azul); }
+  .btn { border: none; border-radius: 9px; padding: 13px 20px; font-size: 14px; font-weight: 700; cursor: pointer; width: 100%; }
+  .btn-primary { background: var(--azul-med); color: #fff; }
+  .btn-primary:disabled { background: #a7b6ce; cursor: not-allowed; }
+  .btn-secondary { background: #fff; border: 1.5px solid var(--borda); color: var(--azul); }
+  .search-wrap { position: relative; }
+  .search-results { position: absolute; left:0; right:0; top:calc(100% + 4px); background:#fff; border:1px solid var(--borda);
+    border-radius:8px; box-shadow: var(--sombra); max-height: 260px; overflow-y: auto; z-index: 50; }
+  .search-item { padding: 10px 12px; font-size: 13.5px; cursor: pointer; border-bottom: 1px solid #f0f2f6; }
+  .search-item:hover { background: var(--cinza); }
+  .search-item:last-child { border-bottom: none; }
+  .chip-candidato { display:flex; align-items:center; justify-content:space-between; background: var(--azul-claro);
+    border: 1.5px solid var(--azul-med); border-radius: 8px; padding: 12px 14px; }
+  .chip-candidato .nome { font-size: 14px; font-weight: 700; color: var(--azul); }
+  .chip-candidato .insc { font-size: 12px; color: var(--muted); }
+  .chip-candidato button { background:none; border:none; color: var(--vermelho); font-size:13px; font-weight:600; cursor:pointer; }
+  .alert { padding: 12px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 14px; }
+  .alert-error { background: #fbeaea; color: var(--vermelho); border: 1px solid #f0c8c8; }
+  .alert-ok { background: #eaf6ef; color: var(--verde); border: 1px solid #c5e6d1; }
+  .preview-pontos { border-radius: 8px; padding: 14px; text-align: center; font-size: 14px; font-weight: 700; }
+  .preview-pontos.ok { background: #eaf6ef; color: var(--verde); }
+  .preview-pontos.elim { background: #fbeaea; color: var(--vermelho); }
+  .preview-pontos.neutro { background: var(--cinza); color: var(--muted); font-weight:600; }
+  .spinner { width: 22px; height: 22px; border: 3px solid var(--borda); border-top-color: var(--azul-med); border-radius: 50%;
+    animation: spin .7s linear infinite; margin: 0 auto; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .success-icon { width: 64px; height: 64px; border-radius: 50%; background: var(--verde); color: #fff; font-size: 30px;
+    display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <div class="header-title">Avaliação Física · TAF</div>
+      <div class="header-sub" id="header-concurso">Carregando...</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div id="loading-inicial" class="card">
+    <div class="card-body" style="text-align:center;padding:40px 20px">
+      <div class="spinner"></div>
+      <div style="margin-top:14px;color:var(--muted);font-size:13px">Carregando formulário...</div>
+    </div>
+  </div>
+
+  <div id="erro-inicial" style="display:none" class="alert alert-error"></div>
+
+  <div id="form-wrap" style="display:none">
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">1. Quem está avaliando</div>
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <label>Avaliador(a)<span class="req">*</span></label>
+          <select id="f-avaliador" onchange="onCabecalhoChange()"><option value="">Selecione...</option></select>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>Prova<span class="req">*</span></label>
+          <select id="f-prova" onchange="onProvaChange()">
+            <option value="">Selecione...</option>
+            <option value="corrida">Corrida de Resistência (12 minutos)</option>
+            <option value="abdominal">Flexão Abdominal</option>
+            <option value="barra">Barra Fixa / Isometria</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">2. Turma</div>
+      </div>
+      <div class="card-body">
+        <div class="form-group" style="margin-bottom:0">
+          <label>Turma / horário<span class="req">*</span></label>
+          <select id="f-turma" onchange="onTurmaChange()"><option value="">Selecione...</option></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">3. Candidato(a)</div>
+        <div class="card-sub">Busque pelo nome ou número de inscrição.</div>
+      </div>
+      <div class="card-body">
+        <div id="busca-wrap">
+          <div class="search-wrap">
+            <input type="text" id="f-busca-candidato" placeholder="Digite o nome ou a inscrição..." oninput="buscarCandidato()" autocomplete="off">
+            <div id="search-results" class="search-results" style="display:none"></div>
+          </div>
+        </div>
+        <div id="candidato-selecionado" style="display:none;margin-top:10px" class="chip-candidato">
+          <div>
+            <div class="nome" id="cand-nome"></div>
+            <div class="insc" id="cand-insc"></div>
+          </div>
+          <button onclick="limparCandidato()">trocar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="card-avaliacao" style="display:none">
+      <div class="card-header">
+        <div class="card-title">4. Avaliação</div>
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <label>Sexo do(a) candidato(a)<span class="req">*</span> <span style="color:var(--muted);font-weight:400">(confirme pessoalmente — não confie só no cadastro)</span></label>
+          <div class="radio-row">
+            <div class="radio-opt" id="sexo-M" onclick="selecionarSexo('M')">Masculino</div>
+            <div class="radio-opt" id="sexo-F" onclick="selecionarSexo('F')">Feminino</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label id="label-valor">Valor obtido<span class="req">*</span></label>
+          <input type="number" step="0.01" id="f-valor" placeholder="0" oninput="atualizarPreview()">
+        </div>
+        <div id="preview-pontos" class="preview-pontos neutro" style="margin-bottom:16px">Informe o valor para calcular a pontuação</div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>Observações <span style="color:var(--muted);font-weight:400">(opcional)</span></label>
+          <textarea id="f-obs" placeholder="Alguma ocorrência a registrar?"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div id="alert-envio" style="display:none"></div>
+    <button class="btn btn-primary" id="btn-enviar" onclick="enviarAvaliacao()" disabled>Confirmar e enviar</button>
+  </div>
+
+  <div id="page-success" style="display:none" class="card">
+    <div class="card-body" style="text-align:center;padding:36px 20px">
+      <div class="success-icon">✓</div>
+      <div style="font-size:17px;font-weight:800;color:var(--azul);margin-bottom:6px">Registrado!</div>
+      <div id="success-resumo" style="color:var(--muted);font-size:13.5px;margin-bottom:24px"></div>
+      <button class="btn btn-primary" onclick="registrarOutro()">Avaliar próximo candidato</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const GITHUB_REPO = 'manuela-sena/ibgp-minhas-tarefas';
+const GH_WRITE_TOKEN = ['ghp_iwsiJT','m95ck1QUPJZ4dth','7MqYB6dCU1sU7fu'].join('');
+
+let TOKEN = '';
+let CONFIG = null;
+let CANDIDATOS_TURMA = [];
+let CANDIDATO_SEL = null;
+let SEXO_SEL = null;
+
+window.onload = async function(){
+  TOKEN = new URLSearchParams(window.location.search).get('token') || '';
+  if(!TOKEN){ mostrarErro('Link inválido — falta o token do formulário. Confirme o link com quem organizou a prova.'); return; }
+  await carregarConfig();
+};
+
+async function carregarConfig(){
+  try{
+    const r = await fetch(
+      `https://api.github.com/repos/${GITHUB_REPO}/contents/respostas_avaliacao/taf_config_${TOKEN}.json`,
+      {headers:{'Authorization':'Bearer '+GH_WRITE_TOKEN}}
+    );
+    if(!r.ok) throw new Error('Formulário não encontrado. Confirme o link com quem organizou a prova.');
+    const d = await r.json();
+    CONFIG = JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))));
+    montarForm();
+  }catch(e){
+    mostrarErro(e.message);
+  }
+}
+
+function mostrarErro(msg){
+  document.getElementById('loading-inicial').style.display='none';
+  const el = document.getElementById('erro-inicial');
+  el.textContent = msg;
+  el.style.display='block';
+}
+
+function montarForm(){
+  document.getElementById('header-concurso').textContent = CONFIG.concursoNome || '';
+
+  const selAval = document.getElementById('f-avaliador');
+  (CONFIG.avaliadores||[]).forEach(nome=>{
+    const op = document.createElement('option'); op.value = nome; op.textContent = nome;
+    selAval.appendChild(op);
+  });
+
+  const turmas = turmasUnicas();
+  const selTurma = document.getElementById('f-turma');
+  turmas.forEach(t=>{
+    const op = document.createElement('option'); op.value = t.key;
+    op.textContent = [t.data, t.horario, t.turma].filter(Boolean).join(' · ');
+    selTurma.appendChild(op);
+  });
+
+  document.getElementById('loading-inicial').style.display='none';
+  document.getElementById('form-wrap').style.display='block';
+}
+
+function turmasUnicas(){
+  const map = new Map();
+  (CONFIG.candidatos||[]).forEach(c=>{
+    const key = [c.data,c.horario,c.turma].filter(Boolean).join(' · ');
+    if(key && !map.has(key)) map.set(key, {key, data:c.data, horario:c.horario, turma:c.turma});
+  });
+  return Array.from(map.values());
+}
+
+function onCabecalhoChange(){ atualizarBotaoEnviar(); }
+
+function onProvaChange(){
+  const prova = document.getElementById('f-prova').value;
+  const labels = {
+    corrida:  {M:'Distância percorrida em 12 minutos (metros)', F:'Distância percorrida em 12 minutos (metros)'},
+    abdominal:{M:'Quantidade de abdominais em 30 segundos',     F:'Quantidade de abdominais em 30 segundos'},
+    barra:    {M:'Quantidade de flexões na barra',              F:'Tempo em sustentação na barra (segundos)'}
+  };
+  if(prova && SEXO_SEL){
+    document.getElementById('label-valor').innerHTML = (labels[prova][SEXO_SEL]||'Valor obtido') + '<span class="req">*</span>';
+  }
+  atualizarPreview();
+  atualizarBotaoEnviar();
+}
+
+function onTurmaChange(){
+  const key = document.getElementById('f-turma').value;
+  CANDIDATOS_TURMA = (CONFIG.candidatos||[]).filter(c=>[c.data,c.horario,c.turma].filter(Boolean).join(' · ')===key);
+  limparCandidato();
+  document.getElementById('f-busca-candidato').value = '';
+  document.getElementById('f-busca-candidato').disabled = !key;
+  atualizarBotaoEnviar();
+}
+
+function buscarCandidato(){
+  const termo = document.getElementById('f-busca-candidato').value.trim().toLowerCase();
+  const box = document.getElementById('search-results');
+  if(!termo){ box.style.display='none'; return; }
+  const achados = CANDIDATOS_TURMA.filter(c =>
+    c.nome.toLowerCase().includes(termo) || c.inscricao.toLowerCase().includes(termo)
+  ).slice(0,8);
+  if(!achados.length){
+    box.innerHTML = '<div class="search-item" style="color:var(--muted)">Nenhum candidato encontrado nesta turma</div>';
+    box.style.display='block';
+    return;
+  }
+  box.innerHTML = achados.map(c=>
+    `<div class="search-item" onclick='selecionarCandidato(${JSON.stringify(c.inscricao)})'>
+      <strong>${c.inscricao}</strong> — ${c.nome}${c.cargo?' <span style="color:var(--muted)">('+c.cargo+')</span>':''}
+    </div>`
+  ).join('');
+  box.style.display='block';
+}
+
+function selecionarCandidato(inscricao){
+  CANDIDATO_SEL = CANDIDATOS_TURMA.find(c=>c.inscricao===inscricao) || null;
+  document.getElementById('search-results').style.display='none';
+  document.getElementById('busca-wrap').style.display='none';
+  const chip = document.getElementById('candidato-selecionado');
+  if(CANDIDATO_SEL){
+    document.getElementById('cand-nome').textContent = CANDIDATO_SEL.nome;
+    document.getElementById('cand-insc').textContent = 'Inscrição '+CANDIDATO_SEL.inscricao + (CANDIDATO_SEL.cargo?' · '+CANDIDATO_SEL.cargo:'');
+    chip.style.display='flex';
+    document.getElementById('card-avaliacao').style.display='block';
+  }
+  atualizarBotaoEnviar();
+}
+
+function limparCandidato(){
+  CANDIDATO_SEL = null;
+  document.getElementById('candidato-selecionado').style.display='none';
+  document.getElementById('busca-wrap').style.display='block';
+  document.getElementById('f-busca-candidato').value = '';
+  document.getElementById('search-results').style.display='none';
+  document.getElementById('card-avaliacao').style.display='none';
+  atualizarBotaoEnviar();
+}
+
+function selecionarSexo(sexo){
+  SEXO_SEL = sexo;
+  document.getElementById('sexo-M').classList.toggle('active', sexo==='M');
+  document.getElementById('sexo-F').classList.toggle('active', sexo==='F');
+  onProvaChange();
+  atualizarPreview();
+  atualizarBotaoEnviar();
+}
+
+function calcularPontos(provaKey, sexo, valor){
+  const tab = CONFIG.tabelaPontos && CONFIG.tabelaPontos[provaKey];
+  if(!tab) return {pontos:0, eliminado:true};
+  const campo = sexo==='M' ? 'm' : 'f';
+  const linhas = [...tab.linhas].sort((a,b)=>a[campo]-b[campo]);
+  let melhor = null;
+  for(const l of linhas){ if(valor >= l[campo]) melhor = l; }
+  if(!melhor) return {pontos:0, eliminado:true};
+  return {pontos:melhor.pontos, eliminado:false};
+}
+
+function atualizarPreview(){
+  const prova = document.getElementById('f-prova').value;
+  const valorStr = document.getElementById('f-valor').value;
+  const box = document.getElementById('preview-pontos');
+  if(!prova || !SEXO_SEL || valorStr===''){
+    box.className='preview-pontos neutro';
+    box.textContent='Informe o valor para calcular a pontuação';
+    return;
+  }
+  const valor = parseFloat(valorStr);
+  const r = calcularPontos(prova, SEXO_SEL, valor);
+  if(r.eliminado){
+    box.className='preview-pontos elim';
+    box.textContent='⚠️ ELIMINADO — abaixo da faixa mínima';
+  } else {
+    box.className='preview-pontos ok';
+    box.textContent = r.pontos.toFixed(1).replace('.0','') + ' pontos';
+  }
+}
+
+function atualizarBotaoEnviar(){
+  const ok = document.getElementById('f-avaliador').value &&
+             document.getElementById('f-prova').value &&
+             document.getElementById('f-turma').value &&
+             CANDIDATO_SEL && SEXO_SEL;
+  document.getElementById('btn-enviar').disabled = !ok;
+}
+
+async function enviarAvaliacao(){
+  const avaliador = document.getElementById('f-avaliador').value;
+  const prova = document.getElementById('f-prova').value;
+  const turmaKey = document.getElementById('f-turma').value;
+  const valorStr = document.getElementById('f-valor').value;
+  const obs = document.getElementById('f-obs').value.trim();
+  const alertEl = document.getElementById('alert-envio');
+
+  if(!avaliador || !prova || !turmaKey || !CANDIDATO_SEL || !SEXO_SEL || valorStr===''){
+    alertEl.className='alert alert-error'; alertEl.style.display='block';
+    alertEl.textContent='Preencha todos os campos obrigatórios antes de enviar.';
+    return;
+  }
+  const valor = parseFloat(valorStr);
+  const calc = calcularPontos(prova, SEXO_SEL, valor);
+
+  const btn = document.getElementById('btn-enviar');
+  btn.disabled = true; btn.textContent = 'Enviando...';
+
+  const payload = {
+    token: TOKEN,
+    concursoNome: CONFIG.concursoNome,
+    avaliador, prova, turma: turmaKey,
+    candidato: {inscricao: CANDIDATO_SEL.inscricao, nome: CANDIDATO_SEL.nome, cargo: CANDIDATO_SEL.cargo||''},
+    sexo: SEXO_SEL,
+    valor,
+    pontos: calc.pontos,
+    eliminado: calc.eliminado,
+    observacoes: obs,
+    enviadoEm: new Date().toISOString()
+  };
+
+  try{
+    const path = `respostas_avaliacao/taf_resp_${TOKEN}_${CANDIDATO_SEL.inscricao}_${prova}.json`;
+    const r0 = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`,
+      {headers:{'Authorization':'Bearer '+GH_WRITE_TOKEN}});
+    let sha; if(r0.ok){ const d0 = await r0.json(); sha = d0.sha; }
+
+    const body = {message:`resposta TAF: ${CANDIDATO_SEL.inscricao} · ${prova}`,
+      content: btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))))};
+    if(sha) body.sha = sha;
+
+    const r = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`,
+      {method:'PUT', headers:{'Authorization':'Bearer '+GH_WRITE_TOKEN,'Content-Type':'application/json'}, body:JSON.stringify(body)});
+    if(!r.ok){ const err = await r.json().catch(()=>({})); throw new Error(err.message||'Erro ao enviar'); }
+
+    document.getElementById('success-resumo').textContent =
+      `${CANDIDATO_SEL.nome} — ${prova.toUpperCase()} — ` + (calc.eliminado ? 'ELIMINADO' : calc.pontos+' pontos');
+    document.getElementById('form-wrap').style.display='none';
+    document.getElementById('page-success').style.display='block';
+    window.scrollTo({top:0, behavior:'smooth'});
+  }catch(e){
+    alertEl.className='alert alert-error'; alertEl.style.display='block';
+    alertEl.textContent = 'Erro ao enviar: '+e.message+'. Tente novamente.';
+    btn.disabled = false; btn.textContent = 'Confirmar e enviar';
+  }
+}
+
+function registrarOutro(){
+  limparCandidato();
+  document.getElementById('f-valor').value = '';
+  document.getElementById('f-obs').value = '';
+  SEXO_SEL = null;
+  document.getElementById('sexo-M').classList.remove('active');
+  document.getElementById('sexo-F').classList.remove('active');
+  document.getElementById('alert-envio').style.display='none';
+  const btn = document.getElementById('btn-enviar');
+  btn.disabled = true; btn.textContent = 'Confirmar e enviar';
+  document.getElementById('page-success').style.display='none';
+  document.getElementById('form-wrap').style.display='block';
+  atualizarPreview();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+</script>
+</body>
+</html>
