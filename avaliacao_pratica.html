@@ -148,9 +148,25 @@
       </div>
     </div>
 
+    <div class="card" id="card-cnh" style="display:none">
+      <div class="card-header">
+        <div class="card-title">3. Documentação</div>
+        <div class="card-sub">Confirme antes de iniciar a prova.</div>
+      </div>
+      <div class="card-body">
+        <div class="form-group" style="margin-bottom:0">
+          <label>Apresentou a CNH exigida para o cargo, válida e dentro do prazo?<span class="req">*</span></label>
+          <div class="radio-row">
+            <div class="radio-opt" id="cnh-SIM" onclick="selecionarCnh(true)">Sim</div>
+            <div class="radio-opt" id="cnh-NAO" onclick="selecionarCnh(false)">Não</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="card" id="card-avaliacao" style="display:none">
       <div class="card-header">
-        <div class="card-title">3. Avaliação</div>
+        <div class="card-title">4. Avaliação</div>
         <div class="card-sub" id="card-avaliacao-sub"></div>
       </div>
       <div class="card-body">
@@ -187,6 +203,7 @@ let CARGO = ''; // 'MOTORISTA' | 'OPERADOR'
 let CONFIG = null;
 let CANDIDATOS_TURMA = [];
 let CANDIDATO_SEL = null;
+let CNH_SEL = null; // true | false | null (não respondido)
 
 window.onload = async function(){
   const params = new URLSearchParams(window.location.search);
@@ -274,6 +291,8 @@ function selecionarCandidato(inscricao){
     document.getElementById('cand-nome').textContent = CANDIDATO_SEL.nome;
     document.getElementById('cand-insc').textContent = 'Inscrição '+CANDIDATO_SEL.inscricao;
     chip.style.display='flex';
+    resetarCnh();
+    document.getElementById('card-cnh').style.display='block';
     document.getElementById('card-avaliacao').style.display='block';
   }
   atualizarBotaoEnviar();
@@ -285,7 +304,23 @@ function limparCandidato(){
   document.getElementById('busca-wrap').style.display='block';
   document.getElementById('f-busca-candidato').value = '';
   document.getElementById('search-results').style.display='none';
+  document.getElementById('card-cnh').style.display='none';
   document.getElementById('card-avaliacao').style.display='none';
+  resetarCnh();
+  atualizarBotaoEnviar();
+}
+
+function resetarCnh(){
+  CNH_SEL = null;
+  document.getElementById('cnh-SIM').classList.remove('active');
+  document.getElementById('cnh-NAO').classList.remove('active');
+}
+
+function selecionarCnh(valor){
+  CNH_SEL = valor;
+  document.getElementById('cnh-SIM').classList.toggle('active', valor===true);
+  document.getElementById('cnh-NAO').classList.toggle('active', valor===false);
+  atualizarPreview();
   atualizarBotaoEnviar();
 }
 
@@ -357,6 +392,9 @@ function somaQtd(nivel){
 }
 
 function calcularPontos(){
+  if(CNH_SEL === false){
+    return {pontos:0, eliminado:true, apto:false, faltas:0, motivo:'cnh'};
+  }
   if(CARGO === 'OPERADOR'){
     const marcados = document.querySelectorAll('.chk-op:checked').length;
     const pontos = Math.max(0, 10 - marcados*0.5);
@@ -376,7 +414,10 @@ function atualizarPreview(){
   const box = document.getElementById('preview-pontos');
   if(!box) return;
   const r = calcularPontos();
-  if(r.eliminado){
+  if(r.motivo === 'cnh'){
+    box.className='preview-pontos elim';
+    box.textContent='⚠️ ELIMINADO — não apresentou a CNH exigida';
+  } else if(r.eliminado){
     box.className='preview-pontos elim';
     box.textContent='⚠️ ELIMINADO — falta gravíssima registrada';
   } else if(r.apto){
@@ -389,7 +430,7 @@ function atualizarPreview(){
 }
 
 function atualizarBotaoEnviar(){
-  const ok = document.getElementById('f-avaliador').value && CANDIDATO_SEL;
+  const ok = document.getElementById('f-avaliador').value && CANDIDATO_SEL && CNH_SEL !== null;
   document.getElementById('btn-enviar').disabled = !ok;
 }
 
@@ -419,9 +460,9 @@ async function enviarAvaliacao(){
   const obs = document.getElementById('f-obs').value.trim();
   const alertEl = document.getElementById('alert-envio');
 
-  if(!avaliador || !CANDIDATO_SEL){
+  if(!avaliador || !CANDIDATO_SEL || CNH_SEL === null){
     alertEl.className='alert alert-error'; alertEl.style.display='block';
-    alertEl.textContent='Preencha todos os campos obrigatórios antes de enviar.';
+    alertEl.textContent='Preencha todos os campos obrigatórios antes de enviar (inclusive se apresentou a CNH).';
     return;
   }
   const calc = calcularPontos();
@@ -436,6 +477,7 @@ async function enviarAvaliacao(){
     avaliador,
     turma: [CANDIDATO_SEL.data, CANDIDATO_SEL.horario].filter(Boolean).join(' · '),
     candidato: {inscricao: CANDIDATO_SEL.inscricao, nome: CANDIDATO_SEL.nome, cargo: CANDIDATO_SEL.cargoRaw||'', data: CANDIDATO_SEL.data||'', horario: CANDIDATO_SEL.horario||''},
+    cnhApresentada: CNH_SEL,
     itensMarcados: itensMarcadosResumo(),
     pontos: calc.pontos,
     eliminado: calc.eliminado,
@@ -472,6 +514,7 @@ async function enviarAvaliacao(){
 
 function registrarOutro(){
   limparCandidato();
+  resetarCnh();
   document.querySelectorAll('.chk-falta, .chk-op').forEach(chk=>{ chk.checked = false; chk.closest('.falta-item').classList.remove('checked'); });
   document.querySelectorAll('.falta-item-qtd').forEach(el=>{
     el.setAttribute('data-qtd', '0');
