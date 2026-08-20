@@ -242,9 +242,10 @@ const GH_WRITE_TOKEN = ['ghp_iwsiJT','m95ck1QUPJZ4dth','7MqYB6dCU1sU7fu'].join('
 
 let TOKEN = '';
 let CARGO_ATIVO = null; // 'MOTORISTA' | 'OPERADOR' | null (ainda não definido para este candidato)
+let CARGO_ENTRY_ATIVO = null; // {tipo, raw, inscricao, data, horario} do cargo escolhido — cada cargo tem sua própria inscrição
 let CONFIG = null;
 let CANDIDATOS_TURMA = [];
-let CANDIDATO_SEL = null;
+let CANDIDATO_SEL = null; // {nome, cargos:[{tipo, raw, inscricao, data, horario}, ...]}
 let CNH_SEL = null; // true | false | null (não respondido)
 let FOTO_DATA_URL = null; // dataURL jpeg comprimido, ou null
 
@@ -300,28 +301,35 @@ function buscarCandidato(){
   const termo = document.getElementById('f-busca-candidato').value.trim().toLowerCase();
   const box = document.getElementById('search-results');
   if(!termo){ box.style.display='none'; return; }
-  const achados = CANDIDATOS_TURMA.filter(c =>
-    c.nome.toLowerCase().includes(termo) || c.inscricao.toLowerCase().includes(termo)
-  ).slice(0,8);
+  const achados = CANDIDATOS_TURMA
+    .map((c,idx)=>({c,idx}))
+    .filter(({c}) =>
+      c.nome.toLowerCase().includes(termo) ||
+      (c.cargos||[]).some(g=>String(g.inscricao||'').toLowerCase().includes(termo))
+    ).slice(0,8);
   if(!achados.length){
     box.innerHTML = '<div class="search-item" style="color:var(--muted)">Nenhum candidato encontrado</div>';
     box.style.display='block';
     return;
   }
-  box.innerHTML = achados.map(c=>
-    `<div class="search-item" onclick='selecionarCandidato(${JSON.stringify(c.inscricao)})'>
-      <strong>${c.inscricao}</strong> — ${c.nome}${c.data||c.horario? ' <span style="color:var(--muted)">('+[c.data,c.horario].filter(Boolean).join(' · ')+')</span>':''}
+  box.innerHTML = achados.map(({c,idx})=>
+    `<div class="search-item" onclick='selecionarCandidato(${idx})'>
+      <strong>${c.nome}</strong>
+      <div style="color:var(--muted);font-size:12px;margin-top:2px">${(c.cargos||[]).map(g=>
+        `${labelCargo(g.tipo)} · insc ${g.inscricao}${g.data||g.horario? ' ('+[g.data,g.horario].filter(Boolean).join(' · ')+')':''}`
+      ).join(' &nbsp;|&nbsp; ')}</div>
     </div>`
   ).join('');
   box.style.display='block';
 }
 
-function selecionarCandidato(inscricao){
-  CANDIDATO_SEL = CANDIDATOS_TURMA.find(c=>c.inscricao===inscricao) || null;
+function selecionarCandidato(idx){
+  CANDIDATO_SEL = CANDIDATOS_TURMA[idx] || null;
   document.getElementById('search-results').style.display='none';
   document.getElementById('busca-wrap').style.display='none';
   const chip = document.getElementById('candidato-selecionado');
   CARGO_ATIVO = null;
+  CARGO_ENTRY_ATIVO = null;
   document.getElementById('modalidade-MOTORISTA').classList.remove('active');
   document.getElementById('modalidade-OPERADOR').classList.remove('active');
   document.getElementById('card-modalidade').style.display='none';
@@ -331,23 +339,35 @@ function selecionarCandidato(inscricao){
   document.getElementById('header-cargo').textContent = '';
   if(CANDIDATO_SEL){
     document.getElementById('cand-nome').textContent = CANDIDATO_SEL.nome;
-    document.getElementById('cand-insc').textContent = 'Inscrição '+CANDIDATO_SEL.inscricao;
+    document.getElementById('cand-insc').textContent = '';
     chip.style.display='flex';
     const cargos = CANDIDATO_SEL.cargos || [];
     if(cargos.length > 1){
       document.getElementById('card-modalidade').style.display='block';
     } else if(cargos.length === 1){
       CARGO_ATIVO = cargos[0].tipo;
+      CARGO_ENTRY_ATIVO = cargos[0];
+      atualizarChipCandidato();
       ativarFluxoAvaliacao();
     }
   }
   atualizarBotaoEnviar();
 }
 
+function atualizarChipCandidato(){
+  const el = document.getElementById('cand-insc');
+  if(!el) return;
+  if(!CARGO_ENTRY_ATIVO){ el.textContent = ''; return; }
+  const detalhe = [CARGO_ENTRY_ATIVO.data, CARGO_ENTRY_ATIVO.horario].filter(Boolean).join(' ');
+  el.textContent = 'Inscrição ' + CARGO_ENTRY_ATIVO.inscricao + ' · ' + labelCargo(CARGO_ENTRY_ATIVO.tipo) + (detalhe ? ' · '+detalhe : '');
+}
+
 function selecionarModalidade(tipo){
   CARGO_ATIVO = tipo;
+  CARGO_ENTRY_ATIVO = (CANDIDATO_SEL.cargos||[]).find(c=>c.tipo===tipo) || null;
   document.getElementById('modalidade-MOTORISTA').classList.toggle('active', tipo==='MOTORISTA');
   document.getElementById('modalidade-OPERADOR').classList.toggle('active', tipo==='OPERADOR');
+  atualizarChipCandidato();
   ativarFluxoAvaliacao();
 }
 
@@ -369,6 +389,7 @@ function ativarFluxoAvaliacao(){
 function limparCandidato(){
   CANDIDATO_SEL = null;
   CARGO_ATIVO = null;
+  CARGO_ENTRY_ATIVO = null;
   document.getElementById('candidato-selecionado').style.display='none';
   document.getElementById('busca-wrap').style.display='block';
   document.getElementById('f-busca-candidato').value = '';
@@ -583,7 +604,7 @@ async function enviarAvaliacao(){
   const obs = document.getElementById('f-obs').value.trim();
   const alertEl = document.getElementById('alert-envio');
 
-  if(!avaliador || !CANDIDATO_SEL || !CARGO_ATIVO || CNH_SEL === null || !FOTO_DATA_URL){
+  if(!avaliador || !CANDIDATO_SEL || !CARGO_ATIVO || !CARGO_ENTRY_ATIVO || CNH_SEL === null || !FOTO_DATA_URL){
     alertEl.className='alert alert-error'; alertEl.style.display='block';
     alertEl.textContent='Preencha todos os campos obrigatórios antes de enviar (inclusive a modalidade, a foto e se apresentou a CNH).';
     return;
@@ -594,8 +615,8 @@ async function enviarAvaliacao(){
   btn.disabled = true; btn.textContent = 'Enviando...';
 
   try{
-    const cargoRaw = (CANDIDATO_SEL.cargos||[]).find(c=>c.tipo===CARGO_ATIVO)?.raw || '';
-    const fotoPath = `respostas_avaliacao/fotos/pratica_${TOKEN}_${CANDIDATO_SEL.inscricao}_${CARGO_ATIVO}.jpg`;
+    const inscricaoAtiva = CARGO_ENTRY_ATIVO.inscricao;
+    const fotoPath = `respostas_avaliacao/fotos/pratica_${TOKEN}_${inscricaoAtiva}_${CARGO_ATIVO}.jpg`;
     await enviarFoto(fotoPath, FOTO_DATA_URL);
 
     const payload = {
@@ -603,8 +624,8 @@ async function enviarAvaliacao(){
       concursoNome: CONFIG.concursoNome,
       cargo: CARGO_ATIVO,
       avaliador,
-      turma: [CANDIDATO_SEL.data, CANDIDATO_SEL.horario].filter(Boolean).join(' · '),
-      candidato: {inscricao: CANDIDATO_SEL.inscricao, nome: CANDIDATO_SEL.nome, cargo: cargoRaw, data: CANDIDATO_SEL.data||'', horario: CANDIDATO_SEL.horario||''},
+      turma: [CARGO_ENTRY_ATIVO.data, CARGO_ENTRY_ATIVO.horario].filter(Boolean).join(' · '),
+      candidato: {inscricao: inscricaoAtiva, nome: CANDIDATO_SEL.nome, cargo: CARGO_ENTRY_ATIVO.raw||'', data: CARGO_ENTRY_ATIVO.data||'', horario: CARGO_ENTRY_ATIVO.horario||''},
       cnhApresentada: CNH_SEL,
       fotoPath,
       itensMarcados: itensMarcadosResumo(),
@@ -615,12 +636,12 @@ async function enviarAvaliacao(){
       enviadoEm: new Date().toISOString()
     };
 
-    const path = `respostas_avaliacao/pratica_resp_${TOKEN}_${CANDIDATO_SEL.inscricao}_${CARGO_ATIVO}.json`;
+    const path = `respostas_avaliacao/pratica_resp_${TOKEN}_${inscricaoAtiva}_${CARGO_ATIVO}.json`;
     const r0 = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`,
       {headers:{'Authorization':'Bearer '+GH_WRITE_TOKEN}});
     let sha; if(r0.ok){ const d0 = await r0.json(); sha = d0.sha; }
 
-    const body = {message:`resposta Prova Prática: ${CANDIDATO_SEL.inscricao} · ${CARGO_ATIVO}`,
+    const body = {message:`resposta Prova Prática: ${inscricaoAtiva} · ${CARGO_ATIVO}`,
       content: btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))))};
     if(sha) body.sha = sha;
 

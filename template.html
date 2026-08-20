@@ -7743,6 +7743,10 @@ function avalClassificarCargo(raw){
   return 'OUTRO';
 }
 
+function avalNormalizarNome(s){
+  return String(s||'').trim().toUpperCase().replace(/\s+/g,' ');
+}
+
 function parseConvocacaoPratica(input){
   const file = input.files[0]; if(!file) return;
   const status = document.getElementById('aval-convocacao-pratica-status');
@@ -7751,7 +7755,10 @@ function parseConvocacaoPratica(input){
     try{
       const buf = await file.arrayBuffer();
       const wb = XLSX.read(buf, {type:'array'});
-      const porInscricao = new Map();
+      // Agrupado por NOME (normalizado), não por inscrição — porque a mesma pessoa
+      // recebe uma inscrição diferente para cada cargo (Motorista e Operador),
+      // então agrupar por inscrição nunca detectaria quem faz as duas provas.
+      const porNome = new Map();
       for(const nomeAba of wb.SheetNames){
         const aoa = XLSX.utils.sheet_to_json(wb.Sheets[nomeAba], {header:1, defval:''});
         const idxHeader = aoa.findIndex(row => Array.isArray(row) && row.some(c => avalNormalizarCabecalho(c)==='INSCRICAO'));
@@ -7772,15 +7779,17 @@ function parseConvocacaoPratica(input){
           const nome = String(colNome>=0 ? row[colNome] : '').trim();
           const data = String(colData>=0 ? row[colData] : '').trim();
           const horario = String(colHora>=0 ? row[colHora] : '').trim();
-          if(porInscricao.has(inscricao)){
-            const existente = porInscricao.get(inscricao);
-            if(!existente.cargos.some(c=>c.tipo===cargoTipo)) existente.cargos.push({tipo:cargoTipo, raw:cargoRaw});
+          const chave = avalNormalizarNome(nome) || ('__INSC_'+inscricao);
+          const cargoEntry = {tipo:cargoTipo, raw:cargoRaw, inscricao, data, horario};
+          if(porNome.has(chave)){
+            const existente = porNome.get(chave);
+            if(!existente.cargos.some(c=>c.inscricao===inscricao && c.tipo===cargoTipo)) existente.cargos.push(cargoEntry);
           } else {
-            porInscricao.set(inscricao, { inscricao, nome, data, horario, cargos:[{tipo:cargoTipo, raw:cargoRaw}] });
+            porNome.set(chave, { nome, cargos:[cargoEntry] });
           }
         }
       }
-      const candidatos = Array.from(porInscricao.values());
+      const candidatos = Array.from(porNome.values());
       if(!candidatos.length){
         status.innerHTML = '⚠️ Não encontrei a coluna INSCRIÇÃO nesta planilha. Confirme se é o arquivo de convocação certo.';
         return;
@@ -7791,7 +7800,7 @@ function parseConvocacaoPratica(input){
       const nAmbos = candidatos.filter(c=>c.cargos.length>1).length;
       const nOutro = candidatos.filter(c=>c.cargos.every(g=>g.tipo==='OUTRO')).length;
       status.innerHTML = `✅ ${candidatos.length} candidato(s) carregado(s) — ${nMotorista} motorista(s), ${nOperador} operador(es)` +
-        (nAmbos ? `, ${nAmbos} nas duas modalidades` : '') +
+        (nAmbos ? `, ${nAmbos} nas duas modalidades (mesma pessoa, inscrição diferente em cada cargo)` : '') +
         (nOutro ? `, ${nOutro} não identificado(s) pelo texto do cargo` : '') + '.';
     }catch(e){
       status.innerHTML = '❌ Erro ao ler a planilha: '+e.message;

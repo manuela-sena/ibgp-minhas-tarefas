@@ -11,1358 +11,1338 @@
   ],
   "candidatos": [
     {
-      "inscricao": "16287806",
       "nome": "ALDAIR JOSE RIBEIRO",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16287806",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16299777",
       "nome": "ÂNGELO SANTOS DE PAULA",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16299777",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16277502",
       "nome": "AROLDO ROCHA SANTANA",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16277502",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16303574",
       "nome": "BRUNO RIBEIRO DA SILVA",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16303574",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16293891",
       "nome": "CARLOS MAGNO DINIZ GOMES",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16293891",
+          "data": "23.08.2026",
+          "horario": "07h00"
+        },
+        {
+          "tipo": "OPERADOR",
+          "raw": "104 - OPERADOR DE MÁQUINA PESADA",
+          "inscricao": "16277748",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16287765",
       "nome": "CHARLES GIAN SILVA MOURA",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16287765",
+          "data": "23.08.2026",
+          "horario": "07h00"
+        },
+        {
+          "tipo": "OPERADOR",
+          "raw": "104 - OPERADOR DE MÁQUINA PESADA",
+          "inscricao": "16287761",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16301409",
       "nome": "DELMIR DE FREITAS DIAS",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16301409",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16304778",
       "nome": "DILCIMAURO APARECIDO PINTO SANTANA",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16304778",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16278533",
       "nome": "ELBERT EDUARDO RIBEIRO SILVA",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16278533",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16276382",
       "nome": "ELIAS ALVES DE FREITAS",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16276382",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16288981",
       "nome": "ELTON VALADARES DOS SANTOS",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16288981",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16299554",
       "nome": "ERASMO JOSÉ DOS SANTOS MARTINS",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16299554",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16300217",
       "nome": "FILLIPI DE CASTRO MIRANDA",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16300217",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16277764",
       "nome": "GABRIEL DOS SANTOS AZEVEDO",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16277764",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16304932",
       "nome": "GEOVANI CESAR GOMES FILHO",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16304932",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16304316",
       "nome": "GERALDO APARECIDO DA SILVA",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16304316",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16305780",
       "nome": "GERALDO APARECIDO VIEIRA",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16305780",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16278722",
       "nome": "GERALDO PEREIRA DE ALMEIDA JUNIOR",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16278722",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16290941",
       "nome": "GILSON FERREIRA COSTA",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16290941",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16278883",
       "nome": "GRACIELMA MUNIZ BARRETO PEREIRA",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16278883",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16304054",
       "nome": "ISAEL DINIZ GOMES",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16304054",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16293653",
       "nome": "IVAN CAMPOS",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16293653",
+          "data": "23.08.2026",
+          "horario": "07h00"
+        },
+        {
+          "tipo": "OPERADOR",
+          "raw": "104 - OPERADOR DE MÁQUINA PESADA",
+          "inscricao": "16293654",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16305411",
       "nome": "JOSÉ RAIMUNDO MOREIRA GUIMARÃES",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16305411",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16305322",
       "nome": "JUSSARA DE ÁVILA AZEVEDO",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16305322",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16276186",
       "nome": "LEDIR DE ALMEIDA COSTA",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16276186",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16304589",
       "nome": "LINDOMAR APARECIDO PEREIRA DA COSTA",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16304589",
+          "data": "23.08.2026",
+          "horario": "07h00"
+        },
+        {
+          "tipo": "OPERADOR",
+          "raw": "104 - OPERADOR DE MÁQUINA PESADA",
+          "inscricao": "16304588",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16305631",
       "nome": "LUAN CARVALHO PEREIRA",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16305631",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16304011",
       "nome": "LUCAS FAGUNDES VAZ DE OLIVEIRA",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16304011",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16283200",
       "nome": "LUCAS SILVA DOS SANTOS",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16283200",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16305682",
       "nome": "MARCELO DE FREITAS PINTO",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16305682",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16276159",
       "nome": "MARCELO LEANDRO PEREIRA LOPES",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16276159",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16293543",
       "nome": "RONE ALVES CORREIA",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16293543",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16281064",
       "nome": "THIAGO DE SOUZA OLIVEIRA",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16281064",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16279035",
       "nome": "VALDECI DA ROCHA SANTANA",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16279035",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16304747",
       "nome": "VINICIUS DE ARAUJO SILVA",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16304747",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16294724",
       "nome": "WESLEY FREIRE DA SILVA",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16294724",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16304725",
       "nome": "ALAN LEONARDO RODRIGUES",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16304725",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16304276",
       "nome": "ALESSANDRO RIBEIRO",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16304276",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16291600",
       "nome": "ALEX LEONARDO RODRIGUES",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16291600",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16290077",
       "nome": "ALEX RODRIGUES DE ALMEIDA",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16290077",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16277752",
       "nome": "ARCEBIADES CUSTODIO DA SILVA JUNIOR",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16277752",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16275334",
       "nome": "ARLINDO RODRIGUES DA SILVA",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16275334",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16276036",
       "nome": "CAIO FERNANDES DOS SANTOS",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16276036",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16305586",
       "nome": "CARLOS LOPES DURAES NETO",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16305586",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16304670",
       "nome": "EULER GIOVANNI DE OLIVEIRA SOUSA",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16304670",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16286460",
       "nome": "GILVAN MENDES PEREIRA",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16286460",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16289617",
       "nome": "GUILHERME LINCES MARTINS",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16289617",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16284183",
       "nome": "GUSTAVO PERACIO DAMASCENO",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16284183",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16305551",
       "nome": "HELVECIO JOSE DA SILVA",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16305551",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16277273",
       "nome": "HENRIQUE ALVES LOPES",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16277273",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16277933",
       "nome": "ISTANISLAU JÚNIOR BERNARDES",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16277933",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16305886",
       "nome": "JAIRO JOSE DE OLIVEIRA",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16305886",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16304776",
       "nome": "JEREMIAS GOMES TRINDADE",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16304776",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16305137",
       "nome": "JHONATAN APARECIDO AQUINO",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16305137",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16275383",
       "nome": "JOAO CESAR ALIPIO",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16275383",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16304928",
       "nome": "JOÃO PAULO TRINDADE PEREIRA",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16304928",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16276877",
       "nome": "JOSÉ SARAIVA MARTINS",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16276877",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16277307",
       "nome": "JÚLIO CÉSAR SANTANA OLIVEIRA",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16277307",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16301963",
       "nome": "LEANDRO DE OLIVEIRA",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16301963",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16275293",
       "nome": "LUCAS GOMES MONTEIRO",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16275293",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16275476",
       "nome": "ORLANDO JÚNIOR SALDANHA DE MATOS",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16275476",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16304525",
       "nome": "OSVALDO FERNANDES LEITE",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16304525",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16304644",
       "nome": "OSVALDO LEANDRO DA CRUZ FILHO",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16304644",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16304487",
       "nome": "RAFAEL VELOSO DE SOUZA",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16304487",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16278482",
       "nome": "RAQUEL DO AMARAL GOMES",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16278482",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16284891",
       "nome": "RENATA GONÇALVES",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16284891",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16304860",
       "nome": "RICARDO SANTOS SABINO DE ARAUJO",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16304860",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16297110",
       "nome": "THIAGO RODRIGUES XAVIER",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16297110",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16290682",
       "nome": "THIAGO SILVA",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16290682",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16292783",
       "nome": "VALDEIR GONCALVES SANTOS",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16292783",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16305643",
       "nome": "VANDER MARQUES DOS SANTOS",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16305643",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16288626",
       "nome": "WASHINGTON OLIVEIRA DINIZ",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16288626",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16286667",
       "nome": "ALAFE DE LIMA RODRIGUES",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16286667",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16287608",
       "nome": "CLAUDENEYPEREIRA DASILVA",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16287608",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16287698",
       "nome": "CLESIO ALVES GUIMARAES",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16287698",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16304203",
       "nome": "ÉDER LÚCIO SANTANA",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16304203",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16276341",
       "nome": "EDMILSON RIBAS",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16276341",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16305379",
       "nome": "FABRICIO LOPES",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16305379",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16302420",
       "nome": "GERALDO HENRIQUE COELHO DE FREITAS",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16302420",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16279698",
       "nome": "JOAO VICTOR GOMES FERREIRA",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16279698",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16278439",
       "nome": "JOSE GERALDO LEITE SILVA",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16278439",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16304396",
       "nome": "JULIO CESAR ALVES COELHO",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16304396",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16277023",
       "nome": "LUCAS SILVEIRA VIEIRA",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16277023",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16301679",
       "nome": "LUCIANO CAMPELO",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16301679",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16276839",
       "nome": "MALHONE ARAUJO LEAL DA SILVA",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16276839",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16305520",
       "nome": "MARCELO MARQUES DOS SANTOS",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16305520",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16303629",
       "nome": "MARCUS VINÍCIUS FERNANDES BARBOSA",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16303629",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16304141",
       "nome": "MARLON HUDSON DINIZ",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16304141",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16296522",
       "nome": "MIGUEL JOSE TELES",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16296522",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16295629",
       "nome": "MILSON FERREIRA GONDIM",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16295629",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16305677",
       "nome": "OLAVO BARBOSA DE ALMEIDA",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16305677",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16296203",
       "nome": "ROBSON SOUZA SILVA",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16296203",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16305726",
       "nome": "RODRIGO AGMAR DOS SANTOS RIBEIRO",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16305726",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16305196",
       "nome": "RYAN JUNIO SANTOS RIBEIRO",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16305196",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16280116",
       "nome": "THIAGO CABRAL DA SILVA",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16280116",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16277420",
       "nome": "TIAGO JOSÉ FREITAS NOVAES",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16277420",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16298250",
       "nome": "VINICIUS DE MOURA FONSECA",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16298250",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16277368",
       "nome": "WAGNER BISPO VIEIRA",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16277368",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16291535",
       "nome": "WILLIAN ERIVELTO ALVES DA SILVA",
-      "data": "23.08.2026",
-      "horario": "13h30",
       "cargos": [
         {
           "tipo": "MOTORISTA",
-          "raw": "103 - MOTORISTA"
+          "raw": "103 - MOTORISTA",
+          "inscricao": "16291535",
+          "data": "23.08.2026",
+          "horario": "13h30"
         }
       ]
     },
     {
-      "inscricao": "16275160",
       "nome": "CARLOS EDUARDO RIBEIRO DE FREITAS",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "OPERADOR",
-          "raw": "104 - OPERADOR DE MÁQUINA PESADA"
+          "raw": "104 - OPERADOR DE MÁQUINA PESADA",
+          "inscricao": "16275160",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16304296",
       "nome": "EDSON COSTA DINIZ JUNIOR",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "OPERADOR",
-          "raw": "104 - OPERADOR DE MÁQUINA PESADA"
+          "raw": "104 - OPERADOR DE MÁQUINA PESADA",
+          "inscricao": "16304296",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16305836",
       "nome": "JHONES LEITE SOUZA",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "OPERADOR",
-          "raw": "104 - OPERADOR DE MÁQUINA PESADA"
+          "raw": "104 - OPERADOR DE MÁQUINA PESADA",
+          "inscricao": "16305836",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16305086",
       "nome": "LEIDIANE SANTOS OLIVEIRA",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "OPERADOR",
-          "raw": "104 - OPERADOR DE MÁQUINA PESADA"
+          "raw": "104 - OPERADOR DE MÁQUINA PESADA",
+          "inscricao": "16305086",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16287400",
       "nome": "NEYBERT CORNELIO DE ASSIS",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "OPERADOR",
-          "raw": "104 - OPERADOR DE MÁQUINA PESADA"
+          "raw": "104 - OPERADOR DE MÁQUINA PESADA",
+          "inscricao": "16287400",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16285572",
       "nome": "RAMON MOURA OLIVEIRA",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "OPERADOR",
-          "raw": "104 - OPERADOR DE MÁQUINA PESADA"
+          "raw": "104 - OPERADOR DE MÁQUINA PESADA",
+          "inscricao": "16285572",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16304098",
       "nome": "WIVER GABRIEL",
-      "data": "23.08.2026",
-      "horario": "07h00",
       "cargos": [
         {
           "tipo": "OPERADOR",
-          "raw": "104 - OPERADOR DE MÁQUINA PESADA"
+          "raw": "104 - OPERADOR DE MÁQUINA PESADA",
+          "inscricao": "16304098",
+          "data": "23.08.2026",
+          "horario": "07h00"
         }
       ]
     },
     {
-      "inscricao": "16286147",
       "nome": "ADELSON JOSÉ DOS SANTOS PEREIRA",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "OPERADOR",
-          "raw": "104 - OPERADOR DE MÁQUINA PESADA"
+          "raw": "104 - OPERADOR DE MÁQUINA PESADA",
+          "inscricao": "16286147",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16305181",
       "nome": "ANDR LUIZ MARQUES LÚCIO",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "OPERADOR",
-          "raw": "104 - OPERADOR DE MÁQUINA PESADA"
+          "raw": "104 - OPERADOR DE MÁQUINA PESADA",
+          "inscricao": "16305181",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     },
     {
-      "inscricao": "16277748",
-      "nome": "CARLOS MAGNO DINIZ GOMES",
-      "data": "23.08.2026",
-      "horario": "10h00",
-      "cargos": [
-        {
-          "tipo": "OPERADOR",
-          "raw": "104 - OPERADOR DE MÁQUINA PESADA"
-        }
-      ]
-    },
-    {
-      "inscricao": "16287761",
-      "nome": "CHARLES GIAN SILVA MOURA",
-      "data": "23.08.2026",
-      "horario": "10h00",
-      "cargos": [
-        {
-          "tipo": "OPERADOR",
-          "raw": "104 - OPERADOR DE MÁQUINA PESADA"
-        }
-      ]
-    },
-    {
-      "inscricao": "16293654",
-      "nome": "IVAN CAMPOS",
-      "data": "23.08.2026",
-      "horario": "10h00",
-      "cargos": [
-        {
-          "tipo": "OPERADOR",
-          "raw": "104 - OPERADOR DE MÁQUINA PESADA"
-        }
-      ]
-    },
-    {
-      "inscricao": "16304588",
-      "nome": "LINDOMAR APARECIDO PEREIRA DA COSTA",
-      "data": "23.08.2026",
-      "horario": "10h00",
-      "cargos": [
-        {
-          "tipo": "OPERADOR",
-          "raw": "104 - OPERADOR DE MÁQUINA PESADA"
-        }
-      ]
-    },
-    {
-      "inscricao": "16289102",
       "nome": "OLACIR GUEDES",
-      "data": "23.08.2026",
-      "horario": "10h00",
       "cargos": [
         {
           "tipo": "OPERADOR",
-          "raw": "104 - OPERADOR DE MÁQUINA PESADA"
+          "raw": "104 - OPERADOR DE MÁQUINA PESADA",
+          "inscricao": "16289102",
+          "data": "23.08.2026",
+          "horario": "10h00"
         }
       ]
     }
