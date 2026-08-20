@@ -1,0 +1,690 @@
+{
+  "token": "PRAT_MT1XH4MV_DZOL",
+  "criadoEm": "2026-08-20T19:43:10.519Z",
+  "atualizadoEm": "2026-08-20T19:43:10.519Z",
+  "concursoNome": "SAE PASSOS - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliadores": [
+    "FERNANDA ALEXANDRE BATISTA",
+    "CHARLEI MAURO DE LIMA"
+  ],
+  "candidatos": [
+    {
+      "nome": "ARTUR ALVES DA SILVA",
+      "cargos": [
+        {
+          "tipo": "OUTRO",
+          "raw": "103 - ENCANADOR",
+          "inscricao": "16326931",
+          "data": "23.08.2026",
+          "horario": "08H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "EDNEI FERREIRA LEITE",
+      "cargos": [
+        {
+          "tipo": "OUTRO",
+          "raw": "103 - ENCANADOR",
+          "inscricao": "16322683",
+          "data": "23.08.2026",
+          "horario": "08H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "MATHEUS DAVID PEREIRA",
+      "cargos": [
+        {
+          "tipo": "OUTRO",
+          "raw": "103 - ENCANADOR",
+          "inscricao": "16326690",
+          "data": "23.08.2026",
+          "horario": "08H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "ELTON PAULO ROSA CATIGERO SILVA",
+      "cargos": [
+        {
+          "tipo": "OUTRO",
+          "raw": "103 - ENCANADOR",
+          "inscricao": "16327166",
+          "data": "23.08.2026",
+          "horario": "08H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "ILDO PAGOTTI BILLAR MUNHOZ JUNIOR",
+      "cargos": [
+        {
+          "tipo": "OUTRO",
+          "raw": "103 - ENCANADOR",
+          "inscricao": "16329214",
+          "data": "23.08.2026",
+          "horario": "08H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "MATHEUS ANTÔNIO SOARES CAMPIDELLI",
+      "cargos": [
+        {
+          "tipo": "OUTRO",
+          "raw": "103 - ENCANADOR",
+          "inscricao": "16330945",
+          "data": "23.08.2026",
+          "horario": "08H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "GRACINDO PRAXEDES DIAS",
+      "cargos": [
+        {
+          "tipo": "OUTRO",
+          "raw": "103 - ENCANADOR",
+          "inscricao": "16312182",
+          "data": "23.08.2026",
+          "horario": "08H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "WELBERT RODRIGUES SANTOS",
+      "cargos": [
+        {
+          "tipo": "OUTRO",
+          "raw": "103 - ENCANADOR",
+          "inscricao": "16311655",
+          "data": "23.08.2026",
+          "horario": "08H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "JOAQUIM SILVESTRE VAGNER DA SILVA",
+      "cargos": [
+        {
+          "tipo": "OUTRO",
+          "raw": "103 - ENCANADOR",
+          "inscricao": "16316258",
+          "data": "23.08.2026",
+          "horario": "08H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "RAPHAEL AUGUSTO NASCIMENTO SILVA",
+      "cargos": [
+        {
+          "tipo": "OUTRO",
+          "raw": "103 - ENCANADOR",
+          "inscricao": "16329102",
+          "data": "23.08.2026",
+          "horario": "08H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "VALDENIR RODRIGUES DOS SANTOS",
+      "cargos": [
+        {
+          "tipo": "OUTRO",
+          "raw": "103 - ENCANADOR",
+          "inscricao": "16328318",
+          "data": "23.08.2026",
+          "horario": "08H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "REINALDO SANTOS DE OLIVEIRA",
+      "cargos": [
+        {
+          "tipo": "OUTRO",
+          "raw": "103 - ENCANADOR",
+          "inscricao": "16329463",
+          "data": "23.08.2026",
+          "horario": "08H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "ADRIANO DOS SANTOS",
+      "cargos": [
+        {
+          "tipo": "PEDREIRO",
+          "raw": "104 - PEDREIRO",
+          "inscricao": "16327501",
+          "data": "23.08.2026",
+          "horario": "10H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "RODRIGO LEAL SOUSA",
+      "cargos": [
+        {
+          "tipo": "PEDREIRO",
+          "raw": "104 - PEDREIRO",
+          "inscricao": "16329965",
+          "data": "23.08.2026",
+          "horario": "10H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "SERGIO DA SILVA",
+      "cargos": [
+        {
+          "tipo": "PEDREIRO",
+          "raw": "104 - PEDREIRO",
+          "inscricao": "16318706",
+          "data": "23.08.2026",
+          "horario": "10H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "JOEL FRANCISCO LOPES",
+      "cargos": [
+        {
+          "tipo": "PEDREIRO",
+          "raw": "104 - PEDREIRO",
+          "inscricao": "16328407",
+          "data": "23.08.2026",
+          "horario": "10H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "JÚLIO CÉSAR AUGUSTO ALVES",
+      "cargos": [
+        {
+          "tipo": "PEDREIRO",
+          "raw": "104 - PEDREIRO",
+          "inscricao": "16329871",
+          "data": "23.08.2026",
+          "horario": "10H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "ALEX GONÇALVES DA SILVA",
+      "cargos": [
+        {
+          "tipo": "PEDREIRO",
+          "raw": "104 - PEDREIRO",
+          "inscricao": "16317775",
+          "data": "23.08.2026",
+          "horario": "10H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "PAULO HENRIQUE TEODORO SILVA",
+      "cargos": [
+        {
+          "tipo": "PEDREIRO",
+          "raw": "104 - PEDREIRO",
+          "inscricao": "16328217",
+          "data": "23.08.2026",
+          "horario": "10H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "RENATO MAGELA DE OLIVEIRA",
+      "cargos": [
+        {
+          "tipo": "PEDREIRO",
+          "raw": "104 - PEDREIRO",
+          "inscricao": "16320688",
+          "data": "23.08.2026",
+          "horario": "10H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "PABLO BATISTA SOARES",
+      "cargos": [
+        {
+          "tipo": "PEDREIRO",
+          "raw": "104 - PEDREIRO",
+          "inscricao": "16317341",
+          "data": "23.08.2026",
+          "horario": "10H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "ANTONIO SIDNEI ÁVILA",
+      "cargos": [
+        {
+          "tipo": "PEDREIRO",
+          "raw": "104 - PEDREIRO",
+          "inscricao": "16330669",
+          "data": "23.08.2026",
+          "horario": "10H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "NELSON JERONIMO",
+      "cargos": [
+        {
+          "tipo": "PEDREIRO",
+          "raw": "104 - PEDREIRO",
+          "inscricao": "16312228",
+          "data": "23.08.2026",
+          "horario": "10H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "LUIZ HENRIQUE DE SOUZA NASCIMENTO",
+      "cargos": [
+        {
+          "tipo": "PEDREIRO",
+          "raw": "104 - PEDREIRO",
+          "inscricao": "16320740",
+          "data": "23.08.2026",
+          "horario": "10H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "VINICIUS HENRIQUE DE SENA",
+      "cargos": [
+        {
+          "tipo": "OPERADOR_ETA",
+          "raw": "304 - OPERADOR DE ETA",
+          "inscricao": "16329195",
+          "data": "23.08.2026",
+          "horario": "08H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "TAISSA DOS SANTOS BARBOSA",
+      "cargos": [
+        {
+          "tipo": "OPERADOR_ETA",
+          "raw": "304 - OPERADOR DE ETA",
+          "inscricao": "16330210",
+          "data": "23.08.2026",
+          "horario": "08H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "LUIS FELIPE SALDANHA LARA DE OLIVEIRA",
+      "cargos": [
+        {
+          "tipo": "OPERADOR_ETA",
+          "raw": "304 - OPERADOR DE ETA",
+          "inscricao": "16317798",
+          "data": "23.08.2026",
+          "horario": "08H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "VINICIUS JOSÉ DOS SANTOS SILVA",
+      "cargos": [
+        {
+          "tipo": "OPERADOR_ETA",
+          "raw": "304 - OPERADOR DE ETA",
+          "inscricao": "16327141",
+          "data": "23.08.2026",
+          "horario": "08H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "WALTER GONÇALVES DA SILVA JUNIOR",
+      "cargos": [
+        {
+          "tipo": "OPERADOR_ETA",
+          "raw": "304 - OPERADOR DE ETA",
+          "inscricao": "16325180",
+          "data": "23.08.2026",
+          "horario": "10H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "TAMIRES OLIVEIRA ARAUJO",
+      "cargos": [
+        {
+          "tipo": "OPERADOR_ETA",
+          "raw": "304 - OPERADOR DE ETA",
+          "inscricao": "16318357",
+          "data": "23.08.2026",
+          "horario": "10H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "ARNALDO MARTINS",
+      "cargos": [
+        {
+          "tipo": "OPERADOR_ETA",
+          "raw": "304 - OPERADOR DE ETA",
+          "inscricao": "16311721",
+          "data": "23.08.2026",
+          "horario": "10H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "ATENOR FERREIRA BARBOSA",
+      "cargos": [
+        {
+          "tipo": "OPERADOR_ETA",
+          "raw": "304 - OPERADOR DE ETA",
+          "inscricao": "16316919",
+          "data": "23.08.2026",
+          "horario": "10H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "RODINEI CARVALHO DE ALMEIDA",
+      "cargos": [
+        {
+          "tipo": "OPERADOR_ETA",
+          "raw": "304 - OPERADOR DE ETA",
+          "inscricao": "16313621",
+          "data": "23.08.2026",
+          "horario": "10H00MIN"
+        }
+      ]
+    },
+    {
+      "nome": "FELIPE MARTINS RODRIGUES",
+      "cargos": [
+        {
+          "tipo": "OPERADOR_ETA",
+          "raw": "304 - OPERADOR DE ETA",
+          "inscricao": "16313847",
+          "data": "23.08.2026",
+          "horario": "10H00MIN"
+        }
+      ]
+    }
+  ],
+  "criterios": {
+    "motorista": {
+      "gravissima": [
+        "Não executar o teste em sua totalidade do percurso preestabelecido.",
+        "Haver colisão com outro veículo, ou objeto presente no percurso.",
+        "Subir com o veículo no meio fio.",
+        "Colocar em risco a vida do passageiro/avaliador e de transeuntes."
+      ],
+      "grave": [
+        "Não respeitar as placas de sinalização.",
+        "Não respeitar os limites de velocidade.",
+        "Não utilizou cinto de segurança.",
+        "Provocar movimentos irregulares durante o teste, sem motivo justificado, ou interromper o funcionamento do motor sem justa razão, após o início do teste."
+      ],
+      "media": [
+        "Uso de marcha desapropriada para a velocidade.",
+        "Apoio do pé no pedal da embreagem com o veículo engrenado e em movimento.",
+        "Arrancar o veículo sem soltar o freio de mão.",
+        "Controle incorreto de embreagem."
+      ],
+      "leve": [
+        "Regulagem incorreta dos retrovisores.",
+        "Uso incorreto da seta.",
+        "Mudança incorreta de marchas.",
+        "Manobra incorreta de baliza (uma tentativa)."
+      ]
+    },
+    "operador": {
+      "categorias": [
+        {
+          "titulo": "I – Checagem da máquina (pré-uso)",
+          "itens": [
+            "Estrutura da máquina — lataria, chassi, pneus e material rodante.",
+            "Vazamentos.",
+            "Peças.",
+            "Conchas, borda cortante, dentes e escarificadores.",
+            "Faróis, faroletes, luz de ré, luzes de freio, lanternas indicativas de direção e retrovisores."
+          ]
+        },
+        {
+          "titulo": "II – Checagem dos níveis da máquina",
+          "itens": [
+            "Nível do óleo do motor.",
+            "Nível do óleo da transmissão.",
+            "Nível do óleo hidráulico.",
+            "Nível do óleo de freio.",
+            "Nível da água — sistema de arrefecimento."
+          ]
+        },
+        {
+          "titulo": "III – Identificação e checagem do painel de instrumentos",
+          "itens": [
+            "Indicador da temperatura da água do motor.",
+            "Indicador da pressão do óleo do motor.",
+            "Indicador da temperatura da transmissão.",
+            "Indicador de pressão da transmissão.",
+            "Indicador da carga da bateria.",
+            "Indicador do nível de combustível.",
+            "Indicador da pressão do freio.",
+            "Indicador da temperatura do óleo hidráulico."
+          ]
+        },
+        {
+          "titulo": "IV – Checagem de comandos",
+          "itens": [
+            "Alavancas do freio de estacionamento.",
+            "Alavancas do comando hidráulico da concha.",
+            "Alavanca do comando de reversão.",
+            "Alavanca do comando da transmissão.",
+            "Pedais de freio / neutralizador.",
+            "Botão de buzina."
+          ]
+        },
+        {
+          "titulo": "V – Procedimentos de partida",
+          "itens": [
+            "Transmissão em neutro.",
+            "Freio de estacionamento aplicado.",
+            "Concha baixa no solo.",
+            "Acionamento da chave de partida.",
+            "Aquecimento do motor.",
+            "Checagem do painel."
+          ]
+        },
+        {
+          "titulo": "VI – Teste de operação",
+          "itens": [
+            "Escavação.",
+            "Carga.",
+            "Transporte.",
+            "Descarga.",
+            "Retorno.",
+            "Estacionamento."
+          ]
+        },
+        {
+          "titulo": "VII – Procedimento de parada",
+          "itens": [
+            "Transmissão em neutro.",
+            "Freio de estacionamento aplicado.",
+            "Concha no solo.",
+            "Arrefecimento do motor."
+          ]
+        }
+      ]
+    },
+    "obra": {
+      "atitudinais": {
+        "pontosPorNivel": {
+          "NR": 0,
+          "RI": 0.2,
+          "RS": 0.4
+        },
+        "itens": [
+          "Capacidade de envolvimento, responsabilidade e comprometimento.",
+          "Iniciativa, interesse, criatividade e proatividade.",
+          "Hábitos de Segurança do Trabalho (utilização de equipamentos de EPI e EPC)",
+          "Responsabilidade e cuidado com materiais e equipamentos.",
+          "Organização e limpeza do local de trabalho."
+        ]
+      },
+      "tecnicasGerais": {
+        "pontosPorNivel": {
+          "NR": 0,
+          "RI": 1,
+          "RS": 2
+        },
+        "itens": [
+          "Conhecimento dos processos de trabalho – Organização e Planejamento."
+        ]
+      },
+      "tecnicasEspecificas": {
+        "pontosPorNivel": {
+          "NR": 0,
+          "RI": 1.5,
+          "RS": 3
+        },
+        "itens": [
+          "Qualidade das atividades desempenhadas.",
+          "Resultado final das atividades desempenhadas dentro do tempo determinado para execução da tarefa."
+        ]
+      }
+    },
+    "operador_eta": {
+      "grupos": [
+        {
+          "titulo": "Tarefa 1",
+          "itens": [
+            {
+              "texto": "Seleção e uso correto do EPI",
+              "nr": 0,
+              "ri": 0.4,
+              "rs": 0.8
+            },
+            {
+              "texto": "Organização da bancada e materiais",
+              "nr": 0,
+              "ri": 0.3,
+              "rs": 0.6
+            },
+            {
+              "texto": "Postura profissional durante a prova",
+              "nr": 0,
+              "ri": 0.3,
+              "rs": 0.6
+            }
+          ]
+        },
+        {
+          "titulo": "Tarefa 2",
+          "itens": [
+            {
+              "texto": "Identificação correta das 4 etapas de tratamento (Ficha de Resultados)",
+              "nr": 0,
+              "ri": 0.4,
+              "rs": 0.8
+            },
+            {
+              "texto": "Execução ou descrição correta da operação básica",
+              "nr": 0,
+              "ri": 0.3,
+              "rs": 0.6
+            },
+            {
+              "texto": "Limpeza e conservação demonstradas corretamente",
+              "nr": 0,
+              "ri": 0.3,
+              "rs": 0.6
+            }
+          ]
+        },
+        {
+          "titulo": "Tarefa 3",
+          "itens": [
+            {
+              "texto": "Coleta da amostra realizada corretamente",
+              "nr": 0,
+              "ri": 0.25,
+              "rs": 0.5
+            },
+            {
+              "texto": "Teste de cloro residual executado corretamente",
+              "nr": 0,
+              "ri": 0.5,
+              "rs": 1
+            },
+            {
+              "texto": "Teste de pH executado corretamente",
+              "nr": 0,
+              "ri": 0.25,
+              "rs": 0.5
+            },
+            {
+              "texto": "Medição de turbidez executada corretamente",
+              "nr": 0,
+              "ri": 0.25,
+              "rs": 0.5
+            },
+            {
+              "texto": "Registro correto dos resultados na ficha",
+              "nr": 0,
+              "ri": 0.25,
+              "rs": 0.5
+            }
+          ]
+        },
+        {
+          "titulo": "Tarefa 4",
+          "itens": [
+            {
+              "texto": "Cálculo correto da quantidade de produto (5,0 g)",
+              "nr": 0,
+              "ri": 0.3,
+              "rs": 0.6
+            },
+            {
+              "texto": "Pesagem correta do produto",
+              "nr": 0,
+              "ri": 0.25,
+              "rs": 0.5
+            },
+            {
+              "texto": "Dissolução correta do produto",
+              "nr": 0,
+              "ri": 0.25,
+              "rs": 0.5
+            },
+            {
+              "texto": "Completou corretamente o volume da solução (500 mL)",
+              "nr": 0,
+              "ri": 0.25,
+              "rs": 0.5
+            },
+            {
+              "texto": "Homogeneização correta da solução",
+              "nr": 0,
+              "ri": 0.2,
+              "rs": 0.4
+            },
+            {
+              "texto": "Identificação correta do recipiente após o preparo",
+              "nr": 0,
+              "ri": 0.25,
+              "rs": 0.5
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
