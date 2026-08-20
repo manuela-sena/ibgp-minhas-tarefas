@@ -43,6 +43,12 @@
   }
   select:focus, input:focus, textarea:focus { outline: none; border-color: var(--azul-med); }
   textarea { resize: vertical; min-height: 60px; }
+  .radio-row { display: flex; gap: 10px; }
+  .radio-opt {
+    flex: 1; border: 1.5px solid var(--borda); border-radius: 8px; padding: 12px; text-align: center;
+    font-size: 13.5px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all .15s;
+  }
+  .radio-opt.active { border-color: var(--azul-med); background: var(--azul-claro); color: var(--azul); }
   .btn { border: none; border-radius: 9px; padding: 13px 20px; font-size: 14px; font-weight: 700; cursor: pointer; width: 100%; }
   .btn-primary { background: var(--azul-med); color: #fff; }
   .btn-primary:disabled { background: #a7b6ce; cursor: not-allowed; }
