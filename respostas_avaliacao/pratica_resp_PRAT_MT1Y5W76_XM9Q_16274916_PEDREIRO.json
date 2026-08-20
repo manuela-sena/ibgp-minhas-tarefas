@@ -1,0 +1,32 @@
+{
+  "token": "PRAT_MT1Y5W76_XM9Q",
+  "concursoNome": "PRESIDENTE JUSCELINO - EDITAL Nº 01/2025 - CONCURSO PÚBLICO",
+  "cargo": "PEDREIRO",
+  "avaliador": "TESTE MANU",
+  "turma": "16.08.2026 · 07H00MIN",
+  "candidato": {
+    "inscricao": "16274916",
+    "nome": "FABIO JUNIOR LOPES DA SILVA",
+    "cargo": "106 - PEDREIRO",
+    "data": "16.08.2026",
+    "horario": "07H00MIN"
+  },
+  "cnhApresentada": null,
+  "resultadoFinal": "APTO",
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MT1Y5W76_XM9Q_16274916_PEDREIRO.jpg",
+  "itensMarcados": [
+    "Capacidade de envolvimento, responsabilidade e comprometimento. — NR (0 pts)",
+    "Iniciativa, interesse, criatividade e proatividade. — RS (0.4 pts)",
+    "Hábitos de Segurança do Trabalho (utilização de equipamentos de EPI e EPC) — RS (0.4 pts)",
+    "Responsabilidade e cuidado com materiais e equipamentos. — RS (0.4 pts)",
+    "Organização e limpeza do local de trabalho. — NR (0 pts)",
+    "Conhecimento dos processos de trabalho – Organização e Planejamento. — RS (2 pts)",
+    "Qualidade das atividades desempenhadas. — RS (3 pts)",
+    "Resultado final das atividades desempenhadas dentro do tempo determinado para execução da tarefa. — RS (3 pts)"
+  ],
+  "pontos": 9.2,
+  "eliminado": false,
+  "apto": true,
+  "observacoes": "Gagahaj",
+  "enviadoEm": "2026-08-20T20:24:08.870Z"
+}
