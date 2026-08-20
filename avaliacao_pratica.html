@@ -108,6 +108,12 @@
     border-radius:8px; padding:8px 4px; font-size:12px; font-weight:600; color:var(--muted); cursor:pointer; }
   .lk-opcao input { margin:0; }
   .lk-opcao.checked { border-color: var(--azul-med); background: var(--azul-claro); color: var(--azul); }
+  .lk-opcao-nr { border-color:#e3a6a3; background:#fdf1f0; color:#b3261e; }
+  .lk-opcao-ri { border-color:#e8cf7a; background:#fdf8e8; color:#8a6d1f; }
+  .lk-opcao-rs { border-color:#a8d69a; background:#eef8ea; color:#2e7d32; }
+  .lk-opcao-nr.checked { border-color:#c0322f; background:#f2b8b4; color:#7a1a17; }
+  .lk-opcao-ri.checked { border-color:#c9a227; background:#f5df94; color:#5c4813; }
+  .lk-opcao-rs.checked { border-color:#5a9c46; background:#b7e0a5; color:#1f5c22; }
 </style>
 </head>
 <body>
@@ -521,9 +527,9 @@ function renderChecklist(){
           <div class="lk-item-row" data-grupo="${grupo.key}">
             <div class="lk-item-texto">${item}</div>
             <div class="lk-opcoes">
-              <label class="lk-opcao"><input type="radio" name="lk-${grupo.key}-${ii}" class="lk-radio" data-nivel="NR" data-valor="${p.NR||0}" onchange="onChecklistChange(this)"><span>NR (${fmtPontos(p.NR||0)})</span></label>
-              <label class="lk-opcao"><input type="radio" name="lk-${grupo.key}-${ii}" class="lk-radio" data-nivel="RI" data-valor="${p.RI||0}" onchange="onChecklistChange(this)"><span>RI (${fmtPontos(p.RI||0)})</span></label>
-              <label class="lk-opcao"><input type="radio" name="lk-${grupo.key}-${ii}" class="lk-radio" data-nivel="RS" data-valor="${p.RS||0}" onchange="onChecklistChange(this)"><span>RS (${fmtPontos(p.RS||0)})</span></label>
+              <label class="lk-opcao lk-opcao-nr"><input type="radio" name="lk-${grupo.key}-${ii}" class="lk-radio" data-nivel="NR" data-valor="${p.NR||0}" onchange="onChecklistChange(this)"><span>NR (${fmtPontos(p.NR||0)})</span></label>
+              <label class="lk-opcao lk-opcao-ri"><input type="radio" name="lk-${grupo.key}-${ii}" class="lk-radio" data-nivel="RI" data-valor="${p.RI||0}" onchange="onChecklistChange(this)"><span>RI (${fmtPontos(p.RI||0)})</span></label>
+              <label class="lk-opcao lk-opcao-rs"><input type="radio" name="lk-${grupo.key}-${ii}" class="lk-radio" data-nivel="RS" data-valor="${p.RS||0}" onchange="onChecklistChange(this)"><span>RS (${fmtPontos(p.RS||0)})</span></label>
             </div>
           </div>`).join('')}
       </div>`;
@@ -539,9 +545,9 @@ function renderChecklist(){
           <div class="lk-item-row" data-grupo="g${gi}">
             <div class="lk-item-texto">${item.texto}</div>
             <div class="lk-opcoes">
-              <label class="lk-opcao"><input type="radio" name="lk-eta-${gi}-${ii}" class="lk-radio" data-nivel="NR" data-valor="${item.nr||0}" onchange="onChecklistChange(this)"><span>NR (${fmtPontos(item.nr||0)})</span></label>
-              <label class="lk-opcao"><input type="radio" name="lk-eta-${gi}-${ii}" class="lk-radio" data-nivel="RI" data-valor="${item.ri||0}" onchange="onChecklistChange(this)"><span>RI (${fmtPontos(item.ri||0)})</span></label>
-              <label class="lk-opcao"><input type="radio" name="lk-eta-${gi}-${ii}" class="lk-radio" data-nivel="RS" data-valor="${item.rs||0}" onchange="onChecklistChange(this)"><span>RS (${fmtPontos(item.rs||0)})</span></label>
+              <label class="lk-opcao lk-opcao-nr"><input type="radio" name="lk-eta-${gi}-${ii}" class="lk-radio" data-nivel="NR" data-valor="${item.nr||0}" onchange="onChecklistChange(this)"><span>NR (${fmtPontos(item.nr||0)})</span></label>
+              <label class="lk-opcao lk-opcao-ri"><input type="radio" name="lk-eta-${gi}-${ii}" class="lk-radio" data-nivel="RI" data-valor="${item.ri||0}" onchange="onChecklistChange(this)"><span>RI (${fmtPontos(item.ri||0)})</span></label>
+              <label class="lk-opcao lk-opcao-rs"><input type="radio" name="lk-eta-${gi}-${ii}" class="lk-radio" data-nivel="RS" data-valor="${item.rs||0}" onchange="onChecklistChange(this)"><span>RS (${fmtPontos(item.rs||0)})</span></label>
             </div>
           </div>`).join('')}
       </div>`;
