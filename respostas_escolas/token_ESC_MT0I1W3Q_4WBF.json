@@ -1,11 +1,162 @@
 {
   "token": "ESC_MT0I1W3Q_4WBF",
-  "criadoEm": "2026-08-19T19:43:39.206Z",
+  "enviadoEm": "2026-08-21T16:56:09.126Z",
+  "protocolo": "ESC_MT0I1W3Q_4WBF_1787331369126",
   "concurso": {
     "concurso": "ARAXÁ - EDITAL Nº 01/2026 - PROCESSO SELETIVO PÚBLICO",
     "municipio": "ARAXÁ/MG",
     "dataProva": "06/09/2026",
     "escola": "ESCOLA MUNICIPAL DONA GABRIELA",
     "idEscola": "ESC_MT0I1W3Q_4WBF"
-  }
+  },
+  "instituicao": {
+    "nome": "ESCOLA MUNICIPAL DONA GABRIELA",
+    "cnpj": "01.992.488/0001-43",
+    "razao": "ESCOLA DONA GABRIELA",
+    "endereco": "RUA PADRE ANCHIETA",
+    "numero": "169",
+    "complemento": "",
+    "bairro": "CENTRO",
+    "cidade": "ARAXA",
+    "uf": "MG",
+    "cep": "38183-084",
+    "responsavel": {
+      "nome": "CLAUDIA F F OLIVEIRA",
+      "cargo": "",
+      "email": "emdonagabriela22@gmail.com",
+      "tel": "(34) 98811-8522"
+    },
+    "diretor": {
+      "nome": "CLAUDIA DE FATIMA DE FARIA OLIVEIRA",
+      "email": "claudiafatimafariaoliveira@gmail.com"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "4",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "4",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA 01",
+      "capacidade": 23,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA 02",
+      "capacidade": 23,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA 04",
+      "capacidade": 23,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA 05",
+      "capacidade": 23,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "2ºANDAR",
+      "sala": "SALA 09",
+      "capacidade": 23,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "2ºANDAR",
+      "sala": "SALA 11",
+      "capacidade": 23,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "2ºANDAR",
+      "sala": "SALA 12",
+      "capacidade": 23,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "2ºANDAR",
+      "sala": "SALA 13",
+      "capacidade": 23,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "2ºANDAR",
+      "sala": "SALA 14",
+      "capacidade": 23,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "2ºANDAR",
+      "sala": "SALA 15",
+      "capacidade": 23,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    }
+  ]
 }
