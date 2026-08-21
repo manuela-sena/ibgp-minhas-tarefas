@@ -1,11 +1,162 @@
 {
   "token": "ESC_MT33Q8G8_LDFU",
-  "criadoEm": "2026-08-21T15:25:59.240Z",
+  "enviadoEm": "2026-08-21T17:27:36.222Z",
+  "protocolo": "ESC_MT33Q8G8_LDFU_1787333256222",
   "concurso": {
     "concurso": "BRUMADINHO - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
     "municipio": "BRUMADINHO/MG",
     "dataProva": "30/08/2026",
     "escola": "E.M. MARIA DUTRA AGUIAR",
     "idEscola": "ESC_MT33Q8G8_LDFU"
-  }
+  },
+  "instituicao": {
+    "nome": "E.M. MARIA DUTRA AGUIAR",
+    "cnpj": "01.397.888/0001-00",
+    "razao": "E.M.MARIA DUTRA DE AGUIAR",
+    "endereco": "RUA JOSÉ DA SILVA MOREIRA",
+    "numero": "180",
+    "complemento": "ESCOLA",
+    "bairro": "COHAB",
+    "cidade": "BRUMADINHA",
+    "uf": "MG",
+    "cep": "32497-126",
+    "responsavel": {
+      "nome": "SIRLENE COELHO BARBOSA",
+      "cargo": "DIRETORA",
+      "email": "sirlenecoelhob@gmail.com",
+      "tel": "(31) 99727-3293"
+    },
+    "diretor": {
+      "nome": "SIRLENE COELHO BARBOSA",
+      "email": "sirlenecoelhob@gmail.com"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "2",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "2",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "A",
+      "andar": "1º",
+      "sala": "SALA 04",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º",
+      "sala": "SALA 05",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º",
+      "sala": "SALA 06",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º",
+      "sala": "SALA 07",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º",
+      "sala": "SALA 08",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º",
+      "sala": "SALA 09",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "2º",
+      "sala": "SALA 11",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "2º",
+      "sala": "SALA 12",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "2º",
+      "sala": "SALA 13",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "BIBLIOTECA",
+      "sala": "SALA 10",
+      "capacidade": 10,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    }
+  ]
 }
