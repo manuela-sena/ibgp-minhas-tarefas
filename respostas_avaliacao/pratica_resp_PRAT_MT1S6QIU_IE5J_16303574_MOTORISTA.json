@@ -1,0 +1,23 @@
+{
+  "token": "PRAT_MT1S6QIU_IE5J",
+  "concursoNome": "INIMUTABA - EDITAL Nº 01/2025 - CONCURSO PÚBLICO",
+  "cargo": "MOTORISTA",
+  "avaliador": "FELIPE CORRÊA",
+  "turma": "23.08.2026 · 07h00",
+  "candidato": {
+    "inscricao": "16303574",
+    "nome": "BRUNO RIBEIRO DA SILVA",
+    "cargo": "103 - MOTORISTA",
+    "data": "23.08.2026",
+    "horario": "07h00"
+  },
+  "cnhApresentada": true,
+  "resultadoFinal": null,
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MT1S6QIU_IE5J_16303574_MOTORISTA.jpg",
+  "itensMarcados": [],
+  "pontos": 10,
+  "eliminado": false,
+  "apto": true,
+  "observacoes": "",
+  "enviadoEm": "2026-08-23T10:25:42.035Z"
+}
