@@ -1,0 +1,41 @@
+{
+  "token": "PRAT_MT1XH4MV_DZOL",
+  "concursoNome": "SAE PASSOS - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "cargo": "OPERADOR_ETA",
+  "avaliador": "FERNANDA ALEXANDRE BATISTA",
+  "turma": "23.08.2026 · 10H00MIN",
+  "candidato": {
+    "inscricao": "16313621",
+    "nome": "RODINEI CARVALHO DE ALMEIDA",
+    "cargo": "304 - OPERADOR DE ETA",
+    "data": "23.08.2026",
+    "horario": "10H00MIN"
+  },
+  "cnhApresentada": null,
+  "resultadoFinal": "APTO",
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MT1XH4MV_DZOL_16313621_OPERADOR_ETA.jpg",
+  "itensMarcados": [
+    "Seleção e uso correto do EPI — RS (0.8 pts)",
+    "Organização da bancada e materiais — RS (0.6 pts)",
+    "Postura profissional durante a prova — RS (0.6 pts)",
+    "Identificação correta das 4 etapas de tratamento (Ficha de Resultados) — RS (0.8 pts)",
+    "Execução ou descrição correta da operação básica — RS (0.6 pts)",
+    "Limpeza e conservação demonstradas corretamente — RI (0.3 pts)",
+    "Coleta da amostra realizada corretamente — RS (0.5 pts)",
+    "Teste de cloro residual executado corretamente — RS (1 pts)",
+    "Teste de pH executado corretamente — RI (0.25 pts)",
+    "Medição de turbidez executada corretamente — RS (0.5 pts)",
+    "Registro correto dos resultados na ficha — RS (0.5 pts)",
+    "Cálculo correto da quantidade de produto (5,0 g) — RS (0.6 pts)",
+    "Pesagem correta do produto — RS (0.5 pts)",
+    "Dissolução correta do produto — RS (0.5 pts)",
+    "Completou corretamente o volume da solução (500 mL) — RS (0.5 pts)",
+    "Homogeneização correta da solução — RS (0.4 pts)",
+    "Identificação correta do recipiente após o preparo — NR (0 pts)"
+  ],
+  "pontos": 8.95,
+  "eliminado": false,
+  "apto": true,
+  "observacoes": "Não descreveu a operação de Calibração. E não executou a limpeza fo pHmetro",
+  "enviadoEm": "2026-08-23T14:16:35.253Z"
+}
