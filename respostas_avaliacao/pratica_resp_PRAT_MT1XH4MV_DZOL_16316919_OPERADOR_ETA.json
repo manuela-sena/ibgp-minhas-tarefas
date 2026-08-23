@@ -1,0 +1,41 @@
+{
+  "token": "PRAT_MT1XH4MV_DZOL",
+  "concursoNome": "SAE PASSOS - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "cargo": "OPERADOR_ETA",
+  "avaliador": "FERNANDA ALEXANDRE BATISTA",
+  "turma": "23.08.2026 · 10H00MIN",
+  "candidato": {
+    "inscricao": "16316919",
+    "nome": "ATENOR FERREIRA BARBOSA",
+    "cargo": "304 - OPERADOR DE ETA",
+    "data": "23.08.2026",
+    "horario": "10H00MIN"
+  },
+  "cnhApresentada": null,
+  "resultadoFinal": "INAPTO",
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MT1XH4MV_DZOL_16316919_OPERADOR_ETA.jpg",
+  "itensMarcados": [
+    "Seleção e uso correto do EPI — RS (0.8 pts)",
+    "Organização da bancada e materiais — RS (0.6 pts)",
+    "Postura profissional durante a prova — RI (0.3 pts)",
+    "Identificação correta das 4 etapas de tratamento (Ficha de Resultados) — NR (0 pts)",
+    "Execução ou descrição correta da operação básica — RS (0.6 pts)",
+    "Limpeza e conservação demonstradas corretamente — RS (0.6 pts)",
+    "Coleta da amostra realizada corretamente — RS (0.5 pts)",
+    "Teste de cloro residual executado corretamente — NR (0 pts)",
+    "Teste de pH executado corretamente — RI (0.25 pts)",
+    "Medição de turbidez executada corretamente — RS (0.5 pts)",
+    "Registro correto dos resultados na ficha — RI (0.25 pts)",
+    "Cálculo correto da quantidade de produto (5,0 g) — NR (0 pts)",
+    "Pesagem correta do produto — NR (0 pts)",
+    "Dissolução correta do produto — NR (0 pts)",
+    "Completou corretamente o volume da solução (500 mL) — NR (0 pts)",
+    "Homogeneização correta da solução — NR (0 pts)",
+    "Identificação correta do recipiente após o preparo — NR (0 pts)"
+  ],
+  "pontos": 4.4,
+  "eliminado": false,
+  "apto": false,
+  "observacoes": "Não realizou a preparação da solução, não descreveu a etapa de calibração, não realizou a mediação do teste de cloro residual .",
+  "enviadoEm": "2026-08-23T13:29:51.703Z"
+}
