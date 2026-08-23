@@ -1,0 +1,25 @@
+{
+  "token": "PRAT_MT1S6QIU_IE5J",
+  "concursoNome": "INIMUTABA - EDITAL Nº 01/2025 - CONCURSO PÚBLICO",
+  "cargo": "MOTORISTA",
+  "avaliador": "MARCIO BISPO",
+  "turma": "23.08.2026 · 07h00",
+  "candidato": {
+    "inscricao": "16287806",
+    "nome": "ALDAIR JOSE RIBEIRO",
+    "cargo": "103 - MOTORISTA",
+    "data": "23.08.2026",
+    "horario": "07h00"
+  },
+  "cnhApresentada": true,
+  "resultadoFinal": null,
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MT1S6QIU_IE5J_16287806_MOTORISTA.jpg",
+  "itensMarcados": [
+    "[leve] Mudança incorreta de marchas. (x1)"
+  ],
+  "pontos": 9.5,
+  "eliminado": false,
+  "apto": true,
+  "observacoes": "",
+  "enviadoEm": "2026-08-23T10:18:55.357Z"
+}
