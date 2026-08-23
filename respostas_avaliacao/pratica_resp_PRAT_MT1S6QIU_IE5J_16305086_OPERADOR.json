@@ -1,0 +1,25 @@
+{
+  "token": "PRAT_MT1S6QIU_IE5J",
+  "concursoNome": "INIMUTABA - EDITAL Nº 01/2025 - CONCURSO PÚBLICO",
+  "cargo": "OPERADOR",
+  "avaliador": "ÉGON ARIEL",
+  "turma": "23.08.2026 · 07h00",
+  "candidato": {
+    "inscricao": "16305086",
+    "nome": "LEIDIANE SANTOS OLIVEIRA",
+    "cargo": "104 - OPERADOR DE MÁQUINA PESADA",
+    "data": "23.08.2026",
+    "horario": "07h00"
+  },
+  "cnhApresentada": true,
+  "resultadoFinal": null,
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MT1S6QIU_IE5J_16305086_OPERADOR.jpg",
+  "itensMarcados": [
+    "Não atendido: Escavação."
+  ],
+  "pontos": 9.5,
+  "eliminado": false,
+  "apto": true,
+  "observacoes": "",
+  "enviadoEm": "2026-08-23T11:05:02.816Z"
+}
