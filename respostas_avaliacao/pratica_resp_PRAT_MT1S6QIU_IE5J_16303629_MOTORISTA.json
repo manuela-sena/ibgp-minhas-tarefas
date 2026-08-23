@@ -1,0 +1,25 @@
+{
+  "token": "PRAT_MT1S6QIU_IE5J",
+  "concursoNome": "INIMUTABA - EDITAL Nº 01/2025 - CONCURSO PÚBLICO",
+  "cargo": "MOTORISTA",
+  "avaliador": "FELIPE CORRÊA",
+  "turma": "23.08.2026 · 13h30",
+  "candidato": {
+    "inscricao": "16303629",
+    "nome": "MARCUS VINÍCIUS FERNANDES BARBOSA",
+    "cargo": "103 - MOTORISTA",
+    "data": "23.08.2026",
+    "horario": "13h30"
+  },
+  "cnhApresentada": true,
+  "resultadoFinal": null,
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MT1S6QIU_IE5J_16303629_MOTORISTA.jpg",
+  "itensMarcados": [
+    "[leve] Mudança incorreta de marchas. (x1)"
+  ],
+  "pontos": 9.5,
+  "eliminado": false,
+  "apto": true,
+  "observacoes": "",
+  "enviadoEm": "2026-08-23T17:06:50.210Z"
+}
