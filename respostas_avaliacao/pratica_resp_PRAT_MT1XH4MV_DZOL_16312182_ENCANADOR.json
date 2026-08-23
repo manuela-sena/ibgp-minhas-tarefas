@@ -1,0 +1,32 @@
+{
+  "token": "PRAT_MT1XH4MV_DZOL",
+  "concursoNome": "SAE PASSOS - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "cargo": "ENCANADOR",
+  "avaliador": "CHARLEI MAURO DE LIMA",
+  "turma": "23.08.2026 · 08H00MIN",
+  "candidato": {
+    "inscricao": "16312182",
+    "nome": "GRACINDO PRAXEDES DIAS",
+    "cargo": "103 - ENCANADOR",
+    "data": "23.08.2026",
+    "horario": "08H00MIN"
+  },
+  "cnhApresentada": null,
+  "resultadoFinal": "INAPTO",
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MT1XH4MV_DZOL_16312182_ENCANADOR.jpg",
+  "itensMarcados": [
+    "Capacidade de envolvimento, responsabilidade e comprometimento. — RI (0.2 pts)",
+    "Iniciativa, interesse, criatividade e proatividade. — RI (0.2 pts)",
+    "Hábitos de Segurança do Trabalho (utilização de equipamentos de EPI e EPC) — RI (0.2 pts)",
+    "Responsabilidade e cuidado com materiais e equipamentos. — RI (0.2 pts)",
+    "Organização e limpeza do local de trabalho. — RI (0.2 pts)",
+    "Conhecimento dos processos de trabalho – Organização e Planejamento. — NR (0 pts)",
+    "Qualidade das atividades desempenhadas. — RI (1.5 pts)",
+    "Resultado final das atividades desempenhadas dentro do tempo determinado para execução da tarefa. — RI (1.5 pts)"
+  ],
+  "pontos": 4,
+  "eliminado": false,
+  "apto": false,
+  "observacoes": "",
+  "enviadoEm": "2026-08-23T12:03:55.660Z"
+}
