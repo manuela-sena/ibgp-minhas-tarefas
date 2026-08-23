@@ -1,0 +1,25 @@
+{
+  "token": "PRAT_MT1S6QIU_IE5J",
+  "concursoNome": "INIMUTABA - EDITAL Nº 01/2025 - CONCURSO PÚBLICO",
+  "cargo": "MOTORISTA",
+  "avaliador": "FELIPE CORRÊA",
+  "turma": "23.08.2026 · 13h30",
+  "candidato": {
+    "inscricao": "16287698",
+    "nome": "CLESIO ALVES GUIMARAES",
+    "cargo": "103 - MOTORISTA",
+    "data": "23.08.2026",
+    "horario": "13h30"
+  },
+  "cnhApresentada": true,
+  "resultadoFinal": null,
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MT1S6QIU_IE5J_16287698_MOTORISTA.jpg",
+  "itensMarcados": [
+    "[leve] Mudança incorreta de marchas. (x2)"
+  ],
+  "pontos": 9,
+  "eliminado": false,
+  "apto": true,
+  "observacoes": "",
+  "enviadoEm": "2026-08-23T16:42:12.502Z"
+}
