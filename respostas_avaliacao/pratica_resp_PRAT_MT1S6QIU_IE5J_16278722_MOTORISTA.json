@@ -1,0 +1,27 @@
+{
+  "token": "PRAT_MT1S6QIU_IE5J",
+  "concursoNome": "INIMUTABA - EDITAL Nº 01/2025 - CONCURSO PÚBLICO",
+  "cargo": "MOTORISTA",
+  "avaliador": "MARCIO BISPO",
+  "turma": "23.08.2026 · 07h00",
+  "candidato": {
+    "inscricao": "16278722",
+    "nome": "GERALDO PEREIRA DE ALMEIDA JUNIOR",
+    "cargo": "103 - MOTORISTA",
+    "data": "23.08.2026",
+    "horario": "07h00"
+  },
+  "cnhApresentada": true,
+  "resultadoFinal": null,
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MT1S6QIU_IE5J_16278722_MOTORISTA.jpg",
+  "itensMarcados": [
+    "[grave] Provocar movimentos irregulares durante o teste, sem motivo justificado, ou interromper o funcionamento do motor sem justa razão, após o início do teste. (x1)",
+    "[media] Apoio do pé no pedal da embreagem com o veículo engrenado e em movimento. (x1)",
+    "[media] Controle incorreto de embreagem. (x1)"
+  ],
+  "pontos": 6,
+  "eliminado": false,
+  "apto": true,
+  "observacoes": "",
+  "enviadoEm": "2026-08-23T11:05:18.273Z"
+}
