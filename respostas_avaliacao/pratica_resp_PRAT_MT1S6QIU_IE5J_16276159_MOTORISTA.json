@@ -1,0 +1,23 @@
+{
+  "token": "PRAT_MT1S6QIU_IE5J",
+  "concursoNome": "INIMUTABA - EDITAL Nº 01/2025 - CONCURSO PÚBLICO",
+  "cargo": "MOTORISTA",
+  "avaliador": "FELIPE CORRÊA",
+  "turma": "23.08.2026 · 07h00",
+  "candidato": {
+    "inscricao": "16276159",
+    "nome": "MARCELO LEANDRO PEREIRA LOPES",
+    "cargo": "103 - MOTORISTA",
+    "data": "23.08.2026",
+    "horario": "07h00"
+  },
+  "cnhApresentada": true,
+  "resultadoFinal": null,
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MT1S6QIU_IE5J_16276159_MOTORISTA.jpg",
+  "itensMarcados": [],
+  "pontos": 10,
+  "eliminado": false,
+  "apto": true,
+  "observacoes": "",
+  "enviadoEm": "2026-08-23T11:47:59.127Z"
+}
