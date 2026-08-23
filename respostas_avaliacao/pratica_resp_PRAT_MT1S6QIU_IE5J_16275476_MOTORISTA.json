@@ -1,0 +1,26 @@
+{
+  "token": "PRAT_MT1S6QIU_IE5J",
+  "concursoNome": "INIMUTABA - EDITAL Nº 01/2025 - CONCURSO PÚBLICO",
+  "cargo": "MOTORISTA",
+  "avaliador": "GIOVANNI HOTT",
+  "turma": "23.08.2026 · 10h00",
+  "candidato": {
+    "inscricao": "16275476",
+    "nome": "ORLANDO JÚNIOR SALDANHA DE MATOS",
+    "cargo": "103 - MOTORISTA",
+    "data": "23.08.2026",
+    "horario": "10h00"
+  },
+  "cnhApresentada": true,
+  "resultadoFinal": null,
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MT1S6QIU_IE5J_16275476_MOTORISTA.jpg",
+  "itensMarcados": [
+    "[media] Uso de marcha desapropriada para a velocidade. (x1)",
+    "[leve] Manobra incorreta de baliza (uma tentativa). (x1)"
+  ],
+  "pontos": 8.5,
+  "eliminado": false,
+  "apto": true,
+  "observacoes": "",
+  "enviadoEm": "2026-08-23T14:06:55.367Z"
+}
