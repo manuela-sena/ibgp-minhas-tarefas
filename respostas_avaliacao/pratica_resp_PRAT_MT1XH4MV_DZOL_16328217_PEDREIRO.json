@@ -1,0 +1,32 @@
+{
+  "token": "PRAT_MT1XH4MV_DZOL",
+  "concursoNome": "SAE PASSOS - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "cargo": "PEDREIRO",
+  "avaliador": "CHARLEI MAURO DE LIMA",
+  "turma": "23.08.2026 · 10H00MIN",
+  "candidato": {
+    "inscricao": "16328217",
+    "nome": "PAULO HENRIQUE TEODORO SILVA",
+    "cargo": "104 - PEDREIRO",
+    "data": "23.08.2026",
+    "horario": "10H00MIN"
+  },
+  "cnhApresentada": null,
+  "resultadoFinal": "APTO",
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MT1XH4MV_DZOL_16328217_PEDREIRO.jpg",
+  "itensMarcados": [
+    "Capacidade de envolvimento, responsabilidade e comprometimento. — RS (0.4 pts)",
+    "Iniciativa, interesse, criatividade e proatividade. — RS (0.4 pts)",
+    "Hábitos de Segurança do Trabalho (utilização de equipamentos de EPI e EPC) — RS (0.4 pts)",
+    "Responsabilidade e cuidado com materiais e equipamentos. — RS (0.4 pts)",
+    "Organização e limpeza do local de trabalho. — RS (0.4 pts)",
+    "Conhecimento dos processos de trabalho – Organização e Planejamento. — RS (2 pts)",
+    "Qualidade das atividades desempenhadas. — RS (3 pts)",
+    "Resultado final das atividades desempenhadas dentro do tempo determinado para execução da tarefa. — RS (3 pts)"
+  ],
+  "pontos": 10,
+  "eliminado": false,
+  "apto": true,
+  "observacoes": "",
+  "enviadoEm": "2026-08-23T14:14:05.079Z"
+}
