@@ -1,0 +1,26 @@
+{
+  "token": "PRAT_MT1S6QIU_IE5J",
+  "concursoNome": "INIMUTABA - EDITAL Nº 01/2025 - CONCURSO PÚBLICO",
+  "cargo": "MOTORISTA",
+  "avaliador": "MARCIO BISPO",
+  "turma": "23.08.2026 · 07h00",
+  "candidato": {
+    "inscricao": "16281064",
+    "nome": "THIAGO DE SOUZA OLIVEIRA",
+    "cargo": "103 - MOTORISTA",
+    "data": "23.08.2026",
+    "horario": "07h00"
+  },
+  "cnhApresentada": true,
+  "resultadoFinal": null,
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MT1S6QIU_IE5J_16281064_MOTORISTA.jpg",
+  "itensMarcados": [
+    "[media] Uso de marcha desapropriada para a velocidade. (x1)",
+    "[leve] Mudança incorreta de marchas. (x1)"
+  ],
+  "pontos": 8.5,
+  "eliminado": false,
+  "apto": true,
+  "observacoes": "",
+  "enviadoEm": "2026-08-23T12:03:28.603Z"
+}
