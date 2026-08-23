@@ -1,0 +1,23 @@
+{
+  "token": "PRAT_MT1S6QIU_IE5J",
+  "concursoNome": "INIMUTABA - EDITAL Nº 01/2025 - CONCURSO PÚBLICO",
+  "cargo": "MOTORISTA",
+  "avaliador": "MARCIO BISPO",
+  "turma": "23.08.2026 · 13h30",
+  "candidato": {
+    "inscricao": "16304141",
+    "nome": "MARLON HUDSON DINIZ",
+    "cargo": "103 - MOTORISTA",
+    "data": "23.08.2026",
+    "horario": "13h30"
+  },
+  "cnhApresentada": true,
+  "resultadoFinal": null,
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MT1S6QIU_IE5J_16304141_MOTORISTA.jpg",
+  "itensMarcados": [],
+  "pontos": 10,
+  "eliminado": false,
+  "apto": true,
+  "observacoes": "",
+  "enviadoEm": "2026-08-23T17:08:31.840Z"
+}
