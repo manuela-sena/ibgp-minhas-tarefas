@@ -1,0 +1,25 @@
+{
+  "token": "PRAT_MT1S6QIU_IE5J",
+  "concursoNome": "INIMUTABA - EDITAL Nº 01/2025 - CONCURSO PÚBLICO",
+  "cargo": "MOTORISTA",
+  "avaliador": "GIOVANNI HOTT",
+  "turma": "23.08.2026 · 13h30",
+  "candidato": {
+    "inscricao": "16296203",
+    "nome": "ROBSON SOUZA SILVA",
+    "cargo": "103 - MOTORISTA",
+    "data": "23.08.2026",
+    "horario": "13h30"
+  },
+  "cnhApresentada": true,
+  "resultadoFinal": null,
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MT1S6QIU_IE5J_16296203_MOTORISTA.jpg",
+  "itensMarcados": [
+    "[media] Uso de marcha desapropriada para a velocidade. (x1)"
+  ],
+  "pontos": 9,
+  "eliminado": false,
+  "apto": true,
+  "observacoes": "",
+  "enviadoEm": "2026-08-23T17:16:27.857Z"
+}
