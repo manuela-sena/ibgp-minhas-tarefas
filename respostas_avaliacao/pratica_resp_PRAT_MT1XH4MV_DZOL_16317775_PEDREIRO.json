@@ -1,0 +1,32 @@
+{
+  "token": "PRAT_MT1XH4MV_DZOL",
+  "concursoNome": "SAE PASSOS - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "cargo": "PEDREIRO",
+  "avaliador": "CHARLEI MAURO DE LIMA",
+  "turma": "23.08.2026 · 10H00MIN",
+  "candidato": {
+    "inscricao": "16317775",
+    "nome": "ALEX GONÇALVES DA SILVA",
+    "cargo": "104 - PEDREIRO",
+    "data": "23.08.2026",
+    "horario": "10H00MIN"
+  },
+  "cnhApresentada": null,
+  "resultadoFinal": "APTO",
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MT1XH4MV_DZOL_16317775_PEDREIRO.jpg",
+  "itensMarcados": [
+    "Capacidade de envolvimento, responsabilidade e comprometimento. — RS (0.4 pts)",
+    "Iniciativa, interesse, criatividade e proatividade. — RS (0.4 pts)",
+    "Hábitos de Segurança do Trabalho (utilização de equipamentos de EPI e EPC) — RS (0.4 pts)",
+    "Responsabilidade e cuidado com materiais e equipamentos. — RS (0.4 pts)",
+    "Organização e limpeza do local de trabalho. — RS (0.4 pts)",
+    "Conhecimento dos processos de trabalho – Organização e Planejamento. — RI (1 pts)",
+    "Qualidade das atividades desempenhadas. — RI (1.5 pts)",
+    "Resultado final das atividades desempenhadas dentro do tempo determinado para execução da tarefa. — RI (1.5 pts)"
+  ],
+  "pontos": 6,
+  "eliminado": false,
+  "apto": true,
+  "observacoes": "",
+  "enviadoEm": "2026-08-23T13:58:28.814Z"
+}
