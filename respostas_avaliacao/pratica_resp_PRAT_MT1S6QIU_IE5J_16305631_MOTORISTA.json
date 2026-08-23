@@ -1,0 +1,27 @@
+{
+  "token": "PRAT_MT1S6QIU_IE5J",
+  "concursoNome": "INIMUTABA - EDITAL Nº 01/2025 - CONCURSO PÚBLICO",
+  "cargo": "MOTORISTA",
+  "avaliador": "MARCIO BISPO",
+  "turma": "23.08.2026 · 07h00",
+  "candidato": {
+    "inscricao": "16305631",
+    "nome": "LUAN CARVALHO PEREIRA",
+    "cargo": "103 - MOTORISTA",
+    "data": "23.08.2026",
+    "horario": "07h00"
+  },
+  "cnhApresentada": true,
+  "resultadoFinal": null,
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MT1S6QIU_IE5J_16305631_MOTORISTA.jpg",
+  "itensMarcados": [
+    "[media] Uso de marcha desapropriada para a velocidade. (x2)",
+    "[media] Apoio do pé no pedal da embreagem com o veículo engrenado e em movimento. (x1)",
+    "[media] Controle incorreto de embreagem. (x1)"
+  ],
+  "pontos": 6,
+  "eliminado": false,
+  "apto": true,
+  "observacoes": "",
+  "enviadoEm": "2026-08-23T11:48:40.803Z"
+}
