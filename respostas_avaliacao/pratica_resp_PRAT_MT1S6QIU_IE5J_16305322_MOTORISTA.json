@@ -1,0 +1,29 @@
+{
+  "token": "PRAT_MT1S6QIU_IE5J",
+  "concursoNome": "INIMUTABA - EDITAL Nº 01/2025 - CONCURSO PÚBLICO",
+  "cargo": "MOTORISTA",
+  "avaliador": "GIOVANNI HOTT",
+  "turma": "23.08.2026 · 07h00",
+  "candidato": {
+    "inscricao": "16305322",
+    "nome": "JUSSARA DE ÁVILA AZEVEDO",
+    "cargo": "103 - MOTORISTA",
+    "data": "23.08.2026",
+    "horario": "07h00"
+  },
+  "cnhApresentada": true,
+  "resultadoFinal": null,
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MT1S6QIU_IE5J_16305322_MOTORISTA.jpg",
+  "itensMarcados": [
+    "[grave] Não utilizou cinto de segurança. (x1)",
+    "[grave] Provocar movimentos irregulares durante o teste, sem motivo justificado, ou interromper o funcionamento do motor sem justa razão, após o início do teste. (x1)",
+    "[media] Uso de marcha desapropriada para a velocidade. (x1)",
+    "[leve] Mudança incorreta de marchas. (x1)",
+    "[leve] Manobra incorreta de baliza (uma tentativa). (x1)"
+  ],
+  "pontos": 4,
+  "eliminado": false,
+  "apto": false,
+  "observacoes": "",
+  "enviadoEm": "2026-08-23T11:34:19.409Z"
+}
