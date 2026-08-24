@@ -797,22 +797,6 @@ function hideErros(){
 
 function v(id){ return document.getElementById(id)?.value?.trim(); }
 
-function showErros(lista){
-  let el = document.getElementById('alert-erros');
-  if(!el){
-    el = document.createElement('div');
-    el.id = 'alert-erros';
-    el.className = 'alert alert-error';
-    document.querySelector('#page-'+currentStep+' .btn-nav').before(el);
-  }
-  el.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> <div><strong>Corrija os campos:</strong><ul style="margin-top:4px;padding-left:16px">' + lista.map(e=>`<li>${e}</li>`).join('') + '</ul></div>';
-  el.scrollIntoView({behavior:'smooth', block:'nearest'});
-}
-
-function hideErros(){
-  document.getElementById('alert-erros')?.remove();
-}
-
 // ── SALAS ─────────────────────────────────────────────────────────────
 function addSala(){
   salaCount++;
