@@ -8441,14 +8441,18 @@ async function processarAlocacao(){
             const insc = String(r['INSCRIÇÃO']||'').trim();
             if(!insc) return;
             totalSolicitantes++;
-            const resultado = String(r['RESULTADO']||'').trim().toUpperCase();
-            if(resultado === 'DEFERIDA'){
+            const resultadoOriginal = String(r['RESULTADO']||'').trim();
+            const resultado = resultadoOriginal.toUpperCase();
+            // Aceita tanto deferimento total quanto parcial — só INDEFERIDA (e variações
+            // como "NÃO DEFERIDA") ficam de fora.
+            if(resultado.startsWith('DEFERIDA')){
               const atendCol = String(r['ATENDIMENTO ESPECIAL']||'').trim();
               const justif = String(r['JUSTIFICATIVA']||'').trim();
               const inferido = KEYWORDS_ATENDIMENTO.filter(k=>justif.toUpperCase().includes(k)).join(', ');
               deferidos[insc] = {
                 atendimento: atendCol || inferido,
                 justificativa: justif,
+                resultado: resultadoOriginal || 'Deferida',
               };
             }
           });
@@ -8461,6 +8465,7 @@ async function processarAlocacao(){
           const def = deferidos[insc];
           c['ATENDIMENTO ESPECIAL'] = def ? def.atendimento : '';
           c['_justificativaEspecial'] = def ? def.justificativa : '';
+          c['_resultadoEspecial'] = def ? def.resultado : '';
         });
 
         const resultado = executarMotorAlocacao(candidatos, enviadas);
@@ -8869,6 +8874,7 @@ function mapCandidato(c){
     'DATA NASCIMENTO': c['DATA NASCIMENTO']||'', CIDADE: c['CIDADE']||'', STATUS: c['STATUS']||'',
     'ATENDIMENTO ESPECIAL': (c._atendimentos && c._atendimentos.length) ? c._atendimentos.join(', ') : '-',
     JUSTIFICATIVA: c['_justificativaEspecial']||'',
+    RESULTADO_ESPECIAL: c['_resultadoEspecial']||'',
   };
 }
 
@@ -8952,7 +8958,7 @@ async function gerarPlanilhaAlocacao(resultado, escolasEnviadas){
   const atEspecialRows = especiais.map(a=>({
     'INSCRIÇÃO': a['INSCRIÇÃO'], 'CANDIDATO': a['CANDIDATO'], 'DATA DE NASCIMENTO': a['DATA NASCIMENTO'],
     'CARGO': a['CARGO'], 'STATUS DE PAGAMENTO': a['STATUS'], 'ATENDIMENTO ESPECIAL': a['ATENDIMENTO ESPECIAL'],
-    'RESULTADO': 'DEFERIDA', 'JUSTIFICATIVA': a['JUSTIFICATIVA'],
+    'RESULTADO': a['RESULTADO_ESPECIAL'] || 'DEFERIDA', 'JUSTIFICATIVA': a['JUSTIFICATIVA'],
   }));
   criarAba('AT ESPECIAL', atEspecialRows,
     ['INSCRIÇÃO','CANDIDATO','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO','ATENDIMENTO ESPECIAL','RESULTADO','JUSTIFICATIVA']);
