@@ -1,11 +1,142 @@
 {
   "token": "ESC_MT33ALGT_5X9H",
-  "criadoEm": "2026-08-21T15:13:49.613Z",
+  "enviadoEm": "2026-08-24T18:37:57.248Z",
+  "protocolo": "ESC_MT33ALGT_5X9H_1787596677248",
   "concurso": {
     "concurso": "BRUMADINHO - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
     "municipio": "BRUMADINHO/MG",
     "dataProva": "30/08/2026",
     "escola": "E.M. PADRE MACHADO",
     "idEscola": "ESC_MT33ALGT_5X9H"
-  }
+  },
+  "instituicao": {
+    "nome": "E.M. PADRE MACHADO",
+    "cnpj": "26.634.292/0001-08",
+    "razao": "CAIXA ESCOLAR PADRE MACHADO",
+    "endereco": "RUA AROEIRA",
+    "numero": "40",
+    "complemento": "",
+    "bairro": "SÃO SEBASTIÃO",
+    "cidade": "BRUMADINHO",
+    "uf": "MG",
+    "cep": "32480-086",
+    "responsavel": {
+      "nome": "NIKOLY DAS DORES COIMBRA",
+      "cargo": "DIRETORA",
+      "email": "empadremachado@brumadinho.mg.gov.br",
+      "tel": "(31) 97127-1048"
+    },
+    "diretor": {
+      "nome": "NIKOLY DAS DORES COIMBRA",
+      "email": "profnikoly@yahoo.com.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "1",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "1",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "A",
+      "andar": "",
+      "sala": "SALA 01",
+      "capacidade": 22,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "",
+      "sala": "SALA 02",
+      "capacidade": 22,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "",
+      "sala": "SALA 03",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "",
+      "sala": "SALA 04",
+      "capacidade": 27,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "",
+      "sala": "SALA 06",
+      "capacidade": 27,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "",
+      "sala": "SALA 08",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "",
+      "sala": "SALA 09",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "",
+      "sala": "SALA 13 (BIBLIOTECA)",
+      "capacidade": 4,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    }
+  ]
 }
