@@ -8682,7 +8682,9 @@ function executarMotorAlocacao(candidatos, escolas){
   // ── Reservar capacidade térrea suficiente para quem vai precisar dela
   //      nos passos 5/6 (individual, grupo, apenas-térreo), para que o
   //      preenchimento normal (abaixo) não consuma essas vagas antes da hora. ──
-  const precisamTerreo = candidatos.filter(c=>c._terreo).length;
+  // Reserva só para quem NÃO tem sala separada (apenasTerreo) — individual/grupo
+  // agora é alocado por último e não tem mais prioridade nessa reserva.
+  const precisamTerreo = apenasTerreo.length;
   let reservaTerreo = precisamTerreo;
   const reservasTerreo = [];
   for(const s of salasNormais){
@@ -8695,6 +8697,101 @@ function executarMotorAlocacao(candidatos, escolas){
     }
   }
 
+
+  // Salas restritas por sexo não podem usar o ponteiro sequencial comum
+  // (se a sala for pulada por não servir pro candidato atual, ela precisa
+  // continuar disponível pra um candidato do sexo certo mais adiante na
+  // fila — por isso ganham uma passada própria, à parte, antes do resto).
+  const salasRestritasSexo = salasNormais.filter(s=>s.sexo && s.sexo!=='AMBOS');
+  const salasLivresSexo    = salasNormais.filter(s=>!s.sexo || s.sexo==='AMBOS');
+
+  const demaisFila = demais.slice();
+  salasRestritasSexo.forEach(s=>{
+    while(s.capacidadeDisponivel > 0){
+      const idx = demaisFila.findIndex(c=>salaAceitaSexo(s,c));
+      if(idx===-1) break;
+      const c = demaisFila.splice(idx,1)[0];
+      s.capacidadeDisponivel -= 1;
+      alocados.push({...mapCandidato(c), SALA: s.salaBase, ANDAR: s.andar, BLOCO: s.bloco, ESCOLA: s.escola, _tipoSala:'regular'});
+      s.ocupantes.push(c);
+    }
+  });
+
+  let salaAtualIdx = 0;
+  demaisFila.forEach(c=>{
+    let salaEscolhida = null;
+    while(salaAtualIdx < salasLivresSexo.length && salasLivresSexo[salaAtualIdx].capacidadeDisponivel <= 0){
+      salaAtualIdx++;
+    }
+    if(salaAtualIdx < salasLivresSexo.length) salaEscolhida = salasLivresSexo[salaAtualIdx];
+
+    if(salaEscolhida){
+      salaEscolhida.capacidadeDisponivel -= 1;
+      alocados.push({
+        ...mapCandidato(c),
+        SALA: salaEscolhida.salaBase, ANDAR: salaEscolhida.andar, BLOCO: salaEscolhida.bloco, ESCOLA: salaEscolhida.escola,
+        _tipoSala: 'regular'
+      });
+      salaEscolhida.ocupantes.push(c);
+    } else {
+      naoAlocados.push(c);
+    }
+  });
+
+  // ── Sala térrea compartilhável (usada só por quem não é individual/grupo,
+  //      pode ficar junto com candidatos regulares — só precisa ser térreo). ──
+  function alocarEmSalaEspecialOuFallback(c, tipo){
+    let salaEscolhida = null;
+
+    if(tipo==='individual'){
+      salaEscolhida = salasEspeciais.find(s => s.capacidadeOriginal===1 && s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)) && salaAceitaSexo(s,c));
+      if(!salaEscolhida){
+        salaEscolhida = salasEspeciais.find(s => s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)) && salaAceitaSexo(s,c));
+      }
+    } else {
+      salaEscolhida = salasEspeciais.find(s => s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)) && salaAceitaSexo(s,c));
+    }
+
+    let usouSalaEspecial = !!salaEscolhida;
+
+    if(!salaEscolhida){
+      const candidatas = salasNormais
+        .filter(s => s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)) && salaAceitaSexo(s,c))
+        .sort((a,b)=>(capTotalPorEscola[b.escola]-capTotalPorEscola[a.escola]) || (a.capacidadeOriginal - b.capacidadeOriginal));
+      salaEscolhida = candidatas[0] || null;
+    }
+
+    if(!salaEscolhida) return null;
+
+    salaEscolhida.capacidadeDisponivel -= 1;
+    salaEscolhida.ocupantes.push(c);
+    return {salaEscolhida, usouSalaEspecial};
+  }
+
+    // ── Devolver a capacidade térrea reservada só agora, depois de individual e
+  //      grupo já terem sido alocados (sem precisar de térrea, eles não podem
+  //      roubar essa vaga de quem realmente precisa). ──
+  reservasTerreo.forEach(({sala, qtd})=>{ sala.capacidadeDisponivel += qtd; });
+
+  // ── 6. Candidatos que só precisam de sala térrea (sem ser individual/grupo).
+  //      Mesma lógica de prioridade por escola do passo 5. ──
+  apenasTerreo.forEach(c=>{
+    const r = alocarEmSalaEspecialOuFallback(c, 'terreo');
+    if(r){
+      alocados.push({
+        ...mapCandidato(c),
+        SALA: r.salaEscolhida.salaBase, ANDAR: r.salaEscolhida.andar, BLOCO: r.salaEscolhida.bloco, ESCOLA: r.salaEscolhida.escola,
+        _tipoSala: 'terreo', _salaEspecialUsada: r.usouSalaEspecial
+      });
+    } else {
+      naoAlocados.push(c);
+    }
+  });
+
+  // ── 5. Alocar cada grupo exclusivo (individual/grupo) POR ÚLTIMO — depois dos
+  //      candidatos regulares e de quem só precisa de sala térrea, para que o
+  //      atendimento especial que exige sala separada use as vagas que restarem,
+  //      sem tirar prioridade das salas maiores/mais eficientes dos regulares. ──
     // ── 5. Alocar cada grupo exclusivo (individual/grupo) — comparando o custo
   //      de deixar todos JUNTOS numa sala inteira vs. cada um SEPARADO numa
   //      sala individual. Se juntos desperdiçar muito mais vagas do que
@@ -8789,96 +8886,6 @@ function executarMotorAlocacao(candidatos, escolas){
       const nomeSalaFinal = nomeComAbrev(c, s, grp.tipoSala);
       alocados.push({...mapCandidato(c), SALA: nomeSalaFinal, ANDAR: s.andar, BLOCO: s.bloco, ESCOLA: s.escola, _tipoSala: grp.tipoSala, _salaEspecialUsada: true});
     });
-  });
-
-  // Salas restritas por sexo não podem usar o ponteiro sequencial comum
-  // (se a sala for pulada por não servir pro candidato atual, ela precisa
-  // continuar disponível pra um candidato do sexo certo mais adiante na
-  // fila — por isso ganham uma passada própria, à parte, antes do resto).
-  const salasRestritasSexo = salasNormais.filter(s=>s.sexo && s.sexo!=='AMBOS');
-  const salasLivresSexo    = salasNormais.filter(s=>!s.sexo || s.sexo==='AMBOS');
-
-  const demaisFila = demais.slice();
-  salasRestritasSexo.forEach(s=>{
-    while(s.capacidadeDisponivel > 0){
-      const idx = demaisFila.findIndex(c=>salaAceitaSexo(s,c));
-      if(idx===-1) break;
-      const c = demaisFila.splice(idx,1)[0];
-      s.capacidadeDisponivel -= 1;
-      alocados.push({...mapCandidato(c), SALA: s.salaBase, ANDAR: s.andar, BLOCO: s.bloco, ESCOLA: s.escola, _tipoSala:'regular'});
-      s.ocupantes.push(c);
-    }
-  });
-
-  let salaAtualIdx = 0;
-  demaisFila.forEach(c=>{
-    let salaEscolhida = null;
-    while(salaAtualIdx < salasLivresSexo.length && salasLivresSexo[salaAtualIdx].capacidadeDisponivel <= 0){
-      salaAtualIdx++;
-    }
-    if(salaAtualIdx < salasLivresSexo.length) salaEscolhida = salasLivresSexo[salaAtualIdx];
-
-    if(salaEscolhida){
-      salaEscolhida.capacidadeDisponivel -= 1;
-      alocados.push({
-        ...mapCandidato(c),
-        SALA: salaEscolhida.salaBase, ANDAR: salaEscolhida.andar, BLOCO: salaEscolhida.bloco, ESCOLA: salaEscolhida.escola,
-        _tipoSala: 'regular'
-      });
-      salaEscolhida.ocupantes.push(c);
-    } else {
-      naoAlocados.push(c);
-    }
-  });
-
-  // ── Sala térrea compartilhável (usada só por quem não é individual/grupo,
-  //      pode ficar junto com candidatos regulares — só precisa ser térreo). ──
-  function alocarEmSalaEspecialOuFallback(c, tipo){
-    let salaEscolhida = null;
-
-    if(tipo==='individual'){
-      salaEscolhida = salasEspeciais.find(s => s.capacidadeOriginal===1 && s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)) && salaAceitaSexo(s,c));
-      if(!salaEscolhida){
-        salaEscolhida = salasEspeciais.find(s => s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)) && salaAceitaSexo(s,c));
-      }
-    } else {
-      salaEscolhida = salasEspeciais.find(s => s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)) && salaAceitaSexo(s,c));
-    }
-
-    let usouSalaEspecial = !!salaEscolhida;
-
-    if(!salaEscolhida){
-      const candidatas = salasNormais
-        .filter(s => s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)) && salaAceitaSexo(s,c))
-        .sort((a,b)=>(capTotalPorEscola[b.escola]-capTotalPorEscola[a.escola]) || (a.capacidadeOriginal - b.capacidadeOriginal));
-      salaEscolhida = candidatas[0] || null;
-    }
-
-    if(!salaEscolhida) return null;
-
-    salaEscolhida.capacidadeDisponivel -= 1;
-    salaEscolhida.ocupantes.push(c);
-    return {salaEscolhida, usouSalaEspecial};
-  }
-
-    // ── Devolver a capacidade térrea reservada só agora, depois de individual e
-  //      grupo já terem sido alocados (sem precisar de térrea, eles não podem
-  //      roubar essa vaga de quem realmente precisa). ──
-  reservasTerreo.forEach(({sala, qtd})=>{ sala.capacidadeDisponivel += qtd; });
-
-  // ── 6. Candidatos que só precisam de sala térrea (sem ser individual/grupo).
-  //      Mesma lógica de prioridade por escola do passo 5. ──
-  apenasTerreo.forEach(c=>{
-    const r = alocarEmSalaEspecialOuFallback(c, 'terreo');
-    if(r){
-      alocados.push({
-        ...mapCandidato(c),
-        SALA: r.salaEscolhida.salaBase, ANDAR: r.salaEscolhida.andar, BLOCO: r.salaEscolhida.bloco, ESCOLA: r.salaEscolhida.escola,
-        _tipoSala: 'terreo', _salaEspecialUsada: r.usouSalaEspecial
-      });
-    } else {
-      naoAlocados.push(c);
-    }
   });
 
   // ── 7. Varredura final: nenhuma cadeira deve sobrar vazia se ainda houver
