@@ -6882,6 +6882,7 @@ async function verResposta(token){
           <th style="padding:7px 10px;text-align:left">Andar</th>
           <th style="padding:7px 10px;text-align:center">Cap.</th>
           <th style="padding:7px 10px;text-align:center">Turno</th>
+          <th style="padding:7px 10px;text-align:center">Sexo</th>
           <th style="padding:7px 10px;text-align:center">Ar</th>
           <th style="padding:7px 10px;text-align:center">Vent.</th>
         </tr></thead>
@@ -6891,6 +6892,7 @@ async function verResposta(token){
           <td style="padding:6px 10px">${s.andar||'—'}</td>
           <td style="padding:6px 10px;text-align:center;font-weight:700">${s.capacidade}</td>
           <td style="padding:6px 10px;text-align:center">${s.turno==='AMBOS'?'M/T':s.turno==='MANHA'?'M':'T'}</td>
+          <td style="padding:6px 10px;text-align:center">${s.sexo==='F'?'Só mulheres':s.sexo==='M'?'Só homens':'—'}</td>
           <td style="padding:6px 10px;text-align:center">${s.arcond?'✅':'—'}</td>
           <td style="padding:6px 10px;text-align:center">${s.ventilador?'✅':'—'}</td>
         </tr>`).join('')}</tbody>
@@ -6934,6 +6936,7 @@ function editarResposta(){
         <th style="padding:6px 8px;text-align:left">Andar</th>
         <th style="padding:6px 8px;text-align:center">Cap.</th>
         <th style="padding:6px 8px;text-align:center">Turno</th>
+        <th style="padding:6px 8px;text-align:center">Sexo</th>
         <th style="padding:6px 8px;text-align:center">Ar</th>
         <th style="padding:6px 8px;text-align:center">Vent.</th>
         <th></th>
@@ -6947,6 +6950,11 @@ function editarResposta(){
           <option value="MANHA" ${s.turno==='MANHA'?'selected':''}>M</option>
           <option value="TARDE" ${s.turno==='TARDE'?'selected':''}>T</option>
           <option value="AMBOS" ${s.turno==='AMBOS'?'selected':''}>M/T</option>
+        </select></td>
+        <td style="padding:4px;text-align:center"><select data-f="sexo" style="padding:5px;border:1.5px solid #e2e7ef;border-radius:6px" title="Restringe quem pode ser alocado nessa sala">
+          <option value="AMBOS" ${(!s.sexo||s.sexo==='AMBOS')?'selected':''}>Ambos</option>
+          <option value="F" ${s.sexo==='F'?'selected':''}>Só mulheres</option>
+          <option value="M" ${s.sexo==='M'?'selected':''}>Só homens</option>
         </select></td>
         <td style="padding:4px;text-align:center"><input type="checkbox" data-f="arcond" ${s.arcond?'checked':''}></td>
         <td style="padding:4px;text-align:center"><input type="checkbox" data-f="ventilador" ${s.ventilador?'checked':''}></td>
@@ -6977,6 +6985,11 @@ function adicionarSalaEdicao(){
       <option value="TARDE">T</option>
       <option value="AMBOS">M/T</option>
     </select></td>
+    <td style="padding:4px;text-align:center"><select data-f="sexo" style="padding:5px;border:1.5px solid #e2e7ef;border-radius:6px" title="Restringe quem pode ser alocado nessa sala">
+      <option value="AMBOS" selected>Ambos</option>
+      <option value="F">Só mulheres</option>
+      <option value="M">Só homens</option>
+    </select></td>
     <td style="padding:4px;text-align:center"><input type="checkbox" data-f="arcond"></td>
     <td style="padding:4px;text-align:center"><input type="checkbox" data-f="ventilador"></td>
     <td style="padding:4px;text-align:center"><button onclick="this.closest('tr').remove()" style="background:none;border:none;color:#c0392b;cursor:pointer;font-size:14px">🗑</button></td>
@@ -7003,6 +7016,7 @@ async function salvarEdicaoResposta(){
         andar: g('andar').value,
         capacidade: parseInt(g('capacidade').value)||0,
         turno: g('turno').value,
+        sexo: g('sexo') ? g('sexo').value : 'AMBOS',
         arcond: g('arcond').checked,
         ventilador: g('ventilador').checked
       };
@@ -7144,8 +7158,8 @@ async function baixarMapaSalas(){
     const FONTE='Times New Roman';
     const BORDA={top:{style:'thin',color:{argb:'FF000000'}},bottom:{style:'thin',color:{argb:'FF000000'}},left:{style:'thin',color:{argb:'FF000000'}},right:{style:'thin',color:{argb:'FF000000'}}};
 
-    const cols = ['ESCOLA','BLOCO','ANDAR','Nº SALA','CAPACIDADE','TURNO','AR COND.','VENTILADOR'];
-    const LARG = {'ESCOLA':40,'BLOCO':10,'ANDAR':14,'Nº SALA':10,'CAPACIDADE':12,'TURNO':16,'AR COND.':10,'VENTILADOR':11};
+    const cols = ['ESCOLA','BLOCO','ANDAR','Nº SALA','CAPACIDADE','TURNO','SEXO','AR COND.','VENTILADOR'];
+    const LARG = {'ESCOLA':40,'BLOCO':10,'ANDAR':14,'Nº SALA':10,'CAPACIDADE':12,'TURNO':16,'SEXO':14,'AR COND.':10,'VENTILADOR':11};
 
     cols.forEach((c,ci)=>{
       const cell = ws.getCell(1,ci+1);
@@ -7168,6 +7182,7 @@ async function baixarMapaSalas(){
       salas.forEach(s=>{
         const vals = [nomeEsc, s.bloco||'', s.andar||'', s.sala||'', s.capacidade||0,
           s.turno==='AMBOS'?'Manhã e Tarde':s.turno==='MANHA'?'Manhã':'Tarde',
+          s.sexo==='F'?'Só mulheres':s.sexo==='M'?'Só homens':'Ambos',
           s.arcond?'Sim':'Não', s.ventilador?'Sim':'Não'];
         vals.forEach((v,ci)=>{
           const cell = ws.getCell(ri,ci+1);
@@ -8549,7 +8564,7 @@ function executarMotorAlocacao(candidatos, escolas){
         escola: nomeEsc, bloco: s.bloco||'', andar: normalizarAndar(s.andar),
         salaBase: String(s.sala||'').split('\n')[0].trim(), capacidadeOriginal: parseInt(s.capacidade)||0,
         capacidadeDisponivel: parseInt(s.capacidade)||0,
-        turno: s.turno||'AMBOS', ocupantes: [],
+        turno: s.turno||'AMBOS', sexo: (s.sexo==='F'||s.sexo==='M') ? s.sexo : 'AMBOS', ocupantes: [],
         atendimentoEspecial: s.atendimentoEspecial===true || s.atendimentoEspecial==='true',
         explicacaoEspecial: s.explicacaoEspecial||'',
       });
@@ -8587,6 +8602,24 @@ function executarMotorAlocacao(candidatos, escolas){
       const semAcento = a.normalize('NFD').replace(/[̀-ͯ]/g,'');
       return semAcento.includes('TERREA') || semAcento.includes('TERREO');
     });
+  }
+
+  // Algumas salas/escolas são reservadas só para um sexo (definido manualmente
+  // na edição da resposta da escola). Se a sala não tiver restrição (AMBOS),
+  // qualquer candidato pode ocupá-la. Se tiver, só entra quem tem o SEXO
+  // correspondente informado na planilha — candidato sem essa informação
+  // (célula vazia) NÃO entra numa sala restrita, por segurança.
+  function sexoCandidato(c){
+    return (c['SEXO']||'').toString().trim().toUpperCase().charAt(0); // 'M' ou 'F' (ou '' se vazio)
+  }
+  function salaAceitaSexo(s, c){
+    if(!s.sexo || s.sexo==='AMBOS') return true;
+    return sexoCandidato(c) === s.sexo;
+  }
+  function salaAceitaCandidato(s, c){
+    if(!salaAceitaSexo(s, c)) return false;
+    if(c._terreo && !salaEhTerrea(s.andar)) return false;
+    return true;
   }
 
   // ── 3. Ordenar candidatos: maior código cargo → CPF → alfabético ──
@@ -8660,10 +8693,10 @@ function executarMotorAlocacao(candidatos, escolas){
   //      separar (ex: sala de 10 lugares pra 2 pessoas), separa em salas
   //      individuais em vez de reservar uma sala grande à toa. ──
   function menorSalaLivrePara(c, excluidas){
-    let s = salasEspeciais.find(x=>!excluidas.has(x) && x.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(x.andar)));
+    let s = salasEspeciais.find(x=>!excluidas.has(x) && x.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(x.andar)) && salaAceitaSexo(x,c));
     if(s) return s;
     const cands = salasNormais
-      .filter(x=>!excluidas.has(x) && x.ocupantes.length===0 && (!c._terreo || salaEhTerrea(x.andar)))
+      .filter(x=>!excluidas.has(x) && x.ocupantes.length===0 && (!c._terreo || salaEhTerrea(x.andar)) && salaAceitaSexo(x,c))
       .sort((a,b)=>(a.capacidadeOriginal-b.capacidadeOriginal) || (capTotalPorEscola[b.escola]-capTotalPorEscola[a.escola]));
     return cands[0] || null;
   }
@@ -8684,11 +8717,14 @@ function executarMotorAlocacao(candidatos, escolas){
   gruposExclusivos.forEach(grp=>{
     const qtd = grp.candidatos.length;
     const precisaTerreoGrp = grp.candidatos.some(c=>c._terreo);
+    // Sala restrita por sexo só serve pro grupo inteiro se TODOS os candidatos
+    // do grupo tiverem o sexo exigido por ela (senão precisa ser AMBOS).
+    const grupoAceitaSala = (s)=> grp.candidatos.every(c=>salaAceitaSexo(s,c));
 
-    let salaJuntos = salasEspeciais.find(s=>s.capacidadeDisponivel>=qtd && (!precisaTerreoGrp || salaEhTerrea(s.andar)));
+    let salaJuntos = salasEspeciais.find(s=>s.capacidadeDisponivel>=qtd && (!precisaTerreoGrp || salaEhTerrea(s.andar)) && grupoAceitaSala(s));
     if(!salaJuntos){
       const candidatasSala = salasNormais
-        .filter(s=>s.ocupantes.length===0 && (!precisaTerreoGrp || salaEhTerrea(s.andar)))
+        .filter(s=>s.ocupantes.length===0 && (!precisaTerreoGrp || salaEhTerrea(s.andar)) && grupoAceitaSala(s))
         .sort((a,b)=>(a.capacidadeOriginal - b.capacidadeOriginal) || (capTotalPorEscola[b.escola]-capTotalPorEscola[a.escola]));
       salaJuntos = candidatasSala.find(s=>s.capacidadeOriginal>=qtd) || null;
     }
@@ -8741,19 +8777,38 @@ function executarMotorAlocacao(candidatos, escolas){
 
     grp.candidatos.forEach(c=>{
       const s = alocarUmExclusivo(c);
-      if(!s){ naoAlocados.push(mapCandidato(c)); return; }
+      if(!s){ naoAlocados.push(c); return; }
       const nomeSalaFinal = nomeComAbrev(c, s, grp.tipoSala);
       alocados.push({...mapCandidato(c), SALA: nomeSalaFinal, ANDAR: s.andar, BLOCO: s.bloco, ESCOLA: s.escola, _tipoSala: grp.tipoSala, _salaEspecialUsada: true});
     });
   });
 
-let salaAtualIdx = 0;
-  demais.forEach(c=>{
+  // Salas restritas por sexo não podem usar o ponteiro sequencial comum
+  // (se a sala for pulada por não servir pro candidato atual, ela precisa
+  // continuar disponível pra um candidato do sexo certo mais adiante na
+  // fila — por isso ganham uma passada própria, à parte, antes do resto).
+  const salasRestritasSexo = salasNormais.filter(s=>s.sexo && s.sexo!=='AMBOS');
+  const salasLivresSexo    = salasNormais.filter(s=>!s.sexo || s.sexo==='AMBOS');
+
+  const demaisFila = demais.slice();
+  salasRestritasSexo.forEach(s=>{
+    while(s.capacidadeDisponivel > 0){
+      const idx = demaisFila.findIndex(c=>salaAceitaSexo(s,c));
+      if(idx===-1) break;
+      const c = demaisFila.splice(idx,1)[0];
+      s.capacidadeDisponivel -= 1;
+      alocados.push({...mapCandidato(c), SALA: s.salaBase, ANDAR: s.andar, BLOCO: s.bloco, ESCOLA: s.escola, _tipoSala:'regular'});
+      s.ocupantes.push(c);
+    }
+  });
+
+  let salaAtualIdx = 0;
+  demaisFila.forEach(c=>{
     let salaEscolhida = null;
-    while(salaAtualIdx < salasNormais.length && salasNormais[salaAtualIdx].capacidadeDisponivel <= 0){
+    while(salaAtualIdx < salasLivresSexo.length && salasLivresSexo[salaAtualIdx].capacidadeDisponivel <= 0){
       salaAtualIdx++;
     }
-    if(salaAtualIdx < salasNormais.length) salaEscolhida = salasNormais[salaAtualIdx];
+    if(salaAtualIdx < salasLivresSexo.length) salaEscolhida = salasLivresSexo[salaAtualIdx];
 
     if(salaEscolhida){
       salaEscolhida.capacidadeDisponivel -= 1;
@@ -8764,7 +8819,7 @@ let salaAtualIdx = 0;
       });
       salaEscolhida.ocupantes.push(c);
     } else {
-      naoAlocados.push(mapCandidato(c));
+      naoAlocados.push(c);
     }
   });
 
@@ -8774,19 +8829,19 @@ let salaAtualIdx = 0;
     let salaEscolhida = null;
 
     if(tipo==='individual'){
-      salaEscolhida = salasEspeciais.find(s => s.capacidadeOriginal===1 && s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)));
+      salaEscolhida = salasEspeciais.find(s => s.capacidadeOriginal===1 && s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)) && salaAceitaSexo(s,c));
       if(!salaEscolhida){
-        salaEscolhida = salasEspeciais.find(s => s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)));
+        salaEscolhida = salasEspeciais.find(s => s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)) && salaAceitaSexo(s,c));
       }
     } else {
-      salaEscolhida = salasEspeciais.find(s => s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)));
+      salaEscolhida = salasEspeciais.find(s => s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)) && salaAceitaSexo(s,c));
     }
 
     let usouSalaEspecial = !!salaEscolhida;
 
     if(!salaEscolhida){
       const candidatas = salasNormais
-        .filter(s => s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)))
+        .filter(s => s.capacidadeDisponivel>=1 && (!c._terreo || salaEhTerrea(s.andar)) && salaAceitaSexo(s,c))
         .sort((a,b)=>(capTotalPorEscola[b.escola]-capTotalPorEscola[a.escola]) || (a.capacidadeOriginal - b.capacidadeOriginal));
       salaEscolhida = candidatas[0] || null;
     }
@@ -8814,11 +8869,32 @@ let salaAtualIdx = 0;
         _tipoSala: 'terreo', _salaEspecialUsada: r.usouSalaEspecial
       });
     } else {
-      naoAlocados.push(mapCandidato(c));
+      naoAlocados.push(c);
     }
   });
 
-  return {alocados, naoAlocados, salasPool};
+  // ── 7. Varredura final: nenhuma cadeira deve sobrar vazia se ainda houver
+  //      candidato compatível com ela sem sala (mesmas regras de sexo e
+  //      térreo já aplicadas acima). Isso cobre folgas que sobram de passos
+  //      anteriores — por exemplo, capacidade reservada para térreo que foi
+  //      liberada depois que outra etapa já tinha passado por aquela sala. ──
+  const todasSalasOrdenadas = [...salasEspeciais, ...salasNormais].sort((a,b)=>b.capacidadeDisponivel-a.capacidadeDisponivel);
+  for(let i=naoAlocados.length-1; i>=0; i--){
+    const c = naoAlocados[i];
+    const exclusivo = c._individual || c._grupoEspecial;
+    const salaEscolhida = todasSalasOrdenadas.find(s =>
+      s.capacidadeDisponivel > 0 && salaAceitaCandidato(s, c) && (!exclusivo || s.ocupantes.length===0)
+    );
+    if(!salaEscolhida) continue;
+    salaEscolhida.capacidadeDisponivel -= 1;
+    salaEscolhida.ocupantes.push(c);
+    const tipoFinal = c._individual ? 'individual' : c._grupoEspecial ? 'grupo' : c._terreo ? 'terreo' : 'regular';
+    const nomeSalaFinal = exclusivo ? nomeComAbrev(c, salaEscolhida, tipoFinal) : salaEscolhida.salaBase;
+    alocados.push({...mapCandidato(c), SALA: nomeSalaFinal, ANDAR: salaEscolhida.andar, BLOCO: salaEscolhida.bloco, ESCOLA: salaEscolhida.escola, _tipoSala: tipoFinal, _salaEspecialUsada: exclusivo||undefined});
+    naoAlocados.splice(i,1);
+  }
+
+  return {alocados, naoAlocados: naoAlocados.map(mapCandidato), salasPool};
 }
 function mapCandidato(c){
   return {
@@ -8901,9 +8977,10 @@ async function gerarPlanilhaAlocacao(resultado, escolasEnviadas){
   resultado.salasPool.slice().filter(s=>escolasUsadas.has(s.escola)).sort((x,y)=>y.capacidadeOriginal-x.capacidadeOriginal).forEach((s,i)=>{
     acumulado += s.capacidadeOriginal;
     escolasRows.push({'Índice':i+1, 'Nome da Instituição': s.escola, 'Bloco': s.bloco, 'Andar': s.andar,
-      'Nº sala': s.salaBase, 'Capacidade': s.capacidadeOriginal, 'TURNO': s.turno, 'CAP': acumulado, 'Coluna1': i+1});
+      'Nº sala': s.salaBase, 'Capacidade': s.capacidadeOriginal, 'TURNO': s.turno,
+      'SEXO': s.sexo==='F'?'Só mulheres':s.sexo==='M'?'Só homens':'Ambos', 'CAP': acumulado, 'Coluna1': i+1});
   });
-  criarAba('ESCOLAS', escolasRows, ['Índice','Nome da Instituição','Bloco','Andar','Nº sala','Capacidade','TURNO','CAP','Coluna1']);
+  criarAba('ESCOLAS', escolasRows, ['Índice','Nome da Instituição','Bloco','Andar','Nº sala','Capacidade','TURNO','SEXO','CAP','Coluna1']);
 
   // ── AT ESPECIAL (só quem tem atendimento especial deferido) ──
   const especiais = resultado.alocados.filter(a=>a['ATENDIMENTO ESPECIAL'] && a['ATENDIMENTO ESPECIAL']!=='-');
