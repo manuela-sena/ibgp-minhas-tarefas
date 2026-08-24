@@ -6925,6 +6925,7 @@ function editarResposta(){
       <button onclick="this.closest('[style*=fixed]').remove()" style="background:none;border:none;font-size:22px;color:#8a9ab5;cursor:pointer">×</button>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+      <label style="font-size:11px;font-weight:700;color:#8a9ab5;grid-column:1 / -1">Nome da Instituição<input id="edResp-nome" value="${(dados.instituicao?.nome||'').replace(/"/g,'&quot;')}" style="width:100%;margin-top:4px;padding:7px 9px;border:1.5px solid #e2e7ef;border-radius:7px;font-size:13px"></label>
       <label style="font-size:11px;font-weight:700;color:#8a9ab5">Endereço<input id="edResp-endereco" value="${(dados.instituicao?.endereco||'').replace(/"/g,'&quot;')}" style="width:100%;margin-top:4px;padding:7px 9px;border:1.5px solid #e2e7ef;border-radius:7px;font-size:13px"></label>
       <label style="font-size:11px;font-weight:700;color:#8a9ab5">Responsável<input id="edResp-responsavel" value="${(dados.instituicao?.responsavel?.nome||'').replace(/"/g,'&quot;')}" style="width:100%;margin-top:4px;padding:7px 9px;border:1.5px solid #e2e7ef;border-radius:7px;font-size:13px"></label>
       <label style="font-size:11px;font-weight:700;color:#8a9ab5">Telefone<input id="edResp-tel" value="${(dados.instituicao?.responsavel?.tel||'').replace(/"/g,'&quot;')}" style="width:100%;margin-top:4px;padding:7px 9px;border:1.5px solid #e2e7ef;border-radius:7px;font-size:13px"></label>
@@ -7007,6 +7008,7 @@ async function salvarEdicaoResposta(){
     const info = window._respAtual;
     const token = info.token, dados = info.dados;
     dados.instituicao = dados.instituicao || {};
+    dados.instituicao.nome = document.getElementById('edResp-nome').value;
     dados.instituicao.endereco = document.getElementById('edResp-endereco').value;
     dados.instituicao.responsavel = dados.instituicao.responsavel || {};
     dados.instituicao.responsavel.nome = document.getElementById('edResp-responsavel').value;
