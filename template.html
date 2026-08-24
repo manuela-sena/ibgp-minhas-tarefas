@@ -6883,6 +6883,7 @@ async function verResposta(token){
           <th style="padding:7px 10px;text-align:center">Cap.</th>
           <th style="padding:7px 10px;text-align:center">Turno</th>
           <th style="padding:7px 10px;text-align:center">Sexo</th>
+          <th style="padding:7px 10px;text-align:center">Atend. Especial</th>
           <th style="padding:7px 10px;text-align:center">Ar</th>
           <th style="padding:7px 10px;text-align:center">Vent.</th>
         </tr></thead>
@@ -6893,6 +6894,7 @@ async function verResposta(token){
           <td style="padding:6px 10px;text-align:center;font-weight:700">${s.capacidade}</td>
           <td style="padding:6px 10px;text-align:center">${s.turno==='AMBOS'?'M/T':s.turno==='MANHA'?'M':'T'}</td>
           <td style="padding:6px 10px;text-align:center">${s.sexo==='F'?'Só mulheres':s.sexo==='M'?'Só homens':'—'}</td>
+          <td style="padding:6px 10px;text-align:center">${(s.atendimentoEspecial===true||s.atendimentoEspecial==='true')?'✅ Sim':'—'}</td>
           <td style="padding:6px 10px;text-align:center">${s.arcond?'✅':'—'}</td>
           <td style="padding:6px 10px;text-align:center">${s.ventilador?'✅':'—'}</td>
         </tr>`).join('')}</tbody>
@@ -6937,6 +6939,7 @@ function editarResposta(){
         <th style="padding:6px 8px;text-align:center">Cap.</th>
         <th style="padding:6px 8px;text-align:center">Turno</th>
         <th style="padding:6px 8px;text-align:center">Sexo</th>
+        <th style="padding:6px 8px;text-align:center">Atend. Especial</th>
         <th style="padding:6px 8px;text-align:center">Ar</th>
         <th style="padding:6px 8px;text-align:center">Vent.</th>
         <th></th>
@@ -6956,6 +6959,7 @@ function editarResposta(){
           <option value="F" ${s.sexo==='F'?'selected':''}>Só mulheres</option>
           <option value="M" ${s.sexo==='M'?'selected':''}>Só homens</option>
         </select></td>
+        <td style="padding:4px;text-align:center"><input type="checkbox" data-f="especial" ${(s.atendimentoEspecial===true||s.atendimentoEspecial==='true')?'checked':''} title="Marque se esta sala pode ser usada para alocar candidatos com atendimento especial (ex: biblioteca, laboratório, sala multimídia)"></td>
         <td style="padding:4px;text-align:center"><input type="checkbox" data-f="arcond" ${s.arcond?'checked':''}></td>
         <td style="padding:4px;text-align:center"><input type="checkbox" data-f="ventilador" ${s.ventilador?'checked':''}></td>
         <td style="padding:4px;text-align:center"><button onclick="this.closest('tr').remove()" style="background:none;border:none;color:#c0392b;cursor:pointer;font-size:14px">🗑</button></td>
@@ -6990,6 +6994,7 @@ function adicionarSalaEdicao(){
       <option value="F">Só mulheres</option>
       <option value="M">Só homens</option>
     </select></td>
+    <td style="padding:4px;text-align:center"><input type="checkbox" data-f="especial" title="Marque se esta sala pode ser usada para alocar candidatos com atendimento especial (ex: biblioteca, laboratório, sala multimídia)"></td>
     <td style="padding:4px;text-align:center"><input type="checkbox" data-f="arcond"></td>
     <td style="padding:4px;text-align:center"><input type="checkbox" data-f="ventilador"></td>
     <td style="padding:4px;text-align:center"><button onclick="this.closest('tr').remove()" style="background:none;border:none;color:#c0392b;cursor:pointer;font-size:14px">🗑</button></td>
@@ -7017,6 +7022,7 @@ async function salvarEdicaoResposta(){
         capacidade: parseInt(g('capacidade').value)||0,
         turno: g('turno').value,
         sexo: g('sexo') ? g('sexo').value : 'AMBOS',
+        atendimentoEspecial: g('especial') ? g('especial').checked : false,
         arcond: g('arcond').checked,
         ventilador: g('ventilador').checked
       };
