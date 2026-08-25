@@ -8309,6 +8309,21 @@ const MESMA_SALA_GRUPO = ['PROVA AMPLIADA','SALA AMAMENTAÇÃO','TEMPO ADICIONAL
 const SEM_RESTRICAO = ['CADEIRA SEPARADA','CADEIRA CANHOTO','CADEIRA PARA CANHOTO','APOIO DE PÉ','PRÓTESE AUDITIVA','BOMBA DE INSULINA'];
 const KEYWORDS_ATENDIMENTO = [...SALA_INDIVIDUAL, ...MESMA_SALA_GRUPO, ...SEM_RESTRICAO];
 
+// Extrai da JUSTIFICATIVA os itens efetivamente deferidos, no texto original
+// do próprio parecer (não uma palavra-chave genérica). A justificativa segue
+// a mesma numeração dos itens pedidos na coluna ATENDIMENTO ESPECIAL
+// (ex: "2 - Realização das provas após às 18 horas..."), então cada item
+// numerado é extraído e devolvido sem o prefixo de número.
+function itensDeJustificativa(justif){
+  if(!justif) return [];
+  const partes = justif.split(/\r?\n|(?=\d+\s*[-–.)]\s*\S)/)
+    .map(s=>s.trim())
+    .filter(Boolean);
+  return partes
+    .map(s=>s.replace(/^\s*\d+\s*[-–.)]\s*/,'').trim())
+    .filter(s=>s && s.toUpperCase()!=='NÃO' && s.toUpperCase()!=='NAO' && s!=='-');
+}
+
 function abreviarAtendimento(nome){
   const map = {
     'LEDOR':'LEDOR', 'TRANSCRITOR':'TRANSC', 'TRANSCRIÇÃO':'TRANSC', 'SOFTWARE':'SOFTWARE', 'SALA INDIVIDUAL':'IND', 'LIBRAS':'LIBRAS',
@@ -8448,15 +8463,17 @@ async function processarAlocacao(){
             if(resultado.startsWith('DEFERIDA')){
               const atendCol = String(r['ATENDIMENTO ESPECIAL']||'').trim();
               const justif = String(r['JUSTIFICATIVA']||'').trim();
-              const inferido = KEYWORDS_ATENDIMENTO.filter(k=>justif.toUpperCase().includes(k)).join(', ');
               // A coluna ATENDIMENTO ESPECIAL é sempre o que o candidato pediu
               // (autodeclarado) — o que de fato foi deferido (total ou
               // parcialmente) fica descrito na JUSTIFICATIVA, então é sempre
-              // ela a fonte usada. Só recorre à coluna autodeclarada se a
-              // justificativa não tiver nenhuma palavra-chave reconhecível
+              // ela a fonte usada. Extrai os itens numerados da própria
+              // justificativa (no texto original do parecer, não uma palavra-
+              // chave genérica). Só recorre à coluna autodeclarada se a
+              // justificativa não tiver nenhum item numerado reconhecível
               // (pra não perder o atendimento por completo).
+              const itensJustif = itensDeJustificativa(justif);
               deferidos[insc] = {
-                atendimento: inferido || atendCol,
+                atendimento: itensJustif.length ? itensJustif.join(', ') : atendCol,
                 justificativa: justif,
                 resultado: resultadoOriginal || 'Deferida',
               };
