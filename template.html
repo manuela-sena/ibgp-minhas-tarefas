@@ -8449,8 +8449,13 @@ async function processarAlocacao(){
               const atendCol = String(r['ATENDIMENTO ESPECIAL']||'').trim();
               const justif = String(r['JUSTIFICATIVA']||'').trim();
               const inferido = KEYWORDS_ATENDIMENTO.filter(k=>justif.toUpperCase().includes(k)).join(', ');
+              const ehParcial = resultado.includes('PARCIAL');
+              // Deferimento PARCIAL: só vale o que realmente foi aprovado, que
+              // fica descrito na JUSTIFICATIVA — a coluna ATENDIMENTO ESPECIAL
+              // é sempre o que o candidato pediu (autodeclarado), não o que
+              // foi deferido. Deferimento total: aí sim vale o que foi pedido.
               deferidos[insc] = {
-                atendimento: atendCol || inferido,
+                atendimento: ehParcial ? inferido : (atendCol || inferido),
                 justificativa: justif,
                 resultado: resultadoOriginal || 'Deferida',
               };
