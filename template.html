@@ -7259,6 +7259,12 @@ function initAvaliacao(){
 
 async function carregarAvaliacao(){
   const concursoNome = (document.getElementById('inp-aval-concurso')?.value || '').trim();
+  // sel-aval-concurso guarda o ID (estável) do bucket do Planner selecionado no dropdown —
+  // usamos ele como chave principal de busca, porque o nome exibido (concursoNome) é texto
+  // livre que pode ser editado/corrigido no Planner depois que o formulário já foi criado.
+  // Se o nome mudar (mesmo um espaço ou acento), a busca por nome não encontra mais nada e
+  // a tela parece "zerada", mesmo com o cadastro intacto no repositório.
+  const concursoId = (document.getElementById('sel-aval-concurso')?.value || '').trim();
   const el = document.getElementById('aval-content');
   if(!concursoNome){ el.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Digite ou selecione um concurso</div></div>'; return; }
 
@@ -7266,23 +7272,31 @@ async function carregarAvaliacao(){
 
   let configExistente = null;
   let configPraticaExistente = null;
+  let falhaCarregamento = false;
   try{
     const r = await fetch(
       `https://api.github.com/repos/${GH_REPO_ALOC}/contents/respostas_avaliacao`,
       {headers:{'Authorization':'Bearer '+GH_TOKEN_ALOC}}
     );
+    if(!r.ok) falhaCarregamento = true;
     if(r.ok){
       const arquivos = await r.json();
       const lista = Array.isArray(arquivos) ? arquivos : [];
       const configsTaf = lista.filter(a=>a.name.startsWith('taf_config_') && a.name.endsWith('.json'));
       const configsPratica = lista.filter(a=>a.name.startsWith('pratica_config_') && a.name.endsWith('.json'));
+      // casaConfig: por ID primeiro (estável); só cai pro nome se o config antigo
+      // ainda não tiver o ID salvo (cadastros criados antes desta correção).
+      function casaConfig(conteudo){
+        if(concursoId && conteudo.concursoId) return conteudo.concursoId === concursoId;
+        return (conteudo.concursoNome||'').trim().toLowerCase() === concursoNome.toLowerCase();
+      }
       for(const arq of configsTaf){
         try{
           const rc = await fetch(arq.url, {headers:{'Authorization':'Bearer '+GH_TOKEN_ALOC}});
           if(!rc.ok) continue;
           const dc = await rc.json();
           const conteudo = JSON.parse(decodeURIComponent(escape(atob(dc.content.replace(/\n/g,'')))));
-          if((conteudo.concursoNome||'').trim().toLowerCase() === concursoNome.toLowerCase()){
+          if(casaConfig(conteudo)){
             configExistente = {...conteudo, _sha: dc.sha};
             break;
           }
@@ -7294,25 +7308,35 @@ async function carregarAvaliacao(){
           if(!rc.ok) continue;
           const dc = await rc.json();
           const conteudo = JSON.parse(decodeURIComponent(escape(atob(dc.content.replace(/\n/g,'')))));
-          if((conteudo.concursoNome||'').trim().toLowerCase() === concursoNome.toLowerCase()){
+          if(casaConfig(conteudo)){
             configPraticaExistente = {...conteudo, _sha: dc.sha};
             break;
           }
         }catch(e){ /* ignora arquivo com problema e segue */ }
       }
     }
-  }catch(e){ /* segue sem config existente */ }
+  }catch(e){ falhaCarregamento = true; }
+
+  // Se a listagem falhou (rate limit, rede, GitHub fora do ar), NÃO renderiza a
+  // tela como se nada estivesse cadastrado — isso pareceria perda de dados.
+  // Mostra um erro claro e não sobrescreve o estado anterior.
+  if(falhaCarregamento){
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Não foi possível carregar as avaliações</div><div class="empty-desc">Falha ao consultar o repositório (rede ou limite de requisições da API do GitHub). Isso NÃO significa que o cadastro foi perdido — clique em Buscar novamente em alguns instantes.</div></div>`;
+    return;
+  }
 
   window._avalConfig = configExistente || {
-    token: null, _sha: null, criadoEm: null, concursoNome,
+    token: null, _sha: null, criadoEm: null, concursoNome, concursoId,
     avaliadores: [], candidatos: [],
     tabelaPontos: JSON.parse(JSON.stringify(AVAL_TABELA_DEFAULT))
   };
+  if(configExistente) window._avalConfig.concursoId = concursoId || configExistente.concursoId || '';
   window._avalConfigPratica = configPraticaExistente || {
-    token: null, _sha: null, criadoEm: null, concursoNome,
+    token: null, _sha: null, criadoEm: null, concursoNome, concursoId,
     avaliadores: [], candidatos: [],
     criterios: JSON.parse(JSON.stringify(PRATICA_CRITERIOS_DEFAULT))
   };
+  if(configPraticaExistente) window._avalConfigPratica.concursoId = concursoId || configPraticaExistente.concursoId || '';
   window._avalTab = 'taf';
   renderAvaliacaoShell();
 }
@@ -7829,6 +7853,7 @@ async function salvarConfigAvaliacao(){
     criadoEm: cfg.criadoEm,
     atualizadoEm: new Date().toISOString(),
     concursoNome: cfg.concursoNome,
+    concursoId: cfg.concursoId || '',
     avaliadores: cfg.avaliadores,
     candidatos: cfg.candidatos,
     tabelaPontos: cfg.tabelaPontos
@@ -8272,6 +8297,7 @@ async function salvarConfigPratica(){
     criadoEm: cfg.criadoEm,
     atualizadoEm: new Date().toISOString(),
     concursoNome: cfg.concursoNome,
+    concursoId: cfg.concursoId || '',
     avaliadores: cfg.avaliadores,
     candidatos: cfg.candidatos,
     criterios: cfg.criterios
