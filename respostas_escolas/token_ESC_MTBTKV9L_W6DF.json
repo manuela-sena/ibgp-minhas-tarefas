@@ -1,11 +1,202 @@
 {
   "token": "ESC_MTBTKV9L_W6DF",
-  "criadoEm": "2026-08-27T17:51:48.297Z",
+  "enviadoEm": "2026-08-27T18:24:15.478Z",
+  "protocolo": "ESC_MTBTKV9L_W6DF_1787855055479",
   "concurso": {
     "concurso": "MARIANA/MG - EDITAL Nº 01/2026 - PSS",
     "municipio": "MARIANA/MG",
     "dataProva": "13/09/2026",
     "escola": "ESCOLA MUNICIPAL DOM OSCAR DE OLIVEIRA",
     "idEscola": "ESC_MTBTKV9L_W6DF"
-  }
+  },
+  "instituicao": {
+    "nome": "ESCOLA MUNICIPAL DOM OSCAR DE OLIVEIRA",
+    "cnpj": "09.013.022/0006-0",
+    "razao": "ESCOLA MUNICIPAL DOM OACAR DE OLIVEIRA",
+    "endereco": "RUA: PASSAGEM DE MARIANA",
+    "numero": "360",
+    "complemento": "",
+    "bairro": "SANTA RITA",
+    "cidade": "MARIANA",
+    "uf": "MG",
+    "cep": "35420-000",
+    "responsavel": {
+      "nome": "SEBASTIAO GILMAR DA SILVA",
+      "cargo": "VICE- DITETOR",
+      "email": "sgsnps@hotmail.com",
+      "tel": "(31) 99961-9970"
+    },
+    "diretor": {
+      "nome": "SOLANGE MOREIRA DE CASTRO",
+      "email": "domoscar@educacao.mariana.mg.gov.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": false
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "8",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "8",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "SALA 1",
+      "andar": "1° ANDAR",
+      "sala": "SALA 01",
+      "capacidade": 25,
+      "turno": "MANHA",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 2",
+      "andar": "1° ANDAR",
+      "sala": "SALA 02",
+      "capacidade": 25,
+      "turno": "MANHA",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 3",
+      "andar": "1° ANDAR",
+      "sala": "SALA 03",
+      "capacidade": 25,
+      "turno": "MANHA",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 4",
+      "andar": "2° ANDAR",
+      "sala": "SALA 04",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 5",
+      "andar": "2° ANDAR",
+      "sala": "SALA 05",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 6",
+      "andar": "2° ANDAR",
+      "sala": "SALA 06",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 7",
+      "andar": "2° ANDAR",
+      "sala": "SALA 07",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 8",
+      "andar": "2° ANDAR",
+      "sala": "SALA 08",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 9",
+      "andar": "2° ANDAR",
+      "sala": "SALA 09",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 10",
+      "andar": "2° ANDAR",
+      "sala": "SALA 10",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 11",
+      "andar": "2° ANDAR",
+      "sala": "SALA 11",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 12",
+      "andar": "2° ANDAR",
+      "sala": "SALA 12",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 13",
+      "andar": "2° ANDAR",
+      "sala": "SALA 13",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 14",
+      "andar": "2° ANDAR",
+      "sala": "SALA 14",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    }
+  ]
 }
