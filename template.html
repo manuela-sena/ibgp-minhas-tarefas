@@ -6143,6 +6143,9 @@ function processarHomologacao(){
       const isClass = u.includes('CLASS')||u.includes('CASS');
       if(!isClass) return null;
       if(u.includes('PCD')||u.includes('PcD'.toUpperCase())||u.includes('DEFIC')) return 'PCD';
+      // 'VAGAS AFIRMATIVAS' / 'AÇÃO AFIRMATIVA' / etc — checa ANTES do catch-all
+      // de AMPLA, senão cai lá dentro e a reserva nem aparece na homologação.
+      if(u.includes('AFIRMATIV')) return 'VAGAS AFIRMATIVAS';
       if(u.includes('PNP')||u.includes('NEGRO')||u.includes('NEGR')) return 'PNP';
       if(u.includes('INDIG')) return 'INDIGENA';
       if(u.includes('QUILOM')) return 'QUILOMBOLA';
@@ -6155,7 +6158,7 @@ function processarHomologacao(){
     const reservasDetectadas=[];
     const abasJaAdicionadas=new Set();
     // Prioridade: AMPLA primeiro, depois demais
-    const ordemPrioridade=['AMPLA','PCD','PNP','INDIGENA','QUILOMBOLA','TRANS'];
+    const ordemPrioridade=['AMPLA','PCD','VAGAS AFIRMATIVAS','PNP','INDIGENA','QUILOMBOLA','TRANS'];
     const colsPorReserva={};
     todasCols.forEach(col=>{
       const reserva=detectarReserva(col);
