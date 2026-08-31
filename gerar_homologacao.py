@@ -6,11 +6,12 @@ from openpyxl.utils import get_column_letter
 
 # Mapeamento de reservas: nome da aba → coluna de classificação na CF → coluna flag na CF
 RESERVAS = [
-    ("AMPLA",       "CLASS. CARGO AMPLA",  "AMPLA"),
-    ("PCD",         "CLASS. CARGO PcD",    "PCD.1"),
-    ("PNP",         "CLASS. CARGO PNP",    "PN4"),
-    ("INDIGENA",    "CLASS. INDIGENA",     "IND5"),
-    ("QUILOMBOLA",  "CLASS. QUILOMBOLA",   "QUILO6"),
+    ("AMPLA",              "CLASS. CARGO AMPLA",        "AMPLA"),
+    ("PCD",                "CLASS. CARGO PcD",          "PCD.1"),
+    ("PNP",                "CLASS. CARGO PNP",          "PN4"),
+    ("INDIGENA",           "CLASS. INDIGENA",           "IND5"),
+    ("QUILOMBOLA",         "CLASS. QUILOMBOLA",         "QUILO6"),
+    ("VAGAS AFIRMATIVAS",  "CLASS. VAGAS AFIRMATIVAS",  "VAGAFIRM7"),
 ]
 
 def ordem_class(val):

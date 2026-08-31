@@ -21,7 +21,7 @@ CONFIG_DIR = "configs_classificacao"
 
 TIPOS_ETAPA = ["pontuacao", "classificatoria", "binaria"]
 TIPOS_DESEMPATE = ["idoso_60", "maior_nota", "jurado", "idade_maior"]
-POOLS_DISPONIVEIS = ["pcd", "pnp", "indigena", "quilombola"]
+POOLS_DISPONIVEIS = ["pcd", "pnp", "indigena", "quilombola", "vagas afirmativas"]
 
 
 # ── util: github (config) ──────────────────────────────────────────────
