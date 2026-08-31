@@ -1,6 +1,7 @@
 import pandas as pd
 import io
 import re
+import unicodedata
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
@@ -26,20 +27,72 @@ def borda():
     s = Side(border_style='thin', color='000000')
     return Border(top=s, bottom=s, left=s, right=s)
 
+def _norm_col(s):
+    """Normaliza nome de coluna pra comparação: maiúsculo, sem acento, sem
+    quebra de linha/espaço duplicado, e sem a palavra 'CARGO' (alguns editais
+    usam 'CLASS. CARGO PcD', outros só 'CLASS. PcD' — é a mesma coisa)."""
+    s = re.sub(r'\s+', ' ', str(s)).strip().upper()
+    s = ''.join(c for c in unicodedata.normalize('NFKD', s) if not unicodedata.combining(c))
+    s = s.replace('CARGO ', '')
+    return re.sub(r'\s+', ' ', s).strip()
+
+def _ler_classificacao_final(bytes_cf):
+    """Lê a Classificação Final. Alguns editais exportam tudo numa aba única
+    chamada 'CONVOCADOS'; outros exportam uma aba por grupo de escolaridade/
+    cargo (ex: FUNDAMENTAL, MÉDIO, SUPERIOR, CARGO 205, 537...) — cada uma
+    com as mesmas colunas CLASS. AMPLA / CLASS. PcD / etc. Detecta os dois
+    formatos automaticamente e junta tudo num único DataFrame."""
+    todas_abas = pd.read_excel(io.BytesIO(bytes_cf), sheet_name=None, header=1, dtype=str)
+    if 'CONVOCADOS' in todas_abas:
+        abas = {'CONVOCADOS': todas_abas['CONVOCADOS']}
+    else:
+        abas = todas_abas
+
+    partes = []
+    for df in abas.values():
+        if df is None or df.empty:
+            continue
+        df = df.copy()
+        cols = [re.sub(r'\s+', ' ', str(c)).strip() for c in df.columns]
+        # Algumas abas repetem o mesmo título de coluna (ex: 'INÍCIO' aparece
+        # duas vezes, uma pra cada prazo) — isso quebra o pd.concat mais na
+        # frente, então desambigua mantendo a primeira ocorrência com o nome
+        # original e sufixando as repetidas.
+        vistos = {}
+        cols_unicas = []
+        for c in cols:
+            if c not in vistos:
+                vistos[c] = 0
+                cols_unicas.append(c)
+            else:
+                vistos[c] += 1
+                cols_unicas.append(f"{c}__{vistos[c]}")
+        df.columns = cols_unicas
+        if 'INSCRIÇÃO' not in df.columns:
+            continue  # aba sem dados de candidato (ex: aba de instruções)
+        partes.append(df)
+
+    if not partes:
+        raise ValueError("Não encontrei nenhuma aba com coluna INSCRIÇÃO na Classificação Final.")
+
+    df_cf = pd.concat(partes, ignore_index=True, sort=False)
+    df_cf['INSCRIÇÃO'] = df_cf['INSCRIÇÃO'].astype(str).str.strip()
+    return df_cf
+
 def processar_homologacao(bytes_dados, bytes_cf):
     """
     bytes_dados: planilha de dados gerais (qualquer aba usada como base)
     bytes_cf: planilha de classificação final (aba CONVOCADOS, header na linha 2)
     Retorna: bytes do xlsx de homologação
     """
-    # ── Ler classificação final ─────────────────────────────────────
-    df_cf = pd.read_excel(io.BytesIO(bytes_cf), sheet_name='CONVOCADOS', header=1, dtype=str)
-    # Cabeçalhos longos (ex: 'CLASS. VAGAS AFIRMATIVAS') às vezes vêm com quebra
-    # de linha dentro da célula do Excel ('CLASS. VAGAS\nAFIRMATIVAS') — normaliza
-    # qualquer sequência de espaços/quebras de linha pra um único espaço, senão a
-    # comparação com o nome esperado em RESERVAS nunca bate e a aba não é gerada.
-    df_cf.columns = [re.sub(r'\s+', ' ', str(c)).strip() for c in df_cf.columns]
-    df_cf['INSCRIÇÃO'] = df_cf['INSCRIÇÃO'].str.strip()
+    # ── Ler classificação final (aba única 'CONVOCADOS' ou uma aba por
+    #    escolaridade/cargo — ver _ler_classificacao_final) ────────────
+    df_cf = _ler_classificacao_final(bytes_cf)
+    # mapa nome-normalizado -> nome real da coluna, pra achar a coluna certa
+    # mesmo com variações de acento/maiúscula/'CARGO'/quebra de linha entre editais
+    cf_cols_norm = {}
+    for c in df_cf.columns:
+        cf_cols_norm.setdefault(_norm_col(c), c)
 
     # ── Ler planilha de dados (primeira aba disponível como template) ─
     xl_dados = pd.read_excel(io.BytesIO(bytes_dados), sheet_name=None, header=0, dtype=str)
@@ -56,13 +109,17 @@ def processar_homologacao(bytes_dados, bytes_cf):
     wb.remove(wb.active)  # remover aba padrão
 
     for nome_aba, col_class, col_flag in RESERVAS:
-        # Filtrar candidatos desta reserva na CF
-        if col_class not in df_cf.columns:
+        # Filtrar candidatos desta reserva na CF — busca a coluna pelo nome
+        # normalizado, porque editais diferentes escrevem o cabeçalho de
+        # jeitos ligeiramente diferentes (ex: 'CLASS. CARGO PcD' vs
+        # 'CLASS. PcD', com ou sem quebra de linha, com ou sem acento).
+        col_real = cf_cols_norm.get(_norm_col(col_class))
+        if col_real is None:
             continue
-        
+
         # Candidatos que têm classificação nesta reserva (não nulo e não '-')
-        mask = df_cf[col_class].notna() & (~df_cf[col_class].isin(['-','NaN','nan','']))
-        df_reserva_cf = df_cf[mask][['INSCRIÇÃO', col_class, 'CARGO']].copy()
+        mask = df_cf[col_real].notna() & (~df_cf[col_real].isin(['-','NaN','nan','']))
+        df_reserva_cf = df_cf[mask][['INSCRIÇÃO', col_real, 'CARGO']].copy()
         
         if df_reserva_cf.empty:
             continue
