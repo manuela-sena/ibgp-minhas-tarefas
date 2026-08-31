@@ -535,8 +535,16 @@ header[data-testid="stHeader"]{display:none}
 
 # ── PÁGINA DE HOMOLOGAÇÃO ─────────────────────────────────────────────
 if st.session_state.get("pagina") == "homologacao":
-    import sys
+    import sys, importlib
     sys.path.insert(0, "/mount/src/ibgp-minhas-tarefas")
+    # Recarrega o módulo do disco a cada execução — como ele é importado aqui
+    # dentro (não no topo do arquivo), o Python cacheia a PRIMEIRA versão
+    # carregada em sys.modules e simplesmente reutiliza ela nas próximas
+    # execuções, mesmo depois de um novo `git push` mudar o arquivo. Sem o
+    # reload, correções em gerar_homologacao.py não têm efeito até o processo
+    # do Streamlit reiniciar de verdade (o que pode nunca acontecer sozinho).
+    import gerar_homologacao
+    importlib.reload(gerar_homologacao)
     from gerar_homologacao import processar_homologacao
 
     st.markdown("""
