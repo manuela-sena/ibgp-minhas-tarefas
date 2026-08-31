@@ -1,5 +1,6 @@
 import pandas as pd
 import io
+import re
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
@@ -33,7 +34,11 @@ def processar_homologacao(bytes_dados, bytes_cf):
     """
     # ── Ler classificação final ─────────────────────────────────────
     df_cf = pd.read_excel(io.BytesIO(bytes_cf), sheet_name='CONVOCADOS', header=1, dtype=str)
-    df_cf.columns = [str(c).strip() for c in df_cf.columns]
+    # Cabeçalhos longos (ex: 'CLASS. VAGAS AFIRMATIVAS') às vezes vêm com quebra
+    # de linha dentro da célula do Excel ('CLASS. VAGAS\nAFIRMATIVAS') — normaliza
+    # qualquer sequência de espaços/quebras de linha pra um único espaço, senão a
+    # comparação com o nome esperado em RESERVAS nunca bate e a aba não é gerada.
+    df_cf.columns = [re.sub(r'\s+', ' ', str(c)).strip() for c in df_cf.columns]
     df_cf['INSCRIÇÃO'] = df_cf['INSCRIÇÃO'].str.strip()
 
     # ── Ler planilha de dados (primeira aba disponível como template) ─
