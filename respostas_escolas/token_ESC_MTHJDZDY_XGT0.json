@@ -1,11 +1,142 @@
 {
   "token": "ESC_MTHJDZDY_XGT0",
-  "criadoEm": "2026-08-31T17:53:07.942Z",
+  "enviadoEm": "2026-08-31T18:30:49.343Z",
+  "protocolo": "ESC_MTHJDZDY_XGT0_1788201049343",
   "concurso": {
     "concurso": "DE SERRO - EDITAL Nº 01/2026 - PROCESSO SELETIVO SIMPLIFICADO",
     "municipio": "SERRO/MG",
     "dataProva": "13/09/2026",
     "escola": "ESCOLA ESTADUAL LUIZA DE MARILAC",
     "idEscola": "ESC_MTHJDZDY_XGT0"
-  }
+  },
+  "instituicao": {
+    "nome": "ESCOLA ESTADUAL LUIZA DE MARILAC",
+    "cnpj": "",
+    "razao": "",
+    "endereco": "RUA DO ROSÁRIO",
+    "numero": "318",
+    "complemento": "",
+    "bairro": "ROSARIO",
+    "cidade": "SERRO",
+    "uf": "MG",
+    "cep": "39150-000",
+    "responsavel": {
+      "nome": "VERONIQUE SOUSA SILVA",
+      "cargo": "PROFESSORA",
+      "email": "veronique.dolceplus@gmail.com",
+      "tel": "(38) 98801-2272"
+    },
+    "diretor": {
+      "nome": "MARIA DE LOURDES PIRES NUNES NETA RIBEIRO",
+      "email": ""
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "03",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "03",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "01",
+      "andar": "TERREO",
+      "sala": "SALA 04",
+      "capacidade": 32,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "01",
+      "andar": "TERRO",
+      "sala": "SALA 05",
+      "capacidade": 27,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "02",
+      "andar": "TERRO",
+      "sala": "SALA 08",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "02",
+      "andar": "TERRO",
+      "sala": "SALA 09",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "02",
+      "andar": "TERREO",
+      "sala": "SALA 11",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "02",
+      "andar": "TERREO",
+      "sala": "SALA 12",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "02",
+      "andar": "2º ANDAR",
+      "sala": "SALA 13",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "02",
+      "andar": "2º ANDAR",
+      "sala": "SALA 14",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    }
+  ]
 }
