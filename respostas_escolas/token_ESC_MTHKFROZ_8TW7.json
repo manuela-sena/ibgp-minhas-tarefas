@@ -1,11 +1,202 @@
 {
   "token": "ESC_MTHKFROZ_8TW7",
-  "criadoEm": "2026-08-31T18:22:30.899Z",
+  "enviadoEm": "2026-09-01T18:24:58.640Z",
+  "protocolo": "ESC_MTHKFROZ_8TW7_1788287098640",
   "concurso": {
     "concurso": "LAGOA DA PRATA/MG - EDITAL Nº 04/2026 - PSS",
     "municipio": "LAGOA DA PRATA/MG",
     "dataProva": "13/09/2026",
     "escola": "ESCOLA ESTADUAL VIRGINIO PERILLO",
     "idEscola": "ESC_MTHKFROZ_8TW7"
-  }
+  },
+  "instituicao": {
+    "nome": "ESCOLA ESTADUAL VIRGINIO PERILLO",
+    "cnpj": "19.742.865/0001-51",
+    "razao": "CAIXA ESCOLAR VIRGÍNIO PERILLO",
+    "endereco": "AVENIDA JOSÉ BERNARDES MACIEL",
+    "numero": "471",
+    "complemento": "",
+    "bairro": "MARÍLIA",
+    "cidade": "LAGOA DA PRATA",
+    "uf": "MG",
+    "cep": "35590-014",
+    "responsavel": {
+      "nome": "ROBERTO WAGNER DE MIRANDA",
+      "cargo": "DIRETOR",
+      "email": "roberto.miranda@educacao.mg.gov.br",
+      "tel": "(37) 99943-7353"
+    },
+    "diretor": {
+      "nome": "ROBERTO WAGNER DE MIRANDA",
+      "email": "roberto.miranda@educacao.mg.gov.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "1",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "1",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "01",
+      "andar": "",
+      "sala": "SALA 01",
+      "capacidade": 37,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "01",
+      "andar": "",
+      "sala": "SALA 07",
+      "capacidade": 37,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "01",
+      "andar": "",
+      "sala": "SALA 08",
+      "capacidade": 37,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "02",
+      "andar": "",
+      "sala": "SALA 09",
+      "capacidade": 37,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "02",
+      "andar": "",
+      "sala": "SALA 10",
+      "capacidade": 37,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "02",
+      "andar": "",
+      "sala": "SALA 11",
+      "capacidade": 37,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "02",
+      "andar": "",
+      "sala": "SALA 12",
+      "capacidade": 37,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "02",
+      "andar": "",
+      "sala": "SALA 13",
+      "capacidade": 37,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "02",
+      "andar": "",
+      "sala": "SALA 14",
+      "capacidade": 37,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "03",
+      "andar": "",
+      "sala": "SALA 16",
+      "capacidade": 37,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "03",
+      "andar": "",
+      "sala": "SALA 17",
+      "capacidade": 37,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "03",
+      "andar": "",
+      "sala": "SALA 18",
+      "capacidade": 37,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "03",
+      "andar": "",
+      "sala": "SALA 19",
+      "capacidade": 37,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "03",
+      "andar": "",
+      "sala": "SALA 20",
+      "capacidade": 37,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    }
+  ]
 }
