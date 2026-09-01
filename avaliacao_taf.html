@@ -113,6 +113,17 @@
 
   <div id="form-wrap" style="display:none">
 
+    <div id="rascunho-banner" style="display:none" class="card">
+      <div class="card-body" style="padding:14px 16px">
+        <div style="font-size:13px;font-weight:700;color:var(--azul);margin-bottom:4px">📝 Avaliação em andamento encontrada</div>
+        <div id="rascunho-info" style="font-size:12.5px;color:var(--muted);margin-bottom:10px"></div>
+        <div style="display:flex;gap:8px">
+          <button type="button" class="btn-primary" style="width:auto;padding:9px 16px;font-size:12.5px" onclick="continuarRascunho()">Continuar de onde parei</button>
+          <button type="button" class="btn-secondary" style="width:auto;padding:9px 16px;font-size:12.5px" onclick="descartarRascunho()">Começar do zero</button>
+        </div>
+      </div>
+    </div>
+
     <div class="card">
       <div class="card-header">
         <div class="card-title">1. Quem está avaliando</div>
@@ -201,12 +212,12 @@
         </div>
         <div class="form-group">
           <label id="label-valor">Valor obtido<span class="req">*</span></label>
-          <input type="number" step="0.01" id="f-valor" placeholder="0" oninput="atualizarPreview()">
+          <input type="number" step="0.01" id="f-valor" placeholder="0" oninput="atualizarPreview(); atualizarBotaoEnviar();">
         </div>
         <div id="preview-pontos" class="preview-pontos neutro" style="margin-bottom:16px">Informe o valor para calcular a pontuação</div>
         <div class="form-group" style="margin-bottom:0">
           <label>Observações <span style="color:var(--muted);font-weight:400">(opcional)</span></label>
-          <textarea id="f-obs" placeholder="Alguma ocorrência a registrar?"></textarea>
+          <textarea id="f-obs" placeholder="Alguma ocorrência a registrar?" oninput="atualizarBotaoEnviar()"></textarea>
         </div>
       </div>
     </div>
@@ -236,6 +247,7 @@ let CANDIDATOS_TURMA = [];
 let CANDIDATO_SEL = null;
 let SEXO_SEL = null;
 let FOTO_DATA_URL = null; // dataURL jpeg comprimido, ou null
+let _RASCUNHO_PENDENTE = null; // rascunho carregado do localStorage, aguardando o avaliador confirmar se quer continuar
 
 window.onload = async function(){
   TOKEN = new URLSearchParams(window.location.search).get('token') || '';
@@ -284,6 +296,14 @@ function montarForm(){
 
   document.getElementById('loading-inicial').style.display='none';
   document.getElementById('form-wrap').style.display='block';
+
+  // Se o avaliador tinha uma avaliação em andamento (fechou a aba, caiu a conexão,
+  // trocou de app no celular etc.) sem ter enviado, oferece continuar de onde parou.
+  const rascunho = carregarRascunho();
+  if(rascunho && rascunho.candidatoInscricao){
+    _RASCUNHO_PENDENTE = rascunho;
+    mostrarBannerRascunho(rascunho);
+  }
 }
 
 function turmasUnicas(){
@@ -464,6 +484,7 @@ function atualizarBotaoEnviar(){
              document.getElementById('f-turma').value &&
              CANDIDATO_SEL && SEXO_SEL && !!FOTO_DATA_URL;
   document.getElementById('btn-enviar').disabled = !ok;
+  salvarRascunho();
 }
 
 async function enviarAvaliacao(){
@@ -516,6 +537,7 @@ async function enviarAvaliacao(){
       {method:'PUT', headers:{'Authorization':'Bearer '+GH_WRITE_TOKEN,'Content-Type':'application/json'}, body:JSON.stringify(body)});
     if(!r.ok){ const err = await r.json().catch(()=>({})); throw new Error(err.message||'Erro ao enviar'); }
 
+    limparRascunho();
     document.getElementById('success-resumo').textContent =
       `${CANDIDATO_SEL.nome} — ${prova.toUpperCase()} — ` + (calc.eliminado ? 'ELIMINADO' : calc.pontos+' pontos');
     document.getElementById('form-wrap').style.display='none';
@@ -544,6 +566,112 @@ function registrarOutro(){
   atualizarPreview();
   window.scrollTo({top:0, behavior:'smooth'});
 }
+
+// ── RASCUNHO (autosave local) ─────────────────────────────────────────
+// Salva o progresso da avaliação em andamento no localStorage do próprio
+// navegador, pra não perder nada se o avaliador sair da página (fechar a
+// aba, cair a conexão, trocar de app no celular) antes de enviar. É por
+// dispositivo/navegador, não sincroniza entre aparelhos — só o envio final
+// (enviarAvaliacao) vai pro servidor.
+function chaveRascunho(){
+  return 'ibgp_avalTaf_rascunho_' + TOKEN;
+}
+
+function salvarRascunho(){
+  if(!CANDIDATO_SEL) return;
+  const rascunho = {
+    avaliador: document.getElementById('f-avaliador').value,
+    prova: document.getElementById('f-prova').value,
+    turmaKey: document.getElementById('f-turma').value,
+    candidatoInscricao: CANDIDATO_SEL.inscricao,
+    candidatoNome: CANDIDATO_SEL.nome,
+    sexoSel: SEXO_SEL,
+    valor: document.getElementById('f-valor') ? document.getElementById('f-valor').value : '',
+    fotoDataUrl: FOTO_DATA_URL,
+    obs: document.getElementById('f-obs') ? document.getElementById('f-obs').value : '',
+    salvoEm: new Date().toISOString()
+  };
+  try{ localStorage.setItem(chaveRascunho(), JSON.stringify(rascunho)); }
+  catch(e){ /* localStorage cheio (ex: foto grande) — segue sem autosave, não é crítico */ }
+}
+
+function limparRascunho(){
+  try{ localStorage.removeItem(chaveRascunho()); }catch(e){}
+}
+
+function carregarRascunho(){
+  try{
+    const raw = localStorage.getItem(chaveRascunho());
+    return raw ? JSON.parse(raw) : null;
+  }catch(e){ return null; }
+}
+
+function mostrarBannerRascunho(rascunho){
+  const banner = document.getElementById('rascunho-banner');
+  const info = document.getElementById('rascunho-info');
+  if(!banner || !info) return;
+  let quando = '';
+  try{ quando = new Date(rascunho.salvoEm).toLocaleString('pt-BR'); }catch(e){}
+  info.textContent = `${rascunho.candidatoNome || 'candidato'} — ${(rascunho.prova||'').toUpperCase()}` + (quando ? ' · salvo em '+quando : '');
+  banner.style.display = 'block';
+}
+
+function descartarRascunho(){
+  limparRascunho();
+  _RASCUNHO_PENDENTE = null;
+  const banner = document.getElementById('rascunho-banner');
+  if(banner) banner.style.display = 'none';
+}
+
+function continuarRascunho(){
+  const rascunho = _RASCUNHO_PENDENTE;
+  if(!rascunho) return;
+  const banner = document.getElementById('rascunho-banner');
+  if(banner) banner.style.display = 'none';
+
+  if(rascunho.avaliador){
+    const sel = document.getElementById('f-avaliador');
+    if(Array.from(sel.options).some(o=>o.value===rascunho.avaliador)) sel.value = rascunho.avaliador;
+  }
+
+  if(rascunho.turmaKey){
+    const selTurma = document.getElementById('f-turma');
+    if(Array.from(selTurma.options).some(o=>o.value===rascunho.turmaKey)){
+      selTurma.value = rascunho.turmaKey;
+      onTurmaChange(); // popula CANDIDATOS_TURMA da turma e chama limparCandidato()
+    }
+  }
+
+  const cand = CANDIDATOS_TURMA.find(c => String(c.inscricao) === String(rascunho.candidatoInscricao));
+  if(!cand){ _RASCUNHO_PENDENTE = null; limparRascunho(); return; }
+  selecionarCandidato(cand.inscricao);
+
+  if(rascunho.prova){
+    document.getElementById('f-prova').value = rascunho.prova;
+  }
+  if(rascunho.sexoSel === 'M' || rascunho.sexoSel === 'F'){
+    selecionarSexo(rascunho.sexoSel); // também chama onProvaChange() e atualiza o rótulo do valor
+  } else {
+    onProvaChange();
+  }
+  if(rascunho.valor !== undefined && rascunho.valor !== ''){
+    document.getElementById('f-valor').value = rascunho.valor;
+  }
+  if(rascunho.fotoDataUrl){
+    FOTO_DATA_URL = rascunho.fotoDataUrl;
+    document.getElementById('foto-preview').src = FOTO_DATA_URL;
+    document.getElementById('foto-wrap').style.display = 'none';
+    document.getElementById('foto-preview-wrap').style.display = 'block';
+  }
+  if(rascunho.obs){
+    const obsEl = document.getElementById('f-obs');
+    if(obsEl) obsEl.value = rascunho.obs;
+  }
+  atualizarPreview();
+  atualizarBotaoEnviar();
+  _RASCUNHO_PENDENTE = null;
+}
+
 </script>
 </body>
 </html>

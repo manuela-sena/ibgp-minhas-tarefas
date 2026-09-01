@@ -150,6 +150,17 @@
 
   <div id="form-wrap" style="display:none">
 
+    <div id="rascunho-banner" style="display:none" class="card">
+      <div class="card-body" style="padding:14px 16px">
+        <div style="font-size:13px;font-weight:700;color:var(--azul);margin-bottom:4px">📝 Avaliação em andamento encontrada</div>
+        <div id="rascunho-info" style="font-size:12.5px;color:var(--muted);margin-bottom:10px"></div>
+        <div style="display:flex;gap:8px">
+          <button type="button" class="btn-primary" style="width:auto;padding:9px 16px;font-size:12.5px" onclick="continuarRascunho()">Continuar de onde parei</button>
+          <button type="button" class="btn-secondary" style="width:auto;padding:9px 16px;font-size:12.5px" onclick="descartarRascunho()">Começar do zero</button>
+        </div>
+      </div>
+    </div>
+
     <div class="card">
       <div class="card-header">
         <div class="card-title">1. Quem está avaliando</div>
@@ -239,7 +250,7 @@
         <div id="preview-pontos" class="preview-pontos neutro" style="margin:6px 0 16px">10,0 pontos — nenhuma falta marcada</div>
         <div class="form-group" style="margin-bottom:0">
           <label>Observações <span style="color:var(--muted);font-weight:400">(opcional)</span></label>
-          <textarea id="f-obs" placeholder="Alguma ocorrência a registrar?"></textarea>
+          <textarea id="f-obs" placeholder="Alguma ocorrência a registrar?" oninput="atualizarBotaoEnviar()"></textarea>
         </div>
       </div>
     </div>
@@ -275,6 +286,7 @@ let CANDIDATOS_TURMA = [];
 let CANDIDATO_SEL = null; // {nome, cargos:[{tipo, raw, inscricao, data, horario}, ...]}
 let CNH_SEL = null; // true | false | null (não respondido) — usado só para MOTORISTA/OPERADOR
 let FOTO_DATA_URL = null; // dataURL jpeg comprimido, ou null
+let _RASCUNHO_PENDENTE = null; // rascunho carregado do localStorage, aguardando o avaliador confirmar se quer continuar
 
 window.onload = async function(){
   const params = new URLSearchParams(window.location.search);
@@ -335,6 +347,14 @@ function montarForm(){
 
   document.getElementById('loading-inicial').style.display='none';
   document.getElementById('form-wrap').style.display='block';
+
+  // Se o avaliador tinha uma avaliação em andamento (fechou a aba, caiu a conexão,
+  // trocou de app no celular etc.) sem ter enviado, oferece continuar de onde parou.
+  const rascunho = carregarRascunho();
+  if(rascunho && rascunho.candidatoInscricao){
+    _RASCUNHO_PENDENTE = rascunho;
+    mostrarBannerRascunho(rascunho);
+  }
 }
 
 function buscarCandidato(){
@@ -687,6 +707,7 @@ function atualizarBotaoEnviar(){
   }
   const ok = document.getElementById('f-avaliador').value && CANDIDATO_SEL && CARGO_ATIVO && extraOk && !!FOTO_DATA_URL;
   document.getElementById('btn-enviar').disabled = !ok;
+  salvarRascunho();
 }
 
 function itensMarcadosResumo(){
@@ -784,6 +805,7 @@ async function enviarAvaliacao(){
       {method:'PUT', headers:{'Authorization':'Bearer '+GH_WRITE_TOKEN,'Content-Type':'application/json'}, body:JSON.stringify(body)});
     if(!r.ok){ const err = await r.json().catch(()=>({})); throw new Error(err.message||'Erro ao enviar'); }
 
+    limparRascunho();
     document.getElementById('success-resumo').textContent =
       `${CANDIDATO_SEL.nome} — ${labelCargo(CARGO_ATIVO)} — ` + (calc.eliminado ? 'ELIMINADO' : (calc.apto ? 'APTO' : 'INAPTO') + ' ('+fmtPontos(calc.pontos)+' pts)');
     document.getElementById('form-wrap').style.display='none';
@@ -817,6 +839,144 @@ function registrarOutro(){
   atualizarPreview();
   window.scrollTo({top:0, behavior:'smooth'});
 }
+
+// ── RASCUNHO (autosave local) ─────────────────────────────────────────
+// Salva o progresso da avaliação em andamento no localStorage do próprio
+// navegador, pra não perder nada se o avaliador sair da página (fechar a
+// aba, cair a conexão, trocar de app no celular) antes de enviar. É por
+// dispositivo/navegador, não sincroniza entre aparelhos — só o envio final
+// (enviarAvaliacao) vai pro servidor.
+function chaveRascunho(){
+  return 'ibgp_avalPratica_rascunho_' + TOKEN;
+}
+
+function capturarChecklist(){
+  const estado = {chk:{}, radio:{}, qtd:{}};
+  document.querySelectorAll('#checklist-wrap input[type=checkbox]').forEach(chk=>{
+    const wrap = chk.closest('[id]');
+    if(wrap) estado.chk[wrap.id] = chk.checked;
+  });
+  document.querySelectorAll('#checklist-wrap input[type=radio]').forEach(r=>{
+    if(r.checked) estado.radio[r.name] = r.getAttribute('data-nivel');
+  });
+  document.querySelectorAll('#checklist-wrap .falta-item-qtd[id]').forEach(el=>{
+    const qtd = parseInt(el.getAttribute('data-qtd')||'0', 10);
+    if(qtd > 0) estado.qtd[el.id] = qtd;
+  });
+  return estado;
+}
+
+function restaurarChecklist(estado){
+  if(!estado) return;
+  document.querySelectorAll('#checklist-wrap input[type=checkbox]').forEach(chk=>{
+    const wrap = chk.closest('[id]');
+    if(wrap && estado.chk && estado.chk[wrap.id]){
+      chk.checked = true;
+      wrap.classList.add('checked');
+    }
+  });
+  document.querySelectorAll('#checklist-wrap input[type=radio]').forEach(r=>{
+    if(estado.radio && estado.radio[r.name] === r.getAttribute('data-nivel')){
+      r.checked = true;
+      const opcao = r.closest('.lk-opcao');
+      if(opcao) opcao.classList.add('checked');
+    }
+  });
+  document.querySelectorAll('#checklist-wrap .falta-item-qtd[id]').forEach(el=>{
+    const qtd = (estado.qtd && estado.qtd[el.id]) || 0;
+    if(qtd > 0){
+      el.setAttribute('data-qtd', qtd);
+      el.querySelector('.qtd-valor').textContent = qtd;
+      el.classList.add('checked');
+    }
+  });
+}
+
+function salvarRascunho(){
+  if(!CANDIDATO_SEL || !CARGO_ENTRY_ATIVO || !CARGO_ATIVO) return;
+  const rascunho = {
+    avaliador: document.getElementById('f-avaliador').value,
+    candidatoInscricao: CARGO_ENTRY_ATIVO.inscricao,
+    candidatoNome: CANDIDATO_SEL.nome,
+    cargoAtivo: CARGO_ATIVO,
+    cnhSel: CNH_SEL,
+    fotoDataUrl: FOTO_DATA_URL,
+    obs: document.getElementById('f-obs') ? document.getElementById('f-obs').value : '',
+    checklist: capturarChecklist(),
+    salvoEm: new Date().toISOString()
+  };
+  try{ localStorage.setItem(chaveRascunho(), JSON.stringify(rascunho)); }
+  catch(e){ /* localStorage cheio (ex: foto grande) — segue sem autosave, não é crítico */ }
+}
+
+function limparRascunho(){
+  try{ localStorage.removeItem(chaveRascunho()); }catch(e){}
+}
+
+function carregarRascunho(){
+  try{
+    const raw = localStorage.getItem(chaveRascunho());
+    return raw ? JSON.parse(raw) : null;
+  }catch(e){ return null; }
+}
+
+function mostrarBannerRascunho(rascunho){
+  const banner = document.getElementById('rascunho-banner');
+  const info = document.getElementById('rascunho-info');
+  if(!banner || !info) return;
+  let quando = '';
+  try{ quando = new Date(rascunho.salvoEm).toLocaleString('pt-BR'); }catch(e){}
+  info.textContent = `${rascunho.candidatoNome || 'candidato'} — ${labelCargo(rascunho.cargoAtivo)}` + (quando ? ' · salvo em '+quando : '');
+  banner.style.display = 'block';
+}
+
+function descartarRascunho(){
+  limparRascunho();
+  _RASCUNHO_PENDENTE = null;
+  const banner = document.getElementById('rascunho-banner');
+  if(banner) banner.style.display = 'none';
+}
+
+function continuarRascunho(){
+  const rascunho = _RASCUNHO_PENDENTE;
+  if(!rascunho) return;
+  const banner = document.getElementById('rascunho-banner');
+  if(banner) banner.style.display = 'none';
+
+  const idx = CANDIDATOS_TURMA.findIndex(c => (c.cargos||[]).some(g => String(g.inscricao) === String(rascunho.candidatoInscricao)));
+  if(idx === -1){ _RASCUNHO_PENDENTE = null; limparRascunho(); return; }
+
+  if(rascunho.avaliador){
+    const sel = document.getElementById('f-avaliador');
+    if(Array.from(sel.options).some(o=>o.value===rascunho.avaliador)) sel.value = rascunho.avaliador;
+  }
+
+  selecionarCandidato(idx);
+  if(rascunho.cargoAtivo && CANDIDATO_SEL && (CANDIDATO_SEL.cargos||[]).length > 1){
+    selecionarModalidade(rascunho.cargoAtivo);
+  }
+  // A esta altura ativarFluxoAvaliacao() já rodou (via selecionarCandidato, se só
+  // havia 1 cargo, ou via selecionarModalidade acima) e resetou CNH/foto/checklist —
+  // agora reaplica por cima o que estava salvo no rascunho.
+  if((rascunho.cnhSel === true || rascunho.cnhSel === false) && (CARGO_ATIVO==='MOTORISTA'||CARGO_ATIVO==='OPERADOR')){
+    selecionarCnh(rascunho.cnhSel);
+  }
+  if(rascunho.fotoDataUrl){
+    FOTO_DATA_URL = rascunho.fotoDataUrl;
+    document.getElementById('foto-preview').src = FOTO_DATA_URL;
+    document.getElementById('foto-wrap').style.display = 'none';
+    document.getElementById('foto-preview-wrap').style.display = 'block';
+  }
+  if(rascunho.obs){
+    const obsEl = document.getElementById('f-obs');
+    if(obsEl) obsEl.value = rascunho.obs;
+  }
+  restaurarChecklist(rascunho.checklist);
+  atualizarPreview();
+  atualizarBotaoEnviar();
+  _RASCUNHO_PENDENTE = null;
+}
+
 </script>
 </body>
 </html>
