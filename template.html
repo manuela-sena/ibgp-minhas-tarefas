@@ -4054,7 +4054,9 @@ async function carregarPlanejamentos(){
       porConcurso[t.municipio].push(t);
     }
 
-    const cards = Object.entries(porConcurso).sort((a,b)=>a[0].localeCompare(b[0])).map(([concurso, tasks])=>{
+    const cardsAtivos = [];
+    const cardsArquivados = [];
+    Object.entries(porConcurso).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([concurso, tasks])=>{
       const total = tasks.length;
       const concluidas = tasks.filter(t=>t.concluida||t.percentComplete===100).length;
       const pct = Math.round(concluidas/total*100);
@@ -4109,7 +4111,7 @@ async function carregarPlanejamentos(){
 
       const barColor = atrasadas>0?'#d93b3b':pct===100?'#2e7d52':'#2f6cc4';
 
-      return `
+      const cardHtml = `
 <div class="card card-pad" style="display:flex;flex-direction:column;gap:0">
   <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap">
     <div style="flex:1;min-width:0">
@@ -4132,11 +4134,13 @@ async function carregarPlanejamentos(){
   ${fluxoDisc.length?renderFluxo('📝 Correção Discursiva', fluxoDisc):''}
   ${fluxoOutras.length?renderFluxo('📋 Outras Tarefas', fluxoOutras):''}
 </div>`;
-    }).join('');
+      (pct===100 ? cardsArquivados : cardsAtivos).push(cardHtml);
+    });
+    const cards = cardsAtivos.join('');
 
     el.innerHTML = `
 <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:4px">
-  <div style="font-size:12.5px;color:#8a9ab5">${Object.keys(porConcurso).length} concurso(s) com tarefas operacionais</div>
+  <div style="font-size:12.5px;color:#8a9ab5">${cardsAtivos.length} concurso(s) em andamento${cardsArquivados.length?` · ${cardsArquivados.length} arquivado(s)`:''}</div>
   <div style="display:flex;gap:8px">
     <button class="btn-secondary" onclick="abrirGeracaoRetroativa()" style="height:34px;padding:0 14px;font-size:12.5px">
       <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" style="margin-right:5px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Adicionar concurso existente
@@ -4146,7 +4150,13 @@ async function carregarPlanejamentos(){
     </button>
   </div>
 </div>
-<div style="display:flex;flex-direction:column;gap:14px">${cards}</div>`;
+<div style="display:flex;flex-direction:column;gap:14px">${cards}</div>
+${cardsAtivos.length===0 && cardsArquivados.length>0 ? `<div style="text-align:center;padding:20px;font-size:12.5px;color:#8a9ab5">Nenhum concurso em andamento — todos estão arquivados abaixo.</div>` : ''}
+${cardsArquivados.length ? `
+<details style="margin-top:18px">
+  <summary style="cursor:pointer;padding:10px 2px;font-size:12.5px;font-weight:700;color:#5b6577;user-select:none">📦 Arquivados (${cardsArquivados.length}) — concursos 100% concluídos</summary>
+  <div style="display:flex;flex-direction:column;gap:14px;margin-top:10px;opacity:.75">${cardsArquivados.join('')}</div>
+</details>` : ''}`;
 
   } catch(e){
     const is401 = e.message?.includes('401') || e.message?.includes('Unauthorized');
