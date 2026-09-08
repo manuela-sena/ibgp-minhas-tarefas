@@ -5429,6 +5429,10 @@ function processarInscricoes(){
           const cods=inp.value.split(',').map(c=>c.trim()).filter(Boolean);
           if(cods.length>=2) conjuntos.push(cods);
         });
+        // Mapa cargo→índice do conjunto declarado (usado como EXCEÇÃO da Regra 1 abaixo,
+        // só para os cargos que a própria usuária cadastrar como "mesma prova").
+        const conjuntoDoCargo=new Map();
+        conjuntos.forEach((conj,idx)=>{ conj.forEach(cod=>conjuntoDoCargo.set(cod,idx)); });
 
         const cancelar=new Set();    // duplicatas no mesmo turno (mesma data/horário prova) → muda status para Cancelada, mantém a mais recente
         const retirar=new Set();     // mesma prova → só sai da alocação, status original mantido
@@ -5436,18 +5440,24 @@ function processarInscricoes(){
         todos.forEach(r=>{ r._dt=new Date(r['DATA INSCRICAO']||r['DATA INSCRIÇÃO']||0).getTime()||0; });
 
         // Regra 1: duplicata no mesmo turno (mesma data/horário de prova) → cancela, mantém a mais recente
-        // Importante: a chave inclui o CARGO/CÓDIGO. Cargos com "mesma prova" (mesmo conjunto)
-        // legitimamente compartilham a mesma DATA REALIZAÇÃO PROVA — isso não é uma duplicata
-        // acidental, é o candidato inscrito validamente em dois cargos que usam a mesma prova física.
-        // Só é duplicata de verdade quando é o MESMO cargo repetido (reenvio acidental da inscrição).
         const byTurnoCpf=groupBy(todos,r=>{
           const cpf = (r['CPF']||'').replace(/\D/g,'');
           const turno = (r['DATA REALIZAÇÃO PROVA']||r['DATA PROVA']||'').toString().trim();
-          const cargo = (r['CÓDIGO']||r['CODIGO']||r['CARGO']||'').toString().trim();
-          return `${cpf}__${turno}__${cargo}`;
+          return `${cpf}__${turno}`;
         });
         Object.values(byTurnoCpf).forEach(grp=>{
           const ativos=grp.filter(r=>STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase())).sort((a,b)=>a._dt-b._dt);
+          if(ativos.length<2) return;
+          // Exceção: se são cargos DIFERENTES entre si (nenhum repetido) e TODOS pertencem ao
+          // MESMO conjunto declarado em "Cargos com mesma prova", não é duplicata acidental —
+          // é a candidata inscrita de propósito nos cargos daquele conjunto. Quem cuida desse
+          // caso é a Regra 2 (retira da alocação, sem mexer no status).
+          const cargosGrupo=ativos.map(r=>(r['CÓDIGO']||r['CODIGO']||'').toString().trim());
+          const semCargoRepetido=new Set(cargosGrupo).size===cargosGrupo.length;
+          if(semCargoRepetido){
+            const idxs=cargosGrupo.map(c=>conjuntoDoCargo.has(c)?conjuntoDoCargo.get(c):null);
+            if(idxs.every(i=>i!==null) && new Set(idxs).size===1) return;
+          }
           // Mantém a MAIS RECENTE (última do array ordenado ascendente), cancela as demais
           ativos.slice(0,-1).forEach(r=>cancelar.add(r['INSCRIÇÃO']?.toString()));
         });
