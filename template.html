@@ -5669,7 +5669,13 @@ function processarInscricoes(){
           const colsCond=['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO','ATENDIMENTO ESPECIAL','RESULTADO','JUSTIFICATIVA','LINK','DATA REALIZAÇÃO PROVA'];
           const linhasCond=cond.map(r=>{
             const o=mapRow(r,colsCond);
-            o.LINK=acharLinkUpload(o['INSCRIÇÃO'], n=>n.toUpperCase().includes('CONDIÇÕES ESPECIAIS')||n.toUpperCase().includes('CONDICOES ESPECIAIS'))||o.LINK;
+            o.LINK=acharLinkUpload(o['INSCRIÇÃO'], n=>{
+              // Insensível a acento e singular/plural: "condição especial", "condições especiais",
+              // "condicoes especiais" etc. — o nome real do documento no relatório de upload vem
+              // no singular ("...SOLICITAÇÃO DE CONDIÇÃO ESPECIAL..."), que o match anterior não cobria.
+              const nu=n.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+              return nu.includes('CONDIC')&&nu.includes('ESPECIAL');
+            })||o.LINK;
             if(!o.LINK) o.RESULTADO='INDEFERIDA';
             return o;
           });
