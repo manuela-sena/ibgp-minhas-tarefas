@@ -5436,10 +5436,15 @@ function processarInscricoes(){
         todos.forEach(r=>{ r._dt=new Date(r['DATA INSCRICAO']||r['DATA INSCRIÇÃO']||0).getTime()||0; });
 
         // Regra 1: duplicata no mesmo turno (mesma data/horário de prova) → cancela, mantém a mais recente
+        // Importante: a chave inclui o CARGO/CÓDIGO. Cargos com "mesma prova" (mesmo conjunto)
+        // legitimamente compartilham a mesma DATA REALIZAÇÃO PROVA — isso não é uma duplicata
+        // acidental, é o candidato inscrito validamente em dois cargos que usam a mesma prova física.
+        // Só é duplicata de verdade quando é o MESMO cargo repetido (reenvio acidental da inscrição).
         const byTurnoCpf=groupBy(todos,r=>{
           const cpf = (r['CPF']||'').replace(/\D/g,'');
           const turno = (r['DATA REALIZAÇÃO PROVA']||r['DATA PROVA']||'').toString().trim();
-          return `${cpf}__${turno}`;
+          const cargo = (r['CÓDIGO']||r['CODIGO']||r['CARGO']||'').toString().trim();
+          return `${cpf}__${turno}__${cargo}`;
         });
         Object.values(byTurnoCpf).forEach(grp=>{
           const ativos=grp.filter(r=>STATUS_ATIVOS.includes((r['STATUS']||'').toLowerCase())).sort((a,b)=>a._dt-b._dt);
