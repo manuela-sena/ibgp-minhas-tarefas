@@ -1,11 +1,162 @@
 {
   "token": "ESC_MTSY946R_TEB3",
-  "criadoEm": "2026-09-08T17:34:43.059Z",
+  "enviadoEm": "2026-09-09T14:19:42.422Z",
+  "protocolo": "ESC_MTSY946R_TEB3_1788963582422",
   "concurso": {
     "concurso": "PARACATU/MG GCM - EDITAL Nº 03/2026",
     "municipio": "PARACATU/MG",
     "dataProva": "20/09/2026",
     "escola": "Escola Estadual Neusa Pimentel Barbosa",
     "idEscola": "ESC_MTSY946R_TEB3"
-  }
+  },
+  "instituicao": {
+    "nome": "E.E. NEUSA PIMENTEL BARBOSA",
+    "cnpj": "17.222.990/0001-05",
+    "razao": "CAIXA ESCOLAR NEUSA PIMENTEL BARBOSA",
+    "endereco": "RUA ZITA DA SILVA NEIVA",
+    "numero": "350",
+    "complemento": "ESCOLA",
+    "bairro": "PRADO",
+    "cidade": "PARACATU",
+    "uf": "MG",
+    "cep": "36603-154",
+    "responsavel": {
+      "nome": "ANA CLARA MARQUES GUIMARÃES",
+      "cargo": "SECRETÁRIA E PROFESSORA",
+      "email": "escola.353205@educacao.mg.gov.br",
+      "tel": "(38) 3672-3638"
+    },
+    "diretor": {
+      "nome": "ANA BEATRIZ DA SILVA OLIVEIRA",
+      "email": "ana.silva.oliveira@educacao.mg.gov.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "2",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "2",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 03",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 04",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 05",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 06",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 07",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 08",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 09",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "B",
+      "andar": "1º ANDAR",
+      "sala": "SALA 11",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "B",
+      "andar": "1º ANDAR",
+      "sala": "SALA 12",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "B",
+      "andar": "1º ANDAR",
+      "sala": "SALA 13",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    }
+  ]
 }
