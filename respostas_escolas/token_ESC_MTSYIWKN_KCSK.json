@@ -1,11 +1,162 @@
 {
   "token": "ESC_MTSYIWKN_KCSK",
-  "criadoEm": "2026-09-08T17:42:19.751Z",
+  "enviadoEm": "2026-09-09T17:22:55.362Z",
+  "protocolo": "ESC_MTSYIWKN_KCSK_1788974575362",
   "concurso": {
     "concurso": "PARACATU/MG GCM - EDITAL Nº 03/2026",
     "municipio": "PARACATU/MG",
     "dataProva": "20/09/2026",
     "escola": "Escola Estadual Delano Brochado Adjuto",
     "idEscola": "ESC_MTSYIWKN_KCSK"
-  }
+  },
+  "instituicao": {
+    "nome": "Escola Estadual Delano Brochado Adjuto",
+    "cnpj": "20.583.266/0001-11",
+    "razao": "CAIXA ESCOLAR E E DELANO BROCHADO ADJUTO",
+    "endereco": "RUA JOSÉ TEIXEIRA OLIVEIRA",
+    "numero": "375",
+    "complemento": "",
+    "bairro": "PARACATUZINHO",
+    "cidade": "PARACATU",
+    "uf": "MG",
+    "cep": "38603-318",
+    "responsavel": {
+      "nome": "SIMONE CLARETE DE SOUZA OLIVEIRA",
+      "cargo": "DIRETOR",
+      "email": "simone.clarete@educacao.mg.gov.br",
+      "tel": "(38) 99911-1774"
+    },
+    "diretor": {
+      "nome": "SIMONE CLARETE DE SOUZA OLIVEIRA",
+      "email": "simone.clarete@educacao.mg.gov.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "1",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "1",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "",
+      "andar": "1º ANDAR",
+      "sala": "SALA 08",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "1º ANDAR",
+      "sala": "SALA 07",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "1º ANDAR",
+      "sala": "SALA 06",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "2º ANDAR",
+      "sala": "SALA 21",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "2º ANDAR",
+      "sala": "SALA 20",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "2º ANDAR",
+      "sala": "SALA 19",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "2º ANDAR",
+      "sala": "SALA 18",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "2º ANDAR",
+      "sala": "SALA 17",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "2º ANDAR",
+      "sala": "SALA 16",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "2º ANDAR",
+      "sala": "SALA 14",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    }
+  ]
 }
