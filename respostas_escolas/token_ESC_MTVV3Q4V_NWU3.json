@@ -1,11 +1,132 @@
 {
   "token": "ESC_MTVV3Q4V_NWU3",
-  "criadoEm": "2026-09-10T18:29:51.247Z",
+  "enviadoEm": "2026-09-10T18:47:23.298Z",
+  "protocolo": "ESC_MTVV3Q4V_NWU3_1789066043298",
   "concurso": {
     "concurso": "TOMBOS E CÂMARA DE TOMBOS - EDITAL Nº 01/2026 - CONCURSO PÚBLICO UNIFICADO",
     "municipio": "TOMBOS/MG",
     "dataProva": "27/09/2026",
     "escola": "E.M. EMILIO SOARES",
     "idEscola": "ESC_MTVV3Q4V_NWU3"
-  }
+  },
+  "instituicao": {
+    "nome": "ESCOLA MUNICIPAL EMILIO SOARES",
+    "cnpj": "19.658.814/0001-46",
+    "razao": "ESCOLA MUNICIPAL EMILIO SOARES",
+    "endereco": "AVENIDA IMACULADA CONCEIÇÃO",
+    "numero": "333",
+    "complemento": "",
+    "bairro": "QUEBRA-COPOS",
+    "cidade": "TOMBOS",
+    "uf": "MG",
+    "cep": "36844-000",
+    "responsavel": {
+      "nome": "DIANA PAULA PEREIRA COUTINHO",
+      "cargo": "DIRETOR",
+      "email": "secretariaemiliosoares@gmail.com",
+      "tel": "(32) 99833-1237"
+    },
+    "diretor": {
+      "nome": "DIANA PAULA PEREIRA COUTINHO",
+      "email": "secretariaemiliosoares@gmail.com"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": true,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "1",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "1",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "UNICO",
+      "andar": "1º ANDAR",
+      "sala": "SALA 01",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "UNICO",
+      "andar": "1º ANDAR",
+      "sala": "SALA 02",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "UNICO",
+      "andar": "1º ANDAR",
+      "sala": "SALA 03",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "UNICO",
+      "andar": "TERREO",
+      "sala": "SALA 04",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "UNICO",
+      "andar": "TERREO",
+      "sala": "SALA 05",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "UNICO",
+      "andar": "TERREO",
+      "sala": "SALA 06",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "UNICO",
+      "andar": "TERREO",
+      "sala": "SALA 07",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    }
+  ]
 }
