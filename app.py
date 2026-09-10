@@ -439,8 +439,17 @@ if _nav == "homologacao":
 
 # ── PÁGINA DE RESULTADOS ──────────────────────────────────────────────
 if st.session_state.get("pagina") == "resultados":
-    import sys
+    import sys, importlib
     sys.path.insert(0, "/mount/src/ibgp-minhas-tarefas")
+    # Recarrega o módulo do disco a cada execução — como ele é importado aqui
+    # dentro (não no topo do arquivo), o Python cacheia a PRIMEIRA versão
+    # carregada em sys.modules e simplesmente reutiliza ela nas próximas
+    # execuções, mesmo depois de um novo `git push` mudar o arquivo. Sem o
+    # reload, correções em processar_inscricoes.py não têm efeito até o
+    # processo do Streamlit reiniciar de verdade (o que pode nunca acontecer
+    # sozinho) — mesmo bug já visto e corrigido em gerar_homologacao.py.
+    import processar_inscricoes
+    importlib.reload(processar_inscricoes)
     from processar_inscricoes import processar
 
     st.markdown("""
