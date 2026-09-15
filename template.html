@@ -6899,7 +6899,7 @@ async function verResposta(token){
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
         ${[
-          ['Endereço', [dados.instituicao?.endereco,dados.instituicao?.bairro,dados.instituicao?.cidade].filter(Boolean).join(', ')],
+          ['Endereço', [[dados.instituicao?.endereco,dados.instituicao?.numero].filter(Boolean).join(', '),dados.instituicao?.bairro,dados.instituicao?.cidade].filter(Boolean).join(', ')],
           ['Responsável', dados.instituicao?.responsavel?.nome||'—'],
           ['Telefone', dados.instituicao?.responsavel?.tel||'—'],
           ['E-mail', dados.instituicao?.responsavel?.email||'—'],
