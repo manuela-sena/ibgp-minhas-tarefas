@@ -6960,7 +6960,10 @@ function editarResposta(){
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
       <label style="font-size:11px;font-weight:700;color:#8a9ab5;grid-column:1 / -1">Nome da Instituição<input id="edResp-nome" value="${(dados.instituicao?.nome||'').replace(/"/g,'&quot;')}" style="width:100%;margin-top:4px;padding:7px 9px;border:1.5px solid #e2e7ef;border-radius:7px;font-size:13px"></label>
-      <label style="font-size:11px;font-weight:700;color:#8a9ab5">Endereço<input id="edResp-endereco" value="${(dados.instituicao?.endereco||'').replace(/"/g,'&quot;')}" style="width:100%;margin-top:4px;padding:7px 9px;border:1.5px solid #e2e7ef;border-radius:7px;font-size:13px"></label>
+      <label style="font-size:11px;font-weight:700;color:#8a9ab5">Endereço (rua/av.)<input id="edResp-endereco" value="${(dados.instituicao?.endereco||'').replace(/"/g,'&quot;')}" style="width:100%;margin-top:4px;padding:7px 9px;border:1.5px solid #e2e7ef;border-radius:7px;font-size:13px"></label>
+      <label style="font-size:11px;font-weight:700;color:#8a9ab5">Número<input id="edResp-numero" value="${(dados.instituicao?.numero||'').replace(/"/g,'&quot;')}" style="width:100%;margin-top:4px;padding:7px 9px;border:1.5px solid #e2e7ef;border-radius:7px;font-size:13px"></label>
+      <label style="font-size:11px;font-weight:700;color:#8a9ab5">Bairro<input id="edResp-bairro" value="${(dados.instituicao?.bairro||'').replace(/"/g,'&quot;')}" style="width:100%;margin-top:4px;padding:7px 9px;border:1.5px solid #e2e7ef;border-radius:7px;font-size:13px"></label>
+      <label style="font-size:11px;font-weight:700;color:#8a9ab5">Cidade<input id="edResp-cidade" value="${(dados.instituicao?.cidade||'').replace(/"/g,'&quot;')}" style="width:100%;margin-top:4px;padding:7px 9px;border:1.5px solid #e2e7ef;border-radius:7px;font-size:13px"></label>
       <label style="font-size:11px;font-weight:700;color:#8a9ab5">Responsável<input id="edResp-responsavel" value="${(dados.instituicao?.responsavel?.nome||'').replace(/"/g,'&quot;')}" style="width:100%;margin-top:4px;padding:7px 9px;border:1.5px solid #e2e7ef;border-radius:7px;font-size:13px"></label>
       <label style="font-size:11px;font-weight:700;color:#8a9ab5">Telefone<input id="edResp-tel" value="${(dados.instituicao?.responsavel?.tel||'').replace(/"/g,'&quot;')}" style="width:100%;margin-top:4px;padding:7px 9px;border:1.5px solid #e2e7ef;border-radius:7px;font-size:13px"></label>
       <label style="font-size:11px;font-weight:700;color:#8a9ab5">E-mail<input id="edResp-email" value="${(dados.instituicao?.responsavel?.email||'').replace(/"/g,'&quot;')}" style="width:100%;margin-top:4px;padding:7px 9px;border:1.5px solid #e2e7ef;border-radius:7px;font-size:13px"></label>
@@ -7044,6 +7047,9 @@ async function salvarEdicaoResposta(){
     dados.instituicao = dados.instituicao || {};
     dados.instituicao.nome = document.getElementById('edResp-nome').value;
     dados.instituicao.endereco = document.getElementById('edResp-endereco').value;
+    dados.instituicao.numero = document.getElementById('edResp-numero').value;
+    dados.instituicao.bairro = document.getElementById('edResp-bairro').value;
+    dados.instituicao.cidade = document.getElementById('edResp-cidade').value;
     dados.instituicao.responsavel = dados.instituicao.responsavel || {};
     dados.instituicao.responsavel.nome = document.getElementById('edResp-responsavel').value;
     dados.instituicao.responsavel.tel = document.getElementById('edResp-tel').value;
