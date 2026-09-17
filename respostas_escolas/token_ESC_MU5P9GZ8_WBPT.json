@@ -1,11 +1,132 @@
 {
   "token": "ESC_MU5P9GZ8_WBPT",
-  "criadoEm": "2026-09-17T15:44:03.380Z",
+  "enviadoEm": "2026-09-17T19:24:02.507Z",
+  "protocolo": "ESC_MU5P9GZ8_WBPT_1789673042507",
   "concurso": {
     "concurso": "FARIA LEMOS - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
     "municipio": "CARANGOLA/MG",
     "dataProva": "27/09/2026",
     "escola": "COLÉGIO CONCEITO",
     "idEscola": "ESC_MU5P9GZ8_WBPT"
-  }
+  },
+  "instituicao": {
+    "nome": "COLÉGIO CONCEITO",
+    "cnpj": "07.537.481/0001-18",
+    "razao": "COLÉGIO CIDADE DE CARANGOLA LTDA",
+    "endereco": "RUA THOMAZ GONZAGA",
+    "numero": "95",
+    "complemento": "",
+    "bairro": "SANTA EMILIA",
+    "cidade": "CARANGOLA",
+    "uf": "MG",
+    "cep": "36802-088",
+    "responsavel": {
+      "nome": "PATRÍCIA AQUINO REIS",
+      "cargo": "DIRETOR",
+      "email": "colegioconceitomg@gmail.com",
+      "tel": "(32) 99811-5671"
+    },
+    "diretor": {
+      "nome": "PATRÍCIA AQUINO REIS",
+      "email": "aquinoreis@gmail.com"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": true,
+      "canhoto": true,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": true,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "3",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "3",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "SALA A",
+      "andar": "",
+      "sala": "SALA 1",
+      "capacidade": 23,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "SALA B",
+      "andar": "",
+      "sala": "SALA 2",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "SALA C",
+      "andar": "",
+      "sala": "SALA 3",
+      "capacidade": 27,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "SALA D",
+      "andar": "",
+      "sala": "SALA 4",
+      "capacidade": 26,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "SALA E",
+      "andar": "",
+      "sala": "SALA 5",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "SALA F",
+      "andar": "",
+      "sala": "SALA 6",
+      "capacidade": 29,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "SALA G",
+      "andar": "",
+      "sala": "SALA 7",
+      "capacidade": 34,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    }
+  ]
 }
