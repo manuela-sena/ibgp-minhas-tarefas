@@ -6781,7 +6781,9 @@ function renderEscolas(escolas, concursoNome){
   const nEnviado  = escolas.filter(e=>e._status?.enviado||e.enviadoEm).length;
   const nAcessado = escolas.filter(e=>!e._status?.enviado&&(e._status?.acessos||0)>0).length;
   const nPendente = nTotal - nEnviado - nAcessado;
-  
+  const capacidadeEscolaCalc = (e) => (e.salas||[]).reduce((s,r)=>s+(parseInt(r.capacidade)||0),0);
+  const capTotalSelecionadas = escolas.filter(e=>window._alocSelecionadas.has(e.token)).reduce((s,e)=>s+capacidadeEscolaCalc(e),0);
+
   el.innerHTML = `
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px">
   ${[['Total',nTotal,'#1f4e8c'],['Enviados',nEnviado,'#2e7d52'],['Acessados',nAcessado,'#a06c12'],['Pendentes',nPendente,'#c0322f']]
@@ -6792,8 +6794,8 @@ function renderEscolas(escolas, concursoNome){
 </div>
 
 <div class="card" style="overflow:hidden">
-  <div style="padding:13px 18px;font-size:12.5px;color:#7a869c;border-bottom:1px solid #eef1f6;display:flex;align-items:center;justify-content:space-between">
-    <span>${nTotal} escola(s) cadastrada(s)</span>
+  <div style="padding:13px 18px;font-size:12.5px;color:#7a869c;border-bottom:1px solid #eef1f6;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+    <span>${nTotal} escola(s) cadastrada(s) · <strong style="color:#1f4e8c">Capacidade selecionada: <span id="aloc-cap-total-valor">${capTotalSelecionadas.toLocaleString('pt-BR')}</span> candidatos</strong></span>
     <button class="btn-secondary" style="height:30px;padding:0 12px;font-size:12px" onclick="copiarTodosLinks()">
       📋 Copiar todos os links
     </button>
@@ -6804,6 +6806,7 @@ function renderEscolas(escolas, concursoNome){
         <th style="padding:9px 14px;font-size:11px;font-weight:700;color:#41506b;text-align:center;border-bottom:1px solid #e2e7ef;width:34px"><input type="checkbox" id="chk-aloc-all" title="Selecionar/desmarcar todas para a alocação" onchange="toggleTodasEscolas(this.checked)"></th>
         <th style="padding:9px 14px;font-size:11px;font-weight:700;color:#41506b;text-align:left;border-bottom:1px solid #e2e7ef">ESCOLA</th>
         <th style="padding:9px 14px;font-size:11px;font-weight:700;color:#41506b;text-align:center;border-bottom:1px solid #e2e7ef;white-space:nowrap">STATUS</th>
+        <th style="padding:9px 14px;font-size:11px;font-weight:700;color:#41506b;text-align:center;border-bottom:1px solid #e2e7ef;white-space:nowrap">CAPACIDADE</th>
         <th style="padding:9px 14px;font-size:11px;font-weight:700;color:#41506b;text-align:center;border-bottom:1px solid #e2e7ef;white-space:nowrap">ACESSOS</th>
         <th style="padding:9px 14px;font-size:11px;font-weight:700;color:#41506b;text-align:center;border-bottom:1px solid #e2e7ef;white-space:nowrap">ÚLTIMO ACESSO</th>
         <th style="padding:9px 14px;font-size:11px;font-weight:700;color:#41506b;text-align:right;border-bottom:1px solid #e2e7ef">AÇÕES</th>
@@ -6813,6 +6816,7 @@ function renderEscolas(escolas, concursoNome){
       ${escolas.length ? escolas.map((e,i)=>{
         const enviado  = e._status?.enviado === true || e._status?.enviado === 'true';
         const acessos  = e._status?.acessos||0;
+        const capacidade = capacidadeEscolaCalc(e);
         const ultimoAc = e._status?.ultimoAcesso ? new Date(e._status.ultimoAcesso).toLocaleString('pt-BR') : '—';
         const badge    = enviado 
           ? '<span class="badge-green" style="font-size:10px;padding:2px 8px;border-radius:12px;font-weight:700">✓ Enviado</span>'
@@ -6824,6 +6828,7 @@ function renderEscolas(escolas, concursoNome){
           <td style="padding:10px 14px;text-align:center">${enviado ? `<input type="checkbox" class="chk-aloc-escola" data-token="${e.token}" ${window._alocSelecionadas.has(e.token)?'checked':''} onchange="toggleEscolaSelecionada('${e.token}', this.checked)">` : '<span style="color:#c7cedb">—</span>'}</td>
           <td style="padding:10px 14px;font-size:13px;font-weight:600;color:#1f2a3d">${e.concurso?.escola||e.escola||e.token}</td>
           <td style="padding:10px 14px;text-align:center">${badge}</td>
+          <td style="padding:10px 14px;text-align:center;font-size:13px;color:#41506b;font-weight:600">${enviado ? capacidade.toLocaleString('pt-BR') : '—'}</td>
           <td style="padding:10px 14px;text-align:center;font-size:13px;color:#41506b">${acessos}</td>
           <td style="padding:10px 14px;text-align:center;font-size:12px;color:#8a9ab5">${ultimoAc}</td>
           <td style="padding:10px 14px;text-align:right">
@@ -6834,7 +6839,7 @@ function renderEscolas(escolas, concursoNome){
             </div>
           </td>
         </tr>`;
-      }).join('') : '<tr><td colspan="5" style="padding:32px;text-align:center;color:#8a9ab5">Nenhuma escola cadastrada.</td></tr>'}
+      }).join('') : '<tr><td colspan="7" style="padding:32px;text-align:center;color:#8a9ab5">Nenhuma escola cadastrada.</td></tr>'}
     </tbody>
   </table>
 </div>`;
@@ -8415,6 +8420,7 @@ function toggleTodasEscolas(checked){
     else window._alocSelecionadas.delete(e.token);
   });
   document.querySelectorAll('.chk-aloc-escola').forEach(chk=>{ chk.checked = checked; });
+  atualizarCapacidadeSelecionada();
 }
 
 function toggleEscolaSelecionada(token, checked){
@@ -8425,6 +8431,16 @@ function toggleEscolaSelecionada(token, checked){
   const allChecked = all.length>0 && Array.from(all).every(c=>c.checked);
   const chkAll = document.getElementById('chk-aloc-all');
   if(chkAll) chkAll.checked = allChecked;
+  atualizarCapacidadeSelecionada();
+}
+
+function atualizarCapacidadeSelecionada(){
+  const escolas = window._alocEscolas||[];
+  const sel = window._alocSelecionadas||new Set();
+  const total = escolas.filter(e=>sel.has(e.token))
+    .reduce((s,e)=>s+(e.salas||[]).reduce((s2,r)=>s2+(parseInt(r.capacidade)||0),0), 0);
+  const elVal = document.getElementById('aloc-cap-total-valor');
+  if(elVal) elVal.textContent = total.toLocaleString('pt-BR');
 }
 
 async function excluirEscola(token, nomeEscola){
