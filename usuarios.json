@@ -123,12 +123,12 @@
       "ativo": true
     },
     {
-      "nome_interno": "EXECUÇÃO",
+      "nome_interno": "Execução",
       "aliases": [
         "execução"
       ],
       "perfil": "gestora",
-      "ativo": false
+      "ativo": true
     }
   ]
 }
