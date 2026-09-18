@@ -5894,10 +5894,12 @@ function lerRemarkArquivo_RP(wb, nomeArquivo){
   // manual ou exportação diferente), o que desalinhava a leitura quando os
   // números de linha eram fixos. A linha de matérias é sempre a de cima dela.
   const idxInscricao = aoa.findIndex(row=>String(row[0]||'').trim()==='Inscrição');
+  console.log('🔍 DIAGNÓSTICO REMARK —', nomeArquivo, '— linha Inscrição no índice:', idxInscricao);
   if(idxInscricao<1) return {resultados:new Map(), erro:`"${nomeArquivo}" não parece um arquivo de resultado do Remark/Gravic (não encontrei a linha "Inscrição").`};
   const linhaMaterias=aoa[idxInscricao-1]||[];
   const blocos=[];
   linhaMaterias.forEach((v,c)=>{ if(v&&String(v).trim()) blocos.push({nome:String(v).trim(),col:c}); });
+  console.log('  Matérias encontradas:', blocos.map(b=>b.nome).join(', '));
   if(!blocos.length) return {resultados:new Map(), erro:`"${nomeArquivo}" não parece um arquivo de resultado do Remark/Gravic (não encontrei a linha de matérias).`};
   const geral=blocos[0];
   const materias=blocos.slice(1);
