@@ -1353,7 +1353,7 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
       <div class="card card-pad">
         <label class="form-label">Relatório Geral (.xlsx)</label>
         <input type="file" id="rp-geral-file" accept=".xlsx" class="form-input" style="padding:6px"
-          onchange="carregarRPGeral(this)">
+          onclick="this.value=null" onchange="carregarRPGeral(this)">
         <div id="rp-geral-status" style="margin-top:8px;font-size:12.5px;color:#8a9ab5"></div>
       </div>
       <div id="rp-conjuntos-wrap" style="display:none" class="card card-pad">
@@ -1364,7 +1364,7 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
       <div class="card card-pad">
         <label class="form-label">Resultados do Remark/Gravic (.xlsx) — um arquivo por prova/conjunto de disciplinas</label>
         <input type="file" id="rp-remark-files" accept=".xlsx" multiple class="form-input" style="padding:6px"
-          onchange="carregarRPRemark(this)">
+          onclick="this.value=null" onchange="carregarRPRemark(this)">
         <div id="rp-remark-status" style="margin-top:8px;font-size:12.5px;color:#8a9ab5"></div>
       </div>
       <div id="rp-preview" style="display:none" class="card card-pad">
