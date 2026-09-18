@@ -1,11 +1,172 @@
 {
   "token": "ESC_MU76I25Z_N2QB",
-  "criadoEm": "2026-09-18T16:34:23.735Z",
+  "enviadoEm": "2026-09-18T17:00:23.986Z",
+  "protocolo": "ESC_MU76I25Z_N2QB_1789750823986",
   "concurso": {
     "concurso": "TOMBOS - EDITAL Nº 02/2026 - PROCESSO SELETIVO PÚBLICO",
     "municipio": "PORCIÚNCULA",
     "dataProva": "27/09/2026",
     "escola": "E.M JOÃO FRANCISCO BRAZ",
     "idEscola": "ESC_MU76I25Z_N2QB"
-  }
+  },
+  "instituicao": {
+    "nome": "ASSOCIAÇÃO DE APOIO À ESCOLA ESTADUAL JOÃO FRANCISCO BRAZ",
+    "cnpj": "00.920.107/0001-58",
+    "razao": "ESCOLA MUNICIPAL JOÃO FRANCISCO BRAZ",
+    "endereco": "RUA JOAQUIM MONTEIRO DE CASTRO",
+    "numero": "45",
+    "complemento": "PRÉDIO",
+    "bairro": "JOÃO FRANCISCO BRAZ",
+    "cidade": "PORCIÚNCULA",
+    "uf": "RJ",
+    "cep": "28390-000",
+    "responsavel": {
+      "nome": "VIVIANE BORGES SARMENTO ORLANDO",
+      "cargo": "DIRETORA",
+      "email": "joaofranciscobraz@gmail.com",
+      "tel": "(22) 99829-0925"
+    },
+    "diretor": {
+      "nome": "VIVIANE BORGES SARMENTO ORLANDO",
+      "email": "vivii26@yahoo.com.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": true,
+      "canhoto": false,
+      "dupla": true
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "2",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "3",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 01",
+      "capacidade": 28,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 02",
+      "capacidade": 28,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 03",
+      "capacidade": 28,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 04",
+      "capacidade": 28,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 05",
+      "capacidade": 28,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 06",
+      "capacidade": 28,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 07",
+      "capacidade": 28,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "2º ANDAR",
+      "sala": "SALA 08",
+      "capacidade": 28,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "2º ANDAR",
+      "sala": "SALA 09",
+      "capacidade": 28,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "2º ANDAR",
+      "sala": "SALA 10",
+      "capacidade": 28,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "2º ANDAR",
+      "sala": "SALA LABORATÓRIO",
+      "capacidade": 10,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    }
+  ]
 }
