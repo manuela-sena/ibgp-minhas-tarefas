@@ -5889,14 +5889,20 @@ function carregarRPGeral(input){
 function lerRemarkArquivo_RP(wb, nomeArquivo){
   const ws=wb.Sheets[wb.SheetNames[0]];
   const aoa=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
-  const linhaMaterias=aoa[6]||[];
+  // Localiza a linha "Inscrição" (cabeçalho da tabela) dinamicamente — alguns
+  // arquivos do Remark/Gravic têm uma linha em branco a menos no topo (edição
+  // manual ou exportação diferente), o que desalinhava a leitura quando os
+  // números de linha eram fixos. A linha de matérias é sempre a de cima dela.
+  const idxInscricao = aoa.findIndex(row=>String(row[0]||'').trim()==='Inscrição');
+  if(idxInscricao<1) return {resultados:new Map(), erro:`"${nomeArquivo}" não parece um arquivo de resultado do Remark/Gravic (não encontrei a linha "Inscrição").`};
+  const linhaMaterias=aoa[idxInscricao-1]||[];
   const blocos=[];
   linhaMaterias.forEach((v,c)=>{ if(v&&String(v).trim()) blocos.push({nome:String(v).trim(),col:c}); });
   if(!blocos.length) return {resultados:new Map(), erro:`"${nomeArquivo}" não parece um arquivo de resultado do Remark/Gravic (não encontrei a linha de matérias).`};
   const geral=blocos[0];
   const materias=blocos.slice(1);
   const resultados=new Map();
-  for(let r=8;r<aoa.length;r++){
+  for(let r=idxInscricao+1;r<aoa.length;r++){
     const row=aoa[r]; if(!row||!row.length) continue;
     const inscRaw=row[0]; if(inscRaw===''||inscRaw===undefined) continue;
     const insc=String(parseInt(inscRaw,10));
