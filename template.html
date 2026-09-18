@@ -8777,8 +8777,6 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
     a._cpf.localeCompare(b._cpf) ||
     (a['CANDIDATO']||'').localeCompare(b['CANDIDATO']||'')
   );
-  console.log('🔍 DIAGNÓSTICO ALOCAÇÃO — turno:', turnoPass, '— primeiros 5 candidatos após ordenar:');
-  candidatos.slice(0,5).forEach(c=>console.log('  _codNum=',c._codNum,'| CANDIDATO=',c['CANDIDATO'],'| CÓDIGO bruto=',c['CÓDIGO'],'| CARGO bruto=',c['CARGO']));
 
   const alocados = [];
   const naoAlocados = [];
@@ -9088,6 +9086,7 @@ async function gerarPlanilhaAlocacao(resultado, escolasEnviadas){
     (a.TURNO||'').localeCompare(b.TURNO||'') ||
     (a.ESCOLA||'').localeCompare(b.ESCOLA||'') ||
     (a.SALA||'').localeCompare(b.SALA||'', undefined, {numeric:true}) ||
+    ((parseInt(String(b.CÓDIGO||'').replace(/\D/g,''))||0) - (parseInt(String(a.CÓDIGO||'').replace(/\D/g,''))||0)) ||
     (a.CANDIDATO||'').localeCompare(b.CANDIDATO||'', 'pt-BR', {sensitivity:'base'})
   );
   const dadosAlocacao = resultado.alocados.map((a,i)=>({
