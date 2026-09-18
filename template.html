@@ -8538,13 +8538,20 @@ async function processarAlocacao(){
             const insc = String(r['INSCRIÇÃO']||'').trim();
             if(!insc) return;
             totalSolicitantes++;
-            const resultadoOriginal = String(r['RESULTADO']||'').trim();
+            // A planilha "RESULTADO APÓS RECURSO" tem as colunas duplicadas:
+            // a 1ª leva (RESULTADO/ATENDIMENTO ESPECIAL/JUSTIFICATIVA) é a decisão
+            // ORIGINAL (antes do recurso) e a 2ª leva (SheetJS renomeia para
+            // RESULTADO_1/ATENDIMENTO ESPECIAL_1/JUSTIFICATIVA_1, por terem o
+            // mesmo nome de coluna) é a decisão FINAL, depois do recurso — que é
+            // sempre a que vale. Se o arquivo não tiver essa 2ª leva (formato
+            // sem recurso), cai de volta pra 1ª normalmente.
+            const resultadoOriginal = String(r['RESULTADO_1'] ?? r['RESULTADO'] ?? '').trim();
             const resultado = resultadoOriginal.toUpperCase();
             // Aceita tanto deferimento total quanto parcial — só INDEFERIDA (e variações
             // como "NÃO DEFERIDA") ficam de fora.
             if(resultado.startsWith('DEFERIDA')){
-              const atendCol = String(r['ATENDIMENTO ESPECIAL']||'').trim();
-              const justif = String(r['JUSTIFICATIVA']||'').trim();
+              const atendCol = String(r['ATENDIMENTO ESPECIAL_1'] ?? r['ATENDIMENTO ESPECIAL'] ?? '').trim();
+              const justif = String(r['JUSTIFICATIVA_1'] ?? r['JUSTIFICATIVA'] ?? '').trim();
               // A coluna ATENDIMENTO ESPECIAL é sempre o que o candidato pediu
               // (autodeclarado) — o que de fato foi deferido (total ou
               // parcialmente) fica descrito na JUSTIFICATIVA, então é sempre
