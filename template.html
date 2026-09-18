@@ -8581,9 +8581,12 @@ async function processarAlocacao(){
           : ' ⚠️ nenhuma planilha de Condição Especial enviada — ninguém foi marcado com atendimento especial';
 
         // ── Checagem de capacidade: escolas selecionadas suportam a quantidade de candidatos? ──
+        // Nota: a soma bruta das salas (capacidadeTotal) é só informativa — como o motor
+        // roda por turno, uma sala "AMBOS" vale a capacidade cheia pra manhã E de novo pra
+        // tarde, então o total efetivo pode ser bem maior que essa soma simples. Por isso o
+        // alerta usa o resultado REAL da alocação (naoAlocados), não essa conta simples.
         const capacidadeTotal = enviadas.reduce((acc,e)=> acc + (e.salas||[]).reduce((a,s)=>a+(parseInt(s.capacidade)||0),0), 0);
-        const faltam = candidatos.length - capacidadeTotal;
-        const temInsuficiencia = resultado.naoAlocados.length > 0 || faltam > 0;
+        const temInsuficiencia = resultado.naoAlocados.length > 0;
 
         const corBox    = temInsuficiencia ? '#fdeceb' : '#e4f3ea';
         const corBorda  = temInsuficiencia ? '#f3cfcd' : '#a8dbb8';
@@ -8592,8 +8595,7 @@ async function processarAlocacao(){
 
         const avisoCapacidade = temInsuficiencia
           ? `<div style="margin-top:8px;padding-top:8px;border-top:1px solid ${corBorda};font-weight:700">
-              ⚠️ Capacidade insuficiente: ${enviadas.length} escola(s) selecionada(s) somam ${capacidadeTotal} vaga(s) para ${candidatos.length} candidato(s)${faltam>0?` (faltam ${faltam} vaga${faltam===1?'':'s'})`:''}.
-              ${resultado.naoAlocados.length} candidato(s) ficaram sem sala — veja a aba "NÃO ALOCADOS" na planilha gerada e considere selecionar mais escolas.
+              ⚠️ ${resultado.naoAlocados.length} candidato(s) ficaram sem sala — veja a aba "NÃO ALOCADOS" na planilha gerada e considere selecionar mais escolas.
             </div>`
           : '';
 
@@ -8746,7 +8748,8 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
 
   // ── 3. Ordenar candidatos: maior código cargo → CPF → alfabético ──
   candidatos.forEach(c=>{
-    c._codNum = parseInt((c['CÓDIGO']||c['CODIGO']||'0').toString().replace(/\D/g,'')) || 0;
+    c._codNum = parseInt((c['CÓDIGO']||c['CODIGO']||'').toString().replace(/\D/g,'')) ||
+                parseInt((c['CARGO']||'').toString().match(/^\s*(\d+)/)?.[1]) || 0;
     c._cpf = (c['CPF']||'').toString().replace(/\D/g,'');
     c._atendimentos = getAtendimentos(c);
     c._atendimentosRaw = c._atendimentos;
