@@ -8777,6 +8777,8 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
     a._cpf.localeCompare(b._cpf) ||
     (a['CANDIDATO']||'').localeCompare(b['CANDIDATO']||'')
   );
+  console.log('🔍 DIAGNÓSTICO ALOCAÇÃO — turno:', turnoPass, '— primeiros 5 candidatos após ordenar:');
+  candidatos.slice(0,5).forEach(c=>console.log('  _codNum=',c._codNum,'| CANDIDATO=',c['CANDIDATO'],'| CÓDIGO bruto=',c['CÓDIGO'],'| CARGO bruto=',c['CARGO']));
 
   const alocados = [];
   const naoAlocados = [];
