@@ -1,0 +1,1242 @@
+{
+  "token": "PRAT_MU7CFNK8_Z5ZK",
+  "criadoEm": "2026-09-18T19:20:29.192Z",
+  "atualizadoEm": "2026-09-18T19:20:29.192Z",
+  "concursoNome": "ALTO RIO DOCE - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "concursoId": "uBsaIo9dmkqCtOU340eMHGUAO60X",
+  "avaliadores": [
+    "FELIPE CORRÊA",
+    "EVANDRO LUIZ SOARES"
+  ],
+  "candidatos": [
+    {
+      "nome": "RICARDO PEDRO DE MAGALHAES",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16321359",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "HEDER GUSTAVO ACERBI GARCIA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16319590",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "HUGO COSME DE MELO DAMASCENO",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16331921",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "HUGO HENRIQUE FERREIRA DA SILVA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16326880",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "MARCOS ROBERTO MILAGRES DE ASSIS",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16332204",
+          "data": "46285",
+          "horario": "07h00"
+        },
+        {
+          "tipo": "OPERADOR",
+          "raw": "107 - OPERADOR DE MÁQUINAS",
+          "inscricao": "16332203",
+          "data": "46285",
+          "horario": "14H00"
+        }
+      ]
+    },
+    {
+      "nome": "RODRIGO CÉSAR COELHO SANTANA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16330389",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "ELIAS PEREIRA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16327121",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "EMERSON NUNES DA SILVA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16330333",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "JOAO BATISTA MOREIRA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16328700",
+          "data": "46285",
+          "horario": "07h00"
+        },
+        {
+          "tipo": "OPERADOR",
+          "raw": "107 - OPERADOR DE MÁQUINAS",
+          "inscricao": "16332258",
+          "data": "46285",
+          "horario": "14H00"
+        }
+      ]
+    },
+    {
+      "nome": "JOAO VITOR ARAUJO DE SOUZA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16329112",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "LEONARDO DANIEL JORGE",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16326887",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "LUCAS MA RAMOS",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16331377",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "LUIZ ANTONIO DE MELO COELHO",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16331555",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "ULISSES VANDER DOS REIS",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16331953",
+          "data": "46285",
+          "horario": "07h00"
+        },
+        {
+          "tipo": "OPERADOR",
+          "raw": "107 - OPERADOR DE MÁQUINAS",
+          "inscricao": "16330712",
+          "data": "46285",
+          "horario": "14H00"
+        }
+      ]
+    },
+    {
+      "nome": "VITOR CESAR SANTANA SANTOS",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16325997",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "WELLINGTON DE OLIVEIRA MATEUS",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16331346",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "WELLINGTON VICENTE DE MELO",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16332155",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "ADENILSON NAZARÉ DE CARVALHO",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16323698",
+          "data": "46285",
+          "horario": "07h00"
+        },
+        {
+          "tipo": "OPERADOR",
+          "raw": "107 - OPERADOR DE MÁQUINAS",
+          "inscricao": "16323687",
+          "data": "46285",
+          "horario": "14H00"
+        }
+      ]
+    },
+    {
+      "nome": "AGOSTINHO ABREU",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16327029",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "AUGUSTO CESAR EMANUEL ROSA DE ASSIS",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16331209",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "BRUNO DE SOUZA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16328433",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "CLEBER ARANTES RODRIGUES",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16331565",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "EWERTON DE PAULA ESTEVAO",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16319572",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "JÉSSICA GABRIELA DA SILVA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16321511",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "LUIZ FERNANDO ARRUDA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16320981",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "PAULO CESAR",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16332437",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "PEDRO TAFFAREL COELHO RODRIGUES",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16331871",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "SAMUEL PAIVA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16330784",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "DANIEL ALEX COELHO",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16321089",
+          "data": "46285",
+          "horario": "10h00"
+        }
+      ]
+    },
+    {
+      "nome": "GEISON ROSA DA SILVA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16330408",
+          "data": "46285",
+          "horario": "10h00"
+        }
+      ]
+    },
+    {
+      "nome": "GILSON ANDRE SALES",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16321141",
+          "data": "46285",
+          "horario": "10h00"
+        }
+      ]
+    },
+    {
+      "nome": "HUGO LEMES MALTA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16332374",
+          "data": "46285",
+          "horario": "10h00"
+        }
+      ]
+    },
+    {
+      "nome": "ISABEL APARECIDA LEONCIO",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16326811",
+          "data": "46285",
+          "horario": "10h00"
+        }
+      ]
+    },
+    {
+      "nome": "MONIZ VALERIANO MILAGRES DE ASSIS",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16327120",
+          "data": "46285",
+          "horario": "10h00"
+        }
+      ]
+    },
+    {
+      "nome": "PATRICIA VITOR FERREIRA ALMEIDA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16319647",
+          "data": "46285",
+          "horario": "10h00"
+        }
+      ]
+    },
+    {
+      "nome": "WALACE ANSELMO DA COSTA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16320493",
+          "data": "46285",
+          "horario": "10h00"
+        }
+      ]
+    },
+    {
+      "nome": "ADIEL TOSTES MOREIRA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16320220",
+          "data": "46285",
+          "horario": "10h00"
+        }
+      ]
+    },
+    {
+      "nome": "BRUNO JESUS DA SILVA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16321047",
+          "data": "46285",
+          "horario": "10h00"
+        }
+      ]
+    },
+    {
+      "nome": "FLAVIO MAGALHAES OLIVEIRA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16324515",
+          "data": "46285",
+          "horario": "10h00"
+        }
+      ]
+    },
+    {
+      "nome": "GERALDO INOCENCIO MARTINS DE MELO JUNIOR",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16328391",
+          "data": "46285",
+          "horario": "10h00"
+        }
+      ]
+    },
+    {
+      "nome": "MAGNUS FERREIRA DA SILVA PINTO JUNIOR",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16331488",
+          "data": "46285",
+          "horario": "10h00"
+        }
+      ]
+    },
+    {
+      "nome": "MARCO ANDRE DOS SANTOS",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16319591",
+          "data": "46285",
+          "horario": "10h00"
+        }
+      ]
+    },
+    {
+      "nome": "MARCOS FRANCISCO GOMES SANTANA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16329573",
+          "data": "46285",
+          "horario": "10h00"
+        }
+      ]
+    },
+    {
+      "nome": "MATEUS JOSE DA SILVA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16331822",
+          "data": "46285",
+          "horario": "10h00"
+        },
+        {
+          "tipo": "OPERADOR",
+          "raw": "107 - OPERADOR DE MÁQUINAS",
+          "inscricao": "16331823",
+          "data": "46285",
+          "horario": "14H00"
+        }
+      ]
+    },
+    {
+      "nome": "MATHEUS JOSE ARAUJO PIMENTEL",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16331577",
+          "data": "46285",
+          "horario": "10h00"
+        }
+      ]
+    },
+    {
+      "nome": "OSVANI SANTIAGO CONCEICAO",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16322156",
+          "data": "46285",
+          "horario": "10h00"
+        }
+      ]
+    },
+    {
+      "nome": "ROGERIO LUIS QUIRINO",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16332234",
+          "data": "46285",
+          "horario": "10h00"
+        }
+      ]
+    },
+    {
+      "nome": "VITOR GABRIEL NOLASCO",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16325763",
+          "data": "46285",
+          "horario": "10h00"
+        }
+      ]
+    },
+    {
+      "nome": "WILIAM PAMPLONA RODRIGUES",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "104 - MOTORISTA (D)",
+          "inscricao": "16332131",
+          "data": "46285",
+          "horario": "10h00"
+        }
+      ]
+    },
+    {
+      "nome": "PEDRO NICOLAU DA SILVA FREIRE NETO",
+      "cargos": [
+        {
+          "tipo": "ELETRICISTA",
+          "raw": "105 - OFICIAL SERVIÇO PÚBLICO – ELETRICISTA",
+          "inscricao": "16320198",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "RONALDO FERREIRA DOMINGOS",
+      "cargos": [
+        {
+          "tipo": "ELETRICISTA",
+          "raw": "105 - OFICIAL SERVIÇO PÚBLICO – ELETRICISTA",
+          "inscricao": "16331899",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "JOSÉ HENRIQUE DOS ANJOS SILVEIRA",
+      "cargos": [
+        {
+          "tipo": "ELETRICISTA",
+          "raw": "105 - OFICIAL SERVIÇO PÚBLICO – ELETRICISTA",
+          "inscricao": "16327989",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "SILVANIR REIS GONÇALVES",
+      "cargos": [
+        {
+          "tipo": "ELETRICISTA",
+          "raw": "105 - OFICIAL SERVIÇO PÚBLICO – ELETRICISTA",
+          "inscricao": "16331552",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "MATEUS DIAS DE ARAÚJO",
+      "cargos": [
+        {
+          "tipo": "ELETRICISTA",
+          "raw": "105 - OFICIAL SERVIÇO PÚBLICO – ELETRICISTA",
+          "inscricao": "16330643",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "CLAUDIO SANTIAGO JACO",
+      "cargos": [
+        {
+          "tipo": "PEDREIRO",
+          "raw": "106 - OFICIAL SERVIÇO PÚBLICO – PEDREIRO",
+          "inscricao": "16332392",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "GERALDO BATISTA DE CARVALHO",
+      "cargos": [
+        {
+          "tipo": "PEDREIRO",
+          "raw": "106 - OFICIAL SERVIÇO PÚBLICO – PEDREIRO",
+          "inscricao": "16332369",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "JOSE CARLOS ANTUNES",
+      "cargos": [
+        {
+          "tipo": "PEDREIRO",
+          "raw": "106 - OFICIAL SERVIÇO PÚBLICO – PEDREIRO",
+          "inscricao": "16332302",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "REINALDO PAULO LOURENCO",
+      "cargos": [
+        {
+          "tipo": "PEDREIRO",
+          "raw": "106 - OFICIAL SERVIÇO PÚBLICO – PEDREIRO",
+          "inscricao": "16331467",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "OSVANI ROSA VIEIRA",
+      "cargos": [
+        {
+          "tipo": "PEDREIRO",
+          "raw": "106 - OFICIAL SERVIÇO PÚBLICO – PEDREIRO",
+          "inscricao": "16331676",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "DANIEL DE JESUS FELIPE",
+      "cargos": [
+        {
+          "tipo": "PEDREIRO",
+          "raw": "106 - OFICIAL SERVIÇO PÚBLICO – PEDREIRO",
+          "inscricao": "16332371",
+          "data": "46285",
+          "horario": "07h00"
+        }
+      ]
+    },
+    {
+      "nome": "HUGO HENRIQUE CARVALHO BRAGA",
+      "cargos": [
+        {
+          "tipo": "OPERADOR",
+          "raw": "107 - OPERADOR DE MÁQUINAS",
+          "inscricao": "16331032",
+          "data": "46285",
+          "horario": "14H00"
+        }
+      ]
+    },
+    {
+      "nome": "CHARLES COSTA OLIVEIRA",
+      "cargos": [
+        {
+          "tipo": "OPERADOR",
+          "raw": "107 - OPERADOR DE MÁQUINAS",
+          "inscricao": "16326896",
+          "data": "46285",
+          "horario": "14H00"
+        }
+      ]
+    },
+    {
+      "nome": "DEIVID SANTOS DA COSTA",
+      "cargos": [
+        {
+          "tipo": "OPERADOR",
+          "raw": "107 - OPERADOR DE MÁQUINAS",
+          "inscricao": "16331357",
+          "data": "46285",
+          "horario": "14H00"
+        }
+      ]
+    },
+    {
+      "nome": "LUCIANO DE OLIVEIRA NEPOMUCENO",
+      "cargos": [
+        {
+          "tipo": "OPERADOR",
+          "raw": "107 - OPERADOR DE MÁQUINAS",
+          "inscricao": "16325717",
+          "data": "46285",
+          "horario": "14H00"
+        }
+      ]
+    },
+    {
+      "nome": "ADEILTON DO CARMO PEREIRA",
+      "cargos": [
+        {
+          "tipo": "OPERADOR",
+          "raw": "107 - OPERADOR DE MÁQUINAS",
+          "inscricao": "16332221",
+          "data": "46285",
+          "horario": "14H00"
+        }
+      ]
+    },
+    {
+      "nome": "ANDRÉ ARMOND DE MELO",
+      "cargos": [
+        {
+          "tipo": "OPERADOR",
+          "raw": "107 - OPERADOR DE MÁQUINAS",
+          "inscricao": "16326906",
+          "data": "46285",
+          "horario": "14H00"
+        }
+      ]
+    },
+    {
+      "nome": "ANSELMO DOS REMEDIOS SILVA",
+      "cargos": [
+        {
+          "tipo": "OPERADOR",
+          "raw": "107 - OPERADOR DE MÁQUINAS",
+          "inscricao": "16331266",
+          "data": "46285",
+          "horario": "14H00"
+        }
+      ]
+    },
+    {
+      "nome": "IGOR MARTINS HELENO",
+      "cargos": [
+        {
+          "tipo": "OPERADOR",
+          "raw": "107 - OPERADOR DE MÁQUINAS",
+          "inscricao": "16329472",
+          "data": "46285",
+          "horario": "14H00"
+        }
+      ]
+    },
+    {
+      "nome": "MATHEUS CARLOS DA SILVA",
+      "cargos": [
+        {
+          "tipo": "OPERADOR",
+          "raw": "107 - OPERADOR DE MÁQUINAS",
+          "inscricao": "16331812",
+          "data": "46285",
+          "horario": "14H00"
+        }
+      ]
+    },
+    {
+      "nome": "NATAN KELVIN DA SILVA REIS",
+      "cargos": [
+        {
+          "tipo": "OPERADOR",
+          "raw": "107 - OPERADOR DE MÁQUINAS",
+          "inscricao": "16328923",
+          "data": "46285",
+          "horario": "14H00"
+        }
+      ]
+    },
+    {
+      "nome": "RENATO DOS ANJOS REZENDE DE LIMA REZENDE OI LKLL",
+      "cargos": [
+        {
+          "tipo": "OPERADOR",
+          "raw": "107 - OPERADOR DE MÁQUINAS",
+          "inscricao": "16323317",
+          "data": "46285",
+          "horario": "14H00"
+        }
+      ]
+    },
+    {
+      "nome": "CARLOS RODRIGUES HENRIQUES",
+      "cargos": [
+        {
+          "tipo": "OPERADOR",
+          "raw": "107 - OPERADOR DE MÁQUINAS",
+          "inscricao": "16320132",
+          "data": "46285",
+          "horario": "14H00"
+        }
+      ]
+    },
+    {
+      "nome": "JOSE ANDRO RODRIGUES LOPES",
+      "cargos": [
+        {
+          "tipo": "OPERADOR",
+          "raw": "107 - OPERADOR DE MÁQUINAS",
+          "inscricao": "16321780",
+          "data": "46285",
+          "horario": "14H00"
+        }
+      ]
+    },
+    {
+      "nome": "MARGARETE CARVALHO DE ANDRADE",
+      "cargos": [
+        {
+          "tipo": "OPERADOR",
+          "raw": "107 - OPERADOR DE MÁQUINAS",
+          "inscricao": "16321262",
+          "data": "46285",
+          "horario": "14H00"
+        }
+      ]
+    },
+    {
+      "nome": "MAURÍCIO ADÃO DE PAULA",
+      "cargos": [
+        {
+          "tipo": "OPERADOR",
+          "raw": "107 - OPERADOR DE MÁQUINAS",
+          "inscricao": "16320995",
+          "data": "46285",
+          "horario": "14H00"
+        }
+      ]
+    },
+    {
+      "nome": "THIAGO LUIZ MARCIANO",
+      "cargos": [
+        {
+          "tipo": "OPERADOR",
+          "raw": "107 - OPERADOR DE MÁQUINAS",
+          "inscricao": "16331891",
+          "data": "46285",
+          "horario": "14H00"
+        }
+      ]
+    },
+    {
+      "nome": "UANDERSON DOS SANTOS SILVERIO",
+      "cargos": [
+        {
+          "tipo": "OPERADOR",
+          "raw": "107 - OPERADOR DE MÁQUINAS",
+          "inscricao": "16330834",
+          "data": "46285",
+          "horario": "14H00"
+        }
+      ]
+    }
+  ],
+  "criterios": {
+    "motorista": {
+      "gravissima": [
+        "Não executar o teste em sua totalidade do percurso preestabelecido.",
+        "Haver colisão com outro veículo, ou objeto presente no percurso.",
+        "Subir com o veículo no meio fio.",
+        "Colocar em risco a vida do passageiro/avaliador e de transeuntes."
+      ],
+      "grave": [
+        "Não respeitar as placas de sinalização.",
+        "Não respeitar os limites de velocidade.",
+        "Não utilizou cinto de segurança.",
+        "Provocar movimentos irregulares durante o teste, sem motivo justificado, ou interromper o funcionamento do motor sem justa razão, após o início do teste."
+      ],
+      "media": [
+        "Uso de marcha desapropriada para a velocidade.",
+        "Apoio do pé no pedal da embreagem com o veículo engrenado e em movimento.",
+        "Arrancar o veículo sem soltar o freio de mão.",
+        "Controle incorreto de embreagem."
+      ],
+      "leve": [
+        "Regulagem incorreta dos retrovisores.",
+        "Uso incorreto da seta.",
+        "Mudança incorreta de marchas.",
+        "Manobra incorreta de baliza (uma tentativa)."
+      ]
+    },
+    "operador": {
+      "categorias": [
+        {
+          "titulo": "I – Checagem da máquina (pré-uso)",
+          "itens": [
+            "Estrutura da máquina — lataria, chassi, pneus e material rodante.",
+            "Vazamentos.",
+            "Peças.",
+            "Conchas, borda cortante, dentes e escarificadores.",
+            "Faróis, faroletes, luz de ré, luzes de freio, lanternas indicativas de direção e retrovisores."
+          ]
+        },
+        {
+          "titulo": "II – Checagem dos níveis da máquina",
+          "itens": [
+            "Nível do óleo do motor.",
+            "Nível do óleo da transmissão.",
+            "Nível do óleo hidráulico.",
+            "Nível do óleo de freio.",
+            "Nível da água — sistema de arrefecimento."
+          ]
+        },
+        {
+          "titulo": "III – Identificação e checagem do painel de instrumentos",
+          "itens": [
+            "Indicador da temperatura da água do motor.",
+            "Indicador da pressão do óleo do motor.",
+            "Indicador da temperatura da transmissão.",
+            "Indicador de pressão da transmissão.",
+            "Indicador da carga da bateria.",
+            "Indicador do nível de combustível.",
+            "Indicador da pressão do freio.",
+            "Indicador da temperatura do óleo hidráulico."
+          ]
+        },
+        {
+          "titulo": "IV – Checagem de comandos",
+          "itens": [
+            "Alavancas do freio de estacionamento.",
+            "Alavancas do comando hidráulico da concha.",
+            "Alavanca do comando de reversão.",
+            "Alavanca do comando da transmissão.",
+            "Pedais de freio / neutralizador.",
+            "Botão de buzina."
+          ]
+        },
+        {
+          "titulo": "V – Procedimentos de partida",
+          "itens": [
+            "Transmissão em neutro.",
+            "Freio de estacionamento aplicado.",
+            "Concha baixa no solo.",
+            "Acionamento da chave de partida.",
+            "Aquecimento do motor.",
+            "Checagem do painel."
+          ]
+        },
+        {
+          "titulo": "VI – Teste de operação",
+          "itens": [
+            "Escavação.",
+            "Carga.",
+            "Transporte.",
+            "Descarga.",
+            "Retorno.",
+            "Estacionamento."
+          ]
+        },
+        {
+          "titulo": "VII – Procedimento de parada",
+          "itens": [
+            "Transmissão em neutro.",
+            "Freio de estacionamento aplicado.",
+            "Concha no solo.",
+            "Arrefecimento do motor."
+          ]
+        }
+      ]
+    },
+    "obra": {
+      "atitudinais": {
+        "pontosPorNivel": {
+          "NR": 0,
+          "RI": 0.2,
+          "RS": 0.4
+        },
+        "itens": [
+          "Capacidade de envolvimento, responsabilidade e comprometimento.",
+          "Iniciativa, interesse, criatividade e proatividade.",
+          "Hábitos de Segurança do Trabalho (utilização de equipamentos de EPI e EPC)",
+          "Responsabilidade e cuidado com materiais e equipamentos.",
+          "Organização e limpeza do local de trabalho."
+        ]
+      },
+      "tecnicasGerais": {
+        "pontosPorNivel": {
+          "NR": 0,
+          "RI": 1,
+          "RS": 2
+        },
+        "itens": [
+          "Conhecimento dos processos de trabalho – Organização e Planejamento."
+        ]
+      },
+      "tecnicasEspecificas": {
+        "pontosPorNivel": {
+          "NR": 0,
+          "RI": 1.5,
+          "RS": 3
+        },
+        "itens": [
+          "Qualidade das atividades desempenhadas.",
+          "Resultado final das atividades desempenhadas dentro do tempo determinado para execução da tarefa."
+        ]
+      }
+    },
+    "operador_eta": {
+      "grupos": [
+        {
+          "titulo": "Tarefa 1",
+          "itens": [
+            {
+              "texto": "Seleção e uso correto do EPI",
+              "nr": 0,
+              "ri": 0.4,
+              "rs": 0.8
+            },
+            {
+              "texto": "Organização da bancada e materiais",
+              "nr": 0,
+              "ri": 0.3,
+              "rs": 0.6
+            },
+            {
+              "texto": "Postura profissional durante a prova",
+              "nr": 0,
+              "ri": 0.3,
+              "rs": 0.6
+            }
+          ]
+        },
+        {
+          "titulo": "Tarefa 2",
+          "itens": [
+            {
+              "texto": "Identificação correta das 4 etapas de tratamento (Ficha de Resultados)",
+              "nr": 0,
+              "ri": 0.4,
+              "rs": 0.8
+            },
+            {
+              "texto": "Execução ou descrição correta da operação básica",
+              "nr": 0,
+              "ri": 0.3,
+              "rs": 0.6
+            },
+            {
+              "texto": "Limpeza e conservação demonstradas corretamente",
+              "nr": 0,
+              "ri": 0.3,
+              "rs": 0.6
+            }
+          ]
+        },
+        {
+          "titulo": "Tarefa 3",
+          "itens": [
+            {
+              "texto": "Coleta da amostra realizada corretamente",
+              "nr": 0,
+              "ri": 0.25,
+              "rs": 0.5
+            },
+            {
+              "texto": "Teste de cloro residual executado corretamente",
+              "nr": 0,
+              "ri": 0.5,
+              "rs": 1
+            },
+            {
+              "texto": "Teste de pH executado corretamente",
+              "nr": 0,
+              "ri": 0.25,
+              "rs": 0.5
+            },
+            {
+              "texto": "Medição de turbidez executada corretamente",
+              "nr": 0,
+              "ri": 0.25,
+              "rs": 0.5
+            },
+            {
+              "texto": "Registro correto dos resultados na ficha",
+              "nr": 0,
+              "ri": 0.25,
+              "rs": 0.5
+            }
+          ]
+        },
+        {
+          "titulo": "Tarefa 4",
+          "itens": [
+            {
+              "texto": "Cálculo correto da quantidade de produto (5,0 g)",
+              "nr": 0,
+              "ri": 0.3,
+              "rs": 0.6
+            },
+            {
+              "texto": "Pesagem correta do produto",
+              "nr": 0,
+              "ri": 0.25,
+              "rs": 0.5
+            },
+            {
+              "texto": "Dissolução correta do produto",
+              "nr": 0,
+              "ri": 0.25,
+              "rs": 0.5
+            },
+            {
+              "texto": "Completou corretamente o volume da solução (500 mL)",
+              "nr": 0,
+              "ri": 0.25,
+              "rs": 0.5
+            },
+            {
+              "texto": "Homogeneização correta da solução",
+              "nr": 0,
+              "ri": 0.2,
+              "rs": 0.4
+            },
+            {
+              "texto": "Identificação correta do recipiente após o preparo",
+              "nr": 0,
+              "ri": 0.25,
+              "rs": 0.5
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
