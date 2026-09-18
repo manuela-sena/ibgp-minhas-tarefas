@@ -121,6 +121,14 @@
       "senha_hash": "015ad6653fcc7009b51d3db67fe8a0c14429fa03062a186fcfb1df3cd32d92b9",
       "primeiro_acesso": false,
       "ativo": true
+    },
+    {
+      "nome_interno": "EXECUÇÃO",
+      "aliases": [
+        "execução"
+      ],
+      "perfil": "gestora",
+      "ativo": true
     }
   ]
 }
