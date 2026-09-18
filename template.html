@@ -4488,9 +4488,27 @@ function abrirModalUsuario(idx){
       <input id="mu-nome" class="form-input" value="${u.nome_interno}" placeholder="Ex: Lorena">
     </div>
     <div>
+      <label class="form-label">Tipo de login</label>
+      <div style="display:flex;gap:10px">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:9px 14px;border:1.5px solid ${(u.auth_tipo||'microsoft')==='microsoft'?'#1f4e8c':'#e2e7ef'};border-radius:9px;flex:1;font-size:13px" id="mu-auth-microsoft-label">
+          <input type="radio" name="mu-auth" id="mu-auth-microsoft" value="microsoft" ${(u.auth_tipo||'microsoft')==='microsoft'?'checked':''} onchange="atualizarTipoLoginModal()">
+          Microsoft
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:9px 14px;border:1.5px solid ${u.auth_tipo==='local'?'#1f4e8c':'#e2e7ef'};border-radius:9px;flex:1;font-size:13px" id="mu-auth-local-label">
+          <input type="radio" name="mu-auth" id="mu-auth-local" value="local" ${u.auth_tipo==='local'?'checked':''} onchange="atualizarTipoLoginModal()">
+          Login local (senha própria)
+        </label>
+      </div>
+    </div>
+    <div id="mu-aliases-wrap" style="${u.auth_tipo==='local'?'display:none':''}">
       <label class="form-label">Aliases <span style="color:#8a9ab5;font-size:11px">(nomes no Microsoft, separados por vírgula)</span></label>
       <input id="mu-aliases" class="form-input" value="${(u.aliases||[]).join(', ')}" placeholder="Ex: lorena, lorena silva">
       <div style="font-size:11px;color:#8a9ab5;margin-top:4px">Use o nome exato que aparece na conta Microsoft da pessoa (primeiro nome, nome completo, etc.)</div>
+    </div>
+    <div id="mu-local-info" style="${u.auth_tipo==='local'?'':'display:none'};background:#eef1f6;border-radius:9px;padding:10px 12px;font-size:12px;color:#41506b">
+      ${idx!==null && u.auth_tipo==='local'
+        ? 'Esse usuário já tem login local configurado. Use o botão <strong>🔑 Convite</strong> na lista para gerar um novo código de acesso, se precisar.'
+        : 'Depois de salvar, use o botão <strong>🔑 Convite</strong> na lista de usuários para gerar o código de primeiro acesso.'}
     </div>
     <div>
       <label class="form-label">Perfil de acesso</label>
@@ -4522,16 +4540,39 @@ function abrirModalUsuario(idx){
   modal.addEventListener('click', e=>{ if(e.target===modal) modal.remove(); });
 }
 
+function atualizarTipoLoginModal(){
+  const local = document.getElementById('mu-auth-local')?.checked;
+  const aliasesWrap = document.getElementById('mu-aliases-wrap');
+  const localInfo   = document.getElementById('mu-local-info');
+  const lblMs  = document.getElementById('mu-auth-microsoft-label');
+  const lblLoc = document.getElementById('mu-auth-local-label');
+  if(aliasesWrap) aliasesWrap.style.display = local ? 'none' : '';
+  if(localInfo)   localInfo.style.display   = local ? '' : 'none';
+  if(lblMs)  lblMs.style.borderColor  = local ? '#e2e7ef' : '#1f4e8c';
+  if(lblLoc) lblLoc.style.borderColor = local ? '#1f4e8c' : '#e2e7ef';
+}
+
 function salvarUsuario(idx){
-  const nome    = document.getElementById('mu-nome')?.value.trim();
-  const aliases = document.getElementById('mu-aliases')?.value.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
-  const perfil  = document.getElementById('mu-perfil')?.value;
-  const ativo   = document.getElementById('mu-ativo')?.checked;
+  const nome     = document.getElementById('mu-nome')?.value.trim();
+  const authTipo = document.getElementById('mu-auth-local')?.checked ? 'local' : 'microsoft';
+  const aliases  = document.getElementById('mu-aliases')?.value.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
+  const perfil   = document.getElementById('mu-perfil')?.value;
+  const ativo    = document.getElementById('mu-ativo')?.checked;
 
   if(!nome){ alert('Informe o nome interno.'); return; }
-  if(!aliases.length){ alert('Informe pelo menos um alias.'); return; }
+  if(authTipo==='microsoft' && !aliases.length){ alert('Informe pelo menos um alias.'); return; }
 
-  const novoU = {nome_interno:nome, aliases, perfil, ativo};
+  const usuarioExistente = idx!==null ? _usuarios[idx] : null;
+  const novoU = authTipo==='local'
+    ? {
+        nome_interno: nome,
+        aliases: [nome.toLowerCase()],
+        perfil, ativo, auth_tipo: 'local',
+        senha_hash: usuarioExistente?.senha_hash || '',
+        primeiro_acesso: usuarioExistente?.auth_tipo==='local' ? usuarioExistente.primeiro_acesso : true,
+      }
+    : {nome_interno: nome, aliases, perfil, ativo};
+
   if(idx===null){ _usuarios.push(novoU); }
   else { _usuarios[idx] = novoU; }
 
