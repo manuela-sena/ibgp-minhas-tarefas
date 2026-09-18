@@ -6058,14 +6058,20 @@ function gerarResultadoPreliminarXlsx(){
         });
         ws.getRow(2).height=30;
 
-        // Dados a partir da linha 3
-        const linhasNivel=linhas.filter(l=>l.nivel===nivel).sort((a,b)=>a.CARGO.localeCompare(b.CARGO)||(Number(a.INSCRICAO)-Number(b.INSCRICAO)));
+        // Dados a partir da linha 3 — ordenado por cargo, depois nome alfabético
+        const linhasNivel=linhas.filter(l=>l.nivel===nivel).sort((a,b)=>a.CARGO.localeCompare(b.CARGO)||(a.CANDIDATO||'').localeCompare(b.CANDIDATO||'','pt-BR',{sensitivity:'base'}));
         linhasNivel.forEach((l,ri)=>{
           const row=ri+3;
           const dataNasc=fmtDataRP(l.DATA_NASCIMENTO);
+          // Nota numérica 0 em uma disciplina vira "-"; total 0 vira "AUSENTE"
+          // (candidato que compareceu mas zerou tudo é tratado como ausente).
           const vals=[Number(l.INSCRICAO)||l.INSCRICAO, l.CANDIDATO, l.CARGO, dataNasc,
-            ...materias.map(m=> l.subjects ? (l.subjects[m]!==undefined && l.subjects[m]!==null ? l.subjects[m] : '-') : '-'),
-            l.total];
+            ...materias.map(m=>{
+              const v = l.subjects ? l.subjects[m] : undefined;
+              if(v===undefined||v===null) return '-';
+              return (typeof v==='number' && v===0) ? '-' : v;
+            }),
+            (typeof l.total==='number' && l.total===0) ? 'AUSENTE' : l.total];
           vals.forEach((v,ci)=>{
             const c=ws.getCell(row,ci+1);
             c.value=v;
