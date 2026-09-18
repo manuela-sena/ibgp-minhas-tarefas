@@ -8666,7 +8666,7 @@ function salaEhTerrea(andarRaw){
   return false;
 }
 
-function executarMotorAlocacao(candidatos, escolas){
+function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
   // ── 1. Montar pool de salas de todas as escolas, ordenado por capacidade desc ──
   function normalizarAndar(v){
     v = String(v||'').trim().replace(/\s+/g,' ');
@@ -8678,11 +8678,15 @@ function executarMotorAlocacao(candidatos, escolas){
   escolas.forEach(esc=>{
     const nomeEsc = esc.instituicao?.nome || esc.concurso?.escola || esc.token;
     (esc.salas||[]).forEach(s=>{
+      const turnoSala = s.turno||'AMBOS';
+      // Sala configurada só para o outro turno não entra nesta passada —
+      // ela é reprocessada (com capacidade cheia de novo) na passada do turno dela.
+      if(turnoSala!=='AMBOS' && turnoSala!==turnoPass) return;
       salasPool.push({
         escola: nomeEsc, bloco: s.bloco||'', andar: normalizarAndar(s.andar),
         salaBase: String(s.sala||'').split('\n')[0].trim(), capacidadeOriginal: parseInt(s.capacidade)||0,
         capacidadeDisponivel: parseInt(s.capacidade)||0,
-        turno: s.turno||'AMBOS', sexo: (s.sexo==='F'||s.sexo==='M') ? s.sexo : 'AMBOS', ocupantes: [],
+        turno: turnoSala, sexo: (s.sexo==='F'||s.sexo==='M') ? s.sexo : 'AMBOS', ocupantes: [],
         atendimentoEspecial: s.atendimentoEspecial===true || s.atendimentoEspecial==='true',
         explicacaoEspecial: s.explicacaoEspecial||'',
       });
@@ -8970,6 +8974,41 @@ function executarMotorAlocacao(candidatos, escolas){
   }
 
   return {alocados, naoAlocados: naoAlocados.map(mapCandidato), salasPool};
+}
+
+// Classifica o TURNO bruto do candidato (geralmente um datetime completo tipo
+// "2026-09-27 08:15:00") em MANHÃ ou TARDE, para casar com a configuração de
+// turno que a escola informou pra cada sala (MANHA/TARDE/AMBOS).
+function turnoAMPM(turnoRaw){
+  if(!turnoRaw) return 'MANHA';
+  const d = new Date(turnoRaw);
+  if(!isNaN(d.getTime())) return d.getHours() < 13 ? 'MANHA' : 'TARDE';
+  const s = String(turnoRaw).toUpperCase();
+  if(s.includes('TARDE')) return 'TARDE';
+  return 'MANHA';
+}
+
+// Executa a alocação separadamente para cada turno (manhã/tarde). Isso é
+// necessário porque o mesmo espaço físico (sala) é reutilizado em horários
+// diferentes do mesmo dia — a capacidade de uma sala "AMBOS" deve valer
+// inteira pra manhã E inteira de novo pra tarde, não um pool único
+// compartilhado entre os dois turnos.
+function executarMotorAlocacao(candidatos, escolas){
+  const porTurno = {};
+  candidatos.forEach(c=>{
+    const t = turnoAMPM(c['TURNO']);
+    (porTurno[t] = porTurno[t]||[]).push(c);
+  });
+
+  let alocados = [], naoAlocados = [], salasPool = [];
+  Object.entries(porTurno).forEach(([turnoPass, candidatosDoTurno])=>{
+    const r = executarMotorAlocacaoUmTurno(candidatosDoTurno, escolas, turnoPass);
+    alocados = alocados.concat(r.alocados);
+    naoAlocados = naoAlocados.concat(r.naoAlocados);
+    salasPool = salasPool.concat(r.salasPool);
+  });
+
+  return {alocados, naoAlocados, salasPool};
 }
 function mapCandidato(c){
   return {
