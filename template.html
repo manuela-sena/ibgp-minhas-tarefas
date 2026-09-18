@@ -8746,10 +8746,25 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
     return true;
   }
 
+  // Busca um campo do candidato pelo nome normalizado (sem acento, sem caixa) —
+  // protege contra arquivos onde o acento do cabeçalho (ex: "CÓDIGO") foi salvo
+  // pelo Excel com uma representação Unicode diferente da esperada, fazendo a
+  // comparação exata falhar mesmo com o texto parecendo idêntico visualmente.
+  function campoNorm(c, nomeAlvo){
+    if(!c._camposNorm){
+      c._camposNorm = {};
+      Object.keys(c).forEach(k=>{
+        const kn = k.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
+        if(!(kn in c._camposNorm)) c._camposNorm[kn] = c[k];
+      });
+    }
+    return c._camposNorm[nomeAlvo];
+  }
+
   // ── 3. Ordenar candidatos: maior código cargo → CPF → alfabético ──
   candidatos.forEach(c=>{
-    c._codNum = parseInt((c['CÓDIGO']||c['CODIGO']||'').toString().replace(/\D/g,'')) ||
-                parseInt((c['CARGO']||'').toString().match(/^\s*(\d+)/)?.[1]) || 0;
+    c._codNum = parseInt((campoNorm(c,'CODIGO')||'').toString().replace(/\D/g,'')) ||
+                parseInt((campoNorm(c,'CARGO')||'').toString().match(/^\s*(\d+)/)?.[1]) || 0;
     c._cpf = (c['CPF']||'').toString().replace(/\D/g,'');
     c._atendimentos = getAtendimentos(c);
     c._atendimentosRaw = c._atendimentos;
