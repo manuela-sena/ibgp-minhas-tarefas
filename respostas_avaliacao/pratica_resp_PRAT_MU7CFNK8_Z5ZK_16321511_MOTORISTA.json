@@ -1,0 +1,25 @@
+{
+  "token": "PRAT_MU7CFNK8_Z5ZK",
+  "concursoNome": "ALTO RIO DOCE - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "cargo": "MOTORISTA",
+  "avaliador": "EVANDRO LUIZ SOARES",
+  "turma": "46285 · 07h00",
+  "candidato": {
+    "inscricao": "16321511",
+    "nome": "JÉSSICA GABRIELA DA SILVA",
+    "cargo": "104 - MOTORISTA (D)",
+    "data": "46285",
+    "horario": "07h00"
+  },
+  "cnhApresentada": true,
+  "resultadoFinal": null,
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MU7CFNK8_Z5ZK_16321511_MOTORISTA.jpg",
+  "itensMarcados": [
+    "[leve] Manobra incorreta de baliza (uma tentativa). (x1)"
+  ],
+  "pontos": 9.5,
+  "eliminado": false,
+  "apto": true,
+  "observacoes": "",
+  "enviadoEm": "2026-09-20T11:54:07.993Z"
+}
