@@ -1,0 +1,35 @@
+{
+  "token": "PRAT_MU7CFNK8_Z5ZK",
+  "concursoNome": "ALTO RIO DOCE - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "cargo": "OPERADOR",
+  "avaliador": "EVANDRO LUIZ SOARES",
+  "turma": "46285 · 14H00",
+  "candidato": {
+    "inscricao": "16331357",
+    "nome": "DEIVID SANTOS DA COSTA",
+    "cargo": "107 - OPERADOR DE MÁQUINAS",
+    "data": "46285",
+    "horario": "14H00"
+  },
+  "cnhApresentada": true,
+  "resultadoFinal": null,
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MU7CFNK8_Z5ZK_16331357_OPERADOR.jpg",
+  "itensMarcados": [
+    "Não atendido: Checagem do painel.",
+    "Não atendido: Escavação.",
+    "Não atendido: Carga.",
+    "Não atendido: Transporte.",
+    "Não atendido: Descarga.",
+    "Não atendido: Retorno.",
+    "Não atendido: Estacionamento.",
+    "Não atendido: Transmissão em neutro.",
+    "Não atendido: Freio de estacionamento aplicado.",
+    "Não atendido: Concha no solo.",
+    "Não atendido: Arrefecimento do motor."
+  ],
+  "pontos": 4.5,
+  "eliminado": false,
+  "apto": false,
+  "observacoes": "Candidato desisriu",
+  "enviadoEm": "2026-09-20T18:05:11.921Z"
+}
