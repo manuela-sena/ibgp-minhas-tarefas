@@ -1,0 +1,27 @@
+{
+  "token": "PRAT_MU7CFNK8_Z5ZK",
+  "concursoNome": "ALTO RIO DOCE - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "cargo": "MOTORISTA",
+  "avaliador": "EVANDRO LUIZ SOARES",
+  "turma": "46285 · 10h00",
+  "candidato": {
+    "inscricao": "16331488",
+    "nome": "MAGNUS FERREIRA DA SILVA PINTO JUNIOR",
+    "cargo": "104 - MOTORISTA (D)",
+    "data": "46285",
+    "horario": "10h00"
+  },
+  "cnhApresentada": true,
+  "resultadoFinal": null,
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MU7CFNK8_Z5ZK_16331488_MOTORISTA.jpg",
+  "itensMarcados": [
+    "[grave] Provocar movimentos irregulares durante o teste, sem motivo justificado, ou interromper o funcionamento do motor sem justa razão, após o início do teste. (x1)",
+    "[media] Apoio do pé no pedal da embreagem com o veículo engrenado e em movimento. (x1)",
+    "[leve] Manobra incorreta de baliza (uma tentativa). (x1)"
+  ],
+  "pontos": 6.5,
+  "eliminado": false,
+  "apto": true,
+  "observacoes": "",
+  "enviadoEm": "2026-09-20T13:32:30.104Z"
+}
