@@ -1,0 +1,32 @@
+{
+  "token": "PRAT_MU7CFNK8_Z5ZK",
+  "concursoNome": "ALTO RIO DOCE - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "cargo": "PEDREIRO",
+  "avaliador": "FELIPE CORRÊA",
+  "turma": "46285 · 07h00",
+  "candidato": {
+    "inscricao": "16331467",
+    "nome": "REINALDO PAULO LOURENCO",
+    "cargo": "106 - OFICIAL SERVIÇO PÚBLICO – PEDREIRO",
+    "data": "46285",
+    "horario": "07h00"
+  },
+  "cnhApresentada": null,
+  "resultadoFinal": "APTO",
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MU7CFNK8_Z5ZK_16331467_PEDREIRO.jpg",
+  "itensMarcados": [
+    "Capacidade de envolvimento, responsabilidade e comprometimento. — RS (0.4 pts)",
+    "Iniciativa, interesse, criatividade e proatividade. — RS (0.4 pts)",
+    "Hábitos de Segurança do Trabalho (utilização de equipamentos de EPI e EPC) — RS (0.4 pts)",
+    "Responsabilidade e cuidado com materiais e equipamentos. — RS (0.4 pts)",
+    "Organização e limpeza do local de trabalho. — RS (0.4 pts)",
+    "Conhecimento dos processos de trabalho – Organização e Planejamento. — RS (2 pts)",
+    "Qualidade das atividades desempenhadas. — RS (3 pts)",
+    "Resultado final das atividades desempenhadas dentro do tempo determinado para execução da tarefa. — RS (3 pts)"
+  ],
+  "pontos": 10,
+  "eliminado": false,
+  "apto": true,
+  "observacoes": "",
+  "enviadoEm": "2026-09-20T11:17:27.394Z"
+}
