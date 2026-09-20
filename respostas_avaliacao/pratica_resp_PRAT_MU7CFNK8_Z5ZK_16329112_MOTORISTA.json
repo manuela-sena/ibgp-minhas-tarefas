@@ -1,0 +1,25 @@
+{
+  "token": "PRAT_MU7CFNK8_Z5ZK",
+  "concursoNome": "ALTO RIO DOCE - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "cargo": "MOTORISTA",
+  "avaliador": "EVANDRO LUIZ SOARES",
+  "turma": "46285 · 07h00",
+  "candidato": {
+    "inscricao": "16329112",
+    "nome": "JOAO VITOR ARAUJO DE SOUZA",
+    "cargo": "104 - MOTORISTA (D)",
+    "data": "46285",
+    "horario": "07h00"
+  },
+  "cnhApresentada": true,
+  "resultadoFinal": null,
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MU7CFNK8_Z5ZK_16329112_MOTORISTA.jpg",
+  "itensMarcados": [
+    "[media] Uso de marcha desapropriada para a velocidade. (x1)"
+  ],
+  "pontos": 9,
+  "eliminado": false,
+  "apto": true,
+  "observacoes": "",
+  "enviadoEm": "2026-09-20T12:03:48.713Z"
+}
