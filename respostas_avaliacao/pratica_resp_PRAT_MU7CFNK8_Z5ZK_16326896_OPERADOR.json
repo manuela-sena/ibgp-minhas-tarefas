@@ -1,0 +1,35 @@
+{
+  "token": "PRAT_MU7CFNK8_Z5ZK",
+  "concursoNome": "ALTO RIO DOCE - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "cargo": "OPERADOR",
+  "avaliador": "FELIPE CORRÊA",
+  "turma": "46285 · 14H00",
+  "candidato": {
+    "inscricao": "16326896",
+    "nome": "CHARLES COSTA OLIVEIRA",
+    "cargo": "107 - OPERADOR DE MÁQUINAS",
+    "data": "46285",
+    "horario": "14H00"
+  },
+  "cnhApresentada": true,
+  "resultadoFinal": null,
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MU7CFNK8_Z5ZK_16326896_OPERADOR.jpg",
+  "itensMarcados": [
+    "Não atendido: Alavancas do freio de estacionamento.",
+    "Não atendido: Alavancas do comando hidráulico da concha.",
+    "Não atendido: Alavanca do comando de reversão.",
+    "Não atendido: Alavanca do comando da transmissão.",
+    "Não atendido: Pedais de freio / neutralizador.",
+    "Não atendido: Botão de buzina.",
+    "Não atendido: Transmissão em neutro.",
+    "Não atendido: Freio de estacionamento aplicado.",
+    "Não atendido: Concha baixa no solo.",
+    "Não atendido: Acionamento da chave de partida.",
+    "Não atendido: Aquecimento do motor."
+  ],
+  "pontos": 4.5,
+  "eliminado": false,
+  "apto": false,
+  "observacoes": "Não realizou todo exercício",
+  "enviadoEm": "2026-09-20T18:10:48.647Z"
+}
