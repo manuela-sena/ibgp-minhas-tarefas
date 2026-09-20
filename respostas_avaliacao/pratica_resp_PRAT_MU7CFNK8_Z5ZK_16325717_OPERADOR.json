@@ -1,0 +1,23 @@
+{
+  "token": "PRAT_MU7CFNK8_Z5ZK",
+  "concursoNome": "ALTO RIO DOCE - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "cargo": "OPERADOR",
+  "avaliador": "EVANDRO LUIZ SOARES",
+  "turma": "46285 · 14H00",
+  "candidato": {
+    "inscricao": "16325717",
+    "nome": "LUCIANO DE OLIVEIRA NEPOMUCENO",
+    "cargo": "107 - OPERADOR DE MÁQUINAS",
+    "data": "46285",
+    "horario": "14H00"
+  },
+  "cnhApresentada": true,
+  "resultadoFinal": null,
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MU7CFNK8_Z5ZK_16325717_OPERADOR.jpg",
+  "itensMarcados": [],
+  "pontos": 10,
+  "eliminado": false,
+  "apto": true,
+  "observacoes": "Candidato não concluiu o comando de corte talude",
+  "enviadoEm": "2026-09-20T18:24:56.033Z"
+}
