@@ -1,0 +1,25 @@
+{
+  "token": "PRAT_MU7CFNK8_Z5ZK",
+  "concursoNome": "ALTO RIO DOCE - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "cargo": "MOTORISTA",
+  "avaliador": "EVANDRO LUIZ SOARES",
+  "turma": "46285 · 07h00",
+  "candidato": {
+    "inscricao": "16328433",
+    "nome": "BRUNO DE SOUZA",
+    "cargo": "104 - MOTORISTA (D)",
+    "data": "46285",
+    "horario": "07h00"
+  },
+  "cnhApresentada": true,
+  "resultadoFinal": null,
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MU7CFNK8_Z5ZK_16328433_MOTORISTA.jpg",
+  "itensMarcados": [
+    "[leve] Mudança incorreta de marchas. (x1)"
+  ],
+  "pontos": 9.5,
+  "eliminado": false,
+  "apto": true,
+  "observacoes": "",
+  "enviadoEm": "2026-09-20T10:58:58.285Z"
+}
