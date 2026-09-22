@@ -9191,15 +9191,17 @@ async function gerarPlanilhaAlocacao(resultado, escolasEnviadas){
   function salaSemSufixo(s){ return String(s||'').split(' - ')[0]; }
 
   // ── ATA DE SALA (resumo por sala) ──
+  // A chave inclui DATA PROVA e TURNO — sem isso, uma sala usada de manhã E à
+  // tarde (o caso mais comum) ficava com as duas sessões somadas numa linha só.
   const porSala = {};
   resultado.alocados.forEach(a=>{
-    const chave = a.ESCOLA+'|'+salaSemSufixo(a.SALA)+'|'+a.ANDAR+'|'+a.BLOCO;
+    const chave = a.ESCOLA+'|'+a['DATA PROVA']+'|'+a.TURNO+'|'+salaSemSufixo(a.SALA)+'|'+a.ANDAR+'|'+a.BLOCO;
     (porSala[chave] = porSala[chave]||[]).push(a);
   });
   const ataRows = Object.keys(porSala).map(chave=>{
     const itens = porSala[chave];
     const partes = chave.split('|');
-    const escola = partes[0], sala = partes[1], andar = partes[2], bloco = partes[3];
+    const escola = partes[0], sala = partes[3], andar = partes[4], bloco = partes[5];
     const cargos = [...new Set(itens.map(x=>x.CARGO))].slice(0,5);
     const row = {'CONCURSO': itens[0].CONCURSO, 'DATA PROVA': itens[0]['DATA PROVA'], 'TURNO': itens[0].TURNO,
       'ESCOLA': escola, 'SALA': `${andar} - ${bloco} - ${sala}`, 'QTD DE CANDIDATOS': itens.length};
