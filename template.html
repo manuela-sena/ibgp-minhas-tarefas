@@ -9618,9 +9618,12 @@ function atualizarPreviewDiaria(){
 function calcularEquipe(resultado, enderecoPorEscola){
   function salaBase(s){ return String(s||'').split(' - ')[0]; }
 
+  // Chaves incluem DATA PROVA — sem isso, a mesma escola usada em dois dias
+  // diferentes (ex: sábado e domingo) com o mesmo texto de turno ("TARDE")
+  // ficaria com as duas sessões somadas numa linha só.
   const porSalaTurno = {};
   resultado.alocados.forEach(a=>{
-    const chave = a.ESCOLA+'|'+a.TURNO+'|'+salaBase(a.SALA);
+    const chave = a.ESCOLA+'|'+a['DATA PROVA']+'|'+a.TURNO+'|'+salaBase(a.SALA);
     (porSalaTurno[chave]=porSalaTurno[chave]||[]).push(a);
   });
 
@@ -9633,16 +9636,19 @@ function calcularEquipe(resultado, enderecoPorEscola){
 
   const porEscolaTurno = {};
   resultado.alocados.forEach(a=>{
-    const chave = a.ESCOLA+'|'+a.TURNO;
-    if(!porEscolaTurno[chave]) porEscolaTurno[chave] = {escola:a.ESCOLA, turno:a.TURNO, candidatos:[], salas:new Set()};
+    const chave = a.ESCOLA+'|'+a['DATA PROVA']+'|'+a.TURNO;
+    if(!porEscolaTurno[chave]) porEscolaTurno[chave] = {escola:a.ESCOLA, dataProvaStr:a['DATA PROVA'], turno:a.TURNO, candidatos:[], salas:new Set()};
     porEscolaTurno[chave].candidatos.push(a);
     porEscolaTurno[chave].salas.add(salaBase(a.SALA));
   });
 
-  const turnosPorEscola = {};
+  // Nº de turnos que a escola atende NAQUELE DIA específico (não no total
+  // histórico) — é isso que define a tarifa de 1/2/3/4 turnos do fiscal.
+  const turnosPorEscolaData = {};
   Object.values(porEscolaTurno).forEach(g=>{
-    if(!turnosPorEscola[g.escola]) turnosPorEscola[g.escola] = new Set();
-    turnosPorEscola[g.escola].add(g.turno);
+    const chaveED = g.escola+'|'+g.dataProvaStr;
+    if(!turnosPorEscolaData[chaveED]) turnosPorEscolaData[chaveED] = new Set();
+    turnosPorEscolaData[chaveED].add(g.turno);
   });
 
   const linhas = Object.values(porEscolaTurno).map(g=>{
@@ -9650,7 +9656,7 @@ function calcularEquipe(resultado, enderecoPorEscola){
 
     let fiscal = 0;
     g.salas.forEach(sala=>{
-      const qtdSala = (porSalaTurno[g.escola+'|'+g.turno+'|'+sala]||[]).length;
+      const qtdSala = (porSalaTurno[g.escola+'|'+g.dataProvaStr+'|'+g.turno+'|'+sala]||[]).length;
       fiscal += tierFiscal(qtdSala);
     });
 
@@ -9661,11 +9667,11 @@ function calcularEquipe(resultado, enderecoPorEscola){
       turno: g.turno, escola: g.escola, cidade: end.cidade || '',
       dataProva: primeiraData ? primeiraData['DATA HORA PROVA OBJ'] : null,
       salas: g.salas.size, candidatos, fiscal,
-      nTurnosEscola: turnosPorEscola[g.escola].size,
+      nTurnosEscola: turnosPorEscolaData[g.escola+'|'+g.dataProvaStr].size,
     };
   });
 
-  linhas.sort((a,b)=>a.escola.localeCompare(b.escola)||a.turno.localeCompare(b.turno));
+  linhas.sort((a,b)=>a.escola.localeCompare(b.escola)||(a.dataProva?.getTime()||0)-(b.dataProva?.getTime()||0)||a.turno.localeCompare(b.turno));
   return linhas;
 }
 
