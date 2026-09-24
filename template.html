@@ -1372,6 +1372,7 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
         <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end">
           <button class="btn-primary" onclick="gerarResultadoPreliminarXlsx()">⚙️ Gerar e baixar</button>
         </div>
+        <div id="rp-pos-geracao" style="margin-top:14px"></div>
       </div>
     </div>
 
@@ -5997,6 +5998,7 @@ function carregarRPRemark(input){
 
 function montarLinhasResultadoPreliminar(){
   const linhas=[]; const ordemMateriasPorNivel=new Map();
+  const semResultado=[]; // pago/deferido mas sem nenhum resultado de prova (nem próprio, nem de irmão)
   const irmaosDe=window._rpIrmaosDe||new Map();
   _rpRegistry.forEach(rec=>{
     let res=_rpResultados.get(rec.INSCRICAO);
@@ -6008,10 +6010,12 @@ function montarLinhasResultadoPreliminar(){
         }
       }
     }
+    const ativo=STATUS_ATIVOS_RP.includes(rec.STATUS.toLowerCase());
+    if(!res && ativo) semResultado.push({INSCRICAO:rec.INSCRICAO, CANDIDATO:rec.CANDIDATO, CARGO:rec.CARGO});
     // O filtro de status (pago/deferida) só vale quando o candidato NÃO tem
     // resultado de prova algum — se ele tem nota no Remark/Gravic, aparece
     // mesmo que a inscrição esteja indeferida/pendente/etc.
-    if(!res && !STATUS_ATIVOS_RP.includes(rec.STATUS.toLowerCase())) return;
+    if(!res && !ativo) return;
     const nivel=tierPorCodigoRP(rec.CODIGO);
     if(!ordemMateriasPorNivel.has(nivel)) ordemMateriasPorNivel.set(nivel,[]);
     const ordem=ordemMateriasPorNivel.get(nivel);
@@ -6023,7 +6027,7 @@ function montarLinhasResultadoPreliminar(){
       total: res?res.total:'AUSENTE',
     });
   });
-  return {linhas, ordemMateriasPorNivel};
+  return {linhas, ordemMateriasPorNivel, semResultado};
 }
 
 function atualizarPreviewResultadoPreliminar(){
@@ -6075,7 +6079,7 @@ function gerarResultadoPreliminarXlsx(){
 
   carregarExcelJS(async()=>{
     try{
-      const {linhas, ordemMateriasPorNivel}=montarLinhasResultadoPreliminar();
+      const {linhas, ordemMateriasPorNivel, semResultado}=montarLinhasResultadoPreliminar();
 
       const wb=new ExcelJS.Workbook();
       const bordaThin={top:{style:'thin'},bottom:{style:'thin'},left:{style:'thin'},right:{style:'thin'}};
@@ -6142,6 +6146,21 @@ function gerarResultadoPreliminarXlsx(){
       a.href=URL.createObjectURL(blob);
       a.download='RESULTADO_PRELIMINAR.xlsx';
       a.click();
+
+      const posEl=document.getElementById('rp-pos-geracao');
+      if(posEl){
+        if(semResultado.length){
+          posEl.innerHTML=`
+<div style="background:#fdf6e8;border:1px solid #f0dfb0;border-radius:9px;padding:12px 16px">
+  <div style="font-size:13px;font-weight:700;color:#a06c12;margin-bottom:6px">⚠️ ${semResultado.length} candidato(s) pago(s)/deferido(s) sem nenhum resultado de prova (nem próprio, nem de irmão de mesma prova):</div>
+  <div style="max-height:220px;overflow-y:auto;font-size:12.5px;color:#41506b">
+    ${semResultado.map(s=>`<div style="padding:3px 0;border-bottom:1px solid #f0e6cc">Inscrição <strong>${s.INSCRICAO}</strong> — ${s.CANDIDATO} (${s.CARGO})</div>`).join('')}
+  </div>
+</div>`;
+        } else {
+          posEl.innerHTML=`<div style="background:#e4f3ea;border:1px solid #a8dbb8;border-radius:9px;padding:10px 14px;font-size:12.5px;color:#2e7d52">✅ Todos os candidatos pagos/deferidos têm resultado de prova.</div>`;
+        }
+      }
     }catch(e){
       alert('Erro ao gerar planilha: '+e.message);
       console.error(e);
