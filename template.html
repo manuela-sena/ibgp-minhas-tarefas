@@ -5999,7 +5999,6 @@ function montarLinhasResultadoPreliminar(){
   const linhas=[]; const ordemMateriasPorNivel=new Map();
   const irmaosDe=window._rpIrmaosDe||new Map();
   _rpRegistry.forEach(rec=>{
-    if(!STATUS_ATIVOS_RP.includes(rec.STATUS.toLowerCase())) return;
     let res=_rpResultados.get(rec.INSCRICAO);
     if(!res){
       const irmaos=irmaosDe.get(rec.INSCRICAO);
@@ -6009,6 +6008,10 @@ function montarLinhasResultadoPreliminar(){
         }
       }
     }
+    // O filtro de status (pago/deferida) só vale quando o candidato NÃO tem
+    // resultado de prova algum — se ele tem nota no Remark/Gravic, aparece
+    // mesmo que a inscrição esteja indeferida/pendente/etc.
+    if(!res && !STATUS_ATIVOS_RP.includes(rec.STATUS.toLowerCase())) return;
     const nivel=tierPorCodigoRP(rec.CODIGO);
     if(!ordemMateriasPorNivel.has(nivel)) ordemMateriasPorNivel.set(nivel,[]);
     const ordem=ordemMateriasPorNivel.get(nivel);
