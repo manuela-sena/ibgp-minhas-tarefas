@@ -6119,15 +6119,16 @@ function gerarResultadoPreliminarXlsx(){
         linhasNivel.forEach((l,ri)=>{
           const row=ri+3;
           const dataNasc=fmtDataRP(l.DATA_NASCIMENTO);
-          // Nota numérica 0 em uma disciplina vira "-"; total 0 vira "AUSENTE"
-          // (candidato que compareceu mas zerou tudo é tratado como ausente).
+          // "-" só aparece quando o candidato é ausente (sem nenhum resultado,
+          // l.subjects null) — quando ele tem nota de verdade, um 0 numa
+          // disciplina fica exibido como 0 mesmo, não vira "-".
           const vals=[Number(l.INSCRICAO)||l.INSCRICAO, l.CANDIDATO, l.CARGO, dataNasc,
             ...materias.map(m=>{
-              const v = l.subjects ? l.subjects[m] : undefined;
-              if(v===undefined||v===null) return '-';
-              return (typeof v==='number' && v===0) ? '-' : v;
+              if(!l.subjects) return '-';
+              const v = l.subjects[m];
+              return (v===undefined||v===null) ? '-' : v;
             }),
-            (typeof l.total==='number' && l.total===0) ? 'AUSENTE' : l.total];
+            l.total];
           vals.forEach((v,ci)=>{
             const c=ws.getCell(row,ci+1);
             c.value=v;
