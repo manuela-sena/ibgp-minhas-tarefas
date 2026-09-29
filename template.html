@@ -5522,16 +5522,37 @@ function processarInscricoes(){
 
         function fmtData(v){
           if(!v||v==='-') return '-';
-          try{const d=new Date(v);if(isNaN(d.getTime())) return v.toString();
+          if(v instanceof Date){
+            if(isNaN(v.getTime())) return '-';
+            return `${String(v.getDate()).padStart(2,'0')}/${String(v.getMonth()+1).padStart(2,'0')}/${v.getFullYear()}`;
+          }
+          const s = String(v).trim();
+          // Formato brasileiro "DD/MM/AAAA" — new Date(s) sozinho interpreta a barra
+          // como MM/DD/AAAA (padrão americano) e troca dia/mês silenciosamente sempre
+          // que o dia é <=12, então precisa ser tratado explicitamente antes do
+          // fallback genérico (mesmo bug já corrigido em parseDataRealizacaoProva).
+          const mBr = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+          if(mBr) return `${mBr[1].padStart(2,'0')}/${mBr[2].padStart(2,'0')}/${mBr[3]}`;
+          try{const d=new Date(s);if(isNaN(d.getTime())) return s;
             return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;}
-          catch(e){return v.toString();}
+          catch(e){return s;}
         }
         function fmtDataHora(v){
           // Igual fmtData, mas preserva a hora quando existir. Aceita objeto Date ou texto no
-          // formato Date.toString() do JS (como DATA REALIZAÇÃO PROVA normalmente vem salvo).
+          // formato Date.toString() do JS, ou "DD/MM/AAAA[ HH:MM]" — esse último precisa ser
+          // tratado explicitamente, senão new Date(s) interpreta a barra como MM/DD/AAAA.
           if(!v||v==='-') return '-';
           try{
-            const d=(v instanceof Date)?v:new Date(v);
+            let d;
+            if(v instanceof Date){
+              d = v;
+            } else {
+              const s = String(v).trim();
+              const mBr = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+              d = mBr
+                ? new Date(Number(mBr[3]), Number(mBr[2])-1, Number(mBr[1]), Number(mBr[4]||0), Number(mBr[5]||0), Number(mBr[6]||0))
+                : new Date(s);
+            }
             if(isNaN(d.getTime())) return v.toString();
             const dd=String(d.getDate()).padStart(2,'0');
             const mm=String(d.getMonth()+1).padStart(2,'0');
