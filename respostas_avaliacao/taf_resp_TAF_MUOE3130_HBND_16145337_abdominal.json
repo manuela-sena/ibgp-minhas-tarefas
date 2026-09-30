@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MUOE3130_HBND",
+  "concursoNome": "ALEES - EDITAL Nº 01/2025 - CONCURSO PÚBLICO",
+  "avaliador": "MANUELA",
+  "prova": "abdominal",
+  "turma": "22.02.2026 · 07H30 · 73.5",
+  "candidato": {
+    "inscricao": "16145337",
+    "nome": "ANA PAULA DE OLIVEIRA*",
+    "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA"
+  },
+  "sexo": "F",
+  "valor": 22,
+  "pontos": 36,
+  "eliminado": false,
+  "horaInicio": "2026-09-30T21:01:34.878Z",
+  "horaFim": "2026-09-30T21:01:45.547Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MUOE3130_HBND_16145337_abdominal.jpg",
+  "observacoes": "",
+  "enviadoEm": "2026-09-30T21:02:09.384Z"
+}
