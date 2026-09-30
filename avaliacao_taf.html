@@ -85,6 +85,7 @@
   .alert { padding: 12px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 14px; }
   .alert-error { background: #fbeaea; color: var(--vermelho); border: 1px solid #f0c8c8; }
   .alert-ok { background: #eaf6ef; color: var(--verde); border: 1px solid #c5e6d1; }
+  .alert-warn { background: #fff6e5; color: var(--amarelo); border: 1px solid #f0dca0; line-height:1.5; }
   .preview-pontos { border-radius: 8px; padding: 14px; text-align: center; font-size: 14px; font-weight: 700; }
   .preview-pontos.ok { background: #eaf6ef; color: var(--verde); }
   .preview-pontos.elim { background: #fbeaea; color: var(--vermelho); }
@@ -178,6 +179,7 @@
           </div>
           <button onclick="limparCandidato()">trocar</button>
         </div>
+        <div id="aviso-ja-avaliado" style="display:none;margin-top:10px" class="alert alert-warn"></div>
       </div>
     </div>
 
@@ -322,7 +324,36 @@ function montarForm(){
   }
 }
 
-function onCabecalhoChange(){ atualizarBotaoEnviar(); }
+function onCabecalhoChange(){ atualizarBotaoEnviar(); verificarAvaliacaoExistente(); }
+
+// Checa se ESSE candidato já tem resposta salva NESSA prova (mesmo arquivo
+// que enviarAvaliacao grava) — se tiver, mostra um aviso com o registro
+// existente, pra não avaliar duas vezes sem saber.
+async function verificarAvaliacaoExistente(){
+  const banner = document.getElementById('aviso-ja-avaliado');
+  const prova = document.getElementById('f-prova').value;
+  if(!banner) return;
+  if(!prova || !CANDIDATO_SEL){ banner.style.display='none'; return; }
+  banner.style.display='none';
+  try{
+    const path = `respostas_avaliacao/taf_resp_${TOKEN}_${CANDIDATO_SEL.inscricao}_${prova}.json`;
+    const r = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`,
+      {headers:{'Authorization':'Bearer '+GH_WRITE_TOKEN}});
+    if(!r.ok) return; // 404 — ainda não avaliado nessa prova, segue normal
+    const d = await r.json();
+    const resp = JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))));
+    const nomesProva = {corrida:'Corrida de Resistência', abdominal:'Flexão Abdominal', barra:'Barra Fixa / Isometria'};
+    const dataEnvio = resp.enviadoEm ? new Date(resp.enviadoEm).toLocaleString('pt-BR') : '—';
+    const horaIni = resp.horaInicio ? new Date(resp.horaInicio).toLocaleTimeString('pt-BR',{hour12:false}) : '—';
+    const horaFim = resp.horaFim ? new Date(resp.horaFim).toLocaleTimeString('pt-BR',{hour12:false}) : '—';
+    const resultadoTxt = resp.eliminado ? 'ELIMINADO' : `${resp.pontos} pontos`;
+    banner.innerHTML = `⚠️ <strong>Este candidato já foi avaliado em ${nomesProva[prova]||prova}.</strong><br>
+      Avaliador: ${resp.avaliador||'—'} · Valor obtido: ${resp.valor??'—'} · Resultado: ${resultadoTxt}<br>
+      Início: ${horaIni} · Fim: ${horaFim} · Enviado em: ${dataEnvio}<br>
+      <span style="font-weight:600">Se enviar de novo, essa avaliação anterior será substituída.</span>`;
+    banner.style.display = 'block';
+  }catch(e){ /* falha de rede ao checar — não bloqueia o fluxo, só não mostra o aviso */ }
+}
 
 function onProvaChange(){
   const prova = document.getElementById('f-prova').value;
@@ -337,6 +368,7 @@ function onProvaChange(){
   atualizarOpcoesValor();
   atualizarPreview();
   atualizarBotaoEnviar();
+  verificarAvaliacaoExistente();
 }
 
 // Preenche o grid de "Valor obtido" só com os degraus que existem na tabela de
@@ -447,6 +479,7 @@ function selecionarCandidato(inscricao){
     document.getElementById('card-avaliacao').style.display='block';
   }
   atualizarBotaoEnviar();
+  verificarAvaliacaoExistente();
 }
 
 function limparCandidato(){
@@ -458,6 +491,7 @@ function limparCandidato(){
   document.getElementById('card-foto').style.display='none';
   document.getElementById('card-cronometro').style.display='none';
   document.getElementById('card-avaliacao').style.display='none';
+  document.getElementById('aviso-ja-avaliado').style.display='none';
   resetarFoto();
   resetarCronometro();
   atualizarBotaoEnviar();
