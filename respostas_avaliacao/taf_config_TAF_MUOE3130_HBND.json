@@ -1,0 +1,3223 @@
+{
+  "token": "TAF_MUOE3130_HBND",
+  "criadoEm": "2026-09-30T17:38:44.412Z",
+  "atualizadoEm": "2026-09-30T17:38:44.412Z",
+  "concursoNome": "ALEES - EDITAL Nº 01/2025 - CONCURSO PÚBLICO",
+  "concursoId": "flkgIw-KQ0OWbTX5DG5E0mUAOya3",
+  "avaliadores": [
+    "MANUELA"
+  ],
+  "candidatos": [
+    {
+      "inscricao": "16143566",
+      "nome": "AMANDA BERNABÉ POLONINI",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": "78"
+    },
+    {
+      "inscricao": "16151414",
+      "nome": "AMANDA PIFFER ARANTE BAIÃO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16145337",
+      "nome": "ANA PAULA DE OLIVEIRA*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": "73.5"
+    },
+    {
+      "inscricao": "16102478",
+      "nome": "CASSIA CUNHA BASTO DOS SANTOS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16102190",
+      "nome": "CIBELI DRAGO NUNES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16134909",
+      "nome": "CLAUDIA MORAES DO NASCIMENTO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16146998",
+      "nome": "DANIELLE FONSECA NEGRINI",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16105637",
+      "nome": "DEBORAH KAROLINE LOPES DE OLIVEIRA *",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16139752",
+      "nome": "DIANA RABBI GUIMARAES LEAL",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16116095",
+      "nome": "ELIANE HAND ONOFRE *",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16099776",
+      "nome": "ERIKA ANGELO*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16112481",
+      "nome": "GABRIELA DA SILVA RIBEIRO SARCINELLI",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16149681",
+      "nome": "GABRIELA GOMES BORGES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16110368",
+      "nome": "GISELLE LEAL GARCIA SOARES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16102456",
+      "nome": "GISELLE VASCONCELOS BARBOSA MARTINS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16107621",
+      "nome": "IZABEL CRISTINA ARCANJO TAUFFER",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16110450",
+      "nome": "ANNA CLAUDIA MOMBRINI SILVA BARBOSA*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16146767",
+      "nome": "BRUNO SANDERSON COSTA*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16106076",
+      "nome": "CAROLINA MELLO CARVALHO MACHADO MENEGATTI*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16120784",
+      "nome": "GABRIEL SARMENTO SILVA*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16147200",
+      "nome": "GIOVANI DRAGO DE SALLES NUNES*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16104836",
+      "nome": "HENRIQUE SALDANHA LIMA*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16146260",
+      "nome": "ICARO BATISTA GOLTARA *",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16149198",
+      "nome": "STELA DOMINGAS PERIM ALVES *",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16117226",
+      "nome": "ADEILDO DE SOUSA MARTINS*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16110122",
+      "nome": "ADENILSON RUTSATZ",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16149944",
+      "nome": "ALISON DANTAS LIMA DE SOUZA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16120058",
+      "nome": "ALVARINO JOSÉ CÂNDIDO DA SILVA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16139427",
+      "nome": "ARIANNA CALDEIRA LIMA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16112751",
+      "nome": "ARNALDO CORRÊA JUNIOR*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16109061",
+      "nome": "ARTUR SILVA DE ARAUJO*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16113747",
+      "nome": "ASAFE PAULO SALVADOR",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16121092",
+      "nome": "BENHUR COSTA DE CHRISTO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16142195",
+      "nome": "BRENO DE OLIVEIRA DA SILVA*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16140685",
+      "nome": "BRUNO FERREIRA FILHO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16099614",
+      "nome": "BRUNO HERIQUE PASSOS ALMEIDA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16100223",
+      "nome": "BRUNO OSCAR DE ALMEIDA NOGUEIRA SCHMIDT",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16106739",
+      "nome": "CAIO AVANCE ROCHA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16109189",
+      "nome": "CAIO CÉSAR PEREIRA FAGUNDES *",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16113317",
+      "nome": "CARLOS EDUARDO DE ARAUJO DEL PUPO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16123536",
+      "nome": "CARLOS HENRIQUE NUNES DA COSTA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16149118",
+      "nome": "CASSIO ALEXANDER SILVA REDIGHIERI",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16109250",
+      "nome": "LAIS GABRIEL GUEDES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16100727",
+      "nome": "LETÍCIA FROTA SOARES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16139578",
+      "nome": "MANUELLA CINTRA PINTO MENEZES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16125011",
+      "nome": "MARIA EDUARDA LIMA SOUSA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16153527",
+      "nome": "MARIA JESSICA BATISTA DE SOUSA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16149141",
+      "nome": "MARINA MELLO DA SILVA*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16101270",
+      "nome": "MELINA PUCCE KÁO YIEN",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16116217",
+      "nome": "MILLA ROCHA RODRIGUES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16115909",
+      "nome": "MONIQUE RODRIGUES MIRANDA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16155871",
+      "nome": "NATALIA DA SILVA CAMPOS MONTEIRO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16113392",
+      "nome": "NATANNY DOS SANTOS CAVALLINI",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16113103",
+      "nome": "PALOMA TORRES ZAIDAN DE OLIVEIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16101744",
+      "nome": "PATRICIA DIAS MORAES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16153512",
+      "nome": "PAULA NOVATO GONDIM RUY",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16099525",
+      "nome": "PÉROLA SOUZA DOS SANTOS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16102447",
+      "nome": "RAÍSSA NOLASCO DEPIANTE",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16140803",
+      "nome": "SAMARA RODRIGUES DE SOUSA SALTOR",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16101680",
+      "nome": "SCHIRLEY MAIRINCK DE SIQUIERA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16109895",
+      "nome": "TAMILIS DE ASSIS FAZOLO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16148701",
+      "nome": "THAYNA APARECIDA CASAGRANDE",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16137355",
+      "nome": "YASMIN MORETO GUAITOLINI",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16103050",
+      "nome": "YASMIN NASCENTE SÃO JOSÉ*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16120686",
+      "nome": "CÁSSIO SEGLIA NICOLAU",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16147777",
+      "nome": "CHARLLES ANDRE DA ROCHA MACHADO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16112960",
+      "nome": "CLEBER LEITE DOS SANTOS*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16103426",
+      "nome": "DANIEL BISPO RODRIGUES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16145962",
+      "nome": "DANIEL DOS SANTOS DANIEL*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16108021",
+      "nome": "DANIEL HENRIQUE STEIN OLIVEIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16103612",
+      "nome": "DANIEL SANTOS GUIMARAES*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16138270",
+      "nome": "DANIEL SILVESTRE BARBOSA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16151160",
+      "nome": "DAVI PEREIRA DE SOUZA*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16129380",
+      "nome": "DAVID PEREIRA COMINOTTI",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16140664",
+      "nome": "DIEGO DA SILVA ARAUJO*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16107578",
+      "nome": "DIEGO OTONI",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": "78"
+    },
+    {
+      "inscricao": "16101831",
+      "nome": "ÉBERTE VALTER DA SILVA FREITAS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16140203",
+      "nome": "EDGAR SOUSA DE VASCONCELOS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16100452",
+      "nome": "EDILSON SILVA DO NASCIMENTO*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16154160",
+      "nome": "EDUARDA PALMEIRA FERREIRA DOS SANTOS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16138367",
+      "nome": "EDUARDO LIMA BRAVIM",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16127785",
+      "nome": "ELVES LUCIO ROMAO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16106466",
+      "nome": "EMANUEL DE CASTRO ROSSETO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16109962",
+      "nome": "EMERSON NERY*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16114574",
+      "nome": "ENERSON SILVA BACKER*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16115564",
+      "nome": "ENZO FERREIRA GUEDES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16143713",
+      "nome": "LABIENO PAULA GABURO*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16112536",
+      "nome": "MARCELO BARBOSA DACUNHA*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16128435",
+      "nome": "RICARDO VENTURINI JUNIOR*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16114002",
+      "nome": "SÉRGIO FERNANDO STEIN*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16100868",
+      "nome": "GUSTAVO RAUL CARRETTO SOSA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16105898",
+      "nome": "GUSTAVO SEROA DA MOTTA JAEGER",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16151058",
+      "nome": "HENDREW DA SILVA QUEIROZ",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16137958",
+      "nome": "HIGNE SILVA HASTENREITER",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16135626",
+      "nome": "HYGOR VEIGA SOARES CARREIRO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16126708",
+      "nome": "IGOR FERREIRA VIEIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16122621",
+      "nome": "IGOR LUZ CARMINAT",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16153345",
+      "nome": "ISRAEL VALOTTO MATTOS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16148895",
+      "nome": "IVO FREDERICO DOS SANTOS NASCIMENTO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16114752",
+      "nome": "JACKSON ALVES BATISTA*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16135279",
+      "nome": "JADERSON SCALZER FORZA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16104634",
+      "nome": "JEDERSON CARNEIRO NETO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16121649",
+      "nome": "JEFFERSON PIRES PAES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16110465",
+      "nome": "JEREMIAS MANHÃES  OLIVEIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16114763",
+      "nome": "JOAO FELIPE COLONESE CUNHA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16128223",
+      "nome": "JOÃO PAULO TURETTA PELISSON",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16143307",
+      "nome": "JOÃO PERIN RAMALHO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16118050",
+      "nome": "JOÃO VICTOR MAIA DA SILVA*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16145052",
+      "nome": "JOÃO VICTOR RUFINO*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16103961",
+      "nome": "JONATAS BORGES MELO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16120169",
+      "nome": "ERICK RODRIGUES JUSTINO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16112826",
+      "nome": "EVERSON CASTRO SILVA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16132871",
+      "nome": "FABIANO SOARES BRUM",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16120826",
+      "nome": "FELIPE DE CASTRO VIEIRA*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16126460",
+      "nome": "FELIPE MOHANDAS DE MENEZES BAUL",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16103026",
+      "nome": "FELIPE PEREIRA DALVI",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16104305",
+      "nome": "FELIPE TANNURE PEROVANO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16113342",
+      "nome": "FLAVIO DE ALMEIDA SANTOS*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": "73.5"
+    },
+    {
+      "inscricao": "16112282",
+      "nome": "GABRIEL DA SILVA GIRI",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16105404",
+      "nome": "GABRIEL DA SILVA PINHEIRO*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16121181",
+      "nome": "GABRIEL DALLEPRANE",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16147541",
+      "nome": "GABRIEL GALANTINI SANTANNA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16132517",
+      "nome": "GABRIEL RODRIGUES COELHO RAMOS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16103184",
+      "nome": "GEORGE MICHEL OLIVEIRA ANDRADE",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16107913",
+      "nome": "GILBERTO MULLER *",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16153949",
+      "nome": "GIUSEPPE ARGENTA ZANETI",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16139638",
+      "nome": "GUILHERME FONTANA SILVA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16107585",
+      "nome": "GUILHERME ROCHA FERREIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16121068",
+      "nome": "GUSTAVO CAETANO BOTELHO DOS ANJOS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16153752",
+      "nome": "GUSTAVO COSTA SOUZA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16107383",
+      "nome": "GUSTAVO DUARTE VERGNA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16105373",
+      "nome": "GUSTAVO MACIEL TAVARES FERNANDES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16100901",
+      "nome": "GUSTAVO OTONI MAZEGA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16109941",
+      "nome": "JOYCE FERNANDES DA CONCEICAO PINHEIRO CARLETE",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16138737",
+      "nome": "JULIO ANDRADE DE SOUZA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16112877",
+      "nome": "KAIO COLODETTI PAIVA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16104706",
+      "nome": "KERLON MAX BARCELLOS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16151399",
+      "nome": "LEANDRO SANTOS DE FARIAS*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16101702",
+      "nome": "LEONARDO CADETE ARAUJO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16100655",
+      "nome": "LEONARDO MICHEL DA SILVA*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16119152",
+      "nome": "LEONARDO PEREIRA DA SILVA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16109513",
+      "nome": "LEONARDO VIEIRA DA CUNHA SILVA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16116874",
+      "nome": "LUCAS DA SILVA COSTA *",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16127875",
+      "nome": "LUCAS ESPICALSKY STERZA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16113713",
+      "nome": "LUCAS GONÇALVES APERIBÊNCIO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16114166",
+      "nome": "LUCAS MACIEL SÁ",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16143147",
+      "nome": "LUCAS MAIOLI DE ALMEIDA BROSEGHINI",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16124143",
+      "nome": "LUCAS MIRANDA SANTOS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16101798",
+      "nome": "LUCAS RÊGO FERRAZ",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16149356",
+      "nome": "LUCAS SOARES PESSINI",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16126253",
+      "nome": "LUCIANO DOS SANTOS RODRIGUES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": "78"
+    },
+    {
+      "inscricao": "16144767",
+      "nome": "LUÍS GABRIEL FERREIRA DA CRUZ",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16100468",
+      "nome": "LUIS HENRIQUE DIAS DA SILVA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16105037",
+      "nome": "LUIZ FELIPE MION DA PENHA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16110463",
+      "nome": "LUIZ HENRIQUE BRANDÃO POZZATTO RODRIGUES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16152362",
+      "nome": "THALES BOECHAT ALVES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16118360",
+      "nome": "THIAGO MUCIACCIA ALVES*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16147642",
+      "nome": "THIAGO NOSSA CALIXTO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16151968",
+      "nome": "TIAGO ANGELO DA VITORIA*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16107249",
+      "nome": "TIAGO FERREIRA DE SOUSA*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16121377",
+      "nome": "TIAGO FRANCA DOS SANTOS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16151645",
+      "nome": "UÉZIO HENRIQUE FERNANDES DA CUNHA*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16148620",
+      "nome": "VICTOR BARBOSA*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16138842",
+      "nome": "VICTOR HUGO DE ALMEIDA PRUCOLI",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16118827",
+      "nome": "VICTOR PINHEIRO PRADO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16149407",
+      "nome": "VINÍCIUS DE SOUZA PAULISTA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16111881",
+      "nome": "VINICIUS FERNANDES BRAVIM",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16110581",
+      "nome": "VINÍCIUS SOARES RODRIGUES*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16113397",
+      "nome": "VITOR CARLOS SANTOS*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16104984",
+      "nome": "VITOR LUIZ ROCHA DOS SANTOS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16152976",
+      "nome": "VITOR RICARDO VETIS BREGONCI",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16135163",
+      "nome": "WALLACE STEIN RODRIGUES DOS SANTOS*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16144076",
+      "nome": "WAYNE CARLOS MACIEL ANTUNES DE SA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16136187",
+      "nome": "WEMERSON SANTOS DE OLIVEIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16111717",
+      "nome": "WEVERTON POLA DA SILVA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16109480",
+      "nome": "WILDSON CALHAU DOS SANTOS*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16140995",
+      "nome": "WILLIAM SILVEIRA TOMAZINI",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16147452",
+      "nome": "YASSER ELKHATIB MONTEIRO DE SOUZA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16115585",
+      "nome": "PEDRO HENRIQUE CARDOSO DE OLIVEIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16102724",
+      "nome": "PEDRO HENRIQUE SILVESTRE SCHEIN",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16101863",
+      "nome": "PEDRO LUIZ DE JESUS REALLI BEZERRA*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16154816",
+      "nome": "RAFAEL BRAVO RODRIGUES POMBO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16119697",
+      "nome": "RAFAEL COELHO DA SILVA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16146667",
+      "nome": "RAFAEL MAXIMIANO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16146893",
+      "nome": "RAFAEL SILVA SANTOS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16111106",
+      "nome": "RAPHAEL HENRIQUE PEREIRA BUTILHEIRO*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16149997",
+      "nome": "RHUAN CARVALHO DOS SANTOS*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16125989",
+      "nome": "RICARDO GONÇALVES DE ALMEIDA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16153033",
+      "nome": "RICARDO MAGALHÃES PENNA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16109802",
+      "nome": "RICARDO PASCOAL COSTA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16123544",
+      "nome": "RODOLFO MIRANDA RIBEIRO*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16135744",
+      "nome": "RODOLPHO DIAS SANTOS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16099476",
+      "nome": "RODRIGO CARLOS DE LIMA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16110410",
+      "nome": "RODRIGO DA SILVA MENDES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16144147",
+      "nome": "RODRIGO PEREIRA BRANDEMBURG*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16144000",
+      "nome": "ROGÉRIO DE OLIVEIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16134853",
+      "nome": "ROGERIO LUIZ FERREIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16107420",
+      "nome": "RONALDO SOBREIRO CARLINI",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16143130",
+      "nome": "RONAN VALES FIDELIS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16119645",
+      "nome": "RONY ANDRADE CORRÊA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16111543",
+      "nome": "SERGIO RICARDO SEPÚLVEDA RIBEIRO FILHO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16100286",
+      "nome": "STEPHERSON FERREIRA DA FRAGA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16100526",
+      "nome": "TALES DOS SANTOS SILVA*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16111638",
+      "nome": "MARCELO DA CUNHA SOUZA JUNIOR*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16114689",
+      "nome": "MARCELO VINICIUS ZACARIAS GASPARINI*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16139453",
+      "nome": "MARCOS ANDERSON DO CARMO MOREIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16116072",
+      "nome": "MARCOS CARNEIRO RODRIGUES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16099729",
+      "nome": "MARCOS TONON WERNERSBACH",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16106334",
+      "nome": "MARCOS VINICIUS MARTINS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16102030",
+      "nome": "MARCUS ANDRÉ CARVALHO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16122787",
+      "nome": "MARDEN DA SILVA PEREIRA JUNIOR",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16112053",
+      "nome": "MARRONEY BONADIMAN DA SILVA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16113157",
+      "nome": "MATEUS FREITAS LOUREIRO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16107961",
+      "nome": "MATHEUS TAMBASCO FREIRE FERNANDES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16113569",
+      "nome": "MHARL MHAON ROCHA DE JESUS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16145023",
+      "nome": "MICHAEL BERNARDES ROCHA FAVARO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16111867",
+      "nome": "MIQUEAS MARQUES DE JESUS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16150460",
+      "nome": "NICOLAS YAM MACIEL SILVA *",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16147527",
+      "nome": "NIKSON DE OLIVEIRA DE JESUS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16107620",
+      "nome": "NYCHOLAS DE CASTRO DIAS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16148179",
+      "nome": "OSWALDO DA SILVA JÚNIOR",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16156602",
+      "nome": "PATRIC MARIANI RIBEIRO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16103626",
+      "nome": "PATRICK URI AGUILAR",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16146359",
+      "nome": "PATRIK PANDOLFI DE OLIVEIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16111063",
+      "nome": "PAULO ROBERTO FRANÇA*",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16151121",
+      "nome": "PEDRO FILIPE DIAS FREIRE",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": "78"
+    },
+    {
+      "inscricao": "16130381",
+      "nome": "FERNANDA BIANCHI DELEPRANI",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": "67.5"
+    },
+    {
+      "inscricao": "16103999",
+      "nome": "ALLAN SANTOS VIEIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16155601",
+      "nome": "ANDRÉ DA SILVA PAULA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16108155",
+      "nome": "BEATRIZ VIDEIRA FREITAS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16142763",
+      "nome": "BRUNO SANTIAGO RODRIGUES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16109756",
+      "nome": "CARLOS HENRIQUE WOLKERS FIRME",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16104508",
+      "nome": "CID PAULO LEAL JUNIOR",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16150966",
+      "nome": "DAMIANA APARECIDA TAVARES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16114698",
+      "nome": "DAVID DOS SANTOS CERQUEIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16108254",
+      "nome": "ELDER GAMA BRAVIM",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16142260",
+      "nome": "FABIANO DA SILVA BOCK",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16105799",
+      "nome": "FABIANO MONTOVANI JOSE",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16146884",
+      "nome": "GABRIEL SECO VIVACQUA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16128340",
+      "nome": "GLEWISTON DA SILVA CORREA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16148799",
+      "nome": "GUILHERME GUIMARÃES GIACOMIN",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16099673",
+      "nome": "GUSTAVO BRAGATTO DAL PIAZ",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16108059",
+      "nome": "JACKSON ROSA DA SILVA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16148483",
+      "nome": "LILLIAN CAMPOS KOCK",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16153915",
+      "nome": "NARA QUINTELA MUNIZ SCHULTZ",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16106074",
+      "nome": "NAYANE VIALE VARGAS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16112246",
+      "nome": "SARA MARTINS PECANHA BRANDAO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16104680",
+      "nome": "SUELI APARECIDA RODRIGUES LUCAS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16142863",
+      "nome": "JONATHAS SILVA DANTAS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16106115",
+      "nome": "JOSÉ HENRIQUE FERREIRA DRUMMOND",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16103009",
+      "nome": "JÚLIO CÉSAR DE MORAES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16107081",
+      "nome": "LEANDRO ALVES DA CONCEICAO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16103481",
+      "nome": "LEANDRO MARQUES VIANNA LOPES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16143761",
+      "nome": "LEANDRO PINTO GONORING",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16107492",
+      "nome": "LORENZO PIOROTTI FAÉ",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16103169",
+      "nome": "LUCAS BELMONT VIANA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16100289",
+      "nome": "LUCAS TEIXEIRA RAMOS TAVARES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16105088",
+      "nome": "LUIS AUGUSTO ROZA RIBEIRO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16107674",
+      "nome": "LUIZ CLAUDIO FERRI TELES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16148172",
+      "nome": "LUIZ FERNANDO BAZILIO BECCALLI",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16146980",
+      "nome": "MAGNO ALVES DA SILVA MONTAN",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16131988",
+      "nome": "MARIA VICTOR GASPAR DE MENDONÇA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16103878",
+      "nome": "MARILTON KLEIN STEIN",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16106941",
+      "nome": "MATHEUS FONTES DA SILVA DANTAS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16149603",
+      "nome": "MIQUEIAS FELICIANO BRANDAO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16113648",
+      "nome": "NATAN FERREIRA DE SOUZA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16109919",
+      "nome": "PABLO HENRIQUE BARBOSA CARLETE",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16106387",
+      "nome": "PATRICK RAMOS DA CONCEICAO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16100093",
+      "nome": "RAFAEL VIEIRA MAGALHAES DE ARAUJO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16148835",
+      "nome": "RAPHAEL DE SOUZA LIMA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16102388",
+      "nome": "RAYNER GRATZ FIOROTTI",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16103710",
+      "nome": "ROBSON DOS SANTOS CINTRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16101262",
+      "nome": "ROBSON DOS SANTOS SACRAMENTO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16145327",
+      "nome": "RONALDO MENDES PEREIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16125926",
+      "nome": "SAMIR BEZERRA DE PAULA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16150151",
+      "nome": "TIAGO VIEIRA DE OLIVEIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16099957",
+      "nome": "VICTOR PERTEL QUINTILIANO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16099494",
+      "nome": "VINICIUS BARBOZA LOSS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16106836",
+      "nome": "WEDERSON DA SILVA DE JESUS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "* CANDIDATOS FIGURAM EM AMPLA CONCORRÊNCIA",
+      "nome": "",
+      "cargo": "",
+      "data": "",
+      "horario": "",
+      "turma": ""
+    },
+    {
+      "inscricao": "16113230",
+      "nome": "BEATRIZ BALBINO BARBOSA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16103807",
+      "nome": "DAFNE DAS NEVES LEAL DE CARVALHO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16152077",
+      "nome": "DANIELLE ALMEIDA ARAÚJO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16157653",
+      "nome": "ELIANE OLIVEIRA ANDRADE",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16101856",
+      "nome": "EMILY MENDES SOUSA LOPES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16110112",
+      "nome": "GABRIELLE CRISTINA ROSA RIBEIRO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16149932",
+      "nome": "GILMARA MOURA LEITE",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16150166",
+      "nome": "HELLEN JULIA NUNES QUADROS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16142638",
+      "nome": "INGRID MILHOLLI DE OLIVEIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16101169",
+      "nome": "INGRID SILVA EPITÁCIO PEREIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16130474",
+      "nome": "JULLIANNY DA SILVA OLIVEIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16106030",
+      "nome": "ADONIAS RAMOS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16149860",
+      "nome": "ALAILSON DA SILVA MEDEIROS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16152851",
+      "nome": "ALAN MARTINS DIAS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16125962",
+      "nome": "ALBERTO GUSTAVO RODRIGUES FERREIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16115148",
+      "nome": "ANDRE DE ASSIS HIGINO E GORZA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16157510",
+      "nome": "ANTHONY IVENS DA VITÓRIA BERNARDO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16125342",
+      "nome": "AQUILA FERREIRA PEREIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16153199",
+      "nome": "BOAVENTURA DE FREITAS OLIVEIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16122587",
+      "nome": "KARINE SUELEM MARQUES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16122829",
+      "nome": "LEIDIANA GOMES AMARAL",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16153585",
+      "nome": "LETICIA DE PAULA KOCK",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16113250",
+      "nome": "MAYARA VASCONCELOS PEREIRA GRAMLICH",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16102166",
+      "nome": "MAYGLLY BETINI FÉLIX",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16132540",
+      "nome": "PAULA DE LIMA RANGEL",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16147672",
+      "nome": "RAIANA SOARES PARANHOS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16151950",
+      "nome": "THAÍS BAIOCO SILVA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16157487",
+      "nome": "CHARLES RIBEIRO DOS SANTOS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16113400",
+      "nome": "CHRYSTIAN FERRARESI CONCEIÇÃO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16128011",
+      "nome": "DAVI ARAUJO DA SILVA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16134398",
+      "nome": "DEMÉTRIUS GONÇALVES AGUIAR",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16151257",
+      "nome": "EDISON JUNIOR MARCELINO MENDES ARRUDA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16136959",
+      "nome": "EDUARDO CORRÊA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16153892",
+      "nome": "ELIAS ALVES DO NASCIMENTO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16110282",
+      "nome": "ELLEN JOPLIN PEREIRA PEGO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16149065",
+      "nome": "GUSTAVO RIBEIRO DE OLIVEIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16142729",
+      "nome": "HIGOR MACHADO BRANDAO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16124795",
+      "nome": "HUGO LAGO LACERDA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16102742",
+      "nome": "HUGO RAMOS DA SILVA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16142944",
+      "nome": "IRVING BISPO SANTOS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16113653",
+      "nome": "JACKSON DE JESUS SANTOS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16140822",
+      "nome": "JOAO VICTOR DO COUTO ROMUALDO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16108038",
+      "nome": "JOLIMARCOS FERREIRA DOS SANTOS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16102678",
+      "nome": "JONAS SILVA COSTA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16102744",
+      "nome": "JONATHAN LOPES CABRAL",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16124505",
+      "nome": "EZEQUIAS CONCEIÇÃO DOS SANTOS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16107848",
+      "nome": "FÁBIO ROSA LUCAS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16109010",
+      "nome": "FELIPE MACHADO THIEBAUT",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16110243",
+      "nome": "FILIPE FIGUEIREDO DE NOVAIS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16149227",
+      "nome": "GUILHERME BIANCHI EVANGELISTA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16119317",
+      "nome": "GUSTAVO HENRIQUE GALDINO SANTOS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16149300",
+      "nome": "JUAN DA SILVA PEREIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16120920",
+      "nome": "LEONARDO BARRETO GOMES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16148945",
+      "nome": "LEONARDO BENTO CAVALCANTE",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16102806",
+      "nome": "LEONARDO DE OLIVEIRA FERNANDES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16112363",
+      "nome": "LEONARDO GUIMARÃES BARROS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16100074",
+      "nome": "LEONARDO MONTALVAO DA VITORIA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16118336",
+      "nome": "LUCAS BARREIROS SOARES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16114317",
+      "nome": "LUCAS RODRIGUES DA SILVA DE FREITAS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16151686",
+      "nome": "LUIZ FERNANDO PROCOPIO RODRIGUES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16099715",
+      "nome": "LUIZ HENRIQUE OLIVEIRA QUEIROZ",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16153065",
+      "nome": "TIAGO COSTA OLIVEIRA BOURGUIGNON",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16104722",
+      "nome": "UILTON PEREIRA DA SILVA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16123800",
+      "nome": "VALDECI RODRIGUES OLIVEIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16129925",
+      "nome": "VALDEMIR DA SILVA CUSTÓDIO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16141237",
+      "nome": "VICTOR MARINHO MOTA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16103161",
+      "nome": "VITOR FLORENCIO FERREIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16100533",
+      "nome": "VITOR TRANCOSO FERNANDES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16120822",
+      "nome": "WALLACE DE OLIVEIRA PINHEIRO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16104405",
+      "nome": "WILLIAN BREMENKAMP FERNANDES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16153001",
+      "nome": "YURI ROCHA RIBEIRO DA COSTA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16120490",
+      "nome": "RAFAEL CHUAIRY LOPES DE SIQUEIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16125029",
+      "nome": "REGINALDO CELESTINO DOS SANTOS NETO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16149209",
+      "nome": "RICHER WILLIAN DE SOUZA COELHO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16131480",
+      "nome": "RICKSON CINTRA COLLISTET",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16114576",
+      "nome": "RODRIGO BARCELOS MATTOS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16143570",
+      "nome": "SAMUEL DIAS SANTOS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16118796",
+      "nome": "TARCISIO MONTEIRO DIAS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16102655",
+      "nome": "MAICON JOEL NUNES DE ABREU",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16109779",
+      "nome": "MARCOS ANDRÉ DA SILVA OLIVEIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16147929",
+      "nome": "MARCOS JUNIOR FERREIRA DE SOUZA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16135294",
+      "nome": "MARCOS ROSA DE ALMEIDA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16105885",
+      "nome": "MATHEUS DOS SANTOS MIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16151034",
+      "nome": "MOABE SILVA GOMES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16100484",
+      "nome": "NADSON BLENNER DE AMORIM RODRIGUES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16135978",
+      "nome": "PATRICK GUEDIS SERVO DA SILVA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16144646",
+      "nome": "PATRICK LADEIRA CORREA DE JESUS",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16099928",
+      "nome": "PAULO RICARDO DE ALMEIDA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16153411",
+      "nome": "DAIANDARA ALVES FALCÃO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": "52.5"
+    },
+    {
+      "inscricao": "16102022",
+      "nome": "DÉBORA DE JESUS AMARAL LORENZONI",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16108468",
+      "nome": "CAMILLA DO ROSARIO SILVA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16135760",
+      "nome": "ADEMAR BENTO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16142855",
+      "nome": "ARON CRISTOFER PEREIRA CORREA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16124820",
+      "nome": "BEN HUR GUIMARAES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16123986",
+      "nome": "CARLOS PEREIRA DO NASCIMENTO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16136095",
+      "nome": "YARA GOMES FLORES",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "07H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16143276",
+      "nome": "HERCULES SILVA COUTINHO",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16117737",
+      "nome": "JADSON FERNANDO CHAVES DE SANTANA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16107179",
+      "nome": "FREDSON HENRIQUE TORRES RIALVA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "10H30",
+      "turma": ""
+    },
+    {
+      "inscricao": "16154195",
+      "nome": "LUCAS DOS SANTOS DE OLIVEIRA",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16124413",
+      "nome": "RAFAEL DO CARMO TRINDADE",
+      "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA",
+      "data": "22.02.2026",
+      "horario": "14H00",
+      "turma": ""
+    },
+    {
+      "inscricao": "* CANDIDATO FIGURA EM AMPLA CONCORRÊNCIA",
+      "nome": "",
+      "cargo": "",
+      "data": "",
+      "horario": "",
+      "turma": ""
+    }
+  ],
+  "tabelaPontos": {
+    "corrida": {
+      "unidadeM": "metros",
+      "unidadeF": "metros",
+      "linhas": [
+        {
+          "pontos": 30,
+          "m": 2400,
+          "f": 2000
+        },
+        {
+          "pontos": 32,
+          "m": 2500,
+          "f": 2100
+        },
+        {
+          "pontos": 34,
+          "m": 2600,
+          "f": 2200
+        },
+        {
+          "pontos": 36,
+          "m": 2700,
+          "f": 2300
+        },
+        {
+          "pontos": 38,
+          "m": 2800,
+          "f": 2400
+        },
+        {
+          "pontos": 40,
+          "m": 2900,
+          "f": 2500
+        },
+        {
+          "pontos": 44,
+          "m": 3000,
+          "f": 2600
+        },
+        {
+          "pontos": 46,
+          "m": 3100,
+          "f": 2700
+        },
+        {
+          "pontos": 50,
+          "m": 3200,
+          "f": 2800
+        }
+      ]
+    },
+    "abdominal": {
+      "unidadeM": "repetições",
+      "unidadeF": "repetições",
+      "linhas": [
+        {
+          "pontos": 30,
+          "m": 16,
+          "f": 16
+        },
+        {
+          "pontos": 32,
+          "m": 18,
+          "f": 18
+        },
+        {
+          "pontos": 34,
+          "m": 20,
+          "f": 20
+        },
+        {
+          "pontos": 36,
+          "m": 22,
+          "f": 22
+        },
+        {
+          "pontos": 38,
+          "m": 24,
+          "f": 24
+        },
+        {
+          "pontos": 40,
+          "m": 26,
+          "f": 26
+        },
+        {
+          "pontos": 44,
+          "m": 28,
+          "f": 28
+        },
+        {
+          "pontos": 46,
+          "m": 30,
+          "f": 30
+        },
+        {
+          "pontos": 50,
+          "m": 31,
+          "f": 31
+        }
+      ]
+    },
+    "barra": {
+      "unidadeM": "repetições",
+      "unidadeF": "segundos",
+      "linhas": [
+        {
+          "pontos": 30,
+          "m": 2,
+          "f": 5
+        },
+        {
+          "pontos": 32,
+          "m": 3,
+          "f": 10
+        },
+        {
+          "pontos": 34,
+          "m": 4,
+          "f": 14
+        },
+        {
+          "pontos": 36,
+          "m": 5,
+          "f": 18
+        },
+        {
+          "pontos": 38,
+          "m": 6,
+          "f": 22
+        },
+        {
+          "pontos": 40,
+          "m": 7,
+          "f": 26
+        },
+        {
+          "pontos": 44,
+          "m": 8,
+          "f": 30
+        },
+        {
+          "pontos": 46,
+          "m": 9,
+          "f": 34
+        },
+        {
+          "pontos": 50,
+          "m": 10,
+          "f": 38
+        }
+      ]
+    }
+  }
+}
