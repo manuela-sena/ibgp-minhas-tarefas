@@ -1249,8 +1249,29 @@ function renderPosicaoFinal(){
         <div class="valor-grid" id="posicao-grid-${g.inscricao}">
           ${marcas.map(m=>`<div class="valor-opt${g.posicaoParcial===m?' active':''}" onclick='selecionarPosicaoFinal(${JSON.stringify(g.inscricao)}, ${m})'>${m===0?'Não completou 100m':m+'m'}</div>`).join('')}
         </div>
+        <div class="preview-pontos" id="resultado-parcial-${g.inscricao}" style="display:none;margin-top:10px"></div>
       </div>
     `).join('');
+  GRUPO_CORRIDA.forEach(atualizarResultadoParcial);
+}
+
+// Calcula distância total (voltas completas + posição parcial) e mostra o
+// resultado (pontos ou eliminado) assim que a posição final é escolhida —
+// sem precisar esperar enviar pra saber se o candidato foi eliminado.
+function atualizarResultadoParcial(g){
+  const el = document.getElementById('resultado-parcial-'+g.inscricao);
+  if(!el) return;
+  if(g.posicaoParcial===null || g.posicaoParcial===undefined || !METROS_POR_VOLTA){ el.style.display='none'; return; }
+  const distancia = g.voltas*METROS_POR_VOLTA + g.posicaoParcial;
+  const calc = calcularPontos('corrida', g.sexo, distancia);
+  el.style.display = 'block';
+  if(calc.eliminado){
+    el.className = 'preview-pontos elim';
+    el.textContent = `${distancia}m — ⚠️ ELIMINADO`;
+  } else {
+    el.className = 'preview-pontos ok';
+    el.textContent = `${distancia}m — ${calc.pontos.toFixed(1).replace('.0','')} pontos`;
+  }
 }
 
 function selecionarPosicaoFinal(inscricao, valor){
@@ -1263,6 +1284,7 @@ function selecionarPosicaoFinal(inscricao, valor){
       chip.classList.toggle('active', i*100===valor);
     });
   }
+  atualizarResultadoParcial(g);
   atualizarBotaoEnviarGrupo();
 }
 
