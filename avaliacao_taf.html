@@ -200,7 +200,9 @@
         </div>
         <div class="form-group">
           <label id="label-valor">Valor obtido<span class="req">*</span></label>
-          <input type="number" step="0.01" id="f-valor" placeholder="0" oninput="atualizarPreview(); atualizarBotaoEnviar();">
+          <select id="f-valor" onchange="atualizarPreview(); atualizarBotaoEnviar();" disabled>
+            <option value="">Selecione a prova e o sexo primeiro...</option>
+          </select>
         </div>
         <div id="preview-pontos" class="preview-pontos neutro" style="margin-bottom:16px">Informe o valor para calcular a pontuação</div>
         <div class="form-group" style="margin-bottom:0">
@@ -293,15 +295,50 @@ function onCabecalhoChange(){ atualizarBotaoEnviar(); }
 function onProvaChange(){
   const prova = document.getElementById('f-prova').value;
   const labels = {
-    corrida:  {M:'Distância percorrida em 12 minutos (metros)', F:'Distância percorrida em 12 minutos (metros)'},
+    corrida:  {M:'Distância percorrida em 12 minutos', F:'Distância percorrida em 12 minutos'},
     abdominal:{M:'Quantidade de abdominais em 30 segundos',     F:'Quantidade de abdominais em 30 segundos'},
-    barra:    {M:'Quantidade de flexões na barra',              F:'Tempo em sustentação na barra (segundos)'}
+    barra:    {M:'Quantidade de flexões na barra',              F:'Tempo em sustentação na barra'}
   };
   if(prova && SEXO_SEL){
     document.getElementById('label-valor').innerHTML = (labels[prova][SEXO_SEL]||'Valor obtido') + '<span class="req">*</span>';
   }
+  atualizarOpcoesValor();
   atualizarPreview();
   atualizarBotaoEnviar();
+}
+
+// Preenche o select de "Valor obtido" só com os degraus que existem na tabela
+// de pontos (não deixa digitar qualquer número) — a 1ª opção cobre quem ficou
+// abaixo do menor degrau (eliminado).
+function atualizarOpcoesValor(){
+  const prova = document.getElementById('f-prova').value;
+  const sel = document.getElementById('f-valor');
+  const valorAnterior = sel.value;
+  sel.innerHTML = '';
+  const tab = (prova && CONFIG.tabelaPontos) ? CONFIG.tabelaPontos[prova] : null;
+  if(!prova || !SEXO_SEL || !tab || !tab.linhas || !tab.linhas.length){
+    sel.innerHTML = '<option value="">Selecione a prova e o sexo primeiro...</option>';
+    sel.disabled = true;
+    return;
+  }
+  const campo = SEXO_SEL==='M' ? 'm' : 'f';
+  const unidade = (SEXO_SEL==='M' ? tab.unidadeM : tab.unidadeF) || '';
+  const linhas = [...tab.linhas].sort((a,b)=>a[campo]-b[campo]);
+
+  sel.innerHTML = '<option value="">Selecione...</option>';
+  const menor = linhas[0][campo];
+  const opElim = document.createElement('option');
+  opElim.value = String(menor - (Number.isInteger(menor) ? 1 : 0.01));
+  opElim.textContent = `Abaixo de ${menor} ${unidade} (eliminado)`;
+  sel.appendChild(opElim);
+  linhas.forEach(l=>{
+    const op = document.createElement('option');
+    op.value = String(l[campo]);
+    op.textContent = `${l[campo]} ${unidade} — ${l.pontos} pontos`;
+    sel.appendChild(op);
+  });
+  sel.disabled = false;
+  if(valorAnterior && Array.from(sel.options).some(o=>o.value===valorAnterior)) sel.value = valorAnterior;
 }
 
 function buscarCandidato(){
