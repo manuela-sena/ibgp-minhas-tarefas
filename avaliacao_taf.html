@@ -95,14 +95,17 @@
   .crono-display.rodando { color: var(--azul-med); }
   .crono-horarios { display:flex; justify-content:space-around; gap:10px; margin-bottom:14px; font-size:12.5px; color:var(--muted); text-align:center; }
   .crono-horarios b { color: var(--texto); font-size:16px; display:block; margin-top:2px; }
-  .voltas-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(100px,1fr)); gap:10px; }
-  .volta-btn { border:2px solid var(--azul-med); border-radius:10px; padding:12px 6px; text-align:center; cursor:pointer;
-    user-select:none; background:#fff; transition: transform .08s; -webkit-tap-highlight-color: transparent; }
-  .volta-btn:active { transform: scale(0.94); background: var(--azul-claro); }
-  .volta-btn .num { font-size:18px; font-weight:800; color:var(--azul); }
-  .volta-btn .contagem { font-size:11.5px; color:var(--muted); margin-top:4px; }
-  .volta-btn .contagem b { color:var(--azul-med); font-size:16px; }
-  .volta-btn .menos { display:block; margin-top:6px; font-size:11px; color:var(--muted); text-decoration:underline; }
+  .voltas-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(110px,1fr)); gap:12px; }
+  .volta-card { border:2px solid var(--azul-med); border-radius:10px; overflow:hidden; background:#fff; }
+  .volta-tap { padding:16px 6px 14px; text-align:center; cursor:pointer; user-select:none; -webkit-tap-highlight-color: transparent; transition: background .08s; }
+  .volta-tap:active { background: var(--azul-claro); }
+  .volta-tap .num { font-size:18px; font-weight:800; color:var(--azul); }
+  .volta-tap .contagem { font-size:11.5px; color:var(--muted); margin-top:4px; }
+  .volta-tap .contagem b { color:var(--azul-med); font-size:19px; }
+  .volta-corrigir { display:block; width:100%; border:none; border-top:2px solid var(--vermelho);
+    background:#fbeaea; color:var(--vermelho); font-weight:800; font-size:13px; padding:10px 4px; cursor:pointer;
+    -webkit-tap-highlight-color: transparent; }
+  .volta-corrigir:active { background:#f2caca; }
   .grupo-item { display:flex; align-items:center; justify-content:space-between; background: var(--azul-claro);
     border-radius:8px; padding:9px 12px; margin-bottom:8px; }
   .grupo-item .info { font-size:13px; }
@@ -1210,10 +1213,12 @@ function renderGridVoltas(){
     .slice()
     .sort((a,b)=>Number(a.numero)-Number(b.numero))
     .map(g=>`
-      <div class="volta-btn" onclick='incrementarVolta(${JSON.stringify(g.inscricao)})'>
-        <div class="num">Nº ${g.numero}</div>
-        <div class="contagem">voltas: <b id="voltas-${g.inscricao}">${g.voltas}</b></div>
-        <span class="menos" onclick='event.stopPropagation(); decrementarVolta(${JSON.stringify(g.inscricao)})'>− corrigir</span>
+      <div class="volta-card">
+        <div class="volta-tap" onclick='incrementarVolta(${JSON.stringify(g.inscricao)})'>
+          <div class="num">Nº ${g.numero}</div>
+          <div class="contagem">voltas: <b id="voltas-${g.inscricao}">${g.voltas}</b></div>
+        </div>
+        <button type="button" class="volta-corrigir" onclick='decrementarVolta(${JSON.stringify(g.inscricao)})'>− Corrigir</button>
       </div>
     `).join('');
 }
