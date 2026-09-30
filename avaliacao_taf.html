@@ -95,6 +95,24 @@
   .crono-display.rodando { color: var(--azul-med); }
   .crono-horarios { display:flex; justify-content:space-around; gap:10px; margin-bottom:14px; font-size:12.5px; color:var(--muted); text-align:center; }
   .crono-horarios b { color: var(--texto); font-size:16px; display:block; margin-top:2px; }
+  .voltas-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(100px,1fr)); gap:10px; }
+  .volta-btn { border:2px solid var(--azul-med); border-radius:10px; padding:12px 6px; text-align:center; cursor:pointer;
+    user-select:none; background:#fff; transition: transform .08s; -webkit-tap-highlight-color: transparent; }
+  .volta-btn:active { transform: scale(0.94); background: var(--azul-claro); }
+  .volta-btn .num { font-size:18px; font-weight:800; color:var(--azul); }
+  .volta-btn .contagem { font-size:11.5px; color:var(--muted); margin-top:4px; }
+  .volta-btn .contagem b { color:var(--azul-med); font-size:16px; }
+  .volta-btn .menos { display:block; margin-top:6px; font-size:11px; color:var(--muted); text-decoration:underline; }
+  .grupo-item { display:flex; align-items:center; justify-content:space-between; background: var(--azul-claro);
+    border-radius:8px; padding:9px 12px; margin-bottom:8px; }
+  .grupo-item .info { font-size:13px; }
+  .grupo-item .info .n { font-weight:800; color:var(--azul-med); margin-right:6px; }
+  .grupo-item .info .s { color: var(--muted); font-size:11.5px; margin-left:6px; }
+  .grupo-item button { background:none; border:none; color:var(--vermelho); font-size:13px; font-weight:600; cursor:pointer; }
+  .posicao-candidato { margin-bottom:18px; padding-bottom:16px; border-bottom:1px solid var(--borda); }
+  .posicao-candidato:last-child { border-bottom:none; margin-bottom:0; padding-bottom:0; }
+  .posicao-candidato .titulo { font-weight:700; font-size:13.5px; margin-bottom:8px; }
+  .posicao-candidato .titulo .n { color:var(--azul-med); }
   .spinner { width: 22px; height: 22px; border: 3px solid var(--borda); border-top-color: var(--azul-med); border-radius: 50%;
     animation: spin .7s linear infinite; margin: 0 auto; }
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -160,6 +178,7 @@
       </div>
     </div>
 
+    <div id="fluxo-individual">
     <div class="card">
       <div class="card-header">
         <div class="card-title">2. Candidato(a)</div>
@@ -245,6 +264,107 @@
 
     <div id="alert-envio" style="display:none"></div>
     <button class="btn btn-primary" id="btn-enviar" onclick="enviarAvaliacao()" disabled>Confirmar e enviar</button>
+    </div>
+
+    <div id="fluxo-corrida-grupo" style="display:none">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">2. Configuração da pista</div>
+          <div class="card-sub">O tamanho da pista muda de concurso pra concurso — confirme antes de começar.</div>
+        </div>
+        <div class="card-body">
+          <div class="form-group" style="margin-bottom:0">
+            <label>Metros por volta<span class="req">*</span></label>
+            <input type="number" id="f-metros-volta" placeholder="Ex: 300" oninput="onMetrosVoltaChange()">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">3. Monte o grupo</div>
+          <div class="card-sub">Busque o candidato, confirme o sexo e o número que ele recebeu na hora da prova.</div>
+        </div>
+        <div class="card-body">
+          <div class="search-wrap">
+            <input type="text" id="f-busca-grupo" placeholder="Digite o nome ou a inscrição..." oninput="buscarCandidatoGrupo()" autocomplete="off">
+            <div id="search-results-grupo" class="search-results" style="display:none"></div>
+          </div>
+          <div id="add-grupo-form" style="display:none;margin-top:12px;padding:14px;border:1.5px dashed var(--azul-med);border-radius:9px">
+            <div id="add-grupo-nome" style="font-weight:700;color:var(--azul);margin-bottom:10px"></div>
+            <div style="display:flex;gap:10px;margin-bottom:10px">
+              <div class="radio-row" style="flex:1">
+                <div class="radio-opt" id="add-grupo-sexo-M" onclick="selecionarSexoGrupoTemp('M')">Masc.</div>
+                <div class="radio-opt" id="add-grupo-sexo-F" onclick="selecionarSexoGrupoTemp('F')">Fem.</div>
+              </div>
+              <input type="number" id="add-grupo-numero" placeholder="Nº" style="width:90px" inputmode="numeric">
+            </div>
+            <div style="display:flex;gap:8px">
+              <button type="button" class="btn btn-primary" style="padding:10px" onclick="confirmarAdicionarAoGrupo()">Adicionar ao grupo</button>
+              <button type="button" class="btn btn-secondary" style="padding:10px" onclick="cancelarAdicionarAoGrupo()">Cancelar</button>
+            </div>
+          </div>
+          <div id="lista-grupo" style="margin-top:14px"></div>
+        </div>
+      </div>
+
+      <div class="card" id="card-foto-grupo" style="display:none">
+        <div class="card-header">
+          <div class="card-title">4. Foto do grupo</div>
+          <div class="card-sub">Foto de todos alinhados, com os números visíveis, antes de começar a corrida.</div>
+        </div>
+        <div class="card-body">
+          <div id="foto-grupo-wrap">
+            <label class="foto-btn" for="f-foto-grupo-input">📷 Tirar foto</label>
+            <input type="file" id="f-foto-grupo-input" accept="image/*" capture="environment" style="display:none" onchange="onFotoGrupoSelecionada(this)">
+          </div>
+          <div id="foto-grupo-preview-wrap" class="foto-preview-wrap" style="display:none">
+            <img id="foto-grupo-preview" alt="Foto do grupo">
+            <div style="margin-top:10px">
+              <button type="button" class="btn-secondary" style="width:auto;padding:8px 16px;font-size:12.5px" onclick="retirarFotoGrupo()">Tirar novamente</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="card-crono-grupo" style="display:none">
+        <div class="card-header">
+          <div class="card-title">5. Cronômetro da corrida</div>
+          <div class="card-sub">Inicie quando a corrida começar e finalize ao fim do tempo.</div>
+        </div>
+        <div class="card-body">
+          <div id="crono-grupo-display" class="crono-display">00:00:00</div>
+          <div id="crono-grupo-horarios" class="crono-horarios" style="display:none">
+            <div>Início<b id="crono-grupo-hora-inicio">--:--:--</b></div>
+            <div>Fim<b id="crono-grupo-hora-fim">--:--:--</b></div>
+          </div>
+          <button type="button" class="btn btn-primary" id="btn-crono-grupo-iniciar" onclick="iniciarCronometroGrupo()">▶ Iniciar corrida</button>
+          <button type="button" class="btn btn-secondary" id="btn-crono-grupo-finalizar" onclick="finalizarCronometroGrupo()" style="display:none">⏹ Finalizar corrida</button>
+        </div>
+      </div>
+
+      <div class="card" id="card-voltas" style="display:none">
+        <div class="card-header">
+          <div class="card-title">6. Contagem de voltas</div>
+          <div class="card-sub">Toque no número toda vez que o candidato passar pelo ponto de contagem. Errou? Use o "−" pra corrigir.</div>
+        </div>
+        <div class="card-body">
+          <div id="grid-voltas" class="voltas-grid"></div>
+        </div>
+      </div>
+
+      <div class="card" id="card-posicao-final" style="display:none">
+        <div class="card-header">
+          <div class="card-title">7. Posição final de cada um</div>
+          <div class="card-sub">Onde cada candidato parou quando o tempo acabou (volta incompleta), de 100 em 100 metros.</div>
+        </div>
+        <div class="card-body" id="corpo-posicao-final"></div>
+      </div>
+
+      <div id="alert-envio-grupo" style="display:none"></div>
+      <button class="btn btn-primary" id="btn-enviar-grupo" onclick="enviarAvaliacaoGrupo()" disabled>Confirmar e enviar resultados do grupo</button>
+    </div>
+
   </div>
 
   <div id="page-success" style="display:none" class="card">
@@ -357,12 +477,18 @@ async function verificarAvaliacaoExistente(){
 
 function onProvaChange(){
   const prova = document.getElementById('f-prova').value;
+  const ehGrupo = prova === 'corrida';
+  document.getElementById('fluxo-individual').style.display = ehGrupo ? 'none' : 'block';
+  document.getElementById('fluxo-corrida-grupo').style.display = ehGrupo ? 'block' : 'none';
+  if(ehGrupo){
+    atualizarBotaoEnviarGrupo();
+    return;
+  }
   const labels = {
-    corrida:  {M:'Distância percorrida em 12 minutos', F:'Distância percorrida em 12 minutos'},
     abdominal:{M:'Quantidade de abdominais em 30 segundos',     F:'Quantidade de abdominais em 30 segundos'},
     barra:    {M:'Quantidade de flexões na barra',              F:'Tempo em sustentação na barra'}
   };
-  if(prova && SEXO_SEL){
+  if(prova && SEXO_SEL && labels[prova]){
     document.getElementById('label-valor').innerHTML = (labels[prova][SEXO_SEL]||'Valor obtido') + '<span class="req">*</span>';
   }
   atualizarOpcoesValor();
@@ -585,9 +711,9 @@ function restaurarCronometro(inicioISO, fimISO){
   }
 }
 
-function onFotoSelecionada(input){
-  const file = input.files[0];
-  if(!file) return;
+// Comprime uma foto (reduz e reencoda em JPEG) e entrega o dataURL resultante
+// via callback — usado tanto na foto individual quanto na foto do grupo.
+function comprimirFoto(file, callback){
   const reader = new FileReader();
   reader.onload = (e) => {
     const img = new Image();
@@ -599,15 +725,23 @@ function onFotoSelecionada(input){
       const canvas = document.createElement('canvas');
       canvas.width = w; canvas.height = h;
       canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      FOTO_DATA_URL = canvas.toDataURL('image/jpeg', 0.6);
-      document.getElementById('foto-preview').src = FOTO_DATA_URL;
-      document.getElementById('foto-wrap').style.display = 'none';
-      document.getElementById('foto-preview-wrap').style.display = 'block';
-      atualizarBotaoEnviar();
+      callback(canvas.toDataURL('image/jpeg', 0.6));
     };
     img.src = e.target.result;
   };
   reader.readAsDataURL(file);
+}
+
+function onFotoSelecionada(input){
+  const file = input.files[0];
+  if(!file) return;
+  comprimirFoto(file, (dataUrl)=>{
+    FOTO_DATA_URL = dataUrl;
+    document.getElementById('foto-preview').src = FOTO_DATA_URL;
+    document.getElementById('foto-wrap').style.display = 'none';
+    document.getElementById('foto-preview-wrap').style.display = 'block';
+    atualizarBotaoEnviar();
+  });
 }
 
 function retirarFoto(){
@@ -742,6 +876,10 @@ async function enviarAvaliacao(){
 }
 
 function registrarOutro(){
+  if(document.getElementById('f-prova').value === 'corrida'){
+    registrarOutroGrupo();
+    return;
+  }
   limparCandidato();
   resetarFoto();
   document.getElementById('f-obs').value = '';
@@ -755,6 +893,34 @@ function registrarOutro(){
   document.getElementById('page-success').style.display='none';
   document.getElementById('form-wrap').style.display='block';
   atualizarPreview();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// Prepara pra montar um NOVO grupo de corrida — mantém "metros por volta"
+// (geralmente é a mesma pista pro resto da aplicação daquele dia), mas
+// zera o grupo, a foto e o cronômetro.
+function registrarOutroGrupo(){
+  GRUPO_CORRIDA = [];
+  GRUPO_FOTO_DATA_URL = null;
+  CRONO_GRUPO_INICIO = null;
+  CRONO_GRUPO_FIM = null;
+  if(CRONO_GRUPO_TIMER){ clearInterval(CRONO_GRUPO_TIMER); CRONO_GRUPO_TIMER = null; }
+  cancelarAdicionarAoGrupo();
+  renderGrupo();
+  document.getElementById('foto-grupo-wrap').style.display = 'block';
+  document.getElementById('foto-grupo-preview-wrap').style.display = 'none';
+  const cronoDisplay = document.getElementById('crono-grupo-display');
+  cronoDisplay.textContent = '00:00:00'; cronoDisplay.classList.remove('rodando');
+  document.getElementById('crono-grupo-horarios').style.display = 'none';
+  document.getElementById('btn-crono-grupo-iniciar').style.display = 'block';
+  document.getElementById('btn-crono-grupo-finalizar').style.display = 'none';
+  document.getElementById('card-voltas').style.display = 'none';
+  document.getElementById('card-posicao-final').style.display = 'none';
+  document.getElementById('alert-envio-grupo').style.display = 'none';
+  const btn = document.getElementById('btn-enviar-grupo');
+  btn.disabled = true; btn.textContent = 'Confirmar e enviar resultados do grupo';
+  document.getElementById('page-success').style.display='none';
+  document.getElementById('form-wrap').style.display='block';
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
@@ -857,6 +1023,309 @@ function continuarRascunho(){
   atualizarPreview();
   atualizarBotaoEnviar();
   _RASCUNHO_PENDENTE = null;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// CORRIDA EM GRUPO — fluxo separado: essa prova é avaliada com vários
+// candidatos correndo juntos (número de peito atribuído na hora + contagem
+// de voltas), diferente das demais (avaliação individual uma de cada vez).
+// ══════════════════════════════════════════════════════════════════
+let GRUPO_CORRIDA = [];       // [{inscricao, nome, cargo, numero, sexo, voltas, posicaoParcial}]
+let METROS_POR_VOLTA = null;
+let GRUPO_FOTO_DATA_URL = null;
+let CRONO_GRUPO_INICIO = null;
+let CRONO_GRUPO_FIM = null;
+let CRONO_GRUPO_TIMER = null;
+let GRUPO_CANDIDATO_TEMP = null; // candidato clicado na busca, aguardando número/sexo antes de confirmar
+let GRUPO_SEXO_TEMP = null;
+
+function onMetrosVoltaChange(){
+  const v = parseFloat(document.getElementById('f-metros-volta').value);
+  METROS_POR_VOLTA = (v>0) ? v : null;
+  renderPosicaoFinal(); // se já tinha posições escolhidas, os degraus de 100m mudam com o tamanho da pista
+  atualizarBotaoEnviarGrupo();
+}
+
+function buscarCandidatoGrupo(){
+  const termo = document.getElementById('f-busca-grupo').value.trim().toLowerCase();
+  const box = document.getElementById('search-results-grupo');
+  if(!termo){ box.style.display='none'; return; }
+  const jaNoGrupo = new Set(GRUPO_CORRIDA.map(g=>g.inscricao));
+  const achados = (CANDIDATOS_TURMA||[])
+    .filter(c => !jaNoGrupo.has(c.inscricao) && (c.nome.toLowerCase().includes(termo) || c.inscricao.toLowerCase().includes(termo)))
+    .slice(0,8);
+  if(!achados.length){
+    box.innerHTML = '<div class="search-item" style="color:var(--muted)">Nenhum candidato encontrado</div>';
+    box.style.display='block';
+    return;
+  }
+  box.innerHTML = achados.map(c=>
+    `<div class="search-item" onclick='abrirAdicionarAoGrupo(${JSON.stringify(c.inscricao)})'>
+      <strong>${c.inscricao}</strong> — ${c.nome}${c.cargo?' <span style="color:var(--muted)">('+c.cargo+')</span>':''}
+    </div>`
+  ).join('');
+  box.style.display='block';
+}
+
+function abrirAdicionarAoGrupo(inscricao){
+  const cand = (CANDIDATOS_TURMA||[]).find(c=>c.inscricao===inscricao);
+  if(!cand) return;
+  GRUPO_CANDIDATO_TEMP = cand;
+  GRUPO_SEXO_TEMP = null;
+  document.getElementById('search-results-grupo').style.display='none';
+  document.getElementById('f-busca-grupo').value = '';
+  document.getElementById('add-grupo-nome').textContent = cand.nome + ' — Inscrição ' + cand.inscricao;
+  document.getElementById('add-grupo-sexo-M').classList.remove('active');
+  document.getElementById('add-grupo-sexo-F').classList.remove('active');
+  document.getElementById('add-grupo-numero').value = '';
+  document.getElementById('add-grupo-form').style.display='block';
+}
+
+function selecionarSexoGrupoTemp(sexo){
+  GRUPO_SEXO_TEMP = sexo;
+  document.getElementById('add-grupo-sexo-M').classList.toggle('active', sexo==='M');
+  document.getElementById('add-grupo-sexo-F').classList.toggle('active', sexo==='F');
+}
+
+function cancelarAdicionarAoGrupo(){
+  GRUPO_CANDIDATO_TEMP = null;
+  GRUPO_SEXO_TEMP = null;
+  const form = document.getElementById('add-grupo-form');
+  if(form) form.style.display='none';
+}
+
+function confirmarAdicionarAoGrupo(){
+  const numero = document.getElementById('add-grupo-numero').value.trim();
+  if(!GRUPO_CANDIDATO_TEMP || !GRUPO_SEXO_TEMP || !numero){
+    alert('Informe o número e confirme o sexo antes de adicionar.');
+    return;
+  }
+  if(GRUPO_CORRIDA.some(g=>String(g.numero)===String(numero))){
+    alert('Já tem um candidato com esse número no grupo.');
+    return;
+  }
+  GRUPO_CORRIDA.push({
+    inscricao: GRUPO_CANDIDATO_TEMP.inscricao,
+    nome: GRUPO_CANDIDATO_TEMP.nome,
+    cargo: GRUPO_CANDIDATO_TEMP.cargo || '',
+    numero: numero,
+    sexo: GRUPO_SEXO_TEMP,
+    voltas: 0,
+    posicaoParcial: null,
+  });
+  cancelarAdicionarAoGrupo();
+  renderGrupo();
+  atualizarBotaoEnviarGrupo();
+}
+
+function removerDoGrupo(inscricao){
+  GRUPO_CORRIDA = GRUPO_CORRIDA.filter(g=>g.inscricao!==inscricao);
+  renderGrupo();
+  atualizarBotaoEnviarGrupo();
+}
+
+function renderGrupo(){
+  const el = document.getElementById('lista-grupo');
+  if(!el) return;
+  if(!GRUPO_CORRIDA.length){ el.innerHTML = ''; return; }
+  el.innerHTML = GRUPO_CORRIDA
+    .slice()
+    .sort((a,b)=>Number(a.numero)-Number(b.numero))
+    .map(g=>`
+      <div class="grupo-item">
+        <div class="info"><span class="n">Nº ${g.numero}</span>${g.nome}<span class="s">${g.sexo==='M'?'Masc.':'Fem.'}</span></div>
+        <button onclick='removerDoGrupo(${JSON.stringify(g.inscricao)})'>remover</button>
+      </div>
+    `).join('');
+}
+
+function onFotoGrupoSelecionada(input){
+  const file = input.files[0];
+  if(!file) return;
+  comprimirFoto(file, (dataUrl)=>{
+    GRUPO_FOTO_DATA_URL = dataUrl;
+    document.getElementById('foto-grupo-preview').src = GRUPO_FOTO_DATA_URL;
+    document.getElementById('foto-grupo-wrap').style.display = 'none';
+    document.getElementById('foto-grupo-preview-wrap').style.display = 'block';
+    atualizarBotaoEnviarGrupo();
+  });
+}
+
+function retirarFotoGrupo(){
+  GRUPO_FOTO_DATA_URL = null;
+  const inp = document.getElementById('f-foto-grupo-input');
+  if(inp) inp.value = '';
+  document.getElementById('foto-grupo-wrap').style.display = 'block';
+  document.getElementById('foto-grupo-preview-wrap').style.display = 'none';
+  atualizarBotaoEnviarGrupo();
+}
+
+function atualizarCronoGrupoDisplay(){
+  if(!CRONO_GRUPO_INICIO) return;
+  const fim = CRONO_GRUPO_FIM || new Date();
+  document.getElementById('crono-grupo-display').textContent = fmtDecorrido(fim - CRONO_GRUPO_INICIO);
+}
+
+function iniciarCronometroGrupo(){
+  if(!GRUPO_CORRIDA.length){ alert('Monte o grupo antes de iniciar a corrida.'); return; }
+  CRONO_GRUPO_INICIO = new Date();
+  CRONO_GRUPO_FIM = null;
+  document.getElementById('crono-grupo-display').classList.add('rodando');
+  document.getElementById('crono-grupo-horarios').style.display = 'none';
+  document.getElementById('btn-crono-grupo-iniciar').style.display = 'none';
+  document.getElementById('btn-crono-grupo-finalizar').style.display = 'block';
+  document.getElementById('card-voltas').style.display = 'block';
+  renderGridVoltas();
+  if(CRONO_GRUPO_TIMER) clearInterval(CRONO_GRUPO_TIMER);
+  CRONO_GRUPO_TIMER = setInterval(atualizarCronoGrupoDisplay, 250);
+  atualizarCronoGrupoDisplay();
+  atualizarBotaoEnviarGrupo();
+}
+
+function finalizarCronometroGrupo(){
+  if(!CRONO_GRUPO_INICIO) return;
+  CRONO_GRUPO_FIM = new Date();
+  if(CRONO_GRUPO_TIMER){ clearInterval(CRONO_GRUPO_TIMER); CRONO_GRUPO_TIMER = null; }
+  atualizarCronoGrupoDisplay();
+  document.getElementById('crono-grupo-display').classList.remove('rodando');
+  document.getElementById('btn-crono-grupo-finalizar').style.display = 'none';
+  document.getElementById('crono-grupo-horarios').style.display = 'flex';
+  document.getElementById('crono-grupo-hora-inicio').textContent = fmtHora(CRONO_GRUPO_INICIO);
+  document.getElementById('crono-grupo-hora-fim').textContent = fmtHora(CRONO_GRUPO_FIM);
+  document.getElementById('card-posicao-final').style.display = 'block';
+  renderPosicaoFinal();
+  atualizarBotaoEnviarGrupo();
+}
+
+function renderGridVoltas(){
+  const el = document.getElementById('grid-voltas');
+  if(!el) return;
+  el.innerHTML = GRUPO_CORRIDA
+    .slice()
+    .sort((a,b)=>Number(a.numero)-Number(b.numero))
+    .map(g=>`
+      <div class="volta-btn" onclick='incrementarVolta(${JSON.stringify(g.inscricao)})'>
+        <div class="num">Nº ${g.numero}</div>
+        <div class="contagem">voltas: <b id="voltas-${g.inscricao}">${g.voltas}</b></div>
+        <span class="menos" onclick='event.stopPropagation(); decrementarVolta(${JSON.stringify(g.inscricao)})'>− corrigir</span>
+      </div>
+    `).join('');
+}
+
+function incrementarVolta(inscricao){
+  const g = GRUPO_CORRIDA.find(x=>x.inscricao===inscricao);
+  if(!g) return;
+  g.voltas++;
+  const el = document.getElementById('voltas-'+inscricao);
+  if(el) el.textContent = g.voltas;
+}
+
+function decrementarVolta(inscricao){
+  const g = GRUPO_CORRIDA.find(x=>x.inscricao===inscricao);
+  if(!g) return;
+  g.voltas = Math.max(0, g.voltas-1);
+  const el = document.getElementById('voltas-'+inscricao);
+  if(el) el.textContent = g.voltas;
+}
+
+function renderPosicaoFinal(){
+  const el = document.getElementById('corpo-posicao-final');
+  if(!el) return;
+  if(!METROS_POR_VOLTA || !GRUPO_CORRIDA.length){ el.innerHTML = ''; return; }
+  const marcas = [];
+  for(let m=0; m<METROS_POR_VOLTA; m+=100) marcas.push(m);
+  el.innerHTML = GRUPO_CORRIDA
+    .slice()
+    .sort((a,b)=>Number(a.numero)-Number(b.numero))
+    .map(g=>`
+      <div class="posicao-candidato">
+        <div class="titulo"><span class="n">Nº ${g.numero}</span> — ${g.nome} (${g.voltas} volta${g.voltas===1?'':'s'} completa${g.voltas===1?'':'s'})</div>
+        <div class="valor-grid" id="posicao-grid-${g.inscricao}">
+          ${marcas.map(m=>`<div class="valor-opt${g.posicaoParcial===m?' active':''}" onclick='selecionarPosicaoFinal(${JSON.stringify(g.inscricao)}, ${m})'>${m===0?'Não completou 100m':m+'m'}</div>`).join('')}
+        </div>
+      </div>
+    `).join('');
+}
+
+function selecionarPosicaoFinal(inscricao, valor){
+  const g = GRUPO_CORRIDA.find(x=>x.inscricao===inscricao);
+  if(!g) return;
+  g.posicaoParcial = valor;
+  const grid = document.getElementById('posicao-grid-'+inscricao);
+  if(grid){
+    Array.from(grid.children).forEach((chip,i)=>{
+      chip.classList.toggle('active', i*100===valor);
+    });
+  }
+  atualizarBotaoEnviarGrupo();
+}
+
+function atualizarBotaoEnviarGrupo(){
+  const btn = document.getElementById('btn-enviar-grupo');
+  if(!btn) return;
+  const ok = document.getElementById('f-avaliador').value &&
+    METROS_POR_VOLTA && GRUPO_CORRIDA.length>0 && !!GRUPO_FOTO_DATA_URL &&
+    !!CRONO_GRUPO_INICIO && !!CRONO_GRUPO_FIM &&
+    GRUPO_CORRIDA.every(g=>g.posicaoParcial!==null && g.posicaoParcial!==undefined);
+  btn.disabled = !ok;
+}
+
+async function enviarAvaliacaoGrupo(){
+  const avaliador = document.getElementById('f-avaliador').value;
+  const alertEl = document.getElementById('alert-envio-grupo');
+  if(!avaliador || !METROS_POR_VOLTA || !GRUPO_CORRIDA.length || !GRUPO_FOTO_DATA_URL ||
+     !CRONO_GRUPO_INICIO || !CRONO_GRUPO_FIM || GRUPO_CORRIDA.some(g=>g.posicaoParcial===null||g.posicaoParcial===undefined)){
+    alertEl.className='alert alert-error'; alertEl.style.display='block';
+    alertEl.textContent='Preencha todos os campos obrigatórios antes de enviar (grupo, foto, cronômetro e posição final de todos).';
+    return;
+  }
+
+  const btn = document.getElementById('btn-enviar-grupo');
+  btn.disabled = true; btn.textContent = 'Enviando...';
+
+  try{
+    const fotoPath = `respostas_avaliacao/fotos/taf_${TOKEN}_corrida_grupo_${Date.now()}.jpg`;
+    await enviarFoto(fotoPath, GRUPO_FOTO_DATA_URL);
+
+    for(const g of GRUPO_CORRIDA){
+      const distanciaTotal = g.voltas*METROS_POR_VOLTA + (g.posicaoParcial||0);
+      const calc = calcularPontos('corrida', g.sexo, distanciaTotal);
+      const payload = {
+        token: TOKEN,
+        concursoNome: CONFIG.concursoNome,
+        avaliador, prova: 'corrida', turma: '',
+        candidato: {inscricao: g.inscricao, nome: g.nome, cargo: g.cargo||''},
+        sexo: g.sexo,
+        valor: distanciaTotal,
+        pontos: calc.pontos,
+        eliminado: calc.eliminado,
+        horaInicio: CRONO_GRUPO_INICIO.toISOString(),
+        horaFim: CRONO_GRUPO_FIM.toISOString(),
+        fotoPath,
+        observacoes: `Corrida em grupo — ${g.voltas} volta(s) completa(s) de ${METROS_POR_VOLTA}m + ${g.posicaoParcial||0}m.`,
+        enviadoEm: new Date().toISOString()
+      };
+      const path = `respostas_avaliacao/taf_resp_${TOKEN}_${g.inscricao}_corrida.json`;
+      const r0 = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`,
+        {headers:{'Authorization':'Bearer '+GH_WRITE_TOKEN}});
+      let sha; if(r0.ok){ const d0 = await r0.json(); sha = d0.sha; }
+      const body = {message:`resposta TAF (grupo): ${g.inscricao} · corrida`,
+        content: btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))))};
+      if(sha) body.sha = sha;
+      const r = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`,
+        {method:'PUT', headers:{'Authorization':'Bearer '+GH_WRITE_TOKEN,'Content-Type':'application/json'}, body:JSON.stringify(body)});
+      if(!r.ok){ const err = await r.json().catch(()=>({})); throw new Error('Erro ao salvar resposta de '+g.nome+': '+(err.message||'')); }
+    }
+
+    document.getElementById('form-wrap').style.display='none';
+    document.getElementById('page-success').style.display='block';
+    document.getElementById('success-resumo').textContent = `${GRUPO_CORRIDA.length} candidato(s) da corrida registrados com sucesso.`;
+    window.scrollTo({top:0, behavior:'smooth'});
+  }catch(e){
+    alertEl.className='alert alert-error'; alertEl.style.display='block';
+    alertEl.textContent = 'Erro ao enviar: '+e.message+'. Tente novamente.';
+    btn.disabled = false; btn.textContent = 'Confirmar e enviar resultados do grupo';
+  }
 }
 
 </script>
