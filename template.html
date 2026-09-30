@@ -7695,6 +7695,8 @@ function avalLarguraColuna(headerRaw){
   if(h==='RESULTADO') return 14;
   if(h==='NOTA') return 10;
   if(h.includes('LINK')) return 45;
+  if(h.includes('INICIO')) return 11;
+  if(h.endsWith(' FIM')) return 11;
   return 18; // notas de disciplinas (Português, Matemática, etc.) e demais colunas
 }
 
@@ -7793,7 +7795,16 @@ function gerarResultadoTaf(input){
         }
 
         const provasOrdem = ['corrida','abdominal','barra'];
-        const provasTitulos = {corrida:'CORRIDA (NOTA)', abdominal:'ABDOMINAL (NOTA)', barra:'BARRA (NOTA)'};
+        const provasTitulos = {corrida:'CORRIDA', abdominal:'ABDOMINAL', barra:'BARRA'};
+
+        // Formata um ISO string salvo pelo formulário (horaInicio/horaFim) como
+        // HH:MM:SS local — vazio se a resposta não tiver esse campo (respostas
+        // antigas, de antes do cronômetro existir).
+        function avalFmtHora(iso){
+          if(!iso) return '';
+          const d = new Date(iso);
+          return isNaN(d.getTime()) ? '' : d.toLocaleTimeString('pt-BR', {hour12:false});
+        }
 
         const wbOut = new ExcelJS.Workbook();
         let totalCandidatos = 0;
@@ -7804,7 +7815,11 @@ function gerarResultadoTaf(input){
           if(idxHeader < 0){ avalCopiarAbaSimples(wbOut, nomeAba, aoa); continue; }
           const colInsc = headersNorm.findIndex(h=>h.includes('INSCRICAO'));
 
-          const cols = [...headerOriginal, ...provasOrdem.map(p=>provasTitulos[p]), 'RESULTADO', 'LINK FOTO'];
+          const cols = [...headerOriginal];
+          provasOrdem.forEach(p=>{
+            cols.push(`${provasTitulos[p]} - INÍCIO`, `${provasTitulos[p]} - FIM`, `${provasTitulos[p]} (NOTA)`);
+          });
+          cols.push('RESULTADO', 'LINK FOTO');
           const linhas = [];
           for(let r=idxHeader+1; r<aoa.length; r++){
             const row = aoa[r]; if(!Array.isArray(row)) continue;
@@ -7814,11 +7829,12 @@ function gerarResultadoTaf(input){
 
             const respsCandidato = porInscricao.get(inscricao) || {};
             const encontrados = provasOrdem.filter(p=>respsCandidato[p]);
-            const notas = provasOrdem.map(p=>{
+            const colunasPorProva = provasOrdem.map(p=>{
               const resp = respsCandidato[p];
-              if(!resp) return '';
-              return resp.eliminado ? 'ELIMINADO' : resp.pontos;
-            });
+              if(!resp) return ['','',''];
+              const nota = resp.eliminado ? 'ELIMINADO' : resp.pontos;
+              return [avalFmtHora(resp.horaInicio), avalFmtHora(resp.horaFim), nota];
+            }).flat();
             const algumEliminado = encontrados.some(p=>respsCandidato[p].eliminado);
 
             let resultado;
@@ -7834,7 +7850,7 @@ function gerarResultadoTaf(input){
             }
 
             const valoresOriginais = headerOriginal.map((_,ci)=> row[ci]===undefined ? '' : row[ci]);
-            linhas.push([...valoresOriginais, ...notas, resultado, avalLinkFoto(fotoMaisRecente?.fotoPath)]);
+            linhas.push([...valoresOriginais, ...colunasPorProva, resultado, avalLinkFoto(fotoMaisRecente?.fotoPath)]);
           }
           avalCriarPlanilhaResultado(wbOut, nomeAba, cols, linhas);
         }
