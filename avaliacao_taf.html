@@ -1077,7 +1077,7 @@ function abrirAdicionarAoGrupo(inscricao){
   document.getElementById('add-grupo-nome').textContent = cand.nome + ' — Inscrição ' + cand.inscricao;
   document.getElementById('add-grupo-sexo-M').classList.remove('active');
   document.getElementById('add-grupo-sexo-F').classList.remove('active');
-  document.getElementById('add-grupo-numero').value = '';
+  document.getElementById('add-grupo-numero').value = String(GRUPO_CORRIDA.length + 1);
   document.getElementById('add-grupo-form').style.display='block';
 }
 
