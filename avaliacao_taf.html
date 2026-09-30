@@ -89,6 +89,11 @@
   .preview-pontos.ok { background: #eaf6ef; color: var(--verde); }
   .preview-pontos.elim { background: #fbeaea; color: var(--vermelho); }
   .preview-pontos.neutro { background: var(--cinza); color: var(--muted); font-weight:600; }
+  .crono-display { font-family: 'Sora', monospace; font-size: 40px; font-weight: 800; text-align: center;
+    color: var(--azul); background: var(--cinza); border-radius: 10px; padding: 18px; margin-bottom: 14px; letter-spacing: 1px; }
+  .crono-display.rodando { color: var(--azul-med); }
+  .crono-horarios { display:flex; justify-content:space-around; gap:10px; margin-bottom:14px; font-size:12.5px; color:var(--muted); text-align:center; }
+  .crono-horarios b { color: var(--texto); font-size:16px; display:block; margin-top:2px; }
   .spinner { width: 22px; height: 22px; border: 3px solid var(--borda); border-top-color: var(--azul-med); border-radius: 50%;
     animation: spin .7s linear infinite; margin: 0 auto; }
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -195,9 +200,25 @@
       </div>
     </div>
 
+    <div class="card" id="card-cronometro" style="display:none">
+      <div class="card-header">
+        <div class="card-title">4. Cronômetro</div>
+        <div class="card-sub">Inicie quando o candidato começar a prova e finalize assim que ela terminar.</div>
+      </div>
+      <div class="card-body">
+        <div id="crono-display" class="crono-display">00:00:00</div>
+        <div id="crono-horarios" class="crono-horarios" style="display:none">
+          <div>Início<b id="crono-hora-inicio">--:--:--</b></div>
+          <div>Fim<b id="crono-hora-fim">--:--:--</b></div>
+        </div>
+        <button type="button" class="btn btn-primary" id="btn-crono-iniciar" onclick="iniciarCronometro()">▶ Iniciar avaliação</button>
+        <button type="button" class="btn btn-secondary" id="btn-crono-finalizar" onclick="finalizarCronometro()" style="display:none">⏹ Finalizar avaliação</button>
+      </div>
+    </div>
+
     <div class="card" id="card-avaliacao" style="display:none">
       <div class="card-header">
-        <div class="card-title">4. Avaliação</div>
+        <div class="card-title">5. Avaliação</div>
       </div>
       <div class="card-body">
         <div class="form-group">
@@ -245,6 +266,9 @@ let CANDIDATOS_TURMA = [];
 let CANDIDATO_SEL = null;
 let SEXO_SEL = null;
 let FOTO_DATA_URL = null; // dataURL jpeg comprimido, ou null
+let CRONO_INICIO = null; // Date de quando a avaliação começou, ou null
+let CRONO_FIM = null;    // Date de quando terminou, ou null
+let CRONO_TIMER = null;  // id do setInterval do relógio rodando, ou null
 let _RASCUNHO_PENDENTE = null; // rascunho carregado do localStorage, aguardando o avaliador confirmar se quer continuar
 
 window.onload = async function(){
@@ -417,7 +441,9 @@ function selecionarCandidato(inscricao){
     document.getElementById('cand-insc').textContent = 'Inscrição '+CANDIDATO_SEL.inscricao + (CANDIDATO_SEL.cargo?' · '+CANDIDATO_SEL.cargo:'');
     chip.style.display='flex';
     resetarFoto();
+    resetarCronometro();
     document.getElementById('card-foto').style.display='block';
+    document.getElementById('card-cronometro').style.display='block';
     document.getElementById('card-avaliacao').style.display='block';
   }
   atualizarBotaoEnviar();
@@ -430,8 +456,10 @@ function limparCandidato(){
   document.getElementById('f-busca-candidato').value = '';
   document.getElementById('search-results').style.display='none';
   document.getElementById('card-foto').style.display='none';
+  document.getElementById('card-cronometro').style.display='none';
   document.getElementById('card-avaliacao').style.display='none';
   resetarFoto();
+  resetarCronometro();
   atualizarBotaoEnviar();
 }
 
@@ -441,6 +469,86 @@ function resetarFoto(){
   if(inp) inp.value = '';
   document.getElementById('foto-wrap').style.display = 'block';
   document.getElementById('foto-preview-wrap').style.display = 'none';
+}
+
+// ── CRONÔMETRO (marca hora de início e fim de cada avaliação) ──────────
+function fmtHora(d){ return d.toLocaleTimeString('pt-BR', {hour12:false}); }
+
+function fmtDecorrido(ms){
+  const total = Math.max(0, Math.floor(ms/1000));
+  const h = Math.floor(total/3600), m = Math.floor((total%3600)/60), s = total%60;
+  return [h,m,s].map(n=>String(n).padStart(2,'0')).join(':');
+}
+
+function atualizarCronoDisplay(){
+  if(!CRONO_INICIO) return;
+  const fim = CRONO_FIM || new Date();
+  document.getElementById('crono-display').textContent = fmtDecorrido(fim - CRONO_INICIO);
+}
+
+function iniciarCronometro(){
+  CRONO_INICIO = new Date();
+  CRONO_FIM = null;
+  document.getElementById('crono-display').classList.add('rodando');
+  document.getElementById('crono-horarios').style.display = 'none';
+  document.getElementById('btn-crono-iniciar').style.display = 'none';
+  document.getElementById('btn-crono-finalizar').style.display = 'block';
+  if(CRONO_TIMER) clearInterval(CRONO_TIMER);
+  CRONO_TIMER = setInterval(atualizarCronoDisplay, 250);
+  atualizarCronoDisplay();
+  atualizarBotaoEnviar();
+}
+
+function finalizarCronometro(){
+  if(!CRONO_INICIO) return;
+  CRONO_FIM = new Date();
+  if(CRONO_TIMER){ clearInterval(CRONO_TIMER); CRONO_TIMER = null; }
+  atualizarCronoDisplay();
+  document.getElementById('crono-display').classList.remove('rodando');
+  document.getElementById('btn-crono-finalizar').style.display = 'none';
+  document.getElementById('crono-horarios').style.display = 'flex';
+  document.getElementById('crono-hora-inicio').textContent = fmtHora(CRONO_INICIO);
+  document.getElementById('crono-hora-fim').textContent = fmtHora(CRONO_FIM);
+  atualizarBotaoEnviar();
+}
+
+function resetarCronometro(){
+  if(CRONO_TIMER){ clearInterval(CRONO_TIMER); CRONO_TIMER = null; }
+  CRONO_INICIO = null;
+  CRONO_FIM = null;
+  const display = document.getElementById('crono-display');
+  if(display){ display.textContent = '00:00:00'; display.classList.remove('rodando'); }
+  const horarios = document.getElementById('crono-horarios');
+  if(horarios) horarios.style.display = 'none';
+  const btnIni = document.getElementById('btn-crono-iniciar');
+  const btnFim = document.getElementById('btn-crono-finalizar');
+  if(btnIni) btnIni.style.display = 'block';
+  if(btnFim) btnFim.style.display = 'none';
+}
+
+// Restaura o cronômetro de um rascunho salvo — se só tinha início (o avaliador
+// saiu no meio da prova), volta a contar a partir de onde realmente começou,
+// em vez de zerar o tempo decorrido.
+function restaurarCronometro(inicioISO, fimISO){
+  resetarCronometro();
+  if(!inicioISO) return;
+  CRONO_INICIO = new Date(inicioISO);
+  if(fimISO){
+    CRONO_FIM = new Date(fimISO);
+    atualizarCronoDisplay();
+    document.getElementById('btn-crono-iniciar').style.display = 'none';
+    document.getElementById('btn-crono-finalizar').style.display = 'none';
+    document.getElementById('crono-horarios').style.display = 'flex';
+    document.getElementById('crono-hora-inicio').textContent = fmtHora(CRONO_INICIO);
+    document.getElementById('crono-hora-fim').textContent = fmtHora(CRONO_FIM);
+  } else {
+    document.getElementById('crono-display').classList.add('rodando');
+    document.getElementById('btn-crono-iniciar').style.display = 'none';
+    document.getElementById('btn-crono-finalizar').style.display = 'block';
+    if(CRONO_TIMER) clearInterval(CRONO_TIMER);
+    CRONO_TIMER = setInterval(atualizarCronoDisplay, 250);
+    atualizarCronoDisplay();
+  }
 }
 
 function onFotoSelecionada(input){
@@ -528,7 +636,8 @@ function atualizarPreview(){
 function atualizarBotaoEnviar(){
   const ok = document.getElementById('f-avaliador').value &&
              document.getElementById('f-prova').value &&
-             CANDIDATO_SEL && SEXO_SEL && !!FOTO_DATA_URL;
+             CANDIDATO_SEL && SEXO_SEL && !!FOTO_DATA_URL &&
+             !!CRONO_INICIO && !!CRONO_FIM;
   document.getElementById('btn-enviar').disabled = !ok;
   salvarRascunho();
 }
@@ -541,9 +650,9 @@ async function enviarAvaliacao(){
   const obs = document.getElementById('f-obs').value.trim();
   const alertEl = document.getElementById('alert-envio');
 
-  if(!avaliador || !prova || !CANDIDATO_SEL || !SEXO_SEL || valorStr==='' || !FOTO_DATA_URL){
+  if(!avaliador || !prova || !CANDIDATO_SEL || !SEXO_SEL || valorStr==='' || !FOTO_DATA_URL || !CRONO_INICIO || !CRONO_FIM){
     alertEl.className='alert alert-error'; alertEl.style.display='block';
-    alertEl.textContent='Preencha todos os campos obrigatórios antes de enviar (inclusive a foto do candidato).';
+    alertEl.textContent='Preencha todos os campos obrigatórios antes de enviar (inclusive a foto e o cronômetro iniciado e finalizado).';
     return;
   }
   const valor = parseFloat(valorStr);
@@ -565,6 +674,8 @@ async function enviarAvaliacao(){
       valor,
       pontos: calc.pontos,
       eliminado: calc.eliminado,
+      horaInicio: CRONO_INICIO.toISOString(),
+      horaFim: CRONO_FIM.toISOString(),
       fotoPath,
       observacoes: obs,
       enviadoEm: new Date().toISOString()
@@ -633,6 +744,8 @@ function salvarRascunho(){
     sexoSel: SEXO_SEL,
     valor: document.getElementById('f-valor') ? document.getElementById('f-valor').value : '',
     fotoDataUrl: FOTO_DATA_URL,
+    cronoInicio: CRONO_INICIO ? CRONO_INICIO.toISOString() : null,
+    cronoFim: CRONO_FIM ? CRONO_FIM.toISOString() : null,
     obs: document.getElementById('f-obs') ? document.getElementById('f-obs').value : '',
     salvoEm: new Date().toISOString()
   };
@@ -699,6 +812,9 @@ function continuarRascunho(){
     document.getElementById('foto-preview').src = FOTO_DATA_URL;
     document.getElementById('foto-wrap').style.display = 'none';
     document.getElementById('foto-preview-wrap').style.display = 'block';
+  }
+  if(rascunho.cronoInicio){
+    restaurarCronometro(rascunho.cronoInicio, rascunho.cronoFim);
   }
   if(rascunho.obs){
     const obsEl = document.getElementById('f-obs');
