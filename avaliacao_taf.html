@@ -358,7 +358,9 @@ function atualizarOpcoesValor(){
     const proximo = linhas[i+1];
     let label;
     if(proximo && (proximo[campo]-1) > l[campo]){
-      label = `${fmtValor(l[campo])} a ${fmtLimiteSuperior(proximo[campo])}`;
+      label = ehSegundos
+        ? `${fmtValor(l[campo])} a ${fmtLimiteSuperior(proximo[campo])}`
+        : `${l[campo]} a ${proximo[campo]-1} ${unidade}`;
     } else if(proximo){
       label = fmtValor(l[campo]);
     } else {
