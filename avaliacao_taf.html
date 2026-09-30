@@ -344,11 +344,20 @@ function atualizarOpcoesValor(){
   chipElim.textContent = `Abaixo de ${menor} ${unidade} (eliminado)`;
   chipElim.onclick = ()=>selecionarValor(valorElim);
   grid.appendChild(chipElim);
-  linhas.forEach(l=>{
+  linhas.forEach((l,i)=>{
     const chip = document.createElement('div');
     chip.className = 'valor-opt';
     chip.dataset.valor = String(l[campo]);
-    chip.textContent = `${l[campo]} ${unidade} — ${l.pontos} pontos`;
+    const proximo = linhas[i+1];
+    let label;
+    if(proximo && (proximo[campo]-1) > l[campo]){
+      label = `${l[campo]} a ${proximo[campo]-1} ${unidade} — ${l.pontos} pontos`;
+    } else if(proximo){
+      label = `${l[campo]} ${unidade} — ${l.pontos} pontos`;
+    } else {
+      label = `${l[campo]} ${unidade} ou mais — ${l.pontos} pontos`;
+    }
+    chip.textContent = label;
     chip.onclick = ()=>selecionarValor(String(l[campo]));
     grid.appendChild(chip);
   });
