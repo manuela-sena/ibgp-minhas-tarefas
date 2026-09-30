@@ -7815,11 +7815,8 @@ function gerarResultadoTaf(input){
           if(idxHeader < 0){ avalCopiarAbaSimples(wbOut, nomeAba, aoa); continue; }
           const colInsc = headersNorm.findIndex(h=>h.includes('INSCRICAO'));
 
-          const cols = [...headerOriginal];
-          provasOrdem.forEach(p=>{
-            cols.push(`${provasTitulos[p]} - INÍCIO`, `${provasTitulos[p]} - FIM`, `${provasTitulos[p]} (NOTA)`);
-          });
-          cols.push('RESULTADO', 'LINK FOTO');
+          const cols = [...headerOriginal, ...provasOrdem.map(p=>`${provasTitulos[p]} (NOTA)`), 'RESULTADO', 'LINK FOTO'];
+          provasOrdem.forEach(p=>{ cols.push(`${provasTitulos[p]} - INÍCIO`, `${provasTitulos[p]} - FIM`); });
           const linhas = [];
           for(let r=idxHeader+1; r<aoa.length; r++){
             const row = aoa[r]; if(!Array.isArray(row)) continue;
@@ -7829,11 +7826,14 @@ function gerarResultadoTaf(input){
 
             const respsCandidato = porInscricao.get(inscricao) || {};
             const encontrados = provasOrdem.filter(p=>respsCandidato[p]);
-            const colunasPorProva = provasOrdem.map(p=>{
+            const notas = provasOrdem.map(p=>{
               const resp = respsCandidato[p];
-              if(!resp) return ['','',''];
-              const nota = resp.eliminado ? 'ELIMINADO' : resp.pontos;
-              return [avalFmtHora(resp.horaInicio), avalFmtHora(resp.horaFim), nota];
+              if(!resp) return '';
+              return resp.eliminado ? 'ELIMINADO' : resp.pontos;
+            });
+            const horarios = provasOrdem.map(p=>{
+              const resp = respsCandidato[p];
+              return resp ? [avalFmtHora(resp.horaInicio), avalFmtHora(resp.horaFim)] : ['',''];
             }).flat();
             const algumEliminado = encontrados.some(p=>respsCandidato[p].eliminado);
 
@@ -7850,7 +7850,7 @@ function gerarResultadoTaf(input){
             }
 
             const valoresOriginais = headerOriginal.map((_,ci)=> row[ci]===undefined ? '' : row[ci]);
-            linhas.push([...valoresOriginais, ...colunasPorProva, resultado, avalLinkFoto(fotoMaisRecente?.fotoPath)]);
+            linhas.push([...valoresOriginais, ...notas, resultado, avalLinkFoto(fotoMaisRecente?.fotoPath), ...horarios]);
           }
           avalCriarPlanilhaResultado(wbOut, nomeAba, cols, linhas);
         }
