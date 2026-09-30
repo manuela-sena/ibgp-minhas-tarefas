@@ -1115,12 +1115,18 @@ function confirmarAdicionarAoGrupo(){
   });
   cancelarAdicionarAoGrupo();
   renderGrupo();
+  document.getElementById('card-foto-grupo').style.display = 'block';
+  document.getElementById('card-crono-grupo').style.display = 'block';
   atualizarBotaoEnviarGrupo();
 }
 
 function removerDoGrupo(inscricao){
   GRUPO_CORRIDA = GRUPO_CORRIDA.filter(g=>g.inscricao!==inscricao);
   renderGrupo();
+  if(!GRUPO_CORRIDA.length){
+    document.getElementById('card-foto-grupo').style.display = 'none';
+    document.getElementById('card-crono-grupo').style.display = 'none';
+  }
   atualizarBotaoEnviarGrupo();
 }
 
