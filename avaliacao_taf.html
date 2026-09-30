@@ -54,6 +54,15 @@
     font-size: 13.5px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all .15s;
   }
   .radio-opt.active { border-color: var(--azul-med); background: var(--azul-claro); color: var(--azul); }
+  .valor-grid { display:flex; flex-wrap:wrap; gap:8px; }
+  .valor-opt {
+    border: 1.5px solid var(--borda); border-radius: 8px; padding: 10px 14px; text-align: center;
+    font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all .15s;
+  }
+  .valor-opt.active { border-color: var(--azul-med); background: var(--azul-claro); color: var(--azul); }
+  .valor-opt.elim { border-color:#e7c3bb; color:#b0503f; }
+  .valor-opt.elim.active { border-color:#b0503f; background:#fdece8; color:#b0503f; }
+  .valor-grid.vazio { color: var(--muted); font-size: 13px; }
   .foto-btn { display:block; width:100%; text-align:center; background:#fff; border:1.5px dashed var(--azul-med);
     border-radius:9px; padding:26px 14px; color:var(--azul-med); font-weight:700; font-size:14px; cursor:pointer; }
   .foto-preview-wrap { text-align:center; }
@@ -200,9 +209,8 @@
         </div>
         <div class="form-group">
           <label id="label-valor">Valor obtido<span class="req">*</span></label>
-          <select id="f-valor" onchange="atualizarPreview(); atualizarBotaoEnviar();" disabled>
-            <option value="">Selecione a prova e o sexo primeiro...</option>
-          </select>
+          <input type="hidden" id="f-valor" value="">
+          <div id="f-valor-grid" class="valor-grid vazio">Selecione a prova e o sexo primeiro...</div>
         </div>
         <div id="preview-pontos" class="preview-pontos neutro" style="margin-bottom:16px">Informe o valor para calcular a pontuação</div>
         <div class="form-group" style="margin-bottom:0">
@@ -307,38 +315,58 @@ function onProvaChange(){
   atualizarBotaoEnviar();
 }
 
-// Preenche o select de "Valor obtido" só com os degraus que existem na tabela
-// de pontos (não deixa digitar qualquer número) — a 1ª opção cobre quem ficou
-// abaixo do menor degrau (eliminado).
+// Preenche o grid de "Valor obtido" só com os degraus que existem na tabela de
+// pontos (não deixa digitar qualquer número) — a 1ª opção cobre quem ficou
+// abaixo do menor degrau (eliminado). O valor selecionado fica num input oculto
+// (#f-valor), que é o que o resto do código já lê.
 function atualizarOpcoesValor(){
   const prova = document.getElementById('f-prova').value;
-  const sel = document.getElementById('f-valor');
-  const valorAnterior = sel.value;
-  sel.innerHTML = '';
+  const grid = document.getElementById('f-valor-grid');
+  const valorAnterior = document.getElementById('f-valor').value;
+  document.getElementById('f-valor').value = '';
   const tab = (prova && CONFIG.tabelaPontos) ? CONFIG.tabelaPontos[prova] : null;
   if(!prova || !SEXO_SEL || !tab || !tab.linhas || !tab.linhas.length){
-    sel.innerHTML = '<option value="">Selecione a prova e o sexo primeiro...</option>';
-    sel.disabled = true;
+    grid.className = 'valor-grid vazio';
+    grid.innerHTML = 'Selecione a prova e o sexo primeiro...';
     return;
   }
   const campo = SEXO_SEL==='M' ? 'm' : 'f';
   const unidade = (SEXO_SEL==='M' ? tab.unidadeM : tab.unidadeF) || '';
   const linhas = [...tab.linhas].sort((a,b)=>a[campo]-b[campo]);
-
-  sel.innerHTML = '<option value="">Selecione...</option>';
   const menor = linhas[0][campo];
-  const opElim = document.createElement('option');
-  opElim.value = String(menor - (Number.isInteger(menor) ? 1 : 0.01));
-  opElim.textContent = `Abaixo de ${menor} ${unidade} (eliminado)`;
-  sel.appendChild(opElim);
+  const valorElim = String(menor - (Number.isInteger(menor) ? 1 : 0.01));
+
+  grid.className = 'valor-grid';
+  grid.innerHTML = '';
+  const chipElim = document.createElement('div');
+  chipElim.className = 'valor-opt elim';
+  chipElim.dataset.valor = valorElim;
+  chipElim.textContent = `Abaixo de ${menor} ${unidade} (eliminado)`;
+  chipElim.onclick = ()=>selecionarValor(valorElim);
+  grid.appendChild(chipElim);
   linhas.forEach(l=>{
-    const op = document.createElement('option');
-    op.value = String(l[campo]);
-    op.textContent = `${l[campo]} ${unidade} — ${l.pontos} pontos`;
-    sel.appendChild(op);
+    const chip = document.createElement('div');
+    chip.className = 'valor-opt';
+    chip.dataset.valor = String(l[campo]);
+    chip.textContent = `${l[campo]} ${unidade} — ${l.pontos} pontos`;
+    chip.onclick = ()=>selecionarValor(String(l[campo]));
+    grid.appendChild(chip);
   });
-  sel.disabled = false;
-  if(valorAnterior && Array.from(sel.options).some(o=>o.value===valorAnterior)) sel.value = valorAnterior;
+
+  // Se o valor anterior ainda existir entre as opções da prova/sexo atuais,
+  // mantém selecionado; senão fica em branco (força reescolher, já que os
+  // degraus mudam de acordo com o sexo).
+  const opcoesValidas = [valorElim, ...linhas.map(l=>String(l[campo]))];
+  if(valorAnterior && opcoesValidas.includes(valorAnterior)) selecionarValor(valorAnterior);
+}
+
+function selecionarValor(v){
+  document.getElementById('f-valor').value = v;
+  document.querySelectorAll('#f-valor-grid .valor-opt').forEach(chip=>{
+    chip.classList.toggle('active', chip.dataset.valor===v);
+  });
+  atualizarPreview();
+  atualizarBotaoEnviar();
 }
 
 function buscarCandidato(){
@@ -553,11 +581,11 @@ async function enviarAvaliacao(){
 function registrarOutro(){
   limparCandidato();
   resetarFoto();
-  document.getElementById('f-valor').value = '';
   document.getElementById('f-obs').value = '';
   SEXO_SEL = null;
   document.getElementById('sexo-M').classList.remove('active');
   document.getElementById('sexo-F').classList.remove('active');
+  atualizarOpcoesValor();
   document.getElementById('alert-envio').style.display='none';
   const btn = document.getElementById('btn-enviar');
   btn.disabled = true; btn.textContent = 'Confirmar e enviar';
@@ -646,7 +674,7 @@ function continuarRascunho(){
     onProvaChange();
   }
   if(rascunho.valor !== undefined && rascunho.valor !== ''){
-    document.getElementById('f-valor').value = rascunho.valor;
+    selecionarValor(String(rascunho.valor));
   }
   if(rascunho.fotoDataUrl){
     FOTO_DATA_URL = rascunho.fotoDataUrl;
