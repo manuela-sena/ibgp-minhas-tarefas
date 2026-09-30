@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MUOE3130_HBND",
+  "concursoNome": "ALEES - EDITAL Nº 01/2025 - CONCURSO PÚBLICO",
+  "avaliador": "MANUELA",
+  "prova": "barra",
+  "turma": "22.02.2026 · 07H30 · 78",
+  "candidato": {
+    "inscricao": "16143566",
+    "nome": "AMANDA BERNABÉ POLONINI",
+    "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA"
+  },
+  "sexo": "F",
+  "valor": 5,
+  "pontos": 30,
+  "eliminado": false,
+  "horaInicio": "2026-09-30T18:48:34.534Z",
+  "horaFim": "2026-09-30T18:48:52.827Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MUOE3130_HBND_16143566_barra.jpg",
+  "observacoes": "",
+  "enviadoEm": "2026-09-30T18:48:57.892Z"
+}
