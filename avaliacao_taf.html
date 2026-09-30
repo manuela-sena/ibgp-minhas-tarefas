@@ -358,11 +358,11 @@ function atualizarOpcoesValor(){
     const proximo = linhas[i+1];
     let label;
     if(proximo && (proximo[campo]-1) > l[campo]){
-      label = `${fmtValor(l[campo])} a ${fmtLimiteSuperior(proximo[campo])} — ${l.pontos} pontos`;
+      label = `${fmtValor(l[campo])} a ${fmtLimiteSuperior(proximo[campo])}`;
     } else if(proximo){
-      label = `${fmtValor(l[campo])} — ${l.pontos} pontos`;
+      label = fmtValor(l[campo]);
     } else {
-      label = `${fmtValor(l[campo])} ou mais — ${l.pontos} pontos`;
+      label = `${fmtValor(l[campo])} ou mais`;
     }
     chip.textContent = label;
     chip.onclick = ()=>selecionarValor(String(l[campo]));
