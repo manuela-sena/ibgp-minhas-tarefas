@@ -338,10 +338,17 @@ function atualizarOpcoesValor(){
 
   grid.className = 'valor-grid';
   grid.innerHTML = '';
+  // Segundos usam a notação oficial de atletismo SS"CC (segundos"centésimos) —
+  // ex: 09"99 — em vez de subtrair 1 unidade inteira no limite superior da
+  // faixa, subtrai 1 centésimo (o "99" final).
+  const ehSegundos = unidade === 'segundos';
+  function fmtValor(v){ return ehSegundos ? `${String(v).padStart(2,'0')}"00` : `${v} ${unidade}`; }
+  function fmtLimiteSuperior(vProximo){ return ehSegundos ? `${String(vProximo-1).padStart(2,'0')}"99` : `${vProximo-1} ${unidade}`; }
+
   const chipElim = document.createElement('div');
   chipElim.className = 'valor-opt elim';
   chipElim.dataset.valor = valorElim;
-  chipElim.textContent = `Abaixo de ${menor} ${unidade} (eliminado)`;
+  chipElim.textContent = `Abaixo de ${fmtValor(menor)} (eliminado)`;
   chipElim.onclick = ()=>selecionarValor(valorElim);
   grid.appendChild(chipElim);
   linhas.forEach((l,i)=>{
@@ -351,11 +358,11 @@ function atualizarOpcoesValor(){
     const proximo = linhas[i+1];
     let label;
     if(proximo && (proximo[campo]-1) > l[campo]){
-      label = `${l[campo]} a ${proximo[campo]-1} ${unidade} — ${l.pontos} pontos`;
+      label = `${fmtValor(l[campo])} a ${fmtLimiteSuperior(proximo[campo])} — ${l.pontos} pontos`;
     } else if(proximo){
-      label = `${l[campo]} ${unidade} — ${l.pontos} pontos`;
+      label = `${fmtValor(l[campo])} — ${l.pontos} pontos`;
     } else {
-      label = `${l[campo]} ${unidade} ou mais — ${l.pontos} pontos`;
+      label = `${fmtValor(l[campo])} ou mais — ${l.pontos} pontos`;
     }
     chip.textContent = label;
     chip.onclick = ()=>selecionarValor(String(l[campo]));
