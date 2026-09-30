@@ -147,20 +147,8 @@
 
     <div class="card">
       <div class="card-header">
-        <div class="card-title">2. Turma</div>
-      </div>
-      <div class="card-body">
-        <div class="form-group" style="margin-bottom:0">
-          <label>Turma / horário<span class="req">*</span></label>
-          <select id="f-turma" onchange="onTurmaChange()"><option value="">Selecione...</option></select>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">3. Candidato(a)</div>
-        <div class="card-sub">Busque pelo nome ou número de inscrição.</div>
+        <div class="card-title">2. Candidato(a)</div>
+        <div class="card-sub">Busque pelo nome ou número de inscrição — a data e o horário vêm junto com o candidato.</div>
       </div>
       <div class="card-body">
         <div id="busca-wrap">
@@ -181,7 +169,7 @@
 
     <div class="card" id="card-foto" style="display:none">
       <div class="card-header">
-        <div class="card-title">4. Foto do candidato</div>
+        <div class="card-title">3. Foto do candidato</div>
         <div class="card-sub">Tire uma foto do candidato antes de iniciar a avaliação.</div>
       </div>
       <div class="card-body">
@@ -200,7 +188,7 @@
 
     <div class="card" id="card-avaliacao" style="display:none">
       <div class="card-header">
-        <div class="card-title">5. Avaliação</div>
+        <div class="card-title">4. Avaliação</div>
       </div>
       <div class="card-body">
         <div class="form-group">
@@ -286,13 +274,7 @@ function montarForm(){
     selAval.appendChild(op);
   });
 
-  const turmas = turmasUnicas();
-  const selTurma = document.getElementById('f-turma');
-  turmas.forEach(t=>{
-    const op = document.createElement('option'); op.value = t.key;
-    op.textContent = [t.data, t.horario, t.turma].filter(Boolean).join(' · ');
-    selTurma.appendChild(op);
-  });
+  CANDIDATOS_TURMA = CONFIG.candidatos||[];
 
   document.getElementById('loading-inicial').style.display='none';
   document.getElementById('form-wrap').style.display='block';
@@ -304,15 +286,6 @@ function montarForm(){
     _RASCUNHO_PENDENTE = rascunho;
     mostrarBannerRascunho(rascunho);
   }
-}
-
-function turmasUnicas(){
-  const map = new Map();
-  (CONFIG.candidatos||[]).forEach(c=>{
-    const key = [c.data,c.horario,c.turma].filter(Boolean).join(' · ');
-    if(key && !map.has(key)) map.set(key, {key, data:c.data, horario:c.horario, turma:c.turma});
-  });
-  return Array.from(map.values());
 }
 
 function onCabecalhoChange(){ atualizarBotaoEnviar(); }
@@ -331,15 +304,6 @@ function onProvaChange(){
   atualizarBotaoEnviar();
 }
 
-function onTurmaChange(){
-  const key = document.getElementById('f-turma').value;
-  CANDIDATOS_TURMA = (CONFIG.candidatos||[]).filter(c=>[c.data,c.horario,c.turma].filter(Boolean).join(' · ')===key);
-  limparCandidato();
-  document.getElementById('f-busca-candidato').value = '';
-  document.getElementById('f-busca-candidato').disabled = !key;
-  atualizarBotaoEnviar();
-}
-
 function buscarCandidato(){
   const termo = document.getElementById('f-busca-candidato').value.trim().toLowerCase();
   const box = document.getElementById('search-results');
@@ -348,7 +312,7 @@ function buscarCandidato(){
     c.nome.toLowerCase().includes(termo) || c.inscricao.toLowerCase().includes(termo)
   ).slice(0,8);
   if(!achados.length){
-    box.innerHTML = '<div class="search-item" style="color:var(--muted)">Nenhum candidato encontrado nesta turma</div>';
+    box.innerHTML = '<div class="search-item" style="color:var(--muted)">Nenhum candidato encontrado</div>';
     box.style.display='block';
     return;
   }
@@ -481,7 +445,6 @@ function atualizarPreview(){
 function atualizarBotaoEnviar(){
   const ok = document.getElementById('f-avaliador').value &&
              document.getElementById('f-prova').value &&
-             document.getElementById('f-turma').value &&
              CANDIDATO_SEL && SEXO_SEL && !!FOTO_DATA_URL;
   document.getElementById('btn-enviar').disabled = !ok;
   salvarRascunho();
@@ -490,12 +453,12 @@ function atualizarBotaoEnviar(){
 async function enviarAvaliacao(){
   const avaliador = document.getElementById('f-avaliador').value;
   const prova = document.getElementById('f-prova').value;
-  const turmaKey = document.getElementById('f-turma').value;
+  const turmaKey = CANDIDATO_SEL ? [CANDIDATO_SEL.data, CANDIDATO_SEL.horario, CANDIDATO_SEL.turma].filter(Boolean).join(' · ') : '';
   const valorStr = document.getElementById('f-valor').value;
   const obs = document.getElementById('f-obs').value.trim();
   const alertEl = document.getElementById('alert-envio');
 
-  if(!avaliador || !prova || !turmaKey || !CANDIDATO_SEL || !SEXO_SEL || valorStr==='' || !FOTO_DATA_URL){
+  if(!avaliador || !prova || !CANDIDATO_SEL || !SEXO_SEL || valorStr==='' || !FOTO_DATA_URL){
     alertEl.className='alert alert-error'; alertEl.style.display='block';
     alertEl.textContent='Preencha todos os campos obrigatórios antes de enviar (inclusive a foto do candidato).';
     return;
@@ -582,7 +545,6 @@ function salvarRascunho(){
   const rascunho = {
     avaliador: document.getElementById('f-avaliador').value,
     prova: document.getElementById('f-prova').value,
-    turmaKey: document.getElementById('f-turma').value,
     candidatoInscricao: CANDIDATO_SEL.inscricao,
     candidatoNome: CANDIDATO_SEL.nome,
     sexoSel: SEXO_SEL,
@@ -632,14 +594,6 @@ function continuarRascunho(){
   if(rascunho.avaliador){
     const sel = document.getElementById('f-avaliador');
     if(Array.from(sel.options).some(o=>o.value===rascunho.avaliador)) sel.value = rascunho.avaliador;
-  }
-
-  if(rascunho.turmaKey){
-    const selTurma = document.getElementById('f-turma');
-    if(Array.from(selTurma.options).some(o=>o.value===rascunho.turmaKey)){
-      selTurma.value = rascunho.turmaKey;
-      onTurmaChange(); // popula CANDIDATOS_TURMA da turma e chama limparCandidato()
-    }
   }
 
   const cand = CANDIDATOS_TURMA.find(c => String(c.inscricao) === String(rascunho.candidatoInscricao));
