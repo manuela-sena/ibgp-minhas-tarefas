@@ -212,7 +212,7 @@
           <input type="hidden" id="f-valor" value="">
           <div id="f-valor-grid" class="valor-grid vazio">Selecione a prova e o sexo primeiro...</div>
         </div>
-        <div id="preview-pontos" class="preview-pontos neutro" style="margin-bottom:16px">Informe o valor para calcular a pontuação</div>
+        <div id="preview-pontos" class="preview-pontos neutro" style="margin-bottom:16px;display:none"></div>
         <div class="form-group" style="margin-bottom:0">
           <label>Observações <span style="color:var(--muted);font-weight:400">(opcional)</span></label>
           <textarea id="f-obs" placeholder="Alguma ocorrência a registrar?" oninput="atualizarBotaoEnviar()"></textarea>
@@ -508,10 +508,10 @@ function atualizarPreview(){
   const valorStr = document.getElementById('f-valor').value;
   const box = document.getElementById('preview-pontos');
   if(!prova || !SEXO_SEL || valorStr===''){
-    box.className='preview-pontos neutro';
-    box.textContent='Informe o valor para calcular a pontuação';
+    box.style.display='none';
     return;
   }
+  box.style.display='block';
   const valor = parseFloat(valorStr);
   const r = calcularPontos(prova, SEXO_SEL, valor);
   if(r.eliminado){
