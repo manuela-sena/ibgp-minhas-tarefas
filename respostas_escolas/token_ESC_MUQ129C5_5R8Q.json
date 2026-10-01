@@ -1,0 +1,172 @@
+{
+  "token": "ESC_MUQ129C5_5R8Q",
+  "enviadoEm": "2026-10-01T21:09:45.797Z",
+  "protocolo": "ESC_MUQ129C5_5R8Q_1790888985797",
+  "concurso": {
+    "concurso": "PARACATU/MG - EDITAL Nº 02/2026 - CONCURSO",
+    "municipio": "PARACATU/MG",
+    "dataProva": "20/09/2026",
+    "escola": "E.E. DELANO BROCHADO ADJUTO",
+    "idEscola": "ESC_MUQ129C5_5R8Q"
+  },
+  "instituicao": {
+    "nome": "E.E. DELANO BROCHADO ADJUTO",
+    "cnpj": "20.583.266/0001-11",
+    "razao": "CAIXA ESCOLAR E E DELANO BROCHADO ADJUTO",
+    "endereco": "RUA JOSÉ TEIXEIRA OLIVEIRA",
+    "numero": "375",
+    "complemento": "",
+    "bairro": "PARACATUZINHO",
+    "cidade": "PARACATU",
+    "uf": "MG",
+    "cep": "38603-318",
+    "responsavel": {
+      "nome": "SIMONE CLARETE DE SOUZA OLIVEIRA",
+      "cargo": "DIRETOR",
+      "email": "simone.clarete@educacao.mg.gov.br",
+      "tel": "(38) 99911-1774"
+    },
+    "diretor": {
+      "nome": "SIMONE CLARETE DE SOUZA OLIVEIRA",
+      "email": "simone.clarete@educacao.mg.gov.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "1",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "1",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "sala": "SALA 08",
+      "bloco": "ÚNICO",
+      "andar": "1º ANDAR",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 07",
+      "bloco": "ÚNICO",
+      "andar": "1º ANDAR",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 06",
+      "bloco": "ÚNICO",
+      "andar": "1º ANDAR",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 21",
+      "bloco": "ÚNICO",
+      "andar": "2º ANDAR",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 20",
+      "bloco": "ÚNICO",
+      "andar": "2º ANDAR",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 19",
+      "bloco": "ÚNICO",
+      "andar": "2º ANDAR",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 18",
+      "bloco": "ÚNICO",
+      "andar": "2º ANDAR",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 17",
+      "bloco": "ÚNICO",
+      "andar": "2º ANDAR",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 16",
+      "bloco": "ÚNICO",
+      "andar": "2º ANDAR",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 14",
+      "bloco": "ÚNICO",
+      "andar": "2º ANDAR",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": false,
+      "ventilador": true
+    }
+  ]
+}
