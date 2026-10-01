@@ -1,11 +1,182 @@
 {
   "token": "ESC_MUPVSHLI_2RJ9",
-  "criadoEm": "2026-10-01T18:42:11.862Z",
+  "enviadoEm": "2026-10-01T19:42:15.150Z",
+  "protocolo": "ESC_MUPVSHLI_2RJ9_1790883735151",
   "concurso": {
     "concurso": "PARACATU/MG - EDITAL Nº 02/2026 - CONCURSO",
     "municipio": "PARACATU/MG",
     "dataProva": "11/10/2026",
     "escola": "E.E. AFONSO ARINOS",
     "idEscola": "ESC_MUPVSHLI_2RJ9"
-  }
+  },
+  "instituicao": {
+    "nome": "E.E. AFONSO ARINOS",
+    "cnpj": "19.643.774/0001-69",
+    "razao": "CAIXA ESCOLAR AFONSO ARINOS",
+    "endereco": "PRACA ADELMAR DA SILVA NEIVA",
+    "numero": "213",
+    "complemento": "",
+    "bairro": "CENTRO",
+    "cidade": "PARACATU",
+    "uf": "MG",
+    "cep": "38600-132",
+    "responsavel": {
+      "nome": "ERCIR PIMENTEL MAGALHAES",
+      "cargo": "DIRETOR",
+      "email": "escola.108812@educacao.mg.gov.br",
+      "tel": "(38) 99992-1879"
+    },
+    "diretor": {
+      "nome": "ERCIR PIMENTEL MAGALHAES",
+      "email": "ercir.magalhaes@educacao.mg.gov.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "01",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "01",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA 01",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA 02",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA 03",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA 04",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA 05",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA 06",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA 07",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA 08",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA 09",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA BIBLIOTECA",
+      "capacidade": 3,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA LABORATORIO INF",
+      "capacidade": 2,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA MULTIMIDIA",
+      "capacidade": 3,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": true
+    }
+  ]
 }
