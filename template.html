@@ -7198,6 +7198,7 @@ function abrirModalReaproveitarEscolas(){
     alert('Digite o concurso de destino no campo "Concurso" antes de reaproveitar escolas.');
     return;
   }
+  _REAPROV_CONCURSO_DESTINO = concursoDestino;
   const modal = document.createElement('div');
   modal.id = 'modal-reaproveitar-escolas';
   modal.style.cssText='position:fixed;inset:0;background:rgba(16,30,54,0.4);z-index:9999;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto';
@@ -7219,7 +7220,7 @@ function abrirModalReaproveitarEscolas(){
     <div id="reaprov-erro" style="color:#c0322f;font-size:12.5px;margin-bottom:8px;display:none"></div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button onclick="document.getElementById('modal-reaproveitar-escolas').remove()" style="background:#f4f6fa;border:1.5px solid #e2e7ef;border-radius:9px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer">Cancelar</button>
-      <button id="btn-reaprov-copiar" onclick="copiarEscolasSelecionadas(${JSON.stringify(concursoDestino)})" disabled style="background:#1f4e8c;border:none;border-radius:9px;padding:9px 18px;font-size:13px;font-weight:600;color:#fff;cursor:pointer;opacity:.5">Copiar selecionadas</button>
+      <button id="btn-reaprov-copiar" onclick="copiarEscolasSelecionadas()" disabled style="background:#1f4e8c;border:none;border-radius:9px;padding:9px 18px;font-size:13px;font-weight:600;color:#fff;cursor:pointer;opacity:.5">Copiar selecionadas</button>
     </div>
   </div>`;
   document.body.appendChild(modal);
@@ -7227,6 +7228,7 @@ function abrirModalReaproveitarEscolas(){
 }
 
 let _REAPROV_ESCOLAS = [];
+let _REAPROV_CONCURSO_DESTINO = '';
 
 async function buscarEscolasParaReaproveitar(){
   const origem = document.getElementById('reaprov-concurso-origem')?.value?.trim();
@@ -7273,7 +7275,8 @@ function toggleTodasReaprov(checked){
 // não é alterada), com os mesmos dados de endereço/salas/estrutura já
 // preenchidos, só trocando o concurso — marca como já enviada (enviado:true)
 // porque não precisa de nenhuma ação nova da escola.
-async function copiarEscolasSelecionadas(concursoDestino){
+async function copiarEscolasSelecionadas(){
+  const concursoDestino = _REAPROV_CONCURSO_DESTINO;
   const marcados = Array.from(document.querySelectorAll('.reaprov-check:checked')).map(c=>Number(c.value));
   if(!marcados.length){ alert('Selecione ao menos uma escola.'); return; }
   const btn = document.getElementById('btn-reaprov-copiar');
