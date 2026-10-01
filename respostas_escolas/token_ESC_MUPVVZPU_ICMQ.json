@@ -1,11 +1,202 @@
 {
   "token": "ESC_MUPVVZPU_ICMQ",
-  "criadoEm": "2026-10-01T18:44:55.314Z",
+  "enviadoEm": "2026-10-01T19:14:50.165Z",
+  "protocolo": "ESC_MUPVVZPU_ICMQ_1790882090165",
   "concurso": {
     "concurso": "PARACATU/MG - EDITAL Nº 02/2026 - CONCURSO",
     "municipio": "PARACATU/MG",
     "dataProva": "11/10/2026",
     "escola": "E.M. CACILDA CAETANO DE SOUZA",
     "idEscola": "ESC_MUPVVZPU_ICMQ"
-  }
+  },
+  "instituicao": {
+    "nome": "E.M. CACILDA CAETANO DE SOUZA",
+    "cnpj": "01.911.811/0001-07",
+    "razao": "ESCOLA CACILDA CAETANO DE SOUZA",
+    "endereco": "RUA: NASCENTE",
+    "numero": "Nº 34",
+    "complemento": "",
+    "bairro": "BAIRRO: NOSSA SENHORA DE FÁTIMA",
+    "cidade": "PARACATU",
+    "uf": "MG",
+    "cep": "38607-070",
+    "responsavel": {
+      "nome": "MIRELE CARVALHO DOS SANTOS",
+      "cargo": "DIRETOR",
+      "email": "mirelecarvalho725@gmail.com",
+      "tel": "(38) 99975-4892"
+    },
+    "diretor": {
+      "nome": "MIRELE CARVALHO DOS SANTOS",
+      "email": "mirelecarvalho725@gmail.com"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "2",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "2",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "",
+      "andar": "1º ANDAR",
+      "sala": "SALA 1",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "1º ANDAR",
+      "sala": "SALA 2",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "1º ANDAR",
+      "sala": "SALA 3",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "1º ANDAR",
+      "sala": "SALA CINEMA",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "",
+      "andar": "2º ANDAR",
+      "sala": "SALA 4",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "2º ANDAR",
+      "sala": "SALA 5",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "2º ANDAR",
+      "sala": "SALA 6",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "2º ANDAR",
+      "sala": "SALA 7",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "2º ANDAR",
+      "sala": "SALA 8",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "2º ANDAR",
+      "sala": "SALA 9",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "2º ANDAR",
+      "sala": "SALA 10",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "2º ANDAR",
+      "sala": "SALA 11",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "2º ANDAR",
+      "sala": "SALA 12",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "2º ANDAR",
+      "sala": "SALA LABORATÓRIO",
+      "capacidade": 6,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": true
+    }
+  ]
 }
