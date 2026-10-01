@@ -1,0 +1,172 @@
+{
+  "token": "ESC_MUQ127HU_OK31",
+  "enviadoEm": "2026-10-01T21:09:43.410Z",
+  "protocolo": "ESC_MUQ127HU_OK31_1790888983410",
+  "concurso": {
+    "concurso": "PARACATU/MG - EDITAL Nº 02/2026 - CONCURSO",
+    "municipio": "PARACATU/MG",
+    "dataProva": "20/09/2026",
+    "escola": "E.E. NEUSA PIMENTEL BARBOSA",
+    "idEscola": "ESC_MUQ127HU_OK31"
+  },
+  "instituicao": {
+    "nome": "E.E. NEUSA PIMENTEL BARBOSA",
+    "cnpj": "17.222.990/0001-05",
+    "razao": "CAIXA ESCOLAR NEUSA PIMENTEL BARBOSA",
+    "endereco": "RUA ZITA DA SILVA NEIVA",
+    "numero": "350",
+    "complemento": "ESCOLA",
+    "bairro": "PRADO",
+    "cidade": "PARACATU",
+    "uf": "MG",
+    "cep": "36603-154",
+    "responsavel": {
+      "nome": "ANA CLARA MARQUES GUIMARÃES",
+      "cargo": "SECRETÁRIA E PROFESSORA",
+      "email": "escola.353205@educacao.mg.gov.br",
+      "tel": "(38) 3672-3638"
+    },
+    "diretor": {
+      "nome": "ANA BEATRIZ DA SILVA OLIVEIRA",
+      "email": "ana.silva.oliveira@educacao.mg.gov.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "2",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "2",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "sala": "SALA 03",
+      "bloco": "BLOCO A",
+      "andar": "1º ANDAR",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 04",
+      "bloco": "BLOCO A",
+      "andar": "1º ANDAR",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 05",
+      "bloco": "BLOCO A",
+      "andar": "1º ANDAR",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 06",
+      "bloco": "BLOCO A",
+      "andar": "1º ANDAR",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 07",
+      "bloco": "BLOCO A",
+      "andar": "1º ANDAR",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 08",
+      "bloco": "BLOCO A",
+      "andar": "1º ANDAR",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 09",
+      "bloco": "BLOCO A",
+      "andar": "1º ANDAR",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 11",
+      "bloco": "BLOCO B",
+      "andar": "1º ANDAR",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 12",
+      "bloco": "BLOCO B",
+      "andar": "1º ANDAR",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    {
+      "sala": "SALA 13",
+      "bloco": "BLOCO B",
+      "andar": "1º ANDAR",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": false,
+      "ventilador": true
+    }
+  ]
+}
