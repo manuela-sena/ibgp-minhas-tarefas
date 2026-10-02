@@ -6788,11 +6788,12 @@ async function buscarEscolasPorConcurso(concursoNome){
   const tokensArq = arquivos.filter(a=>a.name.startsWith('token_')&&a.name.endsWith('.json'));
   const statusArq = arquivos.filter(a=>a.name.startsWith('status_')&&a.name.endsWith('.json'));
   const concursoNomeN = normConcurso(concursoNome);
+  let falhas = 0; // só erro de rede/arquivo real — "não bate com o concurso" NÃO conta aqui
 
   async function processarEscola(arq){
     try{
       const texto = await fetchTextoComRetry(arq.download_url);
-      if(!texto) return null;
+      if(!texto){ falhas++; return null; }
       let dados;
       try{ dados = JSON.parse(texto); }
       catch(parseErr){ console.warn(`Escola com JSON inv\u00e1lido, ignorada: ${arq.name}`, parseErr); return null; }
@@ -6825,14 +6826,9 @@ async function buscarEscolasPorConcurso(concursoNome){
 
   const LOTE = 4;
   const escolas = [];
-  let falhas = 0;
   for(let i=0; i<tokensArq.length; i+=LOTE){
     const lote = tokensArq.slice(i, i+LOTE);
-    const resultados = await Promise.all(lote.map(async arq=>{
-      const r = await processarEscola(arq);
-      if(r===null) falhas++;
-      return r;
-    }));
+    const resultados = await Promise.all(lote.map(processarEscola));
     escolas.push(...resultados.filter(Boolean));
     if(i+LOTE < tokensArq.length) await new Promise(res=>setTimeout(res, 200));
   }
