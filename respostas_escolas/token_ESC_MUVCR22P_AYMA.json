@@ -1,11 +1,522 @@
 {
   "token": "ESC_MUVCR22P_AYMA",
-  "criadoEm": "2026-10-05T14:35:49.441Z",
+  "enviadoEm": "2026-10-05T14:56:35.153Z",
+  "protocolo": "ESC_MUVCR22P_AYMA_1791212195153",
   "concurso": {
     "concurso": "PARACATU/MG - EDITAL Nº 02/2026 - CONCURSO",
     "municipio": "PARACATU/MG",
     "dataProva": "11/10/2026",
     "escola": "CENTRO UNIVERSITÁRIO ATENAS",
     "idEscola": "ESC_MUVCR22P_AYMA"
-  }
+  },
+  "instituicao": {
+    "nome": "CENTRO UNIVERSITÁRIO ATENAS",
+    "cnpj": "",
+    "razao": "",
+    "endereco": "RUA EURIDAMAS AVELINO DE BARROS",
+    "numero": "1400",
+    "complemento": "",
+    "bairro": "PRADO",
+    "cidade": "PARACATU",
+    "uf": "MG",
+    "cep": "38602-002",
+    "responsavel": {
+      "nome": "GUILHERME ABREU",
+      "cargo": "ENCARREGADO",
+      "email": "priscila.supervisao@uniatenas.edu.br",
+      "tel": "(38) 9900-6457"
+    },
+    "diretor": {
+      "nome": "PRISCILLA",
+      "email": ""
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": false,
+      "universitaria": true,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": true,
+      "arcond": true,
+      "ventilador": false
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "15",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "15",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "BLOCO B",
+      "andar": "TÉRREO",
+      "sala": "SALA B -206",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO B",
+      "andar": "TÉRREO",
+      "sala": "SALA B -207",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO B",
+      "andar": "TÉRREO",
+      "sala": "SALA B -208",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO B",
+      "andar": "TÉRREO",
+      "sala": "SALA B -209",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO B",
+      "andar": "TÉRREO",
+      "sala": "SALA B -210",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO J",
+      "andar": "TÉRREO",
+      "sala": "SALA J-1001",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO J",
+      "andar": "TÉRREO",
+      "sala": "SALA J-1002",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO J",
+      "andar": "TÉRREO",
+      "sala": "SALA J-1003",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO J",
+      "andar": "TÉRREO",
+      "sala": "SALA J-1004",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO J",
+      "andar": "TÉRREO",
+      "sala": "SALA J-1005",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO J",
+      "andar": "TÉRREO",
+      "sala": "SALA J-1006",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO J",
+      "andar": "TÉRREO",
+      "sala": "SALA J-1007",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO J",
+      "andar": "TÉRREO",
+      "sala": "SALA J-1008",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO J",
+      "andar": "TÉRREO",
+      "sala": "SALA J-1009",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO K",
+      "andar": "TÉRREO",
+      "sala": "SALA K-1101",
+      "capacidade": 55,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO K",
+      "andar": "TÉRREO",
+      "sala": "SALA K-1102",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO K",
+      "andar": "TÉRREO",
+      "sala": "SALA K-1103",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO K",
+      "andar": "TÉRREO",
+      "sala": "SALA K-1104",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO K",
+      "andar": "TÉRREO",
+      "sala": "SALA K-1105",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO K",
+      "andar": "TÉRREO",
+      "sala": "SALA K-1106",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO K",
+      "andar": "TÉRREO",
+      "sala": "SALA K-1107",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO K",
+      "andar": "TÉRREO",
+      "sala": "SALA K-1108",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO K",
+      "andar": "TÉRREO",
+      "sala": "SALA K-1112",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO L",
+      "andar": "TÉRREO",
+      "sala": "SALA L -1202",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO L",
+      "andar": "TÉRREO",
+      "sala": "SALA L -1203",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO L",
+      "andar": "TÉRREO",
+      "sala": "SALA L -1204",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO L",
+      "andar": "TÉRREO",
+      "sala": "SALA L-1209",
+      "capacidade": 49,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO L",
+      "andar": "TÉRREO",
+      "sala": "SALA L-1210",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO L",
+      "andar": "TÉRREO",
+      "sala": "SALA L-1211",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO L",
+      "andar": "TÉRREO",
+      "sala": "SALA L-1212",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO L",
+      "andar": "2º ANDAR",
+      "sala": "SALA L-1214",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO L",
+      "andar": "2º ANDAR",
+      "sala": "SALA L-1215",
+      "capacidade": 49,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO L",
+      "andar": "2º ANDAR",
+      "sala": "SALA L-1216",
+      "capacidade": 49,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO L",
+      "andar": "2º ANDAR",
+      "sala": "SALA L-1217",
+      "capacidade": 49,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO L",
+      "andar": "2º ANDAR",
+      "sala": "SALA L-1218",
+      "capacidade": 49,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO L",
+      "andar": "2º ANDAR",
+      "sala": "SALA L-1219",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO L",
+      "andar": "2º ANDAR",
+      "sala": "SALA L-1220",
+      "capacidade": 49,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO L",
+      "andar": "2º ANDAR",
+      "sala": "SALA L-1221",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO L",
+      "andar": "2º ANDAR",
+      "sala": "SALA L-1222",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO L",
+      "andar": "2º ANDAR",
+      "sala": "SALA L-1223",
+      "capacidade": 49,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO L",
+      "andar": "2º ANDAR",
+      "sala": "SALA L-1224",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO M",
+      "andar": "TÉRREO",
+      "sala": "SALA M-1301",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO M",
+      "andar": "TÉRREO",
+      "sala": "SALA M-1302",
+      "capacidade": 49,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO M",
+      "andar": "TÉRREO",
+      "sala": "SALA M-1303",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO M",
+      "andar": "TÉRREO",
+      "sala": "SALA M-1304",
+      "capacidade": 49,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO M",
+      "andar": "TÉRREO",
+      "sala": "SALA M-1305",
+      "capacidade": 49,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    }
+  ]
 }
