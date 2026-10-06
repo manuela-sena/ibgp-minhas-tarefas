@@ -1,11 +1,162 @@
 {
   "token": "ESC_MUX6KXBJ_MTU1",
-  "criadoEm": "2026-10-06T21:18:37.999Z",
+  "enviadoEm": "2026-10-06T21:35:34.645Z",
+  "protocolo": "ESC_MUX6KXBJ_MTU1_1791322534645",
   "concurso": {
     "concurso": "PARACATU/MG - EDITAL Nº 02/2026 - CONCURSO",
     "municipio": "PARACATU/MG",
     "dataProva": "11/10/2026",
     "escola": "COLÉGIO ATENAS",
     "idEscola": "ESC_MUX6KXBJ_MTU1"
-  }
+  },
+  "instituicao": {
+    "nome": "COLÉGIO ATENAS",
+    "cnpj": "",
+    "razao": "",
+    "endereco": "RUA JOÃO GONÇALVES DE CARVALHO",
+    "numero": "114",
+    "complemento": "",
+    "bairro": "SANTA LÚCIA",
+    "cidade": "PARACATU",
+    "uf": "MG",
+    "cep": "38600-000",
+    "responsavel": {
+      "nome": "MARIANA RABELO",
+      "cargo": "DIRETORA",
+      "email": "concursos@ibgp.org.br",
+      "tel": "(38) 99900-3852"
+    },
+    "diretor": {
+      "nome": "",
+      "email": ""
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": true,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": false,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": false
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "3",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "3",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "ÚNICO",
+      "andar": "TÉRREO",
+      "sala": "SALA 08",
+      "capacidade": 29,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "ÚNICO",
+      "andar": "TÉRREO",
+      "sala": "SALA 09",
+      "capacidade": 28,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "ÚNICO",
+      "andar": "TÉRREO",
+      "sala": "SALA 10",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "ÚNICO",
+      "andar": "TÉRREO",
+      "sala": "SALA 12",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "ÚNICO",
+      "andar": "1º ANDAR",
+      "sala": "SALA 31",
+      "capacidade": 48,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "ÚNICO",
+      "andar": "2ª ANDAR",
+      "sala": "SALA 34",
+      "capacidade": 29,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "ÚNICO",
+      "andar": "2ª ANDAR",
+      "sala": "SALA 35",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "ÚNICO",
+      "andar": "2ª ANDAR",
+      "sala": "SALA 36",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "ÚNICO",
+      "andar": "2ª ANDAR",
+      "sala": "SALA 37",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "ÚNICO",
+      "andar": "2ª ANDAR",
+      "sala": "SALA 38",
+      "capacidade": 28,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    }
+  ]
 }
