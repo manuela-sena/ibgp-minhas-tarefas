@@ -9428,8 +9428,18 @@ async function gerarPlanilhaAlocacao(resultado, escolasEnviadas){
     const partes = chave.split('|');
     const escola = partes[0], sala = partes[3], andar = partes[4], bloco = partes[5];
     const cargos = [...new Set(itens.map(x=>x.CARGO))].slice(0,5);
+    // A sala de atendimento especial vem em a.SALA com o atendimento no nome
+    // (ex: "BIBLIOTECA - AMPL", "SALA 12 - IND"). A chave acima agrupa pela sala
+    // física (sem o sufixo), então aqui junta os atendimentos dos candidatos da
+    // sala pra mostrar o nome completo, igual aparece em DADOS ALOCAÇÃO.
+    const sufixos = [];
+    itens.forEach(x=>{
+      String(x.SALA||'').split(' - ').slice(1).join(' - ').split(',').map(t=>t.trim()).filter(Boolean)
+        .forEach(t=>{ if(!sufixos.includes(t)) sufixos.push(t); });
+    });
+    const nomeSalaAta = sufixos.length ? `${sala} - ${sufixos.join(', ')}` : sala;
     const row = {'CONCURSO': itens[0].CONCURSO, 'DATA PROVA': itens[0]['DATA PROVA'], 'TURNO': itens[0].TURNO,
-      'ESCOLA': escola, 'SALA': `${andar} - ${bloco} - ${sala}`, 'QTD DE CANDIDATOS': itens.length};
+      'ESCOLA': escola, 'SALA': `${andar} - ${bloco} - ${nomeSalaAta}`, 'QTD DE CANDIDATOS': itens.length};
     cargos.forEach((c,i)=>{ row['CARGO.'+(i+1)] = c; });
     return row;
   });
