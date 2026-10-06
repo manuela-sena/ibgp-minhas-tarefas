@@ -8778,6 +8778,7 @@ async function processarAlocacao(){
 
         // ── Ler planilha de Condição Especial (aba COND ESPECIAL) — só DEFERIDA ──
         let deferidos = {};
+        let indeferidos = {}; // só pra aba AT ESPECIAL — não recebem atendimento nenhum na alocação
         let totalSolicitantes = 0;
         if(fileCond){
           const bufCond = await fileCond.arrayBuffer();
@@ -8820,6 +8821,12 @@ async function processarAlocacao(){
                 justificativa: justif,
                 resultado: resultadoOriginal || 'Deferida',
               };
+            } else if(/INDEFERID|N[ÃA]O DEFERID/.test(resultado)){
+              indeferidos[insc] = {
+                atendimento: String(r['ATENDIMENTO ESPECIAL_1'] ?? r['ATENDIMENTO ESPECIAL'] ?? '').trim(),
+                justificativa: String(r['JUSTIFICATIVA_1'] ?? r['JUSTIFICATIVA'] ?? '').trim(),
+                resultado: resultadoOriginal,
+              };
             }
           });
         }
@@ -8829,9 +8836,14 @@ async function processarAlocacao(){
         candidatos.forEach(c=>{
           const insc = String(c['INSCRIÇÃO']||'').trim();
           const def = deferidos[insc];
+          const indef = !def ? indeferidos[insc] : null;
           c['ATENDIMENTO ESPECIAL'] = def ? def.atendimento : '';
-          c['_justificativaEspecial'] = def ? def.justificativa : '';
-          c['_resultadoEspecial'] = def ? def.resultado : '';
+          c['_justificativaEspecial'] = def ? def.justificativa : (indef ? indef.justificativa : '');
+          c['_resultadoEspecial'] = def ? def.resultado : (indef ? indef.resultado : '');
+          // indeferido: não recebe atendimento (campo acima fica vazio), mas guarda o que
+          // foi pedido pra constar na aba AT ESPECIAL
+          c['_indeferidoEspecial'] = !!indef;
+          c['_atendimentoSolicitado'] = indef ? indef.atendimento : '';
         });
 
         const resultado = executarMotorAlocacao(candidatos, enviadas);
@@ -9298,6 +9310,8 @@ function mapCandidato(c){
     'ATENDIMENTO ESPECIAL': (c._atendimentos && c._atendimentos.length) ? c._atendimentos.join(', ') : '-',
     JUSTIFICATIVA: c['_justificativaEspecial']||'',
     RESULTADO_ESPECIAL: c['_resultadoEspecial']||'',
+    INDEFERIDO_ESPECIAL: !!c['_indeferidoEspecial'],
+    ATENDIMENTO_SOLICITADO: c['_atendimentoSolicitado']||'',
   };
 }
 
@@ -9377,15 +9391,27 @@ async function gerarPlanilhaAlocacao(resultado, escolasEnviadas){
   });
   criarAba('ESCOLAS', escolasRows, ['Índice','Nome da Instituição','Bloco','Andar','Nº sala','Capacidade','TURNO','SEXO','CAP','Coluna1']);
 
-  // ── AT ESPECIAL (só quem tem atendimento especial deferido) ──
+  // ── AT ESPECIAL: quem tem atendimento especial deferido (primeiro) e, em seguida,
+  //    quem teve o pedido indeferido — esses não recebem atendimento na alocação, mas
+  //    aparecem aqui com o que pediram. Coluna ESCOLA só existe nesta aba. ──
   const especiais = resultado.alocados.filter(a=>a['ATENDIMENTO ESPECIAL'] && a['ATENDIMENTO ESPECIAL']!=='-');
-  const atEspecialRows = especiais.map(a=>({
-    'INSCRIÇÃO': a['INSCRIÇÃO'], 'CANDIDATO': a['CANDIDATO'], 'DATA DE NASCIMENTO': a['DATA NASCIMENTO'],
-    'CARGO': a['CARGO'], 'STATUS DE PAGAMENTO': a['STATUS'], 'ATENDIMENTO ESPECIAL': a['ATENDIMENTO ESPECIAL'],
-    'RESULTADO': a['RESULTADO_ESPECIAL'] || 'DEFERIDA', 'JUSTIFICATIVA': a['JUSTIFICATIVA'],
-  }));
+  const indeferidosEsp = resultado.alocados
+    .filter(a=>a['INDEFERIDO_ESPECIAL'] && !(a['ATENDIMENTO ESPECIAL'] && a['ATENDIMENTO ESPECIAL']!=='-'))
+    .sort((x,y)=>String(x['CANDIDATO']).localeCompare(String(y['CANDIDATO']),'pt-BR'));
+  const atEspecialRows = [
+    ...especiais.map(a=>({
+      'INSCRIÇÃO': a['INSCRIÇÃO'], 'CANDIDATO': a['CANDIDATO'], 'DATA DE NASCIMENTO': a['DATA NASCIMENTO'],
+      'CARGO': a['CARGO'], 'STATUS DE PAGAMENTO': a['STATUS'], 'ATENDIMENTO ESPECIAL': a['ATENDIMENTO ESPECIAL'],
+      'RESULTADO': a['RESULTADO_ESPECIAL'] || 'DEFERIDA', 'JUSTIFICATIVA': a['JUSTIFICATIVA'], 'ESCOLA': a['ESCOLA'],
+    })),
+    ...indeferidosEsp.map(a=>({
+      'INSCRIÇÃO': a['INSCRIÇÃO'], 'CANDIDATO': a['CANDIDATO'], 'DATA DE NASCIMENTO': a['DATA NASCIMENTO'],
+      'CARGO': a['CARGO'], 'STATUS DE PAGAMENTO': a['STATUS'], 'ATENDIMENTO ESPECIAL': a['ATENDIMENTO_SOLICITADO'],
+      'RESULTADO': a['RESULTADO_ESPECIAL'], 'JUSTIFICATIVA': a['JUSTIFICATIVA'], 'ESCOLA': a['ESCOLA'],
+    })),
+  ];
   criarAba('AT ESPECIAL', atEspecialRows,
-    ['INSCRIÇÃO','CANDIDATO','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO','ATENDIMENTO ESPECIAL','RESULTADO','JUSTIFICATIVA']);
+    ['INSCRIÇÃO','CANDIDATO','DATA DE NASCIMENTO','CARGO','STATUS DE PAGAMENTO','ATENDIMENTO ESPECIAL','RESULTADO','JUSTIFICATIVA','ESCOLA']);
 
   function salaSemSufixo(s){ return String(s||'').split(' - ')[0]; }
 
@@ -9402,18 +9428,8 @@ async function gerarPlanilhaAlocacao(resultado, escolasEnviadas){
     const partes = chave.split('|');
     const escola = partes[0], sala = partes[3], andar = partes[4], bloco = partes[5];
     const cargos = [...new Set(itens.map(x=>x.CARGO))].slice(0,5);
-    // A sala de atendimento especial vem em a.SALA com o atendimento no nome
-    // (ex: "BIBLIOTECA - AMPL", "SALA 12 - IND"). A chave acima agrupa pela sala
-    // física (sem o sufixo), então aqui junta os atendimentos dos candidatos da
-    // sala pra mostrar o nome completo, igual aparece em DADOS ALOCAÇÃO.
-    const sufixos = [];
-    itens.forEach(x=>{
-      String(x.SALA||'').split(' - ').slice(1).join(' - ').split(',').map(t=>t.trim()).filter(Boolean)
-        .forEach(t=>{ if(!sufixos.includes(t)) sufixos.push(t); });
-    });
-    const nomeSalaAta = sufixos.length ? `${sala} - ${sufixos.join(', ')}` : sala;
     const row = {'CONCURSO': itens[0].CONCURSO, 'DATA PROVA': itens[0]['DATA PROVA'], 'TURNO': itens[0].TURNO,
-      'ESCOLA': escola, 'SALA': `${andar} - ${bloco} - ${nomeSalaAta}`, 'QTD DE CANDIDATOS': itens.length};
+      'ESCOLA': escola, 'SALA': `${andar} - ${bloco} - ${sala}`, 'QTD DE CANDIDATOS': itens.length};
     cargos.forEach((c,i)=>{ row['CARGO.'+(i+1)] = c; });
     return row;
   });
