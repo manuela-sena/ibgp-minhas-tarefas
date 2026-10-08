@@ -1,0 +1,423 @@
+{
+  "token": "TAF_MUZZ5N16_5NXF",
+  "criadoEm": "2026-10-08T20:14:06.042Z",
+  "atualizadoEm": "2026-10-08T20:14:06.042Z",
+  "concursoNome": "CÂMARA DE CATAGUASES/MG - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "concursoId": "4qhoHzkQpEuvpWzpZjwS62UAKAUy",
+  "avaliadores": [
+    "MARCIO BISPO"
+  ],
+  "candidatos": [
+    {
+      "inscricao": "16344699",
+      "nome": "JEAN CARLOS DA SILVA",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "08h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16351553",
+      "nome": "JOÃO VICTOR SOUZA BORGES",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "08h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16333118",
+      "nome": "JOHN LENNON TEIXEIRA DOS SANTOS PUGIONE",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "08h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16345312",
+      "nome": "MAURO LUCIO SILVA",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "08h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16347902",
+      "nome": "ADRIANA MARINATTO",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "08h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16334129",
+      "nome": "EDUARDO PIRES DA SLVA",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "08h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16350474",
+      "nome": "EUGÊNIO JOSÉ GOUVÊA DE SOUZA",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "08h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16333261",
+      "nome": "EVERSONCARNEIRO DA SILVA",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "08h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16333456",
+      "nome": "IGOR LANZIERI DE SOUZA",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "08h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16333240",
+      "nome": "JOAO PAULO ZARAM PINHEIRO",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "08h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16352012",
+      "nome": "JOHN LENON SENRA DA SILVA",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "08h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16337139",
+      "nome": "JOSE REINALDO MOREIRA XAVIER",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "08h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16338441",
+      "nome": "LUCAS COSTA DE JESUS",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "08h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16351002",
+      "nome": "MARLON OLIVEIRA E SILVA",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "08h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16352219",
+      "nome": "PAULO SÉRGIO DE SOUZA ALMEIDA",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "08h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16334608",
+      "nome": "ROGERIO NASCIMENTO MAGALHAES",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "08h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16343047",
+      "nome": "RONALDO QUIOSSA",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "13h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16332868",
+      "nome": "RUAN FERNANDES DOS REIS",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "13h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16344605",
+      "nome": "SIDNEI DOMINGOS DE OLIVEIRA",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "13h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16337241",
+      "nome": "VIGORITO LAMAS DA SILVA NETO",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "13h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16341939",
+      "nome": "WALTER GENESIO DA SILVA",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "13h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16332710",
+      "nome": "HENRIQUE PARANHOS OLIVEIRA",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "13h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16333613",
+      "nome": "LUIS ROBERTO DE PAULA",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "13h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16332652",
+      "nome": "LUIZ QUELVIM ANDRÉ SOUZA",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "13h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16343627",
+      "nome": "PEDRO ANTONIO CELESTINO DE OLIVEIRA",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "13h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16352183",
+      "nome": "RENATO DE OLIVEIRA CARVALHO",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "13h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16350848",
+      "nome": "JHONNATHAN GERALDO GREGORIO",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "13h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16332830",
+      "nome": "LEONARDO ANTÔNIO DE PAULA DIOGO",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "13h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16336585",
+      "nome": "ANTONIO CARLOS SANTOS SILVA",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "13h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16333346",
+      "nome": "BRUNO GIOVANI BALDANZA",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "13h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16336816",
+      "nome": "CLAUDIO CAETANO DOS SANTOS",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "13h00",
+      "turma": ""
+    },
+    {
+      "inscricao": "16345666",
+      "nome": "WESLEY ALBINO PEREIRA",
+      "cargo": "201 - MOTORISTA",
+      "data": "46306",
+      "horario": "13h00",
+      "turma": ""
+    }
+  ],
+  "tabelaPontos": {
+    "corrida": {
+      "unidadeM": "metros",
+      "unidadeF": "metros",
+      "linhas": [
+        {
+          "pontos": 30,
+          "m": 2400,
+          "f": 2000
+        },
+        {
+          "pontos": 32,
+          "m": 2500,
+          "f": 2100
+        },
+        {
+          "pontos": 34,
+          "m": 2600,
+          "f": 2200
+        },
+        {
+          "pontos": 36,
+          "m": 2700,
+          "f": 2300
+        },
+        {
+          "pontos": 38,
+          "m": 2800,
+          "f": 2400
+        },
+        {
+          "pontos": 40,
+          "m": 2900,
+          "f": 2500
+        },
+        {
+          "pontos": 44,
+          "m": 3000,
+          "f": 2600
+        },
+        {
+          "pontos": 46,
+          "m": 3100,
+          "f": 2700
+        },
+        {
+          "pontos": 50,
+          "m": 3200,
+          "f": 2800
+        }
+      ]
+    },
+    "abdominal": {
+      "unidadeM": "repetições",
+      "unidadeF": "repetições",
+      "linhas": [
+        {
+          "pontos": 30,
+          "m": 16,
+          "f": 16
+        },
+        {
+          "pontos": 32,
+          "m": 18,
+          "f": 18
+        },
+        {
+          "pontos": 34,
+          "m": 20,
+          "f": 20
+        },
+        {
+          "pontos": 36,
+          "m": 22,
+          "f": 22
+        },
+        {
+          "pontos": 38,
+          "m": 24,
+          "f": 24
+        },
+        {
+          "pontos": 40,
+          "m": 26,
+          "f": 26
+        },
+        {
+          "pontos": 44,
+          "m": 28,
+          "f": 28
+        },
+        {
+          "pontos": 46,
+          "m": 30,
+          "f": 30
+        },
+        {
+          "pontos": 50,
+          "m": 31,
+          "f": 31
+        }
+      ]
+    },
+    "barra": {
+      "unidadeM": "repetições",
+      "unidadeF": "segundos",
+      "linhas": [
+        {
+          "pontos": 30,
+          "m": 2,
+          "f": 5
+        },
+        {
+          "pontos": 32,
+          "m": 3,
+          "f": 10
+        },
+        {
+          "pontos": 34,
+          "m": 4,
+          "f": 14
+        },
+        {
+          "pontos": 36,
+          "m": 5,
+          "f": 18
+        },
+        {
+          "pontos": 38,
+          "m": 6,
+          "f": 22
+        },
+        {
+          "pontos": 40,
+          "m": 7,
+          "f": 26
+        },
+        {
+          "pontos": 44,
+          "m": 8,
+          "f": 30
+        },
+        {
+          "pontos": 46,
+          "m": 9,
+          "f": 34
+        },
+        {
+          "pontos": 50,
+          "m": 10,
+          "f": 38
+        }
+      ]
+    }
+  }
+}
