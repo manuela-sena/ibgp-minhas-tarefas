@@ -1,0 +1,666 @@
+{
+  "token": "PRAT_MUZZDE8N_2E0C",
+  "criadoEm": "2026-10-08T20:20:07.895Z",
+  "atualizadoEm": "2026-10-08T20:20:07.895Z",
+  "concursoNome": "CÂMARA DE CATAGUASES/MG - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "concursoId": "4qhoHzkQpEuvpWzpZjwS62UAKAUy",
+  "avaliadores": [
+    "MARCIO BISPO"
+  ],
+  "candidatos": [
+    {
+      "nome": "JEAN CARLOS DA SILVA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16344699",
+          "data": "46306",
+          "horario": "08h00"
+        }
+      ]
+    },
+    {
+      "nome": "JOÃO VICTOR SOUZA BORGES",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16351553",
+          "data": "46306",
+          "horario": "08h00"
+        }
+      ]
+    },
+    {
+      "nome": "JOHN LENNON TEIXEIRA DOS SANTOS PUGIONE",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16333118",
+          "data": "46306",
+          "horario": "08h00"
+        }
+      ]
+    },
+    {
+      "nome": "MAURO LUCIO SILVA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16345312",
+          "data": "46306",
+          "horario": "08h00"
+        }
+      ]
+    },
+    {
+      "nome": "ADRIANA MARINATTO",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16347902",
+          "data": "46306",
+          "horario": "08h00"
+        }
+      ]
+    },
+    {
+      "nome": "EDUARDO PIRES DA SLVA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16334129",
+          "data": "46306",
+          "horario": "08h00"
+        }
+      ]
+    },
+    {
+      "nome": "EUGÊNIO JOSÉ GOUVÊA DE SOUZA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16350474",
+          "data": "46306",
+          "horario": "08h00"
+        }
+      ]
+    },
+    {
+      "nome": "EVERSONCARNEIRO DA SILVA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16333261",
+          "data": "46306",
+          "horario": "08h00"
+        }
+      ]
+    },
+    {
+      "nome": "IGOR LANZIERI DE SOUZA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16333456",
+          "data": "46306",
+          "horario": "08h00"
+        }
+      ]
+    },
+    {
+      "nome": "JOAO PAULO ZARAM PINHEIRO",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16333240",
+          "data": "46306",
+          "horario": "08h00"
+        }
+      ]
+    },
+    {
+      "nome": "JOHN LENON SENRA DA SILVA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16352012",
+          "data": "46306",
+          "horario": "08h00"
+        }
+      ]
+    },
+    {
+      "nome": "JOSE REINALDO MOREIRA XAVIER",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16337139",
+          "data": "46306",
+          "horario": "08h00"
+        }
+      ]
+    },
+    {
+      "nome": "LUCAS COSTA DE JESUS",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16338441",
+          "data": "46306",
+          "horario": "08h00"
+        }
+      ]
+    },
+    {
+      "nome": "MARLON OLIVEIRA E SILVA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16351002",
+          "data": "46306",
+          "horario": "08h00"
+        }
+      ]
+    },
+    {
+      "nome": "PAULO SÉRGIO DE SOUZA ALMEIDA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16352219",
+          "data": "46306",
+          "horario": "08h00"
+        }
+      ]
+    },
+    {
+      "nome": "ROGERIO NASCIMENTO MAGALHAES",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16334608",
+          "data": "46306",
+          "horario": "08h00"
+        }
+      ]
+    },
+    {
+      "nome": "RONALDO QUIOSSA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16343047",
+          "data": "46306",
+          "horario": "13h00"
+        }
+      ]
+    },
+    {
+      "nome": "RUAN FERNANDES DOS REIS",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16332868",
+          "data": "46306",
+          "horario": "13h00"
+        }
+      ]
+    },
+    {
+      "nome": "SIDNEI DOMINGOS DE OLIVEIRA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16344605",
+          "data": "46306",
+          "horario": "13h00"
+        }
+      ]
+    },
+    {
+      "nome": "VIGORITO LAMAS DA SILVA NETO",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16337241",
+          "data": "46306",
+          "horario": "13h00"
+        }
+      ]
+    },
+    {
+      "nome": "WALTER GENESIO DA SILVA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16341939",
+          "data": "46306",
+          "horario": "13h00"
+        }
+      ]
+    },
+    {
+      "nome": "HENRIQUE PARANHOS OLIVEIRA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16332710",
+          "data": "46306",
+          "horario": "13h00"
+        }
+      ]
+    },
+    {
+      "nome": "LUIS ROBERTO DE PAULA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16333613",
+          "data": "46306",
+          "horario": "13h00"
+        }
+      ]
+    },
+    {
+      "nome": "LUIZ QUELVIM ANDRÉ SOUZA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16332652",
+          "data": "46306",
+          "horario": "13h00"
+        }
+      ]
+    },
+    {
+      "nome": "PEDRO ANTONIO CELESTINO DE OLIVEIRA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16343627",
+          "data": "46306",
+          "horario": "13h00"
+        }
+      ]
+    },
+    {
+      "nome": "RENATO DE OLIVEIRA CARVALHO",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16352183",
+          "data": "46306",
+          "horario": "13h00"
+        }
+      ]
+    },
+    {
+      "nome": "JHONNATHAN GERALDO GREGORIO",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16350848",
+          "data": "46306",
+          "horario": "13h00"
+        }
+      ]
+    },
+    {
+      "nome": "LEONARDO ANTÔNIO DE PAULA DIOGO",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16332830",
+          "data": "46306",
+          "horario": "13h00"
+        }
+      ]
+    },
+    {
+      "nome": "ANTONIO CARLOS SANTOS SILVA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16336585",
+          "data": "46306",
+          "horario": "13h00"
+        }
+      ]
+    },
+    {
+      "nome": "BRUNO GIOVANI BALDANZA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16333346",
+          "data": "46306",
+          "horario": "13h00"
+        }
+      ]
+    },
+    {
+      "nome": "CLAUDIO CAETANO DOS SANTOS",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16336816",
+          "data": "46306",
+          "horario": "13h00"
+        }
+      ]
+    },
+    {
+      "nome": "WESLEY ALBINO PEREIRA",
+      "cargos": [
+        {
+          "tipo": "MOTORISTA",
+          "raw": "201 - MOTORISTA",
+          "inscricao": "16345666",
+          "data": "46306",
+          "horario": "13h00"
+        }
+      ]
+    }
+  ],
+  "criterios": {
+    "motorista": {
+      "gravissima": [
+        "Não executar o teste em sua totalidade do percurso preestabelecido.",
+        "Haver colisão com outro veículo, ou objeto presente no percurso.",
+        "Subir com o veículo no meio fio.",
+        "Colocar em risco a vida do passageiro/avaliador e de transeuntes."
+      ],
+      "grave": [
+        "Não respeitar as placas de sinalização.",
+        "Não respeitar os limites de velocidade.",
+        "Não utilizou cinto de segurança.",
+        "Provocar movimentos irregulares durante o teste, sem motivo justificado, ou interromper o funcionamento do motor sem justa razão, após o início do teste."
+      ],
+      "media": [
+        "Uso de marcha desapropriada para a velocidade.",
+        "Apoio do pé no pedal da embreagem com o veículo engrenado e em movimento.",
+        "Arrancar o veículo sem soltar o freio de mão.",
+        "Controle incorreto de embreagem."
+      ],
+      "leve": [
+        "Regulagem incorreta dos retrovisores.",
+        "Uso incorreto da seta.",
+        "Mudança incorreta de marchas.",
+        "Manobra incorreta de baliza (uma tentativa)."
+      ]
+    },
+    "operador": {
+      "categorias": [
+        {
+          "titulo": "I – Checagem da máquina (pré-uso)",
+          "itens": [
+            "Estrutura da máquina — lataria, chassi, pneus e material rodante.",
+            "Vazamentos.",
+            "Peças.",
+            "Conchas, borda cortante, dentes e escarificadores.",
+            "Faróis, faroletes, luz de ré, luzes de freio, lanternas indicativas de direção e retrovisores."
+          ]
+        },
+        {
+          "titulo": "II – Checagem dos níveis da máquina",
+          "itens": [
+            "Nível do óleo do motor.",
+            "Nível do óleo da transmissão.",
+            "Nível do óleo hidráulico.",
+            "Nível do óleo de freio.",
+            "Nível da água — sistema de arrefecimento."
+          ]
+        },
+        {
+          "titulo": "III – Identificação e checagem do painel de instrumentos",
+          "itens": [
+            "Indicador da temperatura da água do motor.",
+            "Indicador da pressão do óleo do motor.",
+            "Indicador da temperatura da transmissão.",
+            "Indicador de pressão da transmissão.",
+            "Indicador da carga da bateria.",
+            "Indicador do nível de combustível.",
+            "Indicador da pressão do freio.",
+            "Indicador da temperatura do óleo hidráulico."
+          ]
+        },
+        {
+          "titulo": "IV – Checagem de comandos",
+          "itens": [
+            "Alavancas do freio de estacionamento.",
+            "Alavancas do comando hidráulico da concha.",
+            "Alavanca do comando de reversão.",
+            "Alavanca do comando da transmissão.",
+            "Pedais de freio / neutralizador.",
+            "Botão de buzina."
+          ]
+        },
+        {
+          "titulo": "V – Procedimentos de partida",
+          "itens": [
+            "Transmissão em neutro.",
+            "Freio de estacionamento aplicado.",
+            "Concha baixa no solo.",
+            "Acionamento da chave de partida.",
+            "Aquecimento do motor.",
+            "Checagem do painel."
+          ]
+        },
+        {
+          "titulo": "VI – Teste de operação",
+          "itens": [
+            "Escavação.",
+            "Carga.",
+            "Transporte.",
+            "Descarga.",
+            "Retorno.",
+            "Estacionamento."
+          ]
+        },
+        {
+          "titulo": "VII – Procedimento de parada",
+          "itens": [
+            "Transmissão em neutro.",
+            "Freio de estacionamento aplicado.",
+            "Concha no solo.",
+            "Arrefecimento do motor."
+          ]
+        }
+      ]
+    },
+    "obra": {
+      "atitudinais": {
+        "pontosPorNivel": {
+          "NR": 0,
+          "RI": 0.2,
+          "RS": 0.4
+        },
+        "itens": [
+          "Capacidade de envolvimento, responsabilidade e comprometimento.",
+          "Iniciativa, interesse, criatividade e proatividade.",
+          "Hábitos de Segurança do Trabalho (utilização de equipamentos de EPI e EPC)",
+          "Responsabilidade e cuidado com materiais e equipamentos.",
+          "Organização e limpeza do local de trabalho."
+        ]
+      },
+      "tecnicasGerais": {
+        "pontosPorNivel": {
+          "NR": 0,
+          "RI": 1,
+          "RS": 2
+        },
+        "itens": [
+          "Conhecimento dos processos de trabalho – Organização e Planejamento."
+        ]
+      },
+      "tecnicasEspecificas": {
+        "pontosPorNivel": {
+          "NR": 0,
+          "RI": 1.5,
+          "RS": 3
+        },
+        "itens": [
+          "Qualidade das atividades desempenhadas.",
+          "Resultado final das atividades desempenhadas dentro do tempo determinado para execução da tarefa."
+        ]
+      }
+    },
+    "operador_eta": {
+      "grupos": [
+        {
+          "titulo": "Tarefa 1",
+          "itens": [
+            {
+              "texto": "Seleção e uso correto do EPI",
+              "nr": 0,
+              "ri": 0.4,
+              "rs": 0.8
+            },
+            {
+              "texto": "Organização da bancada e materiais",
+              "nr": 0,
+              "ri": 0.3,
+              "rs": 0.6
+            },
+            {
+              "texto": "Postura profissional durante a prova",
+              "nr": 0,
+              "ri": 0.3,
+              "rs": 0.6
+            }
+          ]
+        },
+        {
+          "titulo": "Tarefa 2",
+          "itens": [
+            {
+              "texto": "Identificação correta das 4 etapas de tratamento (Ficha de Resultados)",
+              "nr": 0,
+              "ri": 0.4,
+              "rs": 0.8
+            },
+            {
+              "texto": "Execução ou descrição correta da operação básica",
+              "nr": 0,
+              "ri": 0.3,
+              "rs": 0.6
+            },
+            {
+              "texto": "Limpeza e conservação demonstradas corretamente",
+              "nr": 0,
+              "ri": 0.3,
+              "rs": 0.6
+            }
+          ]
+        },
+        {
+          "titulo": "Tarefa 3",
+          "itens": [
+            {
+              "texto": "Coleta da amostra realizada corretamente",
+              "nr": 0,
+              "ri": 0.25,
+              "rs": 0.5
+            },
+            {
+              "texto": "Teste de cloro residual executado corretamente",
+              "nr": 0,
+              "ri": 0.5,
+              "rs": 1
+            },
+            {
+              "texto": "Teste de pH executado corretamente",
+              "nr": 0,
+              "ri": 0.25,
+              "rs": 0.5
+            },
+            {
+              "texto": "Medição de turbidez executada corretamente",
+              "nr": 0,
+              "ri": 0.25,
+              "rs": 0.5
+            },
+            {
+              "texto": "Registro correto dos resultados na ficha",
+              "nr": 0,
+              "ri": 0.25,
+              "rs": 0.5
+            }
+          ]
+        },
+        {
+          "titulo": "Tarefa 4",
+          "itens": [
+            {
+              "texto": "Cálculo correto da quantidade de produto (5,0 g)",
+              "nr": 0,
+              "ri": 0.3,
+              "rs": 0.6
+            },
+            {
+              "texto": "Pesagem correta do produto",
+              "nr": 0,
+              "ri": 0.25,
+              "rs": 0.5
+            },
+            {
+              "texto": "Dissolução correta do produto",
+              "nr": 0,
+              "ri": 0.25,
+              "rs": 0.5
+            },
+            {
+              "texto": "Completou corretamente o volume da solução (500 mL)",
+              "nr": 0,
+              "ri": 0.25,
+              "rs": 0.5
+            },
+            {
+              "texto": "Homogeneização correta da solução",
+              "nr": 0,
+              "ri": 0.2,
+              "rs": 0.4
+            },
+            {
+              "texto": "Identificação correta do recipiente após o preparo",
+              "nr": 0,
+              "ri": 0.25,
+              "rs": 0.5
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
