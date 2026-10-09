@@ -1,11 +1,142 @@
 {
   "token": "ESC_MV0ZUAG3_TCPQ",
-  "criadoEm": "2026-10-09T13:21:02.307Z",
+  "enviadoEm": "2026-10-09T13:30:28.326Z",
+  "protocolo": "ESC_MV0ZUAG3_TCPQ_1791552628326",
   "concurso": {
     "concurso": "DELFINÓPOLIS - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
     "municipio": "DELFINÓPOLIS /MG",
     "dataProva": "18/10/2026",
     "escola": "E.E. PROFESSORA NEIVA MARIA LEITE",
     "idEscola": "ESC_MV0ZUAG3_TCPQ"
-  }
+  },
+  "instituicao": {
+    "nome": "E.E. PROFESSORA NEIVA MARIA LEITE",
+    "cnpj": "19.689.546/0001-20",
+    "razao": "",
+    "endereco": "AVENIDA PADRE IVO SOARES MATOS",
+    "numero": "888",
+    "complemento": "",
+    "bairro": "CENTRO",
+    "cidade": "DELFINÓPOLIS",
+    "uf": "MG",
+    "cep": "37910-000",
+    "responsavel": {
+      "nome": "BRUNA LOPES PINTO",
+      "cargo": "DIRETORA",
+      "email": "ESCOLA.115126@EDUCACAO.MG.GOV.BR",
+      "tel": "(35) 99941-2840"
+    },
+    "diretor": {
+      "nome": "BRUNA LOPES PINTO",
+      "email": "BRUNA.LOPES@EDUCACAO.MG.GOV.BR"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "4",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "4",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "ÚNICO",
+      "andar": "TÉRREO",
+      "sala": "SALA 16",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "ÚNICO",
+      "andar": "TÉRREO",
+      "sala": "SALA 17",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "ÚNICO",
+      "andar": "TÉRREO",
+      "sala": "SALA 18",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "ÚNICO",
+      "andar": "TÉRREO",
+      "sala": "SALA 08",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "ÚNICO",
+      "andar": "TÉRREO",
+      "sala": "SALA 11",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "ÚNICO",
+      "andar": "TÉRREO",
+      "sala": "SALA 12",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "ÚNICO",
+      "andar": "TÉRREO",
+      "sala": "SALA 13",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "ÚNICO",
+      "andar": "TÉRREO",
+      "sala": "SALA 14",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    }
+  ]
 }
