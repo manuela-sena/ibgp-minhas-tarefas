@@ -1,11 +1,162 @@
 {
   "token": "ESC_MV1A6S6X_JBI2",
-  "criadoEm": "2026-10-09T18:10:41.337Z",
+  "enviadoEm": "2026-10-10T18:29:06.436Z",
+  "protocolo": "ESC_MV1A6S6X_JBI2_1791656946436",
   "concurso": {
     "concurso": "CÂMARA MUNICIPAL DE BOM DESPACHO/MG - EDITAL Nº 01/2026",
     "municipio": "BOM DESPACHO/MG",
     "dataProva": "18/10/2026",
     "escola": "E.E. MIGUEL GONTIJO",
     "idEscola": "ESC_MV1A6S6X_JBI2"
-  }
+  },
+  "instituicao": {
+    "nome": "E.E. MIGUEL GONTIJO",
+    "cnpj": "19.544.493/0001-59",
+    "razao": "CAIXA ESCOLAR MIGUEL GONTIJO",
+    "endereco": "PRAÇA MILTON CAMPOS",
+    "numero": "140",
+    "complemento": "PRAÇA",
+    "bairro": "VILA AURORA",
+    "cidade": "BOM DESPACHO",
+    "uf": "MG",
+    "cep": "35630-126",
+    "responsavel": {
+      "nome": "VANIA MARIA RODRIGUES",
+      "cargo": "SECRETÁRIA",
+      "email": "vaniamrod@yahoo.com.br",
+      "tel": "(37) 98812-5180"
+    },
+    "diretor": {
+      "nome": "RONALDO LÚCIO FERREIRA",
+      "email": "escola.32395@educacao.mg.gov.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": true,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "1",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "1",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 01",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 02",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 03",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 04",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 05",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 06",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "1º ANDAR",
+      "sala": "SALA 07",
+      "capacidade": 4,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "B",
+      "andar": "1º ANDAR",
+      "sala": "SALA 08",
+      "capacidade": 4,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "C",
+      "andar": "1º ANDAR",
+      "sala": "SALA 09",
+      "capacidade": 6,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "D",
+      "andar": "2º ANDAR",
+      "sala": "SALA 10",
+      "capacidade": 60,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    }
+  ]
 }
