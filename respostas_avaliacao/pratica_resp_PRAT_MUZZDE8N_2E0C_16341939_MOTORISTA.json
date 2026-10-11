@@ -1,0 +1,23 @@
+{
+  "token": "PRAT_MUZZDE8N_2E0C",
+  "concursoNome": "CÂMARA DE CATAGUASES/MG - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "cargo": "MOTORISTA",
+  "avaliador": "MARCIO BISPO",
+  "turma": "46306 · 13h00",
+  "candidato": {
+    "inscricao": "16341939",
+    "nome": "WALTER GENESIO DA SILVA",
+    "cargo": "201 - MOTORISTA",
+    "data": "46306",
+    "horario": "13h00"
+  },
+  "cnhApresentada": true,
+  "resultadoFinal": null,
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MUZZDE8N_2E0C_16341939_MOTORISTA.jpg",
+  "itensMarcados": [],
+  "pontos": 10,
+  "eliminado": false,
+  "apto": true,
+  "observacoes": "",
+  "enviadoEm": "2026-10-11T16:57:14.287Z"
+}
