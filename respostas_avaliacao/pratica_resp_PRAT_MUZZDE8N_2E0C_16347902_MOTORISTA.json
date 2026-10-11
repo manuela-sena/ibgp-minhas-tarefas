@@ -14,13 +14,10 @@
   "cnhApresentada": true,
   "resultadoFinal": null,
   "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MUZZDE8N_2E0C_16347902_MOTORISTA.jpg",
-  "itensMarcados": [
-    "[gravissima] Colocar em risco a vida do passageiro/avaliador e de transeuntes.",
-    "[leve] Regulagem incorreta dos retrovisores. (x1)"
-  ],
-  "pontos": 0,
-  "eliminado": true,
-  "apto": false,
+  "itensMarcados": [],
+  "pontos": 10,
+  "eliminado": false,
+  "apto": true,
   "observacoes": "",
-  "enviadoEm": "2026-10-11T11:18:49.104Z"
+  "enviadoEm": "2026-10-11T11:21:00.691Z"
 }
