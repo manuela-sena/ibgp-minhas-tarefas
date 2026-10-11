@@ -1,0 +1,25 @@
+{
+  "token": "PRAT_MUZZDE8N_2E0C",
+  "concursoNome": "CÂMARA DE CATAGUASES/MG - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "cargo": "MOTORISTA",
+  "avaliador": "MARCIO BISPO",
+  "turma": "46306 · 08h00",
+  "candidato": {
+    "inscricao": "16333261",
+    "nome": "EVERSONCARNEIRO DA SILVA",
+    "cargo": "201 - MOTORISTA",
+    "data": "46306",
+    "horario": "08h00"
+  },
+  "cnhApresentada": true,
+  "resultadoFinal": null,
+  "fotoPath": "respostas_avaliacao/fotos/pratica_PRAT_MUZZDE8N_2E0C_16333261_MOTORISTA.jpg",
+  "itensMarcados": [
+    "[leve] Uso incorreto da seta. (x1)"
+  ],
+  "pontos": 9.5,
+  "eliminado": false,
+  "apto": true,
+  "observacoes": "",
+  "enviadoEm": "2026-10-11T11:51:07.020Z"
+}
