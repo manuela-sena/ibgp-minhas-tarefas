@@ -1,11 +1,142 @@
 {
   "token": "ESC_MVFKB9NF_LCZW",
-  "criadoEm": "2026-10-19T18:02:53.211Z",
+  "enviadoEm": "2026-10-19T18:42:45.520Z",
+  "protocolo": "ESC_MVFKB9NF_LCZW_1792435365520",
   "concurso": {
     "concurso": "PIUMHI/MG  GCM - EDITAL Nº 01/2026 - CONCURSO",
     "municipio": "PIUMHI/MG",
     "dataProva": "01/11/2026",
     "escola": "IFMG - Piumhi",
     "idEscola": "ESC_MVFKB9NF_LCZW"
-  }
+  },
+  "instituicao": {
+    "nome": "IFMG CAMPUS PIUMHI",
+    "cnpj": "10.626.896/0009-20",
+    "razao": "INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DE MINAS GERAIS - CAMPUS PIUMHI",
+    "endereco": "RUA SEVERO VELOSO",
+    "numero": "1880",
+    "complemento": "BLOCOS I E II",
+    "bairro": "BELA VISTA",
+    "cidade": "PIUMHI",
+    "uf": "MG",
+    "cep": "37937-660",
+    "responsavel": {
+      "nome": "STELLA MARIA GOMES",
+      "cargo": "RELAÇÕES INSTITUCIONAIS E COMUNICAÇÃO",
+      "email": "stella.gomes@ifmg.edu.br",
+      "tel": "(37) 99863-7971"
+    },
+    "diretor": {
+      "nome": "HUMBERTO COELHO DE MELO",
+      "email": "humberto.melo@ifmg.edu.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": false,
+      "universitaria": true,
+      "canhoto": true,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": true,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "4",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "4",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "BLOCO I",
+      "andar": "2º ANDAR",
+      "sala": "SALA 201",
+      "capacidade": 40,
+      "turno": "MANHA",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO I",
+      "andar": "2º ANDAR",
+      "sala": "SALA 203",
+      "capacidade": 40,
+      "turno": "MANHA",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO I",
+      "andar": "2º ANDAR",
+      "sala": "SALA LAB DE DES TÉCNICO",
+      "capacidade": 40,
+      "turno": "MANHA",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO I",
+      "andar": "2º ANDAR",
+      "sala": "SALA 208",
+      "capacidade": 40,
+      "turno": "MANHA",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO II",
+      "andar": "2º ANDAR",
+      "sala": "SALA DE AULA",
+      "capacidade": 40,
+      "turno": "MANHA",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO I",
+      "andar": "2º ANDAR",
+      "sala": "SALA AMBIENTE DE INOVAÇÃO",
+      "capacidade": 20,
+      "turno": "MANHA",
+      "arcond": true,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "BLOCO I",
+      "andar": "2º ANDAR",
+      "sala": "SALA LABORATÓRIO DE MATEMÁTICA",
+      "capacidade": 10,
+      "turno": "MANHA",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "BLOCO II",
+      "andar": "2º ANDAR",
+      "sala": "SALA DE REUNIÃO",
+      "capacidade": 2,
+      "turno": "MANHA",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    }
+  ]
 }
