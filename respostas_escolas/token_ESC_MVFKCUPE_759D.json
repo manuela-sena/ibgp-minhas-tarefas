@@ -1,11 +1,202 @@
 {
   "token": "ESC_MVFKCUPE_759D",
-  "criadoEm": "2026-10-19T18:04:07.154Z",
+  "enviadoEm": "2026-10-19T19:56:35.350Z",
+  "protocolo": "ESC_MVFKCUPE_759D_1792439795350",
   "concurso": {
     "concurso": "PIUMHI/MG  GCM - EDITAL Nº 01/2026 - CONCURSO",
     "municipio": "PIUMHI/MG",
     "dataProva": "01/11/2026",
     "escola": "EE. PROF. FRANCISCO DE PAULA REBELO HORTA",
     "idEscola": "ESC_MVFKCUPE_759D"
-  }
+  },
+  "instituicao": {
+    "nome": "E.E. PROF. FRANCISCO DE PAULA REBELO HORTA",
+    "cnpj": "19.515.212/0001-30",
+    "razao": "E.E. PROF. HORTA",
+    "endereco": "RUA GETULIO VARGAS",
+    "numero": "1.449",
+    "complemento": "ESCOLA",
+    "bairro": "JARDIM SANTO ANTONIO",
+    "cidade": "PIUMHI/MG",
+    "uf": "MG",
+    "cep": "37934-001",
+    "responsavel": {
+      "nome": "MARIA MADALENA VIEIRA",
+      "cargo": "SECRETÁRIA ESCOLAR",
+      "email": "mariamadalenavieira11@hotmail.com",
+      "tel": "(37) 99963-3451"
+    },
+    "diretor": {
+      "nome": "SELMA GARCIA DA CUNHA",
+      "email": "escola.115690@educacao.mg.gov.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": true,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "4",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "4",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "A",
+      "andar": "",
+      "sala": "SALA A",
+      "capacidade": 32,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "",
+      "sala": "SALA B",
+      "capacidade": 32,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "",
+      "sala": "SALA C",
+      "capacidade": 32,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "D",
+      "andar": "",
+      "sala": "SALA D",
+      "capacidade": 32,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "E",
+      "andar": "",
+      "sala": "SALA E",
+      "capacidade": 32,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "F",
+      "andar": "",
+      "sala": "SALA F",
+      "capacidade": 32,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "G",
+      "andar": "",
+      "sala": "SALA G",
+      "capacidade": 32,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "H",
+      "andar": "",
+      "sala": "SALA H",
+      "capacidade": 32,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "I",
+      "andar": "",
+      "sala": "SALA I",
+      "capacidade": 32,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "J",
+      "andar": "",
+      "sala": "SALA J",
+      "capacidade": 32,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "K",
+      "andar": "",
+      "sala": "SALA K",
+      "capacidade": 32,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "L",
+      "andar": "",
+      "sala": "SALA L",
+      "capacidade": 32,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "M",
+      "andar": "",
+      "sala": "SALA M",
+      "capacidade": 5,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "N",
+      "andar": "",
+      "sala": "SALA N",
+      "capacidade": 32,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    }
+  ]
 }
