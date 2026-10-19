@@ -6273,18 +6273,24 @@ function processarHomologacao(){
 
     // Função para detectar reserva pelo nome da coluna
     function detectarReserva(col){
-      const u=col.toUpperCase().replace(/\s/g,'').replace(/\./g,'');
+      // Normaliza: sem acento, caixa alta e sem espaço/ponto/hífen/underline — assim
+      // "CLASS. IND", "Classificação Indígena" e "CLASS.INDIGENA" caem na mesma regra.
+      const u=col.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[\s._\-]/g,'');
       // Deve conter CLASS ou CASS (erro de digitação comum) + palavra de reserva
       const isClass = u.includes('CLASS')||u.includes('CASS');
       if(!isClass) return null;
-      if(u.includes('PCD')||u.includes('PcD'.toUpperCase())||u.includes('DEFIC')) return 'PCD';
+      if(u.includes('PCD')||u.includes('DEFIC')) return 'PCD';
       // 'VAGAS AFIRMATIVAS' / 'AÇÃO AFIRMATIVA' / etc — checa ANTES do catch-all
       // de AMPLA, senão cai lá dentro e a reserva nem aparece na homologação.
       if(u.includes('AFIRMATIV')) return 'VAGAS AFIRMATIVAS';
-      if(u.includes('PNP')||u.includes('NEGRO')||u.includes('NEGR')) return 'PNP';
-      if(u.includes('INDIG')) return 'INDIGENA';
-      if(u.includes('QUILOM')) return 'QUILOMBOLA';
+      if(u.includes('PNP')||u.includes('NEGR')) return 'PNP';
+      // Aceita o nome completo e a sigla usada em algumas planilhas
+      // ("CLASS. IND", "CLASS. QUIL", "CLASS. FEM") — sem isso a reserva caía no
+      // catch-all de AMPLA e a aba dela nunca era gerada.
+      if(u.includes('INDIG')||/IND$/.test(u)) return 'INDIGENA';
+      if(u.includes('QUIL')) return 'QUILOMBOLA';
       if(u.includes('TRANS')&&!u.includes('TOTAL')) return 'TRANS';
+      if(u.includes('FEM')) return 'FEMININO';
       if(u.includes('AMPLA')||u.includes('CARGO')||u.includes('GERAL')) return 'AMPLA';
       // Se só tem CLASS sem reserva específica, é AMPLA
       return 'AMPLA';
@@ -6293,7 +6299,7 @@ function processarHomologacao(){
     const reservasDetectadas=[];
     const abasJaAdicionadas=new Set();
     // Prioridade: AMPLA primeiro, depois demais
-    const ordemPrioridade=['AMPLA','PCD','VAGAS AFIRMATIVAS','PNP','INDIGENA','QUILOMBOLA','TRANS'];
+    const ordemPrioridade=['AMPLA','PCD','VAGAS AFIRMATIVAS','PNP','INDIGENA','QUILOMBOLA','TRANS','FEMININO'];
     const colsPorReserva={};
     todasCols.forEach(col=>{
       const reserva=detectarReserva(col);
