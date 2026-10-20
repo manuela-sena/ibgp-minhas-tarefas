@@ -6849,7 +6849,9 @@ async function gerarResultadoIsencaoXlsx(){
           }
         });
 
-        const lista=g.lista.slice().sort((a,b)=>a.insc-b.insc);
+        // Classificado por CARGO (o código no início do cargo é comparado como número) e, dentro do cargo, por CANDIDATO (A–Z, sem diferenciar acento/caixa).
+        const cmp=(x,y)=>String(x).replace(/\s+/g,' ').trim().localeCompare(String(y).replace(/\s+/g,' ').trim(),'pt-BR',{numeric:true,sensitivity:'base'}); // espaços repetidos no cadastro não mudam a ordem
+        const lista=g.lista.slice().sort((a,b)=>cmp(a.cargo,b.cargo)||cmp(a.candidato,b.candidato)||(a.insc-b.insc));
         let r=3, comDoc=0, cadSemDoc=0, indef=0, cadDef=0, cadIndef=0;
         lista.forEach(s=>{
           const dec=_isenDecisao(s); const sit=dec; const url=sit.url;
