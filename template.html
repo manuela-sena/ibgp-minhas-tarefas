@@ -6570,7 +6570,8 @@ function carregarIsenUpload(input){
       if(!_isenNorm(v(r,'NOME')).includes('ISENCAO')) return;
       const insc=_isenInsc(v(r,'INSCRICAO')); if(!insc) return;
       totalIsencao++;
-      const url=String(v(r,'URL')??'').trim();
+      // Mesmo padrão da página de Inscrições: o link do relatório vem com "admin." e o correto é "gestor."
+      const url=String(v(r,'URL')??'').trim().replace('admin.ibgpconcursos.com.br','gestor.ibgpconcursos.com.br');
       const arq=('ARQUIVO' in m)?String(v(r,'ARQUIVO')??'').trim():'';
       const cod=Number(String(v(r,'COD UPLOAD')??'').replace(/\D/g,''))||0;
       const urlOk=/^https?:\/\//i.test(url);
