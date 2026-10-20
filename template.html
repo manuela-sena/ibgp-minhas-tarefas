@@ -572,6 +572,10 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         Inscrições
       </button>
+      <button class="nav-btn" data-page="isencao" onclick="goPage('isencao')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15l2 2 4-4"/></svg>
+        Isenção
+      </button>
       <button class="nav-btn" data-page="resultado-preliminar" onclick="goPage('resultado-preliminar')">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V10"/><path d="M13 17V7"/><path d="M17 17v-4"/></svg>
         Resultado Preliminar
@@ -1378,6 +1382,33 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
           <button class="btn-primary" onclick="gerarResultadoPreliminarXlsx()">⚙️ Gerar e baixar</button>
         </div>
         <div id="rp-pos-geracao" style="margin-top:14px"></div>
+      </div>
+    </div>
+
+    <!-- PÁGINA ISENÇÃO -->
+    <div id="page-isencao" class="page">
+      <div class="page-header">
+        <div class="page-title-h1">🧾 Resultados · Isenção</div>
+        <div class="page-sub">Junte o Relatório Geral com o Relatório de Upload e gere a planilha de análise do resultado preliminar da solicitação de isenção, com uma aba por edital.</div>
+      </div>
+      <div class="card card-pad">
+        <label class="form-label">Relatório Geral (.xlsx)</label>
+        <input type="file" id="isen-geral-file" accept=".xlsx" class="form-input" style="padding:6px"
+          onclick="this.value=null" onchange="carregarIsenGeral(this)">
+        <div id="isen-geral-status" style="margin-top:8px;font-size:12.5px;color:#8a9ab5"></div>
+      </div>
+      <div class="card card-pad">
+        <label class="form-label">Relatório de Upload (.xlsx)</label>
+        <input type="file" id="isen-upload-file" accept=".xlsx" class="form-input" style="padding:6px"
+          onclick="this.value=null" onchange="carregarIsenUpload(this)">
+        <div id="isen-upload-status" style="margin-top:8px;font-size:12.5px;color:#8a9ab5"></div>
+      </div>
+      <div id="isen-preview" style="display:none" class="card card-pad">
+        <div id="isen-preview-content"></div>
+        <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end">
+          <button class="btn-primary" id="isen-btn-gerar" onclick="gerarResultadoIsencaoXlsx()" disabled>⚙️ Gerar e baixar</button>
+        </div>
+        <div id="isen-pos-geracao" style="margin-top:14px"></div>
       </div>
     </div>
 
@@ -6442,6 +6473,236 @@ function processarHomologacao(){
   }catch(e){
     res.innerHTML=`<div style="color:#c0322f;padding:12px">Erro: ${e.message}</div>`;
   }
+}
+
+// ── ISENÇÃO: resultado preliminar da solicitação de isenção ───────────
+// Junta o Relatório Geral (quem pediu isenção) com o Relatório de Upload (documento
+// enviado) e gera a planilha de análise — uma aba por concurso/edital.
+let _isenGeral=null;   // {arquivo, totalLinhas, solicitantes:[...]}
+let _isenUpload=null;  // {arquivo, porInscricao:Map, totalIsencao}
+let _isenResumo=[];    // grupos (um por concurso) calculados pela prévia
+
+function _isenNorm(s){ return String(s==null?'':s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim().toUpperCase(); }
+function _isenBonito(n){ return n.replace('ISENCAO','ISENÇÃO').replace('INSCRICAO','INSCRIÇÃO'); }
+function _isenMapa(rows){ const m={}; Object.keys(rows[0]||{}).forEach(k=>{ const n=_isenNorm(k); if(!(n in m)) m[n]=k; }); return m; }
+function _isenInsc(v){ const n=String(v==null?'':v).replace(/\.0+$/,'').replace(/\D/g,''); return n?Number(n):0; }
+function _isenCpf(v){ if(typeof v==='number') return String(v).padStart(11,'0'); return String(v==null?'':v).trim(); }
+function _isenData(v){
+  // Data de nascimento: mantém o texto dd/mm/aaaa do relatório; só formata se vier como data de verdade.
+  if(v instanceof Date){ if(isNaN(v.getTime())) return ''; const p=n=>String(n).padStart(2,'0'); return p(v.getDate())+'/'+p(v.getMonth()+1)+'/'+v.getFullYear(); }
+  return String(v==null?'':v).trim();
+}
+function _isenEdital(concurso){
+  const m=String(concurso||'').match(/EDITAL\s*N[º°Oo]?\s*(\d+)\s*\/\s*(\d{4})/i);
+  return m?{n:parseInt(m[1],10), ano:m[2]}:null;
+}
+function _isenLerPlanilha(file, cb){
+  carregarSheetJS(()=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      try{
+        const wb=XLSX.read(e.target.result,{type:'binary',cellDates:true});
+        let rows=[];
+        for(const nome of wb.SheetNames) rows=rows.concat(XLSX.utils.sheet_to_json(wb.Sheets[nome],{defval:'',range:1}));
+        cb(null,rows);
+      }catch(err){ cb(err); }
+    };
+    reader.readAsBinaryString(file);
+  });
+}
+
+function carregarIsenGeral(input){
+  const file=input.files[0]; if(!file) return;
+  const st=document.getElementById('isen-geral-status');
+  st.textContent='Lendo arquivo...'; _isenGeral=null;
+  _isenLerPlanilha(file,(err,rows)=>{
+    if(err){ st.innerHTML=`<div style="color:#c0322f">Erro ao ler planilha: ${err.message}</div>`; atualizarPreviewIsencao(); return; }
+    if(!rows.length){ st.innerHTML='<div style="color:#c0322f">A planilha está vazia.</div>'; atualizarPreviewIsencao(); return; }
+    const m=_isenMapa(rows);
+    const falt=['INSCRICAO','CANDIDATO','CPF','CONCURSO','CARGO','STATUS','SOLICITOU ISENCAO','TIPO ISENCAO'].filter(n=>!(n in m));
+    if(falt.length){ st.innerHTML=`<div style="color:#c0322f">Não parece o Relatório Geral — faltam as colunas: ${falt.map(_isenBonito).join(', ')}.</div>`; atualizarPreviewIsencao(); return; }
+    const v=(r,n)=>(n in m)?r[m[n]]:'';
+    const solicitantes=[];
+    rows.forEach(r=>{
+      if(_isenNorm(v(r,'SOLICITOU ISENCAO'))!=='SIM') return;
+      const insc=_isenInsc(v(r,'INSCRICAO')); if(!insc) return;
+      solicitantes.push({
+        insc, candidato:String(v(r,'CANDIDATO')??''), cpf:_isenCpf(v(r,'CPF')), nasc:_isenData(v(r,'DATA NASCIMENTO')),
+        concurso:String(v(r,'CONCURSO')??'').trim(), cargo:String(v(r,'CARGO')??''), status:String(v(r,'STATUS')??''),
+        solicitou:String(v(r,'SOLICITOU ISENCAO')??'').trim(), tipo:String(v(r,'TIPO ISENCAO')??''), ativa:String(v(r,'ATIVA')??'')
+      });
+    });
+    _isenGeral={arquivo:file.name, totalLinhas:rows.length, solicitantes};
+    const nConc=new Set(solicitantes.map(s=>s.concurso)).size;
+    st.innerHTML=`✅ <strong>${file.name}</strong> carregado — ${rows.length} inscrições, ${solicitantes.length} com solicitação de isenção em ${nConc} concurso(s)`;
+    atualizarPreviewIsencao();
+  });
+}
+
+function carregarIsenUpload(input){
+  const file=input.files[0]; if(!file) return;
+  const st=document.getElementById('isen-upload-status');
+  st.textContent='Lendo arquivo...'; _isenUpload=null;
+  _isenLerPlanilha(file,(err,rows)=>{
+    if(err){ st.innerHTML=`<div style="color:#c0322f">Erro ao ler planilha: ${err.message}</div>`; atualizarPreviewIsencao(); return; }
+    if(!rows.length){ st.innerHTML='<div style="color:#c0322f">A planilha está vazia.</div>'; atualizarPreviewIsencao(); return; }
+    const m=_isenMapa(rows);
+    const falt=['INSCRICAO','CPF','NOME','COD UPLOAD','URL'].filter(n=>!(n in m));
+    if(falt.length){ st.innerHTML=`<div style="color:#c0322f">Não parece o Relatório de Upload — faltam as colunas: ${falt.map(_isenBonito).join(', ')}.</div>`; atualizarPreviewIsencao(); return; }
+    const v=(r,n)=>r[m[n]];
+    const porInscricao=new Map(); let totalIsencao=0;
+    rows.forEach(r=>{
+      // Só interessa o documento da SOLICITAÇÃO DE ISENÇÃO — o mesmo candidato pode ter
+      // outros envios (laudo PcD, jurado...) e esses não podem virar o link da análise.
+      if(!_isenNorm(v(r,'NOME')).includes('ISENCAO')) return;
+      const insc=_isenInsc(v(r,'INSCRICAO')); if(!insc) return;
+      totalIsencao++;
+      const url=String(v(r,'URL')??'').trim();
+      const cod=Number(String(v(r,'COD UPLOAD')??'').replace(/\D/g,''))||0;
+      const novo={url:/^https?:\/\//i.test(url)?url:'', cod, cpf:_isenCpf(v(r,'CPF'))};
+      const atual=porInscricao.get(insc);
+      // Mais de um envio de isenção na mesma inscrição: vale o mais recente que tenha arquivo.
+      if(!atual || (novo.url&&!atual.url) || (!!novo.url===!!atual.url && novo.cod>atual.cod)) porInscricao.set(insc,novo);
+    });
+    _isenUpload={arquivo:file.name, porInscricao, totalIsencao};
+    st.innerHTML=`✅ <strong>${file.name}</strong> carregado — ${porInscricao.size} inscrições com envio de documento de isenção`;
+    atualizarPreviewIsencao();
+  });
+}
+
+function atualizarPreviewIsencao(){
+  const wrap=document.getElementById('isen-preview'); const cont=document.getElementById('isen-preview-content');
+  const btn=document.getElementById('isen-btn-gerar');
+  if(!_isenGeral){ wrap.style.display='none'; _isenResumo=[]; return; }
+  wrap.style.display='block';
+  const grupos=new Map();
+  _isenGeral.solicitantes.forEach(s=>{
+    if(!grupos.has(s.concurso)) grupos.set(s.concurso,{concurso:s.concurso, lista:[], comLink:0, semLink:0, cpfDiverg:0, ativaDif:0});
+    const g=grupos.get(s.concurso); g.lista.push(s);
+    if(s.ativa && _isenNorm(s.ativa)!=='ATIVA') g.ativaDif++;
+    if(_isenUpload){
+      const up=_isenUpload.porInscricao.get(s.insc);
+      if(up&&up.url) g.comLink++; else g.semLink++;
+      if(up && up.cpf && s.cpf && up.cpf.replace(/\D/g,'')!==s.cpf.replace(/\D/g,'')) g.cpfDiverg++;
+    }
+  });
+  _isenResumo=Array.from(grupos.values()).sort((a,b)=>{
+    const ea=_isenEdital(a.concurso), eb=_isenEdital(b.concurso);
+    if(ea&&eb&&(ea.ano!==eb.ano||ea.n!==eb.n)) return (ea.ano-eb.ano)||(ea.n-eb.n);
+    return a.concurso.localeCompare(b.concurso,'pt-BR');
+  });
+  const tem=!!_isenUpload;
+  const linhas=_isenResumo.map((g,i)=>`
+    <tr>
+      <td style="padding:6px 8px"><input type="checkbox" class="isen-chk" value="${i}" checked></td>
+      <td style="padding:6px 8px;font-size:12.5px">${g.concurso}</td>
+      <td style="padding:6px 8px;text-align:right">${g.lista.length}</td>
+      <td style="padding:6px 8px;text-align:right">${tem?g.comLink:'—'}</td>
+      <td style="padding:6px 8px;text-align:right">${tem?g.semLink:'—'}</td>
+    </tr>`).join('');
+  const totCpf=_isenResumo.reduce((a,g)=>a+g.cpfDiverg,0), totAtiva=_isenResumo.reduce((a,g)=>a+g.ativaDif,0);
+  let avisos='';
+  if(!tem) avisos+=`<div style="margin-top:10px;font-size:12.5px;color:#a06c12">Falta carregar o Relatório de Upload para montar os links dos documentos.</div>`;
+  if(totCpf) avisos+=`<div style="margin-top:10px;font-size:12.5px;color:#a06c12">⚠️ ${totCpf} inscrição(ões) com CPF diferente entre o Relatório Geral e o de Upload — confira o documento dessas antes de analisar.</div>`;
+  if(totAtiva) avisos+=`<div style="margin-top:10px;font-size:12.5px;color:#a06c12">⚠️ ${totAtiva} solicitação(ões) em inscrição com situação diferente de ATIVA — foram mantidas na planilha.</div>`;
+  cont.innerHTML=`
+    <div style="font-size:13px;font-weight:600;color:#1f2a3d;margin-bottom:10px">Editais encontrados <span style="font-size:11px;color:#8a9ab5;font-weight:400">(cada edital vira uma aba)</span></div>
+    <table style="width:100%;border-collapse:collapse;font-size:13px">
+      <thead><tr style="border-bottom:1.5px solid #e2e7ef;color:#8a9ab5;font-size:11.5px;text-align:left">
+        <th style="padding:6px 8px;width:28px"></th><th style="padding:6px 8px">Concurso</th>
+        <th style="padding:6px 8px;text-align:right">Solicitações</th><th style="padding:6px 8px;text-align:right">Com documento</th><th style="padding:6px 8px;text-align:right">Sem documento</th>
+      </tr></thead><tbody>${linhas}</tbody>
+    </table>${avisos}`;
+  if(btn) btn.disabled=!tem;
+}
+
+async function gerarResultadoIsencaoXlsx(){
+  if(!_isenGeral||!_isenUpload){ alert('Carregue o Relatório Geral e o Relatório de Upload antes de gerar.'); return; }
+  const escolhidos=Array.from(document.querySelectorAll('.isen-chk:checked')).map(c=>_isenResumo[Number(c.value)]).filter(Boolean);
+  if(!escolhidos.length){ alert('Selecione ao menos um edital.'); return; }
+  carregarExcelJS(async()=>{
+    try{
+      const wb=new ExcelJS.Workbook();
+      const usados=new Set(); const resumoGer=[];
+      const fonte={name:'Times New Roman',size:10};
+      const borda={top:{style:'thin'},left:{style:'thin'},bottom:{style:'thin'},right:{style:'thin'}};
+      const cabecalhos=['INSCRIÇÃO','CANDIDATO','CPF','DATA DE\nNASCIMENTO','CONCURSO','CARGO','STATUS','SOLICITOU ISENÇÃO','TIPO ISENÇÃO','RESULTADO','JUSTIFICATIVA','LINK ','LINK '];
+      const larguras=[26.4,67.1,39.1,25.7,94.4,116,19.6,14,52.9,38.1,87.6,100.1,104.2];
+      const ocultas=[2,4,12];            // CPF, CONCURSO e o link "cru" ficam ocultos, como no modelo
+      const wrapCab=[3,7,8,9], wrapCorpo=[4,5,8,9];
+      const TITULO_FIM='\n\nRESULTADO PRELIMINAR DA SOLICITAÇÃO DA TAXA DE ISENÇÃO DO PAGAMENTO ';
+
+      for(const g of escolhidos){
+        const ed=_isenEdital(g.concurso);
+        let nome=ed?('ED '+String(ed.n).padStart(2,'0')+ed.ano.slice(2)):g.concurso.replace(/[\\\/?*\[\]:]/g,' ').substring(0,31);
+        if(usados.has(nome)){ let k=2; while(usados.has(nome.substring(0,28)+' '+k)) k++; nome=nome.substring(0,28)+' '+k; }
+        usados.add(nome);
+        const ws=wb.addWorksheet(nome,{
+          views:[{zoomScale:60}],
+          pageSetup:{orientation:'portrait',fitToPage:true,fitToWidth:1,fitToHeight:0,printTitlesRow:'1:2',
+            margins:{left:0.236,right:0.236,top:0.748,bottom:0.748,header:0.315,footer:0.315}}
+        });
+        ws.columns=larguras.map((w,i)=>({width:w,hidden:ocultas.includes(i)}));
+
+        ws.mergeCells('A1:K1');
+        const t=ws.getCell('A1');
+        t.value=g.concurso+TITULO_FIM;
+        t.font={...fonte,bold:true,color:{theme:1}};
+        t.alignment={horizontal:'center',vertical:'middle',wrapText:true};
+        ws.getRow(1).height=79.95;
+
+        const hr=ws.getRow(2); hr.height=30;
+        cabecalhos.forEach((txt,i)=>{
+          const c=hr.getCell(i+1); c.value=txt; c.border=borda;
+          c.alignment={horizontal:'center',vertical:'middle',wrapText:wrapCab.includes(i)};
+          if(i<11){
+            c.font={...fonte,bold:true,color:{theme:1}};
+            c.fill={type:'pattern',pattern:'solid',fgColor:{theme:0,tint:-0.249977111117893}};
+          }
+        });
+
+        const lista=g.lista.slice().sort((a,b)=>a.insc-b.insc);
+        let r=3, comLink=0;
+        lista.forEach(s=>{
+          const up=_isenUpload.porInscricao.get(s.insc);
+          const url=(up&&up.url)?up.url:''; if(url) comLink++;
+          const row=ws.getRow(r); row.height=30;
+          const vals=[s.insc,s.candidato,s.cpf,s.nasc,s.concurso,s.cargo,s.status,s.solicitou,s.tipo,null,null,null,url||null];
+          vals.forEach((val,i)=>{
+            const c=row.getCell(i+1);
+            if(i===11) c.value={formula:`IF(M${r}="","",HYPERLINK(M${r}))`,result:url};
+            else if(val!==null) c.value=val;
+            c.border=borda;
+            c.alignment={horizontal:'center',vertical:'middle',wrapText:wrapCorpo.includes(i)};
+            if(i<11) c.font={...fonte,color:{theme:1}};
+            else if(i===11) c.font={name:'Calibri',size:11,underline:true,color:{theme:10}}; // azul de link, como no modelo
+          });
+          r++;
+        });
+        ws.autoFilter={from:{row:2,column:1},to:{row:Math.max(3,r-1),column:13}};
+        resumoGer.push({aba:nome, total:lista.length, comLink, semLink:lista.length-comLink});
+      }
+
+      const buf=await wb.xlsx.writeBuffer();
+      const blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      const e1=escolhidos.length===1?_isenEdital(escolhidos[0].concurso):null;
+      a.download=e1?`RESULTADO_PRELIMINAR_DA_ISENÇÃO_-_ED_${String(e1.n).padStart(2,'0')}_${e1.ano.slice(2)}.xlsx`:'RESULTADO_PRELIMINAR_DA_ISENÇÃO.xlsx';
+      a.click();
+
+      const pos=document.getElementById('isen-pos-geracao');
+      if(pos){
+        const tot=resumoGer.reduce((x,y)=>x+y.total,0), sem=resumoGer.reduce((x,y)=>x+y.semLink,0);
+        pos.innerHTML=`<div style="background:#e4f3ea;border:1px solid #a8dbb8;border-radius:9px;padding:12px 16px;font-size:12.5px;color:#2e7d52">
+          ✅ Planilha gerada — ${tot} solicitação(ões) em ${resumoGer.length} aba(s): ${resumoGer.map(x=>`<strong>${x.aba}</strong> (${x.total})`).join(' · ')}.
+          <div style="margin-top:6px;color:#41506b">${sem} candidato(s) sem documento de isenção anexado: as colunas de LINK ficam em branco para eles.</div></div>`;
+      }
+    }catch(e){
+      console.error(e);
+      alert('Erro ao gerar a planilha: '+e.message);
+    }
+  });
 }
 
 // ── AGENDA ───────────────────────────────────────────────────────────
