@@ -1,11 +1,212 @@
 {
   "token": "ESC_MVH3FRIQ_Z71X",
-  "criadoEm": "2026-10-20T19:46:01.874Z",
+  "enviadoEm": "2026-10-20T19:50:41.548Z",
+  "protocolo": "ESC_MVH3FRIQ_Z71X_1792525841548",
   "concurso": {
     "concurso": "IBIÁ/MG - EDITAL Nº 01/2026 - CONCURSO",
     "municipio": "IBIÁ/MG",
     "dataProva": "01/11/2026",
     "escola": "EE. DR. PEDRO DIAS DOS REIS",
     "idEscola": "ESC_MVH3FRIQ_Z71X"
-  }
+  },
+  "instituicao": {
+    "nome": "EE. DR. PEDRO DIAS DOS REIS",
+    "cnpj": "",
+    "razao": "",
+    "endereco": "AVENIDA JOSE CAMBRAIA, 266, SANTA CRUZ, IBIÁ",
+    "numero": "266",
+    "complemento": "",
+    "bairro": "SANTA CRUZ",
+    "cidade": "IBIÁ",
+    "uf": "MG",
+    "cep": "",
+    "responsavel": {
+      "nome": "DANUTA MARTINS DE ANDRADE RODRIGUES",
+      "cargo": "",
+      "email": "escola.159026@educacao.mg.gov.br",
+      "tel": "(34) 99834-3600"
+    },
+    "diretor": {
+      "nome": "",
+      "email": ""
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": false,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": false
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "0",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "0",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "SALA 05",
+      "andar": "1",
+      "sala": "SALA 1º BLOCO",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 06",
+      "andar": "1",
+      "sala": "SALA 1º BLOCO",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 07",
+      "andar": "1",
+      "sala": "SALA 1º BLOCO",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 08",
+      "andar": "1",
+      "sala": "SALA 1º BLOCO",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 09",
+      "andar": "1",
+      "sala": "SALA 1º BLOCO",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 10",
+      "andar": "1",
+      "sala": "SALA 1º BLOCO",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 11",
+      "andar": "1",
+      "sala": "SALA 1º BLOCO",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 12",
+      "andar": "2",
+      "sala": "SALA 2º BLOCO",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 13",
+      "andar": "2",
+      "sala": "SALA 2º BLOCO",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 15",
+      "andar": "3",
+      "sala": "SALA 3º BLOCO",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 16",
+      "andar": "3",
+      "sala": "SALA 3º BLOCO",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 17",
+      "andar": "3",
+      "sala": "SALA 3º BLOCO",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 02",
+      "andar": "4",
+      "sala": "SALA 4º BLOCO",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 03",
+      "andar": "4",
+      "sala": "SALA 4º BLOCO",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA 04",
+      "andar": "4",
+      "sala": "SALA 4º BLOCO",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    }
+  ]
 }
