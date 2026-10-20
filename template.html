@@ -6613,7 +6613,7 @@ function atualizarPreviewIsencao(){
   const tem=!!_isenUpload;
   const linhas=_isenResumo.map((g,i)=>`
     <tr>
-      <td style="padding:6px 8px"><input type="checkbox" class="isen-chk" value="${i}" checked onchange="atualizarInfoCadUnico()"></td>
+      <td style="padding:6px 8px"><input type="checkbox" class="isen-chk" value="${i}" checked onchange="aoMarcarIsencao()"></td>
       <td style="padding:6px 8px;font-size:12.5px">${g.concurso}</td>
       <td style="padding:6px 8px;text-align:right">${g.lista.length}</td>
       <td style="padding:6px 8px;text-align:right">${tem?g.comDoc:'—'}</td>
@@ -6632,10 +6632,18 @@ function atualizarPreviewIsencao(){
         <th style="padding:6px 8px;width:28px"></th><th style="padding:6px 8px">Concurso</th>
         <th style="padding:6px 8px;text-align:right">Solicitações</th><th style="padding:6px 8px;text-align:right">Com documento</th><th style="padding:6px 8px;text-align:right" title="CadÚnico (NIS) não precisa enviar documento">CadÚnico sem doc.</th><th style="padding:6px 8px;text-align:right" title="Sem documento e fora do CadÚnico: saem como INDEFERIDO">Indeferidos</th>
       </tr></thead><tbody>${linhas}</tbody>
+      <tfoot><tr style="border-top:2px solid #e2e7ef;font-weight:700;background:#f7f9fc">
+        <td style="padding:8px"></td>
+        <td style="padding:8px;font-size:12.5px" id="isen-tot-rotulo">Total</td>
+        <td style="padding:8px;text-align:right" id="isen-tot-solic">0</td>
+        <td style="padding:8px;text-align:right" id="isen-tot-comdoc">0</td>
+        <td style="padding:8px;text-align:right" id="isen-tot-cad">0</td>
+        <td style="padding:8px;text-align:right" id="isen-tot-indef">0</td>
+      </tr></tfoot>
     </table>${avisos}
     <div id="isen-cad-info" style="margin-top:12px;font-size:12.5px;color:#41506b"></div>`;
   if(btn) btn.disabled=!tem;
-  atualizarInfoCadUnico();
+  aoMarcarIsencao();
 }
 
 // Pessoas distintas (por CPF) com isenção por CadÚnico (NIS) nos editais marcados, na ordem da 1ª inscrição.
@@ -6652,6 +6660,20 @@ function _isenPessoasCadUnico(){
   });
   return {pessoas, invalidos, inscricoes:insc.length};
 }
+// Totais da tabela: somam só os editais marcados (é o que vai para a planilha).
+function atualizarTotaisIsencao(){
+  const marc=Array.from(document.querySelectorAll('.isen-chk:checked')).map(c=>_isenResumo[Number(c.value)]).filter(Boolean);
+  const soma=k=>marc.reduce((a,g)=>a+(g[k]||0),0);
+  const tem=!!_isenUpload;
+  const set=(id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
+  set('isen-tot-rotulo', marc.length<_isenResumo.length ? `Total (${marc.length} de ${_isenResumo.length} editais marcados)` : 'Total');
+  set('isen-tot-solic', marc.reduce((a,g)=>a+g.lista.length,0));
+  set('isen-tot-comdoc', tem?soma('comDoc'):'—');
+  set('isen-tot-cad',    tem?soma('cadSemDoc'):'—');
+  set('isen-tot-indef',  tem?soma('indef'):'—');
+}
+function aoMarcarIsencao(){ atualizarTotaisIsencao(); atualizarInfoCadUnico(); }
+
 function atualizarInfoCadUnico(){
   const el=document.getElementById('isen-cad-info'); if(!el||!_isenGeral) return;
   const r=_isenPessoasCadUnico();
