@@ -1407,7 +1407,7 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
         <label class="form-label">Retorno do SISTAC — relatório de indeferimentos do CadÚnico (.xls ou .xlsx) <span style="font-size:11px;color:#8a9ab5;font-weight:400">(opcional, depois de enviar o TXT)</span></label>
         <input type="file" id="isen-retorno-file" accept=".xls,.xlsx" class="form-input" style="padding:6px"
           onclick="this.value=null" onchange="carregarIsenRetorno(this)">
-        <div style="margin-top:6px;font-size:11.5px;color:#8a9ab5">Quem está no relatório sai INDEFERIDO com o motivo do código; os demais solicitantes do CadÚnico saem DEFERIDO. Sem este arquivo, o CadÚnico fica em branco.</div>
+        <div style="margin-top:6px;font-size:11.5px;color:#8a9ab5">Quem está no relatório sai INDEFERIDA com o motivo do código; os demais solicitantes do CadÚnico saem DEFERIDA. Sem este arquivo, o CadÚnico fica em branco.</div>
         <div id="isen-retorno-status" style="margin-top:8px;font-size:12.5px;color:#8a9ab5"></div>
       </div>
       <div id="isen-preview" style="display:none" class="card card-pad">
@@ -6568,18 +6568,18 @@ function _isenJustifSistac(codigo){
   return (codigo===5?t.mensagem:t.motivo).toUpperCase();
 }
 // Decisão de cada solicitação:
-//  • CadÚnico com retorno carregado: CPF no relatório => INDEFERIDO (motivo do código); fora do relatório => DEFERIDO
+//  • CadÚnico com retorno carregado: CPF no relatório => INDEFERIDA (motivo do código); fora do relatório => DEFERIDA
 //  • CadÚnico sem retorno: em branco (aguardando o SISTAC)
-//  • demais tipos: sem nenhum documento => INDEFERIDO; com documento => em branco p/ análise
+//  • demais tipos: sem nenhum documento => INDEFERIDA; com documento => em branco p/ análise
 function _isenDecisao(s){
   const sit=_isenSituacao(s);
   if(sit.cad){
     if(!_isenRetorno) return {...sit,res:null,just:null,via:null};
     const r=_isenRetorno.porCpf.get(_isenCpfDig(s.cpf));
-    if(r) return {...sit,res:'INDEFERIDO',just:_isenJustifSistac(r.codigo),via:'sistac-indef',codigo:r.codigo};
-    return {...sit,res:'DEFERIDO',just:null,via:'sistac-def'};
+    if(r) return {...sit,res:'INDEFERIDA',just:_isenJustifSistac(r.codigo),via:'sistac-indef',codigo:r.codigo};
+    return {...sit,res:'DEFERIDA',just:null,via:'sistac-def'};
   }
-  if(sit.indeferido) return {...sit,res:'INDEFERIDO',just:_ISEN_JUSTIF_SEM_DOC,via:'sem-doc'};
+  if(sit.indeferido) return {...sit,res:'INDEFERIDA',just:_ISEN_JUSTIF_SEM_DOC,via:'sem-doc'};
   return {...sit,res:null,just:null,via:null};
 }
 
@@ -6747,7 +6747,7 @@ function atualizarPreviewIsencao(){
     <table style="width:100%;border-collapse:collapse;font-size:13px">
       <thead><tr style="border-bottom:1.5px solid #e2e7ef;color:#8a9ab5;font-size:11.5px;text-align:left">
         <th style="padding:6px 8px;width:28px"></th><th style="padding:6px 8px">Concurso</th>
-        <th style="padding:6px 8px;text-align:right">Solicitações</th><th style="padding:6px 8px;text-align:right">Com documento</th><th style="padding:6px 8px;text-align:right" title="CadÚnico (NIS) não precisa enviar documento">CadÚnico sem doc.</th><th style="padding:6px 8px;text-align:right" title="Sem documento e fora do CadÚnico: saem como INDEFERIDO">Indef. sem documento</th>${ret?`<th style="padding:6px 8px;text-align:right" title="CadÚnico que não está no relatório do SISTAC">CadÚnico deferidos</th><th style="padding:6px 8px;text-align:right" title="CadÚnico que está no relatório do SISTAC">CadÚnico indeferidos</th>`:''}
+        <th style="padding:6px 8px;text-align:right">Solicitações</th><th style="padding:6px 8px;text-align:right">Com documento</th><th style="padding:6px 8px;text-align:right" title="CadÚnico (NIS) não precisa enviar documento">CadÚnico sem doc.</th><th style="padding:6px 8px;text-align:right" title="Sem documento e fora do CadÚnico: saem como INDEFERIDA">Indef. sem documento</th>${ret?`<th style="padding:6px 8px;text-align:right" title="CadÚnico que não está no relatório do SISTAC">CadÚnico deferidos</th><th style="padding:6px 8px;text-align:right" title="CadÚnico que está no relatório do SISTAC">CadÚnico indeferidos</th>`:''}
       </tr></thead><tbody>${linhas}</tbody>
       <tfoot><tr style="border-top:2px solid #e2e7ef;font-weight:700;background:#f7f9fc">
         <td style="padding:8px"></td>
@@ -6910,8 +6910,8 @@ async function gerarResultadoIsencaoXlsx(){
         const tot=resumoGer.reduce((x,y)=>x+y.total,0), ind=resumoGer.reduce((x,y)=>x+y.indef,0), cad=resumoGer.reduce((x,y)=>x+y.cadSemDoc,0), cdef=resumoGer.reduce((x,y)=>x+y.cadDef,0), cind=resumoGer.reduce((x,y)=>x+y.cadIndef,0);
         pos.innerHTML=`<div style="background:#e4f3ea;border:1px solid #a8dbb8;border-radius:9px;padding:12px 16px;font-size:12.5px;color:#2e7d52">
           ✅ Planilha gerada — ${tot} solicitação(ões) em ${resumoGer.length} aba(s): ${resumoGer.map(x=>`<strong>${x.aba}</strong> (${x.total})`).join(' · ')}.
-          <div style="margin-top:6px;color:#41506b">${ind} candidato(s) sem documentação saíram como <strong>INDEFERIDO</strong> com a justificativa de falta de documentação. `+
-          (_isenRetorno?`CadÚnico (retorno do SISTAC): <strong>${cdef}</strong> DEFERIDO(S) e <strong>${cind}</strong> INDEFERIDO(S) com o motivo do código.`
+          <div style="margin-top:6px;color:#41506b">${ind} candidato(s) sem documentação saíram como <strong>INDEFERIDA</strong> com a justificativa de falta de documentação. `+
+          (_isenRetorno?`CadÚnico (retorno do SISTAC): <strong>${cdef}</strong> DEFERIDA(S) e <strong>${cind}</strong> INDEFERIDA(S) com o motivo do código.`
             :`${cad} de CadÚnico (NIS) sem documento ficaram em branco, pois são conferidos pelo NIS (use o arquivo TXT do CadÚnico e depois anexe o retorno do SISTAC).`)+`</div></div>`;
       }
     }catch(e){
