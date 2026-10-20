@@ -1406,6 +1406,7 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
       <div id="isen-preview" style="display:none" class="card card-pad">
         <div id="isen-preview-content"></div>
         <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end">
+          <button class="btn-secondary" id="isen-btn-txt" onclick="gerarTxtCadUnicoIsencao()">📄 Gerar TXT do CadÚnico</button>
           <button class="btn-primary" id="isen-btn-gerar" onclick="gerarResultadoIsencaoXlsx()" disabled>⚙️ Gerar e baixar</button>
         </div>
         <div id="isen-pos-geracao" style="margin-top:14px"></div>
@@ -6511,6 +6512,18 @@ function _isenLerPlanilha(file, cb){
   });
 }
 
+const _ISEN_JUSTIF_SEM_DOC='NÃO ANEXOU DOCUMENTAÇÃO CONFORME ESTABELECIDO EM EDITAL';
+function _isenEhCadUnico(tipo){ return _isenNorm(tipo).includes('CADUNICO'); }
+// Situação do pedido: enviou documento? é CadÚnico (não precisa de documento, é conferido pelo NIS)?
+// Indeferido automático = não enviou nada E não é CadÚnico.
+function _isenSituacao(s){
+  const up=_isenUpload?_isenUpload.porInscricao.get(s.insc):null;
+  const url=(up&&up.url)?up.url:'';
+  const enviou=!!(up&&(up.url||up.enviou));
+  const cad=_isenEhCadUnico(s.tipo);
+  return {url, enviou, cad, indeferido: !enviou && !cad};
+}
+
 function carregarIsenGeral(input){
   const file=input.files[0]; if(!file) return;
   const st=document.getElementById('isen-geral-status');
@@ -6558,11 +6571,16 @@ function carregarIsenUpload(input){
       const insc=_isenInsc(v(r,'INSCRICAO')); if(!insc) return;
       totalIsencao++;
       const url=String(v(r,'URL')??'').trim();
+      const arq=('ARQUIVO' in m)?String(v(r,'ARQUIVO')??'').trim():'';
       const cod=Number(String(v(r,'COD UPLOAD')??'').replace(/\D/g,''))||0;
-      const novo={url:/^https?:\/\//i.test(url)?url:'', cod, cpf:_isenCpf(v(r,'CPF'))};
+      const urlOk=/^https?:\/\//i.test(url);
+      // "enviou" = tem link OU o relatório registra um arquivo (ARQUIVO diferente de vazio/"-").
+      // Linha sem nenhum dos dois é só o espaço reservado do documento: candidato não anexou nada.
+      const novo={url:urlOk?url:'', cod, cpf:_isenCpf(v(r,'CPF')), enviou: urlOk || (arq!=='' && arq!=='-')};
+      const rank=x=>x.url?2:(x.enviou?1:0);
       const atual=porInscricao.get(insc);
-      // Mais de um envio de isenção na mesma inscrição: vale o mais recente que tenha arquivo.
-      if(!atual || (novo.url&&!atual.url) || (!!novo.url===!!atual.url && novo.cod>atual.cod)) porInscricao.set(insc,novo);
+      // Mais de um envio de isenção na mesma inscrição: vale o mais completo e, entre iguais, o mais recente.
+      if(!atual || rank(novo)>rank(atual) || (rank(novo)===rank(atual) && novo.cod>atual.cod)) porInscricao.set(insc,novo);
     });
     _isenUpload={arquivo:file.name, porInscricao, totalIsencao};
     st.innerHTML=`✅ <strong>${file.name}</strong> carregado — ${porInscricao.size} inscrições com envio de documento de isenção`;
@@ -6577,12 +6595,13 @@ function atualizarPreviewIsencao(){
   wrap.style.display='block';
   const grupos=new Map();
   _isenGeral.solicitantes.forEach(s=>{
-    if(!grupos.has(s.concurso)) grupos.set(s.concurso,{concurso:s.concurso, lista:[], comLink:0, semLink:0, cpfDiverg:0, ativaDif:0});
+    if(!grupos.has(s.concurso)) grupos.set(s.concurso,{concurso:s.concurso, lista:[], comDoc:0, cadSemDoc:0, indef:0, cpfDiverg:0, ativaDif:0});
     const g=grupos.get(s.concurso); g.lista.push(s);
     if(s.ativa && _isenNorm(s.ativa)!=='ATIVA') g.ativaDif++;
     if(_isenUpload){
+      const sit=_isenSituacao(s);
+      if(sit.enviou) g.comDoc++; else if(sit.cad) g.cadSemDoc++; else g.indef++;
       const up=_isenUpload.porInscricao.get(s.insc);
-      if(up&&up.url) g.comLink++; else g.semLink++;
       if(up && up.cpf && s.cpf && up.cpf.replace(/\D/g,'')!==s.cpf.replace(/\D/g,'')) g.cpfDiverg++;
     }
   });
@@ -6594,11 +6613,12 @@ function atualizarPreviewIsencao(){
   const tem=!!_isenUpload;
   const linhas=_isenResumo.map((g,i)=>`
     <tr>
-      <td style="padding:6px 8px"><input type="checkbox" class="isen-chk" value="${i}" checked></td>
+      <td style="padding:6px 8px"><input type="checkbox" class="isen-chk" value="${i}" checked onchange="atualizarInfoCadUnico()"></td>
       <td style="padding:6px 8px;font-size:12.5px">${g.concurso}</td>
       <td style="padding:6px 8px;text-align:right">${g.lista.length}</td>
-      <td style="padding:6px 8px;text-align:right">${tem?g.comLink:'—'}</td>
-      <td style="padding:6px 8px;text-align:right">${tem?g.semLink:'—'}</td>
+      <td style="padding:6px 8px;text-align:right">${tem?g.comDoc:'—'}</td>
+      <td style="padding:6px 8px;text-align:right">${tem?g.cadSemDoc:'—'}</td>
+      <td style="padding:6px 8px;text-align:right">${tem?g.indef:'—'}</td>
     </tr>`).join('');
   const totCpf=_isenResumo.reduce((a,g)=>a+g.cpfDiverg,0), totAtiva=_isenResumo.reduce((a,g)=>a+g.ativaDif,0);
   let avisos='';
@@ -6610,10 +6630,54 @@ function atualizarPreviewIsencao(){
     <table style="width:100%;border-collapse:collapse;font-size:13px">
       <thead><tr style="border-bottom:1.5px solid #e2e7ef;color:#8a9ab5;font-size:11.5px;text-align:left">
         <th style="padding:6px 8px;width:28px"></th><th style="padding:6px 8px">Concurso</th>
-        <th style="padding:6px 8px;text-align:right">Solicitações</th><th style="padding:6px 8px;text-align:right">Com documento</th><th style="padding:6px 8px;text-align:right">Sem documento</th>
+        <th style="padding:6px 8px;text-align:right">Solicitações</th><th style="padding:6px 8px;text-align:right">Com documento</th><th style="padding:6px 8px;text-align:right" title="CadÚnico (NIS) não precisa enviar documento">CadÚnico sem doc.</th><th style="padding:6px 8px;text-align:right" title="Sem documento e fora do CadÚnico: saem como INDEFERIDO">Indeferidos</th>
       </tr></thead><tbody>${linhas}</tbody>
-    </table>${avisos}`;
+    </table>${avisos}
+    <div id="isen-cad-info" style="margin-top:12px;font-size:12.5px;color:#41506b"></div>`;
   if(btn) btn.disabled=!tem;
+  atualizarInfoCadUnico();
+}
+
+// Pessoas distintas (por CPF) com isenção por CadÚnico (NIS) nos editais marcados, na ordem da 1ª inscrição.
+function _isenPessoasCadUnico(){
+  const marcados=new Set(Array.from(document.querySelectorAll('.isen-chk:checked')).map(c=>_isenResumo[Number(c.value)]).filter(Boolean).map(g=>g.concurso));
+  const insc=(_isenGeral?_isenGeral.solicitantes:[]).filter(s=>marcados.has(s.concurso)&&_isenEhCadUnico(s.tipo)).sort((a,b)=>a.insc-b.insc);
+  const vistos=new Set(); const pessoas=[]; const invalidos=[];
+  insc.forEach(s=>{
+    const cpf=String(s.cpf||'').replace(/\D/g,'').padStart(11,'0');
+    const m=String(s.nasc||'').match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if(!/^\d{11}$/.test(cpf)||!m){ invalidos.push(s); return; }
+    if(vistos.has(cpf)) return;
+    vistos.add(cpf); pessoas.push({cpf, nome:s.candidato, nasc:m[1]+m[2]+m[3]});
+  });
+  return {pessoas, invalidos, inscricoes:insc.length};
+}
+function atualizarInfoCadUnico(){
+  const el=document.getElementById('isen-cad-info'); if(!el||!_isenGeral) return;
+  const r=_isenPessoasCadUnico();
+  el.innerHTML=`<strong>Arquivo do CadÚnico (NIS):</strong> ${r.pessoas.length} pessoa(s) distintas (${r.inscricoes} inscrição(ões)) nos editais marcados`+
+    (r.invalidos.length?` <span style="color:#a06c12">· ⚠️ ${r.invalidos.length} inscrição(ões) com CPF ou data de nascimento inválidos ficarão de fora</span>`:'');
+}
+// Arquivo para a consulta do CadÚnico: layout igual ao modelo — cabeçalho "0;CNPJ;IBGP;IBGP;" e uma linha
+// "1;NOME;CPF;DDMMAAAA;" por pessoa. Nome em MAIÚSCULAS, sem acento e sem apóstrofo (espaços internos
+// mantidos, como no modelo). Linhas separadas por CRLF, sem quebra de linha no final.
+function gerarTxtCadUnicoIsencao(){
+  if(!_isenGeral){ alert('Carregue o Relatório Geral primeiro.'); return; }
+  const r=_isenPessoasCadUnico();
+  if(!r.pessoas.length){ alert('Nenhuma solicitação por CadÚnico (NIS) nos editais marcados.'); return; }
+  const limpa=n=>String(n||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase()
+    .replace(/['’‘´`]/g,'').replace(/[^A-Z ]/g,' ').trim();
+  const cab='0;13761170000130;IBGP;IBGP;';
+  const linhas=[cab, ...r.pessoas.map(p=>`1;${limpa(p.nome)};${p.cpf};${p.nasc};`)];
+  const blob=new Blob([linhas.join('\r\n')],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=cab.replace(/;/g,'_')+'.txt';
+  a.click();
+  const pos=document.getElementById('isen-pos-geracao');
+  if(pos) pos.innerHTML=`<div style="background:#e4f3ea;border:1px solid #a8dbb8;border-radius:9px;padding:12px 16px;font-size:12.5px;color:#2e7d52">
+    ✅ Arquivo do CadÚnico gerado — ${r.pessoas.length} pessoa(s) (${r.inscricoes} inscrição(ões)).`+
+    (r.invalidos.length?`<div style="margin-top:6px;color:#a06c12">⚠️ ${r.invalidos.length} inscrição(ões) ficaram de fora por CPF ou data de nascimento inválidos: ${r.invalidos.slice(0,8).map(s=>s.insc).join(', ')}${r.invalidos.length>8?'…':''}</div>`:'')+`</div>`;
 }
 
 async function gerarResultadoIsencaoXlsx(){
@@ -6662,12 +6726,14 @@ async function gerarResultadoIsencaoXlsx(){
         });
 
         const lista=g.lista.slice().sort((a,b)=>a.insc-b.insc);
-        let r=3, comLink=0;
+        let r=3, comDoc=0, cadSemDoc=0, indef=0;
         lista.forEach(s=>{
-          const up=_isenUpload.porInscricao.get(s.insc);
-          const url=(up&&up.url)?up.url:''; if(url) comLink++;
+          const sit=_isenSituacao(s); const url=sit.url;
+          if(sit.enviou) comDoc++; else if(sit.cad) cadSemDoc++; else indef++;
           const row=ws.getRow(r); row.height=30;
-          const vals=[s.insc,s.candidato,s.cpf,s.nasc,s.concurso,s.cargo,s.status,s.solicitou,s.tipo,null,null,null,url||null];
+          // Sem documento e fora do CadÚnico: já sai INDEFERIDO com a justificativa. CadÚnico e quem enviou: em branco p/ análise.
+          const vals=[s.insc,s.candidato,s.cpf,s.nasc,s.concurso,s.cargo,s.status,s.solicitou,s.tipo,
+            sit.indeferido?'INDEFERIDO':null, sit.indeferido?_ISEN_JUSTIF_SEM_DOC:null, null, url||null];
           vals.forEach((val,i)=>{
             const c=row.getCell(i+1);
             if(i===11) c.value={formula:`IF(M${r}="","",HYPERLINK(M${r}))`,result:url};
@@ -6680,7 +6746,7 @@ async function gerarResultadoIsencaoXlsx(){
           r++;
         });
         ws.autoFilter={from:{row:2,column:1},to:{row:Math.max(3,r-1),column:13}};
-        resumoGer.push({aba:nome, total:lista.length, comLink, semLink:lista.length-comLink});
+        resumoGer.push({aba:nome, total:lista.length, comDoc, cadSemDoc, indef});
       }
 
       const buf=await wb.xlsx.writeBuffer();
@@ -6693,10 +6759,10 @@ async function gerarResultadoIsencaoXlsx(){
 
       const pos=document.getElementById('isen-pos-geracao');
       if(pos){
-        const tot=resumoGer.reduce((x,y)=>x+y.total,0), sem=resumoGer.reduce((x,y)=>x+y.semLink,0);
+        const tot=resumoGer.reduce((x,y)=>x+y.total,0), ind=resumoGer.reduce((x,y)=>x+y.indef,0), cad=resumoGer.reduce((x,y)=>x+y.cadSemDoc,0);
         pos.innerHTML=`<div style="background:#e4f3ea;border:1px solid #a8dbb8;border-radius:9px;padding:12px 16px;font-size:12.5px;color:#2e7d52">
           ✅ Planilha gerada — ${tot} solicitação(ões) em ${resumoGer.length} aba(s): ${resumoGer.map(x=>`<strong>${x.aba}</strong> (${x.total})`).join(' · ')}.
-          <div style="margin-top:6px;color:#41506b">${sem} candidato(s) sem documento de isenção anexado: as colunas de LINK ficam em branco para eles.</div></div>`;
+          <div style="margin-top:6px;color:#41506b">${ind} candidato(s) sem documentação saíram como <strong>INDEFERIDO</strong> com a justificativa de falta de documentação. ${cad} de CadÚnico (NIS) sem documento ficaram em branco, pois são conferidos pelo NIS (use o arquivo TXT do CadÚnico).</div></div>`;
       }
     }catch(e){
       console.error(e);
