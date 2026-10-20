@@ -6505,6 +6505,25 @@ function _isenEdital(concurso){
   const m=String(concurso||'').match(/EDITAL\s*N[º°Oo]?\s*(\d+)\s*\/\s*(\d{4})/i);
   return m?{n:parseInt(m[1],10), ano:m[2]}:null;
 }
+// Município a partir do nome do concurso: o trecho antes de "/UF" depois de "MUNICÍPIO DE" / "MUNICIPAL DE" etc.
+// (ex: "...DO MUNICÍPIO DE SÃO JOÃO DEL-REI/MG - EDITAL Nº 03/2026" => "SÃO JOÃO DEL-REI").
+// Sem "/UF" no nome (ex: órgão sem município), usa o órgão: o título sem "CONCURSO PÚBLICO DO..." e sem o edital.
+function _isenMunicipio(concurso){
+  const c=String(concurso||'').replace(/\s+/g,' ').trim();
+  const m=c.match(/(?:MUNIC[IÍ]PIO|MUNICIPAL|PREFEITURA|C[ÂA]MARA)\s+D[EOA]\s+((?:(?!MUNIC[IÍ]PIO|MUNICIPAL)[^\/])+?)\/[A-Z]{2}\b/i);
+  if(m) return m[1].trim();
+  let r=c.replace(/\s*-\s*EDITAL.*$/i,'').replace(/^(?:CONCURSO P[ÚU]BLICO|PROCESSO SELETIVO(?: P[ÚU]BLICO)?)\s+(?:D[EOA]S?\s+)?/i,'').trim();
+  return r;
+}
+function _isenNomeArquivo(escolhidos){
+  const cont={}; escolhidos.forEach(g=>{ const m=_isenMunicipio(g.concurso); if(m) cont[m]=(cont[m]||0)+g.lista.length; });
+  const mun=Object.keys(cont).sort((a,b)=>cont[b]-cont[a])[0]||'';
+  const e1=escolhidos.length===1?_isenEdital(escolhidos[0].concurso):null;
+  const partes=['RESULTADO_PRELIMINAR_DA_ISENÇÃO'];
+  if(e1) partes.push(`ED_${String(e1.n).padStart(2,'0')}_${e1.ano.slice(2)}`);
+  if(mun) partes.push(mun.toUpperCase().replace(/[\\\/:*?"<>|]/g,' ').replace(/\s+/g,'_'));
+  return partes.join('_-_')+'.xlsx';
+}
 function _isenLerPlanilha(file, cb){
   carregarSheetJS(()=>{
     const reader=new FileReader();
@@ -6883,8 +6902,7 @@ async function gerarResultadoIsencaoXlsx(){
       const blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
       const a=document.createElement('a');
       a.href=URL.createObjectURL(blob);
-      const e1=escolhidos.length===1?_isenEdital(escolhidos[0].concurso):null;
-      a.download=e1?`RESULTADO_PRELIMINAR_DA_ISENÇÃO_-_ED_${String(e1.n).padStart(2,'0')}_${e1.ano.slice(2)}.xlsx`:'RESULTADO_PRELIMINAR_DA_ISENÇÃO.xlsx';
+      a.download=_isenNomeArquivo(escolhidos);   // termina com o nome do município
       a.click();
 
       const pos=document.getElementById('isen-pos-geracao');
