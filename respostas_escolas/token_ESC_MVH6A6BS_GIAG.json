@@ -1,11 +1,162 @@
 {
   "token": "ESC_MVH6A6BS_GIAG",
-  "criadoEm": "2026-10-20T21:05:39.976Z",
+  "enviadoEm": "2026-10-21T16:12:32.579Z",
+  "protocolo": "ESC_MVH6A6BS_GIAG_1792599152579",
   "concurso": {
     "concurso": "DORES DO INDAIÁ/MG - EDITAL Nº 01/2026",
     "municipio": "DORES DO INDAIÁ/MG",
     "dataProva": "01/11/2026",
     "escola": "EE FRANCISCO CAMPOS",
     "idEscola": "ESC_MVH6A6BS_GIAG"
-  }
+  },
+  "instituicao": {
+    "nome": "EE FRANCISCO CAMPOS",
+    "cnpj": "19.544.568/0001-00",
+    "razao": "CAIXA ESCOLAR FRANCISCO CAMPOS",
+    "endereco": "PRAÇA PROFESSOR WALDEMAR DE ALMEIDA BARBOSA",
+    "numero": "21",
+    "complemento": "",
+    "bairro": "CENTRO",
+    "cidade": "DORES DO INDAIÁ",
+    "uf": "MG",
+    "cep": "35610-000",
+    "responsavel": {
+      "nome": "ALEXANDRE DE OLIVEIRA LOPES",
+      "cargo": "DIRETOR",
+      "email": "alexandre.oliveira.lopes@educacao.mg.gov.br",
+      "tel": "(37) 99135-2394"
+    },
+    "diretor": {
+      "nome": "ALEXANDRE DE OLIVEIRA LOPES",
+      "email": "alexandre.oliveira.lopes@educacao.mg.gov.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": false,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "2",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "2",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "TERREO",
+      "sala": "SALA 02",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "TERREO",
+      "sala": "SALA 03",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "TERREO",
+      "sala": "SALA 04",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "TERREO",
+      "sala": "SALA 05",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "TERREO",
+      "sala": "SALA 06",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "1º ANDAR",
+      "sala": "SALA 10",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "1º ANDAR",
+      "sala": "SALA 11",
+      "capacidade": 10,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "1º ANDAR",
+      "sala": "SALA 13",
+      "capacidade": 10,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "1º ANDAR",
+      "sala": "SALA 15",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "1º ANDAR",
+      "sala": "SALA 16",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    }
+  ]
 }
