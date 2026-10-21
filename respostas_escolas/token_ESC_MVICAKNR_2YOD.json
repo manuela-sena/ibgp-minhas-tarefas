@@ -1,11 +1,132 @@
 {
   "token": "ESC_MVICAKNR_2YOD",
-  "criadoEm": "2026-10-21T16:41:42.423Z",
+  "enviadoEm": "2026-10-21T17:36:34.309Z",
+  "protocolo": "ESC_MVICAKNR_2YOD_1792604194309",
   "concurso": {
     "concurso": "DORES DO INDAIÁ/MG - EDITAL Nº 01/2026",
     "municipio": "DORES DO INDAIÁ/MG",
     "dataProva": "01/11/2026",
     "escola": "ESCOLA MUNICIPAL MESTRE TONICO",
     "idEscola": "ESC_MVICAKNR_2YOD"
-  }
+  },
+  "instituicao": {
+    "nome": "ESCOLA MUNICIPAL MESTRE TONICO",
+    "cnpj": "19.544.535/0001-51",
+    "razao": "CAIXA ESCOLAR GODOFREDO DE ARAUJO",
+    "endereco": "AVENIDA JONAS PIRES",
+    "numero": "100",
+    "complemento": "",
+    "bairro": "CENTRO",
+    "cidade": "DORES DO INDAIA",
+    "uf": "MG",
+    "cep": "35610-000",
+    "responsavel": {
+      "nome": "FLAVIO DE MELO CARVALHO",
+      "cargo": "DIRETOR",
+      "email": "flaviodemelocarvalho@gmail.com",
+      "tel": "(37) 99123-3557"
+    },
+    "diretor": {
+      "nome": "FLAVIO DE MELO CARVALHO",
+      "email": "flaviodemelocarvalho@gmail.com"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "1",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "1",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "A",
+      "andar": "1º",
+      "sala": "SALA 2",
+      "capacidade": 15,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "A",
+      "andar": "1º",
+      "sala": "SALA 3",
+      "capacidade": 16,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "A",
+      "andar": "1º",
+      "sala": "SALA 4",
+      "capacidade": 16,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "A",
+      "andar": "1º",
+      "sala": "SALA 5",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "A",
+      "andar": "1º",
+      "sala": "SALA 6",
+      "capacidade": 23,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "A",
+      "andar": "1º",
+      "sala": "SALA 7",
+      "capacidade": 24,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "A",
+      "andar": "1º",
+      "sala": "SALA 8",
+      "capacidade": 24,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    }
+  ]
 }
