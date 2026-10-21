@@ -1,11 +1,192 @@
 {
   "token": "ESC_MVH6BBIT_DPAY",
-  "criadoEm": "2026-10-20T21:06:33.365Z",
+  "enviadoEm": "2026-10-21T14:56:57.214Z",
+  "protocolo": "ESC_MVH6BBIT_DPAY_1792594617214",
   "concurso": {
     "concurso": "DORES DO INDAIÁ/MG - EDITAL Nº 01/2026",
     "municipio": "DORES DO INDAIÁ/MG",
     "dataProva": "01/11/2026",
     "escola": "ESCOLA MUNICIPAL BENJAMIM GUIMARAES",
     "idEscola": "ESC_MVH6BBIT_DPAY"
-  }
+  },
+  "instituicao": {
+    "nome": "ESCOLA MUNICIPAL BENJAMIM GUIMARAES",
+    "cnpj": "03.111.359/0001-24",
+    "razao": "ASSOCIAÇÃO DE PAIS, MESTRES E AMIGOS DA ESCOLA MUNICIPAL BENJAMIM GUIMARÃES",
+    "endereco": "RUA CORONEL ALEXANDRE",
+    "numero": "177",
+    "complemento": "",
+    "bairro": "CENTRO",
+    "cidade": "DORES DO INDAIÁ",
+    "uf": "MG",
+    "cep": "35610-000",
+    "responsavel": {
+      "nome": "KAREN CAETANO CESARIO",
+      "cargo": "DIRETORA",
+      "email": "benjamim@doresdoindaia.mg.gov.br",
+      "tel": "(37) 99104-5868"
+    },
+    "diretor": {
+      "nome": "KAREN CAETANO CESARIO",
+      "email": "karenkaka05@hotmail.com"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "5",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "8",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "",
+      "andar": "1º ANDAR",
+      "sala": "SALA 04",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "1º ANDAR",
+      "sala": "SALA 05",
+      "capacidade": 24,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "1º ANDAR",
+      "sala": "SALA 06",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "1º ANDAR",
+      "sala": "SALA 07",
+      "capacidade": 24,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "1º ANDAR",
+      "sala": "SALA 09",
+      "capacidade": 22,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "1º ANDAR",
+      "sala": "SALA 10",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "1º ANDAR",
+      "sala": "SALA 13",
+      "capacidade": 27,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "SUBSOLO",
+      "sala": "SALA 15",
+      "capacidade": 28,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "SUBSOLO",
+      "sala": "SALA 16",
+      "capacidade": 23,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "SUBSOLO",
+      "sala": "SALA 23",
+      "capacidade": 14,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "SUBSOLO",
+      "sala": "SALA 24",
+      "capacidade": 18,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "SUBSOLO",
+      "sala": "SALA 25",
+      "capacidade": 23,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "SUBSOLO",
+      "sala": "SALA 26",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    }
+  ]
 }
