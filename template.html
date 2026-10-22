@@ -6269,6 +6269,29 @@ function processarHomologacao(){
   const res=document.getElementById('homol-resultado');
   res.innerHTML='<div class="loading"><div class="spinner"></div>Processando...</div>';
   try{
+    // ── Reserva pelo NOME DA ABA ─────────────────────────────────────
+    // Alguns arquivos de classificação trazem uma aba por reserva (AMPLA, PCD, PNP...), todas com a
+    // mesma coluna genérica "CLASS" / "CLASS.". Nesse caso a reserva é a da aba, não a do nome da coluna.
+    function reservaDoNomeDaAba(nome){
+      const u=String(nome||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
+      if(/PCD|DEFIC/.test(u)) return 'PCD';
+      if(/AFIRMATIV/.test(u)) return 'VAGAS AFIRMATIVAS';
+      if(/PNP|NEGR/.test(u)) return 'PNP';
+      if(/INDIG|\bIND\b/.test(u)) return 'INDIGENA';
+      if(/QUIL/.test(u)) return 'QUILOMBOLA';
+      if(/TRANS/.test(u)) return 'TRANS';
+      if(/\bFEM/.test(u)) return 'FEMININO';
+      if(/AMPLA/.test(u)) return 'AMPLA';
+      return null;
+    }
+    // Coluna de classificação SEM reserva no nome (só "CLASS", "CLASS.", "CLASSIFICAÇÃO"...)
+    function ehColunaGenerica(col){
+      const u=String(col).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[\s._\-]/g,'');
+      if(!(u.includes('CLASS')||u.includes('CASS'))) return false;
+      return !/PCD|DEFIC|AFIRMATIV|PNP|NEGR|INDIG|IND$|QUIL|TRANS|FEM|AMPL|CARGO|GERAL/.test(u);
+    }
+    const classeValida=v=>{ const t=(v==null?'':v).toString().trim(); return t!==''&&t!=='-'&&t!=='nan'; };
+
     // ── Ler CF: todas as abas, header na linha 2 ──────────────────
     let cfTodos=[];
     for(const nome of _homolCF.SheetNames){
@@ -6280,6 +6303,7 @@ function processarHomologacao(){
           const kn=k.replace(/\n/g,' ').trim();
           if(kn!==k){r[kn]=r[k];delete r[k];}
         });
+        r._aba_reserva=reservaDoNomeDaAba(nome);
       });
       cfTodos=cfTodos.concat(rows);
     }
@@ -6351,6 +6375,13 @@ function processarHomologacao(){
         reservasDetectadas.push({col:colsPorReserva[reserva],aba:reserva});
       }
     });
+    // Reservas que só aparecem pelo nome da aba (coluna genérica "CLASS"/"CLASS.")
+    const reservasDeAba=new Set();
+    cfTodos.forEach(r=>{
+      if(r._aba_reserva && Object.keys(r).some(k=>ehColunaGenerica(k)&&classeValida(r[k]))) reservasDeAba.add(r._aba_reserva);
+    });
+    reservasDeAba.forEach(res=>{ if(!reservasDetectadas.some(x=>x.aba===res)) reservasDetectadas.push({col:null,aba:res}); });
+    reservasDetectadas.sort((a,b)=>ordemPrioridade.indexOf(a.aba)-ordemPrioridade.indexOf(b.aba));
 
     // ── Montar registros ──────────────────────────────────────────
     const cfComDados=cfTodos.map(cf=>{
@@ -6361,10 +6392,17 @@ function processarHomologacao(){
       const codNum=parseInt(cod)||9999;
       // Guardar classificação por reserva
       const classes={};
+      const reservaAba=cf._aba_reserva||null;
       reservasDetectadas.forEach(({col,aba})=>{
+        if(!col) return;                                    // reserva vinda só do nome da aba
+        if(reservaAba && ehColunaGenerica(col)) return;     // coluna genérica: vale a reserva da aba (abaixo)
         const v=(cf[col]||'').toString().trim();
         if(v&&v!=='-'&&v!=='nan') classes[aba]=parseInt(v.replace(/\D/g,''))||9999;
       });
+      if(reservaAba && classes[reservaAba]===undefined){
+        const kg=Object.keys(cf).find(k=>ehColunaGenerica(k)&&classeValida(cf[k]));
+        if(kg) classes[reservaAba]=parseInt(cf[kg].toString().replace(/\D/g,''))||9999;
+      }
       return {_classes:classes,_codNum:codNum,_cargo:cargo,_insc:insc,_dados:dados};
     });
 
@@ -6412,7 +6450,7 @@ function processarHomologacao(){
             'DATA INSCRIÇÃO':16,'DATA REALIZAÇÃO PROVA':18,'ESCOLA':35,'SALA':10};
 
           // Linha 1: título do concurso
-          const nomeConcurso=(cfTodos[0]?.['CONCURSO']||dadosTodos[0]?.['CONCURSO']||'CONCURSO').toString().trim();
+          const nomeConcurso=(candidatos.find(r=>r._dados['CONCURSO'])?._dados['CONCURSO']||cfTodos[0]?.['CONCURSO']||dadosTodos[0]?.['CONCURSO']||'CONCURSO').toString().trim();
           ws.mergeCells(1,1,1,colsSaida.length);
           const tCell=ws.getCell(1,1);
           tCell.value=`${nomeConcurso}\n\nCLASSIFICAÇÃO PRELIMINAR - ${aba}`;
@@ -6445,7 +6483,8 @@ function processarHomologacao(){
               let val=col==='CLASS.'?row['CLASS.']:(row._dados[col]??'');
               if(val===undefined||val===null||String(val)==='nan') val='';
               if(col.includes('NASC')&&val){
-                try{const d=new Date(val);if(!isNaN(d.getTime())) val=`${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;}catch(e){}
+                // Texto "dd/mm/aaaa" fica como veio: new Date("05/01/1995") lê como MM/DD e trocaria dia e mês.
+                if(val instanceof Date&&!isNaN(val.getTime())) val=`${String(val.getDate()).padStart(2,'0')}/${String(val.getMonth()+1).padStart(2,'0')}/${val.getFullYear()}`;
               }
               c.value=col==='CLASS.'?(parseInt(val)||''):String(val);
               c.font={name:FONTE,size:9};
