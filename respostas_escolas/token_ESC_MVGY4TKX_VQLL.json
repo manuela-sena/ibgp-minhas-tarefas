@@ -1,11 +1,222 @@
 {
   "token": "ESC_MVGY4TKX_VQLL",
-  "criadoEm": "2026-10-20T17:17:33.249Z",
+  "enviadoEm": "2026-10-23T16:45:19.456Z",
+  "protocolo": "ESC_MVGY4TKX_VQLL_1792773919456",
   "concurso": {
     "concurso": "COROMANDEL - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
     "municipio": "COROMANDEL/MG",
     "dataProva": "01/11/2026",
     "escola": "EE. JOAQUIM BOTELHO",
     "idEscola": "ESC_MVGY4TKX_VQLL"
-  }
+  },
+  "instituicao": {
+    "nome": "EE. JOAQUIM BOTELHO",
+    "cnpj": "19.924.844/0001-57",
+    "razao": "CAIXA ESCOLAR JOAQUIM BOTELHO",
+    "endereco": "RUA LAÉRCIO MENDES DE SAIRRE",
+    "numero": "646",
+    "complemento": "",
+    "bairro": "CENTRO",
+    "cidade": "COROMANDEL",
+    "uf": "MG",
+    "cep": "38550-018",
+    "responsavel": {
+      "nome": "EDNEY WILLIAN DE MIRANDA",
+      "cargo": "DIRETOR",
+      "email": "escola.200395@educacao.mg.gov.br",
+      "tel": "(34) 99121-9665"
+    },
+    "diretor": {
+      "nome": "EDNEY WILLIAN DE MIRANDA",
+      "email": "edney.miranda@educacao.mg.gov.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "4",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "4",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "1",
+      "andar": "TÉRREO",
+      "sala": "SALA 09",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "2",
+      "andar": "TÉRRO",
+      "sala": "SALA 20",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "1º PAVIMENTO",
+      "sala": "SALA 10",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "1º PAVIMENTO",
+      "sala": "SALA 11",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "1º PAVIMENTO",
+      "sala": "SALA 12",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "1º PAVIMENTO",
+      "sala": "SALA 13",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "1º PAVIMENTO",
+      "sala": "SALA 14",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "1º PAVIMENTO",
+      "sala": "SALA 15",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "1º PAVIMENTO",
+      "sala": "SALA 16",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "2",
+      "andar": "1º PAVIMENTO",
+      "sala": "SALA 21",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "2",
+      "andar": "1º PAVIMENTO",
+      "sala": "SALA 22",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "2",
+      "andar": "1º PAVIMENTO",
+      "sala": "SALA 23",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "2",
+      "andar": "1º PAVIMENTO",
+      "sala": "SALA 24",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "2",
+      "andar": "1º PAVIMENTO",
+      "sala": "SALA 25",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "2",
+      "andar": "1º PAVIMENTO",
+      "sala": "SALA 26",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "2",
+      "andar": "1º PAVIMENTO",
+      "sala": "SALA 27",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    }
+  ]
 }
