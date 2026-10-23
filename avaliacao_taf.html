@@ -121,6 +121,99 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   .success-icon { width: 64px; height: 64px; border-radius: 50%; background: var(--verde); color: #fff; font-size: 30px;
     display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+
+  /* ══════════════════════════════════════════════════════════════════
+     TABLET — avaliadores usam o formulário em tablet, em pé, muitas vezes de luva ou com pressa:
+     elementos maiores para toque e, em tela larga, duas colunas (cronômetro e resultado ficam
+     visíveis sem rolar). Celular (< 700px) continua exatamente como antes.
+     ══════════════════════════════════════════════════════════════════ */
+  .tab-cols { display: block; }
+  .tab-col { min-width: 0; }
+  button, .radio-opt, .valor-opt, .volta-tap, .foto-btn, .search-item { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .radio-opt, .valor-opt, .volta-tap, .volta-corrigir, .btn { user-select: none; -webkit-user-select: none; }
+  #card-crono-grupo, #card-cronometro, #card-avaliacao, #card-voltas { scroll-margin-top: 84px; }
+
+  @media (min-width: 700px) {
+    body { font-size: 17px; }
+    .header-inner { max-width: 1240px; padding: 16px 28px; gap: 18px; }
+    .header-logo { height: 40px; }
+    .header-title { font-size: 20px; }
+    .header-sub { font-size: 14px; margin-top: 2px; }
+    .container { max-width: 860px; padding: 28px 24px 110px; }
+    .card { border-radius: 16px; margin-bottom: 24px; }
+    .card-header { padding: 20px 28px 14px; }
+    .card-title { font-size: 19px; }
+    .card-sub { font-size: 14.5px; margin-top: 4px; }
+    .card-body { padding: 24px 28px; }
+    .form-group { gap: 8px; margin-bottom: 22px; }
+    label { font-size: 15.5px; }
+    select, input[type=text], input[type=number], textarea { font-size: 18px; padding: 0 18px; min-height: 60px; border-radius: 12px; }
+    textarea { padding: 14px 18px; min-height: 96px; }
+    .radio-row { gap: 14px; }
+    .radio-opt { min-height: 72px; padding: 14px; font-size: 19px; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
+    .valor-grid { gap: 14px; }
+    .valor-opt { min-height: 64px; padding: 14px 18px; font-size: 17.5px; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
+    .valor-grid.vazio { font-size: 16px; }
+    .foto-btn { padding: 46px 20px; font-size: 19px; border-radius: 14px; }
+    .foto-preview-wrap img { max-height: 340px; border-radius: 12px; }
+    .btn { min-height: 66px; padding: 18px 26px; font-size: 19px; border-radius: 14px; }
+    .foto-preview-wrap .btn-secondary, #rascunho-banner button { padding: 15px 26px !important; font-size: 17px !important; min-height: 56px; border-radius: 12px; }
+    .search-results { max-height: 430px; border-radius: 12px; }
+    .search-item { padding: 17px 18px; font-size: 18px; min-height: 60px; display: flex; align-items: center; }
+    .chip-candidato { padding: 16px 18px; border-radius: 12px; }
+    .chip-candidato .nome { font-size: 19px; }
+    .chip-candidato .insc { font-size: 14.5px; margin-top: 3px; }
+    .chip-candidato button { font-size: 17px; padding: 14px 16px; min-height: 52px; }
+    .alert { font-size: 16px; padding: 16px 18px; border-radius: 12px; }
+    .preview-pontos { font-size: 22px; padding: 20px; border-radius: 12px; }
+    .crono-display { font-size: 76px; padding: 26px 18px; margin-bottom: 18px; border-radius: 14px; }
+    .crono-horarios { font-size: 15.5px; margin-bottom: 18px; }
+    .crono-horarios b { font-size: 24px; }
+    /* corrida em grupo */
+    .voltas-grid { grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 12px; }
+    .volta-card { border-radius: 14px; }
+    /* cartão baixo: nº do candidato à esquerda, contagem grande à direita (cabe mais cartões na tela) */
+    .volta-tap { padding: 10px 8px; display: flex; align-items: center; justify-content: space-between; gap: 4px; min-height: 76px; }
+    .volta-tap .num { font-size: 19px; white-space: nowrap; }
+    .volta-tap .contagem { font-size: 11px; margin-top: 0; text-align: right; line-height: 1.1; white-space: nowrap; }
+    .volta-tap .contagem b { display: block; font-size: 30px; line-height: 1; margin-top: 2px; }
+    .volta-corrigir { padding: 14px 4px; font-size: 16px; }
+    #lista-grupo { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 10px; }
+    .grupo-item { padding: 12px 16px; border-radius: 12px; min-height: 60px; margin-bottom: 0; }
+    .grupo-item .info { font-size: 17px; }
+    .grupo-item .info .s { font-size: 14px; }
+    .grupo-item button { font-size: 16px; padding: 12px 14px; min-height: 48px; }
+    #add-grupo-form { padding: 18px !important; border-radius: 12px !important; }
+    #add-grupo-nome { font-size: 18px; }
+    #add-grupo-numero { width: 130px !important; }
+    #add-grupo-form .btn { padding: 16px !important; min-height: 60px; font-size: 18px; }
+    .posicao-candidato { margin-bottom: 24px; padding-bottom: 22px; }
+    .posicao-candidato .titulo { font-size: 18px; margin-bottom: 12px; }
+    /* cronômetro da corrida compacto: relógio e botão na mesma linha (quando a coluna comporta) */
+    #card-crono-grupo .card-body { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding-top: 20px; padding-bottom: 20px; }
+    #card-crono-grupo .crono-display { flex: 1 1 270px; margin-bottom: 0; font-size: 54px; padding: 14px 10px; }
+    #card-crono-grupo .crono-horarios { flex: 1 1 100%; margin: 0; order: 3; }
+    #card-crono-grupo .btn { flex: 0 0 230px; width: auto; }
+    /* cronômetro individual compacto também */
+    #card-cronometro .card-body { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding-top: 20px; padding-bottom: 20px; }
+    #card-cronometro .crono-display { flex: 1 1 270px; margin-bottom: 0; font-size: 54px; padding: 14px 10px; }
+    #card-cronometro .crono-horarios { flex: 1 1 100%; margin: 0; order: 3; }
+    #card-cronometro .btn { flex: 0 0 230px; width: auto; }
+    .card-ident .card-body { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .card-ident .form-group { margin-bottom: 0 !important; }
+    #page-success { text-align: center; }
+  }
+
+  /* Tablet deitado / tela larga: duas colunas */
+  @media (min-width: 960px) {
+    .container { max-width: 1240px; }
+    .tab-cols { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 6fr); gap: 26px; align-items: start; }
+    .tab-col > .card:last-child, .tab-col > .btn:last-child { margin-bottom: 0; }
+    #page-success { max-width: 720px; margin-left: auto; margin-right: auto; }
+    /* o botão de enviar só aparece quando a avaliação (ou o cronômetro do grupo) já está na tela */
+    .tab-col:has(#card-avaliacao[style*="none"]) > #btn-enviar,
+    .tab-col:has(#card-crono-grupo[style*="none"]) > #btn-enviar-grupo { display: none; }
+  }
 </style>
 </head>
 <body>
@@ -160,7 +253,7 @@
       </div>
     </div>
 
-    <div class="card">
+    <div class="card card-ident">
       <div class="card-header">
         <div class="card-title">1. Quem está avaliando</div>
       </div>
@@ -182,6 +275,7 @@
     </div>
 
     <div id="fluxo-individual">
+    <div class="tab-cols"><div class="tab-col">
     <div class="card">
       <div class="card-header">
         <div class="card-title">2. Candidato(a)</div>
@@ -224,6 +318,7 @@
       </div>
     </div>
 
+    </div><div class="tab-col">
     <div class="card" id="card-cronometro" style="display:none">
       <div class="card-header">
         <div class="card-title">4. Cronômetro</div>
@@ -267,9 +362,11 @@
 
     <div id="alert-envio" style="display:none"></div>
     <button class="btn btn-primary" id="btn-enviar" onclick="enviarAvaliacao()" disabled>Confirmar e enviar</button>
+    </div></div>
     </div>
 
     <div id="fluxo-corrida-grupo" style="display:none">
+      <div class="tab-cols"><div class="tab-col">
       <div class="card">
         <div class="card-header">
           <div class="card-title">2. Configuração da pista</div>
@@ -330,6 +427,7 @@
         </div>
       </div>
 
+      </div><div class="tab-col">
       <div class="card" id="card-crono-grupo" style="display:none">
         <div class="card-header">
           <div class="card-title">5. Cronômetro da corrida</div>
@@ -366,6 +464,7 @@
 
       <div id="alert-envio-grupo" style="display:none"></div>
       <button class="btn btn-primary" id="btn-enviar-grupo" onclick="enviarAvaliacaoGrupo()" disabled>Confirmar e enviar resultados do grupo</button>
+      </div></div>
     </div>
 
   </div>
@@ -673,6 +772,9 @@ function finalizarCronometro(){
   document.getElementById('crono-hora-inicio').textContent = fmtHora(CRONO_INICIO);
   document.getElementById('crono-hora-fim').textContent = fmtHora(CRONO_FIM);
   atualizarBotaoEnviar();
+  // leva a tela até a avaliação (sexo e resultado) logo depois de finalizar
+  const ca = document.getElementById('card-avaliacao');
+  if(ca) ca.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 function resetarCronometro(){
@@ -1185,6 +1287,7 @@ function iniciarCronometroGrupo(){
   document.getElementById('btn-crono-grupo-finalizar').style.display = 'block';
   document.getElementById('card-voltas').style.display = 'block';
   renderGridVoltas();
+  document.getElementById('card-crono-grupo').scrollIntoView({behavior:'smooth',block:'start'});   // cronômetro + voltas na tela
   if(CRONO_GRUPO_TIMER) clearInterval(CRONO_GRUPO_TIMER);
   CRONO_GRUPO_TIMER = setInterval(atualizarCronoGrupoDisplay, 250);
   atualizarCronoGrupoDisplay();
