@@ -1,11 +1,282 @@
 {
   "token": "ESC_MVPN5XNM_9AJ6",
-  "criadoEm": "2026-10-26T19:20:24.994Z",
+  "enviadoEm": "2026-10-26T19:40:53.491Z",
+  "protocolo": "ESC_MVPN5XNM_9AJ6_1793043653491",
   "concurso": {
     "concurso": "HECI RESIDENCIA MÉDICA - EDITAL Nº 04/2026",
     "municipio": "CACHOEIRO DE ITAPEMIRIM/ES",
     "dataProva": "02/11/2026",
     "escola": "FACULDADE MULTIVIX - CACHOEIRO DE ITAPEMIRIM",
     "idEscola": "ESC_MVPN5XNM_9AJ6"
-  }
+  },
+  "instituicao": {
+    "nome": "FACULDADE MULTIVIX - CACHOEIRO DE ITAPEMIRIM",
+    "cnpj": "",
+    "razao": "",
+    "endereco": "BR-482",
+    "numero": "1636",
+    "complemento": "",
+    "bairro": "ALVARO TAVARES (UNIÃO)",
+    "cidade": "CACHOEIRO DE ITAPEMIRIM",
+    "uf": "ES",
+    "cep": "",
+    "responsavel": {
+      "nome": "ANDRESSA B. IGNES",
+      "cargo": "",
+      "email": "andressaborsoi@hotmail.com",
+      "tel": "(28) 99886-5482"
+    },
+    "diretor": {
+      "nome": "",
+      "email": ""
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": false,
+      "universitaria": true,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": false,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": false
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "0",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "0",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "BLOCO I",
+      "andar": "1º ANDAR",
+      "sala": "SALA 101",
+      "capacidade": 95,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO I",
+      "andar": "1º ANDAR",
+      "sala": "SALA 103",
+      "capacidade": 77,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO I",
+      "andar": "1º ANDAR",
+      "sala": "SALA 105",
+      "capacidade": 80,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO I",
+      "andar": "1º ANDAR",
+      "sala": "SALA 106",
+      "capacidade": 90,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO I",
+      "andar": "1º ANDAR",
+      "sala": "SALA 107",
+      "capacidade": 90,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO I",
+      "andar": "1º ANDAR",
+      "sala": "SALA 109",
+      "capacidade": 68,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO I",
+      "andar": "1º ANDAR",
+      "sala": "SALA 111",
+      "capacidade": 90,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO I",
+      "andar": "1º ANDAR",
+      "sala": "SALA 112",
+      "capacidade": 90,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO I",
+      "andar": "1º ANDAR",
+      "sala": "SALA 113",
+      "capacidade": 90,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO I",
+      "andar": "1º ANDAR",
+      "sala": "SALA 114",
+      "capacidade": 110,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO I",
+      "andar": "2º ANDAR",
+      "sala": "SALA 201",
+      "capacidade": 95,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO I",
+      "andar": "2º ANDAR",
+      "sala": "SALA 202",
+      "capacidade": 112,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO I",
+      "andar": "2º ANDAR",
+      "sala": "SALA 204",
+      "capacidade": 90,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO I",
+      "andar": "2º ANDAR",
+      "sala": "SALA 205",
+      "capacidade": 88,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO I",
+      "andar": "2º ANDAR",
+      "sala": "SALA 206",
+      "capacidade": 95,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO I",
+      "andar": "2º ANDAR",
+      "sala": "SALA 208",
+      "capacidade": 85,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO I",
+      "andar": "3º ANDAR",
+      "sala": "SALA 301",
+      "capacidade": 100,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO I",
+      "andar": "3º ANDAR",
+      "sala": "SALA 302",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO I",
+      "andar": "3º ANDAR",
+      "sala": "SALA 303/304",
+      "capacidade": 135,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO I",
+      "andar": "3º ANDAR",
+      "sala": "SALA 305",
+      "capacidade": 80,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO I",
+      "andar": "3º ANDAR",
+      "sala": "SALA 306",
+      "capacidade": 90,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BLOCO I",
+      "andar": "3º ANDAR",
+      "sala": "SALA 307",
+      "capacidade": 95,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    }
+  ]
 }
