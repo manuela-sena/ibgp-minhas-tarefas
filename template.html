@@ -5490,7 +5490,7 @@ function atualizarResumoProcessos(){
     : 'Nenhum processo selecionado.';
   const prev=document.getElementById('insc-preview-content');
   if(prev) prev.innerHTML=sel.length
-    ? `<div style="font-size:13px;color:#2e7d52;font-weight:500">✅ ${sel.length>1?'Processos selecionados':'Processo selecionado'}. Configure os conjuntos se necessário e clique em <strong>Processar e baixar</strong>.${sel.length>1?' Cada processo é processado separadamente e as planilhas saem juntas em um .zip.':''}</div>`
+    ? `<div style="font-size:13px;color:#2e7d52;font-weight:500">✅ ${sel.length>1?'Processos selecionados':'Processo selecionado'}. Configure os conjuntos se necessário e clique em <strong>Processar e baixar</strong>.${sel.length>1?' Os editais marcados são processados juntos: cancelamentos e retiradas consideram todos eles. A ALOCAÇÃO sai em um arquivo só e o RESULTADO sai um por edital (em um .zip).':''}</div>`
     : `<div style="font-size:13px;color:#41506b">Selecione o processo acima antes de processar.</div>`;
 }
 
@@ -5519,9 +5519,10 @@ function carregarJSZip(cb){
   s.onload=cb; s.onerror=cb; document.head.appendChild(s);
 }
 
-// Gera as planilhas de UM processo. Com "coletor" (vários processos), os arquivos não são baixados um a um:
-// ficam no coletor e saem juntos em um .zip. Devolve os números do resumo.
-async function _processarInscricoesUm(proc, coletor){
+// Processa os processos (editais) selecionados JUNTOS: o cancelamento por duplicidade e a retirada por "cargos com mesma
+// prova" consideram TODOS os editais. A ALOCAÇÃO sai uma só (todos os editais); o RESULTADO sai um por edital (para publicar).
+// Devolve {resumo, arquivos}; quem baixa é processarInscricoes().
+async function _processarInscricoesUm(procs){
         const STATUS_ATIVOS=['pago','deferida','deferido'];
         let todos=[];
         for(const nome of _inscWorkbook.SheetNames){
@@ -5535,9 +5536,10 @@ async function _processarInscricoesUm(proc, coletor){
         });
         if(!todos.length) throw new Error('Nenhum dado encontrado.');
 
-        if(window._inscColProcesso && proc){
-          todos=todos.filter(r=>(r[window._inscColProcesso]||'').toString().trim()===proc.trim());
-          if(!todos.length) throw new Error(`Nenhum registro para "${proc}".`);
+        if(window._inscColProcesso && procs && procs.length){
+          const setProcs=new Set(procs.map(p=>p.trim()));
+          todos=todos.filter(r=>setProcs.has((r[window._inscColProcesso]||'').toString().trim()));
+          if(!todos.length) throw new Error('Nenhum registro para os processos selecionados.');
         }
 
         const conjuntos=[];
@@ -5547,6 +5549,16 @@ async function _processarInscricoesUm(proc, coletor){
         });
         // Mapa cargo→índice do conjunto declarado (usado como EXCEÇÃO da Regra 1 abaixo,
         // só para os cargos que a própria usuária cadastrar como "mesma prova").
+        // Aviso: o mesmo CÓDIGO de cargo pode existir em editais diferentes; um conjunto com esse código vale para todos eles.
+        const avisosCodigos=[];
+        if(window._inscColProcesso && procs && procs.length>1 && conjuntos.length){
+          const edPorCodigo=new Map();
+          todos.forEach(r=>{ const c=(r['CÓDIGO']||r['CODIGO']||'').toString().trim(); const e=(r[window._inscColProcesso]||'').toString().trim();
+            if(!edPorCodigo.has(c)) edPorCodigo.set(c,new Set()); edPorCodigo.get(c).add(e); });
+          new Set(conjuntos.flat()).forEach(c=>{ const eds=edPorCodigo.get(c); if(eds&&eds.size>1){
+            const nums=[...eds].map(e=>{ const m=e.match(/EDITAL\s*N[º°Oo]?\s*(\d+\s*\/\s*\d{4})/i); return m?m[1].replace(/\s/g,''):e; }).sort();
+            avisosCodigos.push(`O código ${c} existe em mais de um edital selecionado (${nums.join(' e ')}): o conjunto vale para o cargo ${c} de todos eles.`); } });
+        }
         const conjuntoDoCargo=new Map();
         conjuntos.forEach((conj,idx)=>{ conj.forEach(cod=>conjuntoDoCargo.set(cod,idx)); });
 
@@ -5592,7 +5604,7 @@ async function _processarInscricoesUm(proc, coletor){
         todos.forEach(r=>{if(cancelar.has(r['INSCRIÇÃO']?.toString())) r['STATUS']='Cancelada';});
         todos.sort((a,b)=>(a['CARGO']||'').localeCompare(b['CARGO']||'')||((a['INSCRIÇÃO']||0)-(b['INSCRIÇÃO']||0)));
 
-        const nomeConcurso=proc||'CONCURSO';
+        let nomeConcurso='CONCURSO';   // trocado a cada edital na hora de montar o RESULTADO (título das abas)
 
         function fmtData(v){
           if(!v||v==='-') return '-';
@@ -5752,8 +5764,7 @@ async function _processarInscricoesUm(proc, coletor){
           ws.views=[{state:'frozen',xSplit:0,ySplit:1}];
         }
 
-        // ── PLANILHA RESULTADO ─────────────────────────────────────────
-        const wbRes=new ExcelJS.Workbook();
+        // ── PLANILHA RESULTADO (uma por edital — é o arquivo de publicação) ─────────────
 
         const COLS_AMPLA=['INSCRIÇÃO','CANDIDATO','CPF','DATA DE NASCIMENTO','CARGO',
           'STATUS DE PAGAMENTO','CONCORRE VAGA DEFICIÊNCIA','DEFICIÊNCIA',
@@ -5774,6 +5785,8 @@ async function _processarInscricoesUm(proc, coletor){
           return o;
         }
 
+        async function gerarResultadoDe(todos){   // 'todos' aqui = só as inscrições de UM edital (já com cancelamentos de todos os editais)
+        const wbRes=new ExcelJS.Workbook();
         await criarAbaExcel(wbRes,'AMPLA','AMPLA',COLS_AMPLA,todos.map(r=>mapRow(r,COLS_AMPLA)));
 
         // Uma aba por reserva de vaga marcada pelo usuário na tela de upload
@@ -5839,6 +5852,9 @@ async function _processarInscricoesUm(proc, coletor){
           }
         }
 
+        return {wbRes,extrasResumo};
+        }
+
         // ── PLANILHA ALOCAÇÃO ──────────────────────────────────────────
         const wbAloc=new ExcelJS.Workbook();
         // Alocação: pagos/deferidos, sem cancelados e sem retirados
@@ -5857,50 +5873,67 @@ async function _processarInscricoesUm(proc, coletor){
           }
         }
 
-        // Download
-        const nomeArq=(proc||'RESULTADO').replace(/[/\\:*?"<>|]/g,'-').substring(0,50);
-
-        const bufRes=await wbRes.xlsx.writeBuffer();
+        // ── Arquivos ───────────────────────────────────────────────────
+        const colProc=window._inscColProcesso;
+        const editais=(colProc && procs && procs.length>1)?procs:[(procs&&procs[0])||null];
+        const alocSet=new Set(aloc);
         const bufAloc=await wbAloc.xlsx.writeBuffer();
-        if(coletor){
-          // Vários processos: os arquivos vão para o .zip. Os 50 primeiros caracteres do nome podem coincidir
-          // entre editais do mesmo município, então o nome recebe o nº do edital e é garantido único.
-          const m=(proc||'').match(/EDITAL\s*N[º°Oo]?\s*(\d+)\s*\/\s*(\d{4})/i);
-          const tag=m?`ED_${String(m[1]).padStart(2,'0')}_${m[2].slice(2)}`:'';
-          const mun=(typeof _isenMunicipio==='function'?_isenMunicipio(proc||''):'').toUpperCase().replace(/[/\\:*?"<>|]/g,' ').replace(/\s+/g,'_');
-          const nomeBase=(tag&&mun)?`${tag}_-_${mun}`:null;      // ex.: ED_03_26_-_SÃO_JOÃO_DEL-REI
-          const unico=tipo=>{
-            const raiz=nomeBase?`${tipo}_${nomeBase}`:`${tipo}_${nomeArq}${tag?'_-_'+tag:''}`;
-            let n=`${raiz}.xlsx`, k=2; while(coletor.some(a=>a.nome===n)){ n=`${raiz}_${k++}.xlsx`; } return n;
-          };
-          coletor.push({nome:unico('RESULTADO'),buf:bufRes});
-          coletor.push({nome:unico('ALOCACAO'),buf:bufAloc});
-        } else {
-          const blobRes=new Blob([bufRes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-          const aRes=document.createElement('a');
-          aRes.href=URL.createObjectURL(blobRes);
-          aRes.download=`RESULTADO_${nomeArq}.xlsx`;
-          aRes.click();
-
-          await new Promise(r=>setTimeout(r,800));
-
-          const blobAloc=new Blob([bufAloc],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-          const aAloc=document.createElement('a');
-          aAloc.href=URL.createObjectURL(blobAloc);
-          aAloc.download=`ALOCACAO_${nomeArq}.xlsx`;
-          aAloc.click();
+        const porEdital=[], resultados=[];
+        for(const ed of editais){
+          nomeConcurso=ed||'CONCURSO';                       // o título das abas leva o nome do próprio edital
+          const todosEd=(colProc&&ed)?todos.filter(r=>(r[colProc]||'').toString().trim()===ed.trim()):todos;
+          if(!todosEd.length) continue;
+          const {wbRes,extrasResumo}=await gerarResultadoDe(todosEd);
+          resultados.push({ed,buf:await wbRes.xlsx.writeBuffer()});
+          porEdital.push({ed, total:todosEd.length,
+            pagos:todosEd.filter(r=>(r['STATUS']||'').toLowerCase()==='pago').length,
+            deferidos:todosEd.filter(r=>['deferida','deferido'].includes((r['STATUS']||'').toLowerCase())).length,
+            cancelados:todosEd.filter(r=>r['STATUS']==='Cancelada').length,
+            retirados:todosEd.filter(r=>retirar.has(r['INSCRIÇÃO']?.toString())).length,
+            aloc:todosEd.filter(r=>alocSet.has(r)).length, extras:extrasResumo});
         }
-
+        if(!resultados.length) throw new Error('Nenhum registro para os processos selecionados.');
+        let arquivos;
+        if(editais.length===1){
+          const nomeArq=(editais[0]||'RESULTADO').replace(/[/\\:*?"<>|]/g,'-').substring(0,50);
+          arquivos=[{nome:`RESULTADO_${nomeArq}.xlsx`,buf:resultados[0].buf},{nome:`ALOCACAO_${nomeArq}.xlsx`,buf:bufAloc}];
+        } else {
+          arquivos=[{nome:`ALOCACAO_${_inscNomeArqVarios(procs)}.xlsx`,buf:bufAloc}];
+          resultados.forEach(x=>{
+            const raiz=`RESULTADO_${_inscNomeArqVarios([x.ed])}`; let n=`${raiz}.xlsx`, k=2;
+            while(arquivos.some(a=>a.nome===n)){ n=`${raiz}_${k++}.xlsx`; }
+            arquivos.push({nome:n,buf:x.buf});
+          });
+        }
         return {
-          proc, total:todos.length,
-          pagos:todos.filter(r=>(r['STATUS']||'').toLowerCase()==='pago').length,
-          deferidos:todos.filter(r=>['deferida','deferido'].includes((r['STATUS']||'').toLowerCase())).length,
-          cancelados:todos.filter(r=>r['STATUS']==='Cancelada').length,
-          retirados:retirar.size, aloc:aloc.length, extras:extrasResumo
+          resumo:{ total:todos.length,
+            pagos:todos.filter(r=>(r['STATUS']||'').toLowerCase()==='pago').length,
+            deferidos:todos.filter(r=>['deferida','deferido'].includes((r['STATUS']||'').toLowerCase())).length,
+            cancelados:todos.filter(r=>r['STATUS']==='Cancelada').length, retirados:retirar.size, aloc:aloc.length,
+            extras:porEdital.length===1?porEdital[0].extras:[], porEdital, avisos:avisosCodigos },
+          arquivos
         };
 }
 
-// Caixas de resumo de um processo (mesmo visual de antes)
+// Nome curto do(s) edital(is) para nomear arquivos: ED_03_26_-_SÃO_JOÃO_DEL-REI  /  ED_01_02_03_04_05_26_-_SÃO_JOÃO_DEL-REI
+function _inscNomeArqVarios(procs){
+  const tags=procs.map(p=>{ const m=p.match(/EDITAL\s*N[º°Oo]?\s*(\d+)\s*\/\s*(\d{4})/i); return m?{n:String(parseInt(m[1],10)).padStart(2,'0'),ano:m[2]}:null; });
+  const muns=new Set(procs.map(p=>typeof _isenMunicipio==='function'?_isenMunicipio(p):'').filter(Boolean));
+  const mun=muns.size===1?[...muns][0].toUpperCase().replace(/[/\\:*?"<>|]/g,' ').replace(/\s+/g,'_'):'';
+  let ed;
+  if(tags.every(Boolean)){
+    tags.sort((a,b)=>(a.ano-b.ano)||(a.n-b.n)); const anos=new Set(tags.map(t=>t.ano));
+    ed=anos.size===1?`ED_${tags.map(t=>t.n).join('_')}_${[...anos][0].slice(2)}`:'ED_'+tags.map(t=>`${t.n}_${t.ano.slice(2)}`).join('_');
+  } else ed=procs.length===1?procs[0].replace(/[/\\:*?"<>|]/g,'-').substring(0,40):`${procs.length}_EDITAIS`;
+  return ed+(mun?'_-_'+mun:'');
+}
+function _inscNomeZip(procs){
+  const muns=new Set(procs.map(p=>typeof _isenMunicipio==='function'?_isenMunicipio(p):'').filter(Boolean));
+  const mun=muns.size===1?[...muns][0].toUpperCase().replace(/[/\\:*?"<>|]/g,' ').replace(/\s+/g,'_'):'';
+  return `INSCRICOES_${procs.length}_EDITAIS${mun?'_-_'+mun:''}.zip`;
+}
+
+// Caixas de resumo (mesmo visual de antes)
 function _caixasResumoInsc(r){
   return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:12px">
   ${[['Total',r.total,'#41506b'],['Pagos',r.pagos,'#2e7d52'],['Deferidos',r.deferidos,'#2f6cc4'],['Cancelados',r.cancelados,'#c0322f'],['Retirados',r.retirados,'#a06c12'],['Alocação',r.aloc,'#7b34c1'],...r.extras].map(([l,v,c])=>`
@@ -5910,17 +5943,23 @@ function _caixasResumoInsc(r){
   </div>`).join('')}
 </div>`;
 }
-function _inscNomeZip(procs){
-  const muns=new Set(procs.map(p=>typeof _isenMunicipio==='function'?_isenMunicipio(p):'').filter(Boolean));
-  const mun=muns.size===1?[...muns][0].toUpperCase().replace(/[/\\:*?"<>|]/g,' ').replace(/\s+/g,'_'):'';
-  return `INSCRICOES_${procs.length}_EDITAIS${mun?'_-_'+mun:''}.zip`;
+function _tabelaPorEditalInsc(r){
+  if(!r.porEdital||r.porEdital.length<2) return '';
+  const td='padding:6px 8px;text-align:right', th='padding:6px 8px;text-align:right';
+  return `<div style="font-size:12.5px;font-weight:700;color:#1f2a3d;margin:4px 0 8px">Por edital <span style="font-weight:400;color:#8a9ab5">(os cancelamentos e retiradas consideram todos os editais juntos)</span></div>
+<table style="width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:12px">
+  <thead><tr style="border-bottom:1.5px solid #e2e7ef;color:#8a9ab5;font-size:11.5px;text-align:left">
+    <th style="padding:6px 8px">Edital</th><th style="${th}">Total</th><th style="${th}">Pagos</th><th style="${th}">Deferidos</th><th style="${th}">Cancelados</th><th style="${th}">Retirados</th><th style="${th}">Na alocação</th><th style="padding:6px 8px">Reservas / extras</th>
+  </tr></thead>
+  <tbody>${r.porEdital.map(e=>`<tr style="border-bottom:1px solid #f0f3f7"><td style="padding:6px 8px">${e.ed}</td><td style="${td}">${e.total}</td><td style="${td}">${e.pagos}</td><td style="${td}">${e.deferidos}</td><td style="${td}">${e.cancelados}</td><td style="${td}">${e.retirados}</td><td style="${td}">${e.aloc}</td><td style="padding:6px 8px;color:#41506b">${e.extras.map(([l,v])=>`${l.split(' (')[0]} ${v}`).join(' · ')||'—'}</td></tr>`).join('')}</tbody>
+</table>`;
 }
 
-// Processa um ou mais processos (editais). Cada um é processado SEPARADAMENTE — as regras de duplicidade de CPF
-// e de "cargos com mesma prova" nunca misturam editais diferentes. Com 2+ processos, as planilhas saem em um .zip.
+// Processa o(s) edital(is) marcado(s) e baixa: 1 edital = RESULTADO + ALOCACAO (como sempre); 2+ = um .zip com a ALOCAÇÃO única
+// (todos os editais) e um RESULTADO por edital.
 function processarInscricoes(){
   if(!_inscWorkbook){alert('Carregue o arquivo primeiro.');return;}
-  let procs=[null];
+  let procs=null;
   if(window._inscColProcesso){
     procs=(window._inscProcessos||[]).filter(p=>window._inscProcessosSel&&window._inscProcessosSel.has(p));
     if(!procs.length){alert('Selecione ao menos um processo antes de processar.');return;}
@@ -5928,41 +5967,34 @@ function processarInscricoes(){
   const btn=event?.target;
   if(btn){btn.disabled=true;btn.textContent='Processando...';}
   const prev=document.getElementById('insc-preview-content');
+  const baixar=(arq)=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([arq.buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})); a.download=arq.nome; a.click(); };
 
   carregarSheetJS(()=>{
     carregarExcelJS(async()=>{
-      const resumos=[], erros=[], coletor=procs.length>1?[]:null;
-      for(let i=0;i<procs.length;i++){
-        if(btn&&procs.length>1) btn.textContent=`Processando ${i+1} de ${procs.length}...`;
-        try{ resumos.push(await _processarInscricoesUm(procs[i],coletor)); }
-        catch(e){ console.error(e); erros.push({proc:procs[i],msg:e.message}); }
-      }
-      let saida='';
-      if(coletor && coletor.length){
-        try{
-          await new Promise(res=>carregarJSZip(res));
-          const zip=new JSZip(); coletor.forEach(a=>zip.file(a.nome,a.buf));
-          const blob=await zip.generateAsync({type:'blob',compression:'DEFLATE'});
-          saida=_inscNomeZip(resumos.map(r=>r.proc));
-          const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=saida; a.click();
-        }catch(e){
-          // sem o .zip (biblioteca indisponível): baixa os arquivos um a um
-          console.error(e); saida='arquivos separados';
-          for(const arq of coletor){
-            const a=document.createElement('a');
-            a.href=URL.createObjectURL(new Blob([arq.buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
-            a.download=arq.nome; a.click(); await new Promise(r=>setTimeout(r,800));
+      try{
+        const {resumo,arquivos}=await _processarInscricoesUm(procs);
+        let msg;
+        if(arquivos.length===2){                                       // um edital: baixa os dois arquivos, como sempre
+          baixar(arquivos[0]); await new Promise(r=>setTimeout(r,800)); baixar(arquivos[1]);
+          msg='✅ Planilhas geradas e baixadas!';
+        } else {
+          let saida;
+          try{
+            await new Promise(res=>carregarJSZip(res));
+            const zip=new JSZip(); arquivos.forEach(a=>zip.file(a.nome,a.buf));
+            const blob=await zip.generateAsync({type:'blob',compression:'DEFLATE'});
+            saida=_inscNomeZip(procs);
+            const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=saida; a.click();
+          }catch(e){                                                   // sem o .zip (biblioteca indisponível): baixa um a um
+            console.error(e); saida='arquivos separados';
+            for(const arq of arquivos){ baixar(arq); await new Promise(r=>setTimeout(r,800)); }
           }
+          msg=`✅ Gerados em <strong>${saida}</strong>: 1 ALOCAÇÃO com todos os editais + ${arquivos.length-1} RESULTADOS (um por edital).`;
         }
-      }
-      const erroHtml=erros.map(e=>`<div style="color:#c0322f;font-size:12.5px;margin-top:8px">⚠️ ${e.proc?e.proc+': ':''}${e.msg}</div>`).join('');
-      if(resumos.length===1 && !coletor){
-        prev.innerHTML=_caixasResumoInsc(resumos[0])+`<div style="font-size:13px;color:#2e7d52;font-weight:600">✅ Planilhas geradas e baixadas!</div>`+erroHtml;
-      } else if(resumos.length){
-        prev.innerHTML=resumos.map(r=>`<div style="font-size:12.5px;font-weight:700;color:#1f2a3d;margin:12px 0 6px">${r.proc}</div>`+_caixasResumoInsc(r)).join('')
-          +`<div style="font-size:13px;color:#2e7d52;font-weight:600">✅ ${resumos.length} processo(s) processado(s) — ${coletor.length} planilhas em <strong>${saida}</strong></div>`+erroHtml;
-      } else {
-        prev.innerHTML=erroHtml||'<div style="color:#c0322f">Nada foi gerado.</div>';
+        const avisos=(resumo.avisos||[]).map(a=>`<div style="margin-top:8px;font-size:12.5px;color:#a06c12">⚠️ ${a}</div>`).join('');
+        prev.innerHTML=_caixasResumoInsc(resumo)+_tabelaPorEditalInsc(resumo)+`<div style="font-size:13px;color:#2e7d52;font-weight:600">${msg}</div>`+avisos;
+      }catch(e){
+        prev.innerHTML=`<div style="color:#c0322f">Erro: ${e.message}</div>`; console.error(e);
       }
       if(btn){btn.disabled=false;btn.textContent='⚙️ Processar e baixar';}
     });
