@@ -5373,26 +5373,34 @@ function carregarArquivoInscricoes(input){
           wrapConj.parentElement.insertBefore(selWrap, wrapConj);
         }
         selWrap.style.display='block';
+        // Quantidade de registros por processo (aparece ao lado de cada um na lista)
+        const contagem={};
+        todos.forEach(r=>{ const p=(r[colProcesso]||'').toString().trim(); if(p) contagem[p]=(contagem[p]||0)+1; });
+        window._inscContagem=contagem;
         selWrap.innerHTML=`
 <div style="font-size:13px;font-weight:600;color:#1f2a3d;margin-bottom:12px">
-  Selecione o processo a processar
-  <span style="font-size:11px;color:#8a9ab5;font-weight:400">(coluna: ${colProcesso})</span>
+  Selecione os processos a processar
+  <span style="font-size:11px;color:#8a9ab5;font-weight:400">(pode marcar mais de um — coluna: ${colProcesso})</span>
 </div>
 <div style="margin-bottom:10px">
   <input id="insc-busca-processo" class="form-input" placeholder="Buscar processo..." type="text"
     oninput="filtrarProcessos()" style="margin-bottom:8px">
-  <div id="insc-lista-processos" style="max-height:200px;overflow-y:auto;border:1px solid #e2e7ef;border-radius:8px"></div>
+  <div style="display:flex;gap:8px;margin-bottom:8px">
+    <button class="btn-secondary" style="height:32px;padding:0 12px;font-size:12.5px" onclick="marcarProcessos()">Marcar todos da lista</button>
+    <button class="btn-secondary" style="height:32px;padding:0 12px;font-size:12.5px" onclick="limparProcessos()">Limpar seleção</button>
+  </div>
+  <div id="insc-lista-processos" style="max-height:260px;overflow-y:auto;border:1px solid #e2e7ef;border-radius:8px"></div>
 </div>
 <div id="insc-processo-selecionado" style="font-size:12.5px;color:#8a9ab5">Nenhum processo selecionado.</div>`;
 
         window._inscProcessos=processos;
         window._inscColProcesso=colProcesso;
-        window._inscProcessoAtual=null;
+        window._inscProcessosSel=new Set();
         filtrarProcessos();
       } else {
         // Sem coluna de processo — processa tudo
         window._inscColProcesso=null;
-        window._inscProcessoAtual=null;
+        window._inscProcessosSel=new Set();
         document.getElementById('insc-sel-processo-wrap')?.remove();
       }
 
@@ -5446,22 +5454,44 @@ function filtrarProcessos(){
   const busca=(document.getElementById('insc-busca-processo')?.value||'').toLowerCase();
   const lista=document.getElementById('insc-lista-processos');
   if(!lista||!window._inscProcessos) return;
-  const filtrados=window._inscProcessos.filter(p=>p.toLowerCase().includes(busca));
-  lista.innerHTML=filtrados.map(p=>`
-<div onclick="selecionarProcesso('${p.replace(/'/g,"\\'")}')"
-  style="padding:8px 12px;cursor:pointer;font-size:12.5px;border-bottom:1px solid #f0f3f7;
-  ${p===window._inscProcessoAtual?'background:#e9f1fb;color:#1f4e8c;font-weight:600':'color:#1f2a3d'}">
-  ${p}
-</div>`).join('') || '<div style="padding:8px 12px;color:#8a9ab5;font-size:12.5px">Nenhum resultado</div>';
+  const sel=window._inscProcessosSel||new Set();
+  const itens=window._inscProcessos.map((p,i)=>({p,i})).filter(x=>x.p.toLowerCase().includes(busca));
+  lista.innerHTML=itens.map(({p,i})=>{
+    const m=sel.has(p);
+    return `<label style="display:flex;align-items:flex-start;gap:10px;padding:9px 12px;cursor:pointer;font-size:12.5px;border-bottom:1px solid #f0f3f7;${m?'background:#e9f1fb;color:#1f4e8c;font-weight:600':'color:#1f2a3d'}">
+  <input type="checkbox" ${m?'checked':''} onchange="alternarProcesso(${i},this)" style="margin-top:2px;width:17px;height:17px;flex:none">
+  <span style="flex:1">${p}</span>
+  <span style="flex:none;font-size:11.5px;color:#8a9ab5;font-weight:400">${(window._inscContagem||{})[p]||0} reg.</span>
+</label>`;
+  }).join('') || '<div style="padding:8px 12px;color:#8a9ab5;font-size:12.5px">Nenhum resultado</div>';
 }
 
-function selecionarProcesso(proc){
-  window._inscProcessoAtual=proc;
+function alternarProcesso(i,chk){
+  const p=(window._inscProcessos||[])[i]; if(p===undefined) return;
+  if(chk.checked) window._inscProcessosSel.add(p); else window._inscProcessosSel.delete(p);
+  const lab=chk.closest('label');
+  if(lab){ lab.style.background=chk.checked?'#e9f1fb':''; lab.style.color=chk.checked?'#1f4e8c':'#1f2a3d'; lab.style.fontWeight=chk.checked?'600':''; }
+  atualizarResumoProcessos();
+}
+function marcarProcessos(){   // marca todos os que aparecem na lista (respeita a busca)
+  const busca=(document.getElementById('insc-busca-processo')?.value||'').toLowerCase();
+  (window._inscProcessos||[]).filter(p=>p.toLowerCase().includes(busca)).forEach(p=>window._inscProcessosSel.add(p));
+  filtrarProcessos(); atualizarResumoProcessos();
+}
+function limparProcessos(){
+  window._inscProcessosSel.clear(); filtrarProcessos(); atualizarResumoProcessos();
+}
+function atualizarResumoProcessos(){
+  const sel=(window._inscProcessos||[]).filter(p=>window._inscProcessosSel.has(p));
+  const reg=sel.reduce((a,p)=>a+((window._inscContagem||{})[p]||0),0);
   const el=document.getElementById('insc-processo-selecionado');
-  if(el) el.innerHTML=`✅ Selecionado: <strong style="color:#1f4e8c">${proc}</strong>`;
-  filtrarProcessos();
-  document.getElementById('insc-preview-content').innerHTML=
-    `<div style="font-size:13px;color:#2e7d52;font-weight:500">✅ Processo selecionado. Configure os conjuntos se necessário e clique em <strong>Processar e baixar</strong>.</div>`;
+  if(el) el.innerHTML=sel.length
+    ? `✅ <strong style="color:#1f4e8c">${sel.length}</strong> processo(s) selecionado(s) — ${reg} registros`
+    : 'Nenhum processo selecionado.';
+  const prev=document.getElementById('insc-preview-content');
+  if(prev) prev.innerHTML=sel.length
+    ? `<div style="font-size:13px;color:#2e7d52;font-weight:500">✅ ${sel.length>1?'Processos selecionados':'Processo selecionado'}. Configure os conjuntos se necessário e clique em <strong>Processar e baixar</strong>.${sel.length>1?' Cada processo é processado separadamente e as planilhas saem juntas em um .zip.':''}</div>`
+    : `<div style="font-size:13px;color:#41506b">Selecione o processo acima antes de processar.</div>`;
 }
 
 let _conjuntoCount=0;
@@ -5482,14 +5512,16 @@ function carregarExcelJS(cb){
   s.onload=cb; document.head.appendChild(s);
 }
 
-function processarInscricoes(){
-  if(!_inscWorkbook){alert('Carregue o arquivo primeiro.');return;}
-  const btn=event?.target;
-  if(btn){btn.disabled=true;btn.textContent='Processando...';}
+function carregarJSZip(cb){
+  if(typeof JSZip!=='undefined'){cb();return;}
+  const s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+  s.onload=cb; s.onerror=cb; document.head.appendChild(s);
+}
 
-  carregarSheetJS(()=>{
-    carregarExcelJS(async()=>{
-      try{
+// Gera as planilhas de UM processo. Com "coletor" (vários processos), os arquivos não são baixados um a um:
+// ficam no coletor e saem juntos em um .zip. Devolve os números do resumo.
+async function _processarInscricoesUm(proc, coletor){
         const STATUS_ATIVOS=['pago','deferida','deferido'];
         let todos=[];
         for(const nome of _inscWorkbook.SheetNames){
@@ -5501,13 +5533,11 @@ function processarInscricoes(){
           Object.keys(r).forEach(k=>{const kn=k.replace(/\n/g,' ').replace(/\s+/g,' ').trim();n[kn]=typeof r[k]==='string'?r[k].trim():r[k];});
           return n;
         });
-        if(!todos.length){alert('Nenhum dado encontrado.');if(btn){btn.disabled=false;btn.textContent='⚙️ Processar e baixar';}return;}
+        if(!todos.length) throw new Error('Nenhum dado encontrado.');
 
-        if(window._inscColProcesso && window._inscProcessoAtual){
-          todos=todos.filter(r=>(r[window._inscColProcesso]||'').toString().trim()===window._inscProcessoAtual.trim());
-          if(!todos.length){alert(`Nenhum registro para "${window._inscProcessoAtual}".`);if(btn){btn.disabled=false;btn.textContent='⚙️ Processar e baixar';}return;}
-        } else if(window._inscColProcesso && !window._inscProcessoAtual){
-          alert('Selecione um processo antes de processar.');if(btn){btn.disabled=false;btn.textContent='⚙️ Processar e baixar';}return;
+        if(window._inscColProcesso && proc){
+          todos=todos.filter(r=>(r[window._inscColProcesso]||'').toString().trim()===proc.trim());
+          if(!todos.length) throw new Error(`Nenhum registro para "${proc}".`);
         }
 
         const conjuntos=[];
@@ -5562,7 +5592,7 @@ function processarInscricoes(){
         todos.forEach(r=>{if(cancelar.has(r['INSCRIÇÃO']?.toString())) r['STATUS']='Cancelada';});
         todos.sort((a,b)=>(a['CARGO']||'').localeCompare(b['CARGO']||'')||((a['INSCRIÇÃO']||0)-(b['INSCRIÇÃO']||0)));
 
-        const nomeConcurso=window._inscProcessoAtual||'CONCURSO';
+        const nomeConcurso=proc||'CONCURSO';
 
         function fmtData(v){
           if(!v||v==='-') return '-';
@@ -5828,45 +5858,111 @@ function processarInscricoes(){
         }
 
         // Download
-        const nomeArq=(window._inscProcessoAtual||'RESULTADO').replace(/[/\\:*?"<>|]/g,'-').substring(0,50);
+        const nomeArq=(proc||'RESULTADO').replace(/[/\\:*?"<>|]/g,'-').substring(0,50);
 
         const bufRes=await wbRes.xlsx.writeBuffer();
-        const blobRes=new Blob([bufRes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-        const aRes=document.createElement('a');
-        aRes.href=URL.createObjectURL(blobRes);
-        aRes.download=`RESULTADO_${nomeArq}.xlsx`;
-        aRes.click();
-
-        await new Promise(r=>setTimeout(r,800));
-
         const bufAloc=await wbAloc.xlsx.writeBuffer();
-        const blobAloc=new Blob([bufAloc],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-        const aAloc=document.createElement('a');
-        aAloc.href=URL.createObjectURL(blobAloc);
-        aAloc.download=`ALOCACAO_${nomeArq}.xlsx`;
-        aAloc.click();
+        if(coletor){
+          // Vários processos: os arquivos vão para o .zip. Os 50 primeiros caracteres do nome podem coincidir
+          // entre editais do mesmo município, então o nome recebe o nº do edital e é garantido único.
+          const m=(proc||'').match(/EDITAL\s*N[º°Oo]?\s*(\d+)\s*\/\s*(\d{4})/i);
+          const tag=m?`ED_${String(m[1]).padStart(2,'0')}_${m[2].slice(2)}`:'';
+          const mun=(typeof _isenMunicipio==='function'?_isenMunicipio(proc||''):'').toUpperCase().replace(/[/\\:*?"<>|]/g,' ').replace(/\s+/g,'_');
+          const nomeBase=(tag&&mun)?`${tag}_-_${mun}`:null;      // ex.: ED_03_26_-_SÃO_JOÃO_DEL-REI
+          const unico=tipo=>{
+            const raiz=nomeBase?`${tipo}_${nomeBase}`:`${tipo}_${nomeArq}${tag?'_-_'+tag:''}`;
+            let n=`${raiz}.xlsx`, k=2; while(coletor.some(a=>a.nome===n)){ n=`${raiz}_${k++}.xlsx`; } return n;
+          };
+          coletor.push({nome:unico('RESULTADO'),buf:bufRes});
+          coletor.push({nome:unico('ALOCACAO'),buf:bufAloc});
+        } else {
+          const blobRes=new Blob([bufRes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+          const aRes=document.createElement('a');
+          aRes.href=URL.createObjectURL(blobRes);
+          aRes.download=`RESULTADO_${nomeArq}.xlsx`;
+          aRes.click();
 
-        const cancelados=todos.filter(r=>r['STATUS']==='Cancelada').length;
-        const retirados=retirar.size;
-        document.getElementById('insc-preview-content').innerHTML=`
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:12px">
-  ${[['Total',todos.length,'#41506b'],
-     ['Pagos',todos.filter(r=>(r['STATUS']||'').toLowerCase()==='pago').length,'#2e7d52'],
-     ['Deferidos',todos.filter(r=>['deferida','deferido'].includes((r['STATUS']||'').toLowerCase())).length,'#2f6cc4'],
-     ['Cancelados',cancelados,'#c0322f'],
-     ['Retirados',retirados,'#a06c12'],
-     ['Alocação',aloc.length,'#7b34c1'],
-     ...extrasResumo].map(([l,v,c])=>`
+          await new Promise(r=>setTimeout(r,800));
+
+          const blobAloc=new Blob([bufAloc],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+          const aAloc=document.createElement('a');
+          aAloc.href=URL.createObjectURL(blobAloc);
+          aAloc.download=`ALOCACAO_${nomeArq}.xlsx`;
+          aAloc.click();
+        }
+
+        return {
+          proc, total:todos.length,
+          pagos:todos.filter(r=>(r['STATUS']||'').toLowerCase()==='pago').length,
+          deferidos:todos.filter(r=>['deferida','deferido'].includes((r['STATUS']||'').toLowerCase())).length,
+          cancelados:todos.filter(r=>r['STATUS']==='Cancelada').length,
+          retirados:retirar.size, aloc:aloc.length, extras:extrasResumo
+        };
+}
+
+// Caixas de resumo de um processo (mesmo visual de antes)
+function _caixasResumoInsc(r){
+  return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:12px">
+  ${[['Total',r.total,'#41506b'],['Pagos',r.pagos,'#2e7d52'],['Deferidos',r.deferidos,'#2f6cc4'],['Cancelados',r.cancelados,'#c0322f'],['Retirados',r.retirados,'#a06c12'],['Alocação',r.aloc,'#7b34c1'],...r.extras].map(([l,v,c])=>`
   <div style="text-align:center;background:#f7f9fc;border-radius:8px;padding:10px">
     <div style="font-size:22px;font-weight:800;color:${c}">${v}</div>
     <div style="font-size:11px;color:#8a9ab5;font-weight:600">${l}</div>
   </div>`).join('')}
-</div>
-<div style="font-size:13px;color:#2e7d52;font-weight:600">✅ Planilhas geradas e baixadas!</div>`;
+</div>`;
+}
+function _inscNomeZip(procs){
+  const muns=new Set(procs.map(p=>typeof _isenMunicipio==='function'?_isenMunicipio(p):'').filter(Boolean));
+  const mun=muns.size===1?[...muns][0].toUpperCase().replace(/[/\\:*?"<>|]/g,' ').replace(/\s+/g,'_'):'';
+  return `INSCRICOES_${procs.length}_EDITAIS${mun?'_-_'+mun:''}.zip`;
+}
 
-      }catch(e){
-        document.getElementById('insc-preview-content').innerHTML=`<div style="color:#c0322f">Erro: ${e.message}</div>`;
-        console.error(e);
+// Processa um ou mais processos (editais). Cada um é processado SEPARADAMENTE — as regras de duplicidade de CPF
+// e de "cargos com mesma prova" nunca misturam editais diferentes. Com 2+ processos, as planilhas saem em um .zip.
+function processarInscricoes(){
+  if(!_inscWorkbook){alert('Carregue o arquivo primeiro.');return;}
+  let procs=[null];
+  if(window._inscColProcesso){
+    procs=(window._inscProcessos||[]).filter(p=>window._inscProcessosSel&&window._inscProcessosSel.has(p));
+    if(!procs.length){alert('Selecione ao menos um processo antes de processar.');return;}
+  }
+  const btn=event?.target;
+  if(btn){btn.disabled=true;btn.textContent='Processando...';}
+  const prev=document.getElementById('insc-preview-content');
+
+  carregarSheetJS(()=>{
+    carregarExcelJS(async()=>{
+      const resumos=[], erros=[], coletor=procs.length>1?[]:null;
+      for(let i=0;i<procs.length;i++){
+        if(btn&&procs.length>1) btn.textContent=`Processando ${i+1} de ${procs.length}...`;
+        try{ resumos.push(await _processarInscricoesUm(procs[i],coletor)); }
+        catch(e){ console.error(e); erros.push({proc:procs[i],msg:e.message}); }
+      }
+      let saida='';
+      if(coletor && coletor.length){
+        try{
+          await new Promise(res=>carregarJSZip(res));
+          const zip=new JSZip(); coletor.forEach(a=>zip.file(a.nome,a.buf));
+          const blob=await zip.generateAsync({type:'blob',compression:'DEFLATE'});
+          saida=_inscNomeZip(resumos.map(r=>r.proc));
+          const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=saida; a.click();
+        }catch(e){
+          // sem o .zip (biblioteca indisponível): baixa os arquivos um a um
+          console.error(e); saida='arquivos separados';
+          for(const arq of coletor){
+            const a=document.createElement('a');
+            a.href=URL.createObjectURL(new Blob([arq.buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+            a.download=arq.nome; a.click(); await new Promise(r=>setTimeout(r,800));
+          }
+        }
+      }
+      const erroHtml=erros.map(e=>`<div style="color:#c0322f;font-size:12.5px;margin-top:8px">⚠️ ${e.proc?e.proc+': ':''}${e.msg}</div>`).join('');
+      if(resumos.length===1 && !coletor){
+        prev.innerHTML=_caixasResumoInsc(resumos[0])+`<div style="font-size:13px;color:#2e7d52;font-weight:600">✅ Planilhas geradas e baixadas!</div>`+erroHtml;
+      } else if(resumos.length){
+        prev.innerHTML=resumos.map(r=>`<div style="font-size:12.5px;font-weight:700;color:#1f2a3d;margin:12px 0 6px">${r.proc}</div>`+_caixasResumoInsc(r)).join('')
+          +`<div style="font-size:13px;color:#2e7d52;font-weight:600">✅ ${resumos.length} processo(s) processado(s) — ${coletor.length} planilhas em <strong>${saida}</strong></div>`+erroHtml;
+      } else {
+        prev.innerHTML=erroHtml||'<div style="color:#c0322f">Nada foi gerado.</div>';
       }
       if(btn){btn.disabled=false;btn.textContent='⚙️ Processar e baixar';}
     });
