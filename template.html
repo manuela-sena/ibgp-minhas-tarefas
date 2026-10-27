@@ -1066,7 +1066,7 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
       </div>
 
       <!-- Filtros -->
-      <div class="card card-pad" style="margin-bottom:14px">
+      <div class="card card-pad" style="margin-bottom:14px;overflow:visible;position:relative;z-index:5">
         <div style="display:grid;grid-template-columns:1fr 1fr auto auto;gap:12px;align-items:end">
           <div>
             <label class="form-label">Data início</label>
@@ -1076,25 +1076,11 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
             <label class="form-label">Data fim</label>
             <input type="date" id="agenda-fim" class="form-input" style="height:36px">
           </div>
-          <div>
-            <label class="form-label">Tipo</label>
-            <select id="agenda-tipo" class="filter-select" style="height:36px" onchange="renderAgenda()">
-              <option value="todos">Todos</option>
-              <option value="prova">Prova Objetiva</option>
-              <option value="homol">Homologação</option>
-              <option value="curso_formacao">Curso de Formação</option>
-              <option value="entrevista">Entrevista</option>
-              <option value="prova_pratica">Prova Prática</option>
-              <option value="psicologica">Avaliação Psicológica</option>
-              <option value="curso_aperfeicoamento">Curso de Aperfeiçoamento</option>
-              <option value="av_medica">Avaliação Médica</option>
-              <option value="devolutiva">Devolutiva</option>
-              <option value="pericia_medica">Perícia Médica</option>
-              <option value="pcf">Prova de Capacidade Física</option>
-              <option value="exame_medico">Exame Médico</option>
-              <option value="heteroidentificacao">Heteroidentificação</option>
-              <option value="encerramento_inscricao">Encerramento de Inscrição</option>
-            </select>
+          <div style="position:relative">
+            <label class="form-label">Tipo <span style="font-weight:400;color:#8a9ab5">(pode marcar mais de um)</span></label>
+            <button type="button" id="agenda-tipo-btn" class="filter-select" onclick="toggleAgendaTipos(event)"
+              style="height:36px;min-width:250px;width:100%;text-align:left;cursor:pointer"><span id="agenda-tipo-label">Todos os tipos</span></button>
+            <div id="agenda-tipo-painel" style="display:none;position:absolute;z-index:60;top:100%;left:0;margin-top:4px;min-width:300px;max-height:min(540px,70vh);overflow-y:auto;background:#fff;border:1px solid #e2e7ef;border-radius:10px;box-shadow:0 10px 28px rgba(31,42,61,.16);padding:6px"></div>
           </div>
           <button class="btn-primary" onclick="renderAgenda()" style="height:36px;padding:0 16px">
             <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -7210,7 +7196,43 @@ function _tipoAgenda(t){
   return c || {id:'outro', label:'Outro', bg:'#eef1f6', cor:'#41506b'};
 }
 function _matchTipo(t){ return CATEGORIAS_AGENDA.some(c=>c.test(t)); }
+// ── Filtro de TIPO da Agenda: dá para marcar mais de um. Conjunto vazio = todos os tipos. ──
+window._agendaTiposSel = window._agendaTiposSel || new Set();
+function _agendaRotuloTipos(){
+  const sel = CATEGORIAS_AGENDA.filter(c=>window._agendaTiposSel.has(c.id));
+  if(!sel.length) return 'Todos os tipos';
+  if(sel.length<=2) return sel.map(c=>c.label).join(', ');
+  return sel.length+' tipos selecionados';
+}
+function _montarPainelAgendaTipos(){
+  const painel=document.getElementById('agenda-tipo-painel'), lbl=document.getElementById('agenda-tipo-label');
+  if(!painel) return;
+  const sel=window._agendaTiposSel;
+  const linha=(id,texto,marcado,cor)=>`<label style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:7px;cursor:pointer;font-size:13px;color:#1f2a3d;${marcado?'background:#eef4fc;font-weight:600':''}">
+    <input type="checkbox" ${marcado?'checked':''} onchange="agendaTipoAlternar('${id}',this.checked)" style="width:16px;height:16px;flex:none">
+    ${cor?`<span style="width:10px;height:10px;border-radius:50%;background:${cor};flex:none"></span>`:''}<span>${texto}</span></label>`;
+  painel.innerHTML = linha('__todos__','Todos os tipos',!sel.size,'') + '<div style="height:1px;background:#eef1f6;margin:4px 6px"></div>'
+    + CATEGORIAS_AGENDA.map(c=>linha(c.id,c.label,sel.has(c.id),c.cor)).join('');
+  if(lbl) lbl.textContent=_agendaRotuloTipos();
+}
+function agendaTipoAlternar(id,marcado){
+  const sel=window._agendaTiposSel;
+  if(id==='__todos__') sel.clear(); else if(marcado) sel.add(id); else sel.delete(id);
+  _montarPainelAgendaTipos(); renderAgenda();
+}
+function toggleAgendaTipos(ev){
+  if(ev) ev.stopPropagation();
+  const p=document.getElementById('agenda-tipo-painel'); if(!p) return;
+  p.style.display=(p.style.display==='block')?'none':'block';
+}
+document.addEventListener('click',e=>{   // fecha o painel ao clicar fora dele
+  const p=document.getElementById('agenda-tipo-painel'), b=document.getElementById('agenda-tipo-btn');
+  if(p && p.style.display==='block' && !p.contains(e.target) && !(b&&b.contains(e.target))) p.style.display='none';
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ const p=document.getElementById('agenda-tipo-painel'); if(p) p.style.display='none'; } });
+
 function initAgenda(){
+  _montarPainelAgendaTipos();
   // Definir datas padrão: hoje até fim do ano
   const ini = document.getElementById('agenda-ini');
   const fim = document.getElementById('agenda-fim');
@@ -7238,7 +7260,7 @@ function renderAgenda(){
 
   const ini   = document.getElementById('agenda-ini')?.value;
   const fim   = document.getElementById('agenda-fim')?.value;
-  const tipo  = document.getElementById('agenda-tipo')?.value || 'todos';
+  const tiposSel = [...(window._agendaTiposSel||[])];   // vazio = todos os tipos
 
   if(!ini || !fim){ el.innerHTML='<div style="color:#c0322f;font-size:13px;padding:12px">Selecione o período.</div>'; return; }
 
@@ -7253,12 +7275,12 @@ function renderAgenda(){
     if(!t.due) return false;
     const d = parseISO(t.due);
     if(d < iniDate || d > fimDate) return false;
-    if(tipo!=='todos'){ const cat=CATEGORIAS_AGENDA.find(c=>c.id===tipo); return cat?cat.test(t):false; }
+    if(tiposSel.length) return CATEGORIAS_AGENDA.some(c=>tiposSel.includes(c.id) && c.test(t));
     return _matchTipo(t);
   });
 
   if(!tarefas.length){
-    el.innerHTML=`<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">Nenhum evento encontrado</div><div class="empty-desc">Não há ${(CATEGORIAS_AGENDA.find(c=>c.id===tipo)||{label:'eventos'}).label.toLowerCase()} no período selecionado.</div></div>`;
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">Nenhum evento encontrado</div><div class="empty-desc">Não há ${tiposSel.length===1?CATEGORIAS_AGENDA.find(c=>c.id===tiposSel[0]).label.toLowerCase():(tiposSel.length>1?'eventos dos tipos selecionados':'eventos')} no período selecionado.</div></div>`;
     return;
   }
 
@@ -7349,12 +7371,12 @@ function renderAgenda(){
 function exportarAgendaPDF(){
   const ini  = document.getElementById('agenda-ini')?.value || '';
   const fim  = document.getElementById('agenda-fim')?.value || '';
-  const tipo = document.getElementById('agenda-tipo')?.value || 'todos';
+  const tiposSelPdf = [...(window._agendaTiposSel||[])];
   const conteudo = document.getElementById('agenda-exportable')?.innerHTML || '';
   if(!conteudo){ alert('Filtre os eventos primeiro.'); return; }
 
   const fmtBRDate = v => { if(!v) return ''; const [y,m,d]=v.split('-'); return `${d}/${m}/${y}`; };
-  const tipoLabel = (CATEGORIAS_AGENDA.find(c=>c.id===tipo)||{}).label || 'Todos os Eventos';
+  const tipoLabel = tiposSelPdf.length ? CATEGORIAS_AGENDA.filter(c=>tiposSelPdf.includes(c.id)).map(c=>c.label).join(', ') : 'Todos os Eventos';
 
   const win = window.open('','_blank','width=1000,height=800');
   if(!win){ alert('Permita pop-ups para exportar.'); return; }
