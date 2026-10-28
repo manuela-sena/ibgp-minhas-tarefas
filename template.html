@@ -9423,8 +9423,15 @@ async function processarAlocacao(){
         const bufCand = await fileCand.arrayBuffer();
         const wbCand = XLSX.read(bufCand, {type:'array', cellDates:true});
         let candidatos = [];
+        let retiradosIgnorados = 0;
         for(const nome of wbCand.SheetNames){
           const rows = XLSX.utils.sheet_to_json(wbCand.Sheets[nome], {defval:''});
+          // A aba RETIRADOS (gerada na página de Inscrições) lista quem foi retirado da alocação por ter mais de uma
+          // inscrição na mesma prova: esses candidatos NÃO entram na alocação.
+          if(/^RETIRAD/.test(String(nome).normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toUpperCase())){
+            retiradosIgnorados += rows.filter(r=>String(r['INSCRIÇÃO']||'').trim()).length;
+            continue;
+          }
           candidatos = candidatos.concat(rows);
         }
         candidatos = candidatos.map(r=>{
@@ -9548,6 +9555,7 @@ async function processarAlocacao(){
           ${icone} Alocação gerada! ${resultado.alocados.length} de ${candidatos.length} candidatos alocados · capacidade total selecionada: ${capacidadeTotal} vaga(s)
           ${avisoCapacidade}
           <div style="margin-top:4px;font-weight:500">${avisoCondEspecial}</div>
+          ${retiradosIgnorados?`<div style="margin-top:4px;font-weight:500">ℹ️ Aba RETIRADOS ignorada: ${retiradosIgnorados} candidato(s) retirado(s) por mais de uma inscrição não entram na alocação.</div>`:''}
         </div>`;
       }catch(err){
         statusEl.innerHTML = `<div style="color:#c0322f;padding:10px">Erro: ${err.message}</div>`;
