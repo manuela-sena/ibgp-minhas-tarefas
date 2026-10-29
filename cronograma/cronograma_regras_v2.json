@@ -1,0 +1,5525 @@
+[
+ {
+  "id": "A003",
+  "linha": 3,
+  "nome": "Recebimento do escopo e das legislações para elaboração do edital",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "—",
+  "regras": {
+   "C": {
+    "texto": "Definido manualmente, sempre em dia útil",
+    "tipo": "MANUAL",
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "Definido manualmente, sempre em dia útil",
+    "tipo": "MANUAL",
+    "ref_linhas": {}
+   }
+  },
+  "fase": "pre_edital"
+ },
+ {
+  "id": "A004",
+  "linha": 4,
+  "nome": "Análise legislação e elaboração do Edital",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "5 dias úteis após o recebimento da legislação e do escopo da contratação",
+    "tipo": "APOS",
+    "ref": "ESCOPO",
+    "n": 5,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "periodo_apos": false,
+    "ref_linhas": {
+     "ESCOPO": {
+      "conc": 3,
+      "guarda": 3
+     }
+    }
+   },
+   "D": {
+    "texto": "5 dias úteis após o recebimento da legislação e do escopo da contratação",
+    "tipo": "APOS",
+    "ref": "ESCOPO",
+    "n": 5,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "periodo_apos": false,
+    "ref_linhas": {
+     "ESCOPO": {
+      "conc": 3,
+      "guarda": 3
+     }
+    }
+   }
+  },
+  "fase": "pre_edital"
+ },
+ {
+  "id": "A005",
+  "linha": 5,
+  "nome": "Envio do Edital para validação",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "—",
+  "regras": {
+   "C": {
+    "texto": "5 dias úteis após o recebimento da legislação e do escopo da contratação",
+    "tipo": "APOS",
+    "ref": "ESCOPO",
+    "n": 5,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "periodo_apos": false,
+    "ref_linhas": {
+     "ESCOPO": {
+      "conc": 3,
+      "guarda": 3
+     }
+    }
+   },
+   "D": {
+    "texto": "5 dias úteis após o recebimento da legislação e do escopo da contratação",
+    "tipo": "APOS",
+    "ref": "ESCOPO",
+    "n": 5,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "periodo_apos": false,
+    "ref_linhas": {
+     "ESCOPO": {
+      "conc": 3,
+      "guarda": 3
+     }
+    }
+   }
+  },
+  "fase": "pre_edital"
+ },
+ {
+  "id": "A006",
+  "linha": 6,
+  "nome": "Retorno da validação final do Edital",
+  "aplicavel": "Todos",
+  "formato_data": "ate",
+  "dia_semana": "—",
+  "regras": {
+   "C": {
+    "texto": "5 dias úteis após o envio do Edital para validação",
+    "tipo": "APOS",
+    "ref": "ENVIO_ED",
+    "n": 5,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "periodo_apos": false,
+    "ref_linhas": {
+     "ENVIO_ED": {
+      "conc": 5,
+      "guarda": 5
+     }
+    }
+   },
+   "D": {
+    "texto": "6 dias úteis após o envio do Edital para validação",
+    "tipo": "APOS",
+    "ref": "ENVIO_ED",
+    "n": 6,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "periodo_apos": false,
+    "ref_linhas": {
+     "ENVIO_ED": {
+      "conc": 5,
+      "guarda": 5
+     }
+    }
+   }
+  },
+  "fase": "pre_edital"
+ },
+ {
+  "id": "A007",
+  "linha": 7,
+  "nome": "Publicação do Edital",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "Definido manualmente, sempre em dia útil",
+    "tipo": "MANUAL",
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "Definido manualmente, sempre em dia útil",
+    "tipo": "MANUAL",
+    "ref_linhas": {}
+   }
+  },
+  "fase": "base"
+ },
+ {
+  "id": "A008",
+  "linha": 8,
+  "nome": "Período Solicitação de Isenção",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "Duração: 3 dias úteis (padrão, podendo variar manualmente) / 60 dias corridos após a publicação do Edital. Inicia e encerra sempre em dia útil.",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "APOS",
+     "ref": "PUB_ED",
+     "n": 60,
+     "un": "dc",
+     "minimo": false,
+     "editavel": false,
+     "cond": null,
+     "periodo_apos": false
+    },
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": true,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ED": {
+      "conc": 7,
+      "guarda": 7
+     }
+    }
+   },
+   "D": {
+    "texto": "De 1 a 3 dias úteis",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "APOS",
+     "ref": "PUB_ED",
+     "n": 60,
+     "un": "dc",
+     "minimo": false,
+     "editavel": false,
+     "cond": null,
+     "periodo_apos": false
+    },
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": true,
+    "cond": null,
+    "faixa": [
+     1,
+     3
+    ],
+    "ref_linhas": {
+     "PUB_ED": {
+      "conc": 7,
+      "guarda": 7
+     }
+    }
+   }
+  },
+  "fase": "isencao"
+ },
+ {
+  "id": "A009",
+  "linha": 9,
+  "nome": "Período de Inscrições/PcD/Negros/Solicitação Cond. Especial/Envio Laudos",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "—",
+  "regras": {
+   "C": {
+    "texto": "Duração: 30 dias corridos (padrão, podendo variar manualmente) / 60 dias corridos após a publicação do Edital. Inicia e encerra sempre em dia útil.",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "APOS",
+     "ref": "PUB_ED",
+     "n": 60,
+     "un": "dc",
+     "minimo": false,
+     "editavel": false,
+     "cond": null,
+     "periodo_apos": false
+    },
+    "n": 30,
+    "un": "dc",
+    "minimo": false,
+    "editavel": true,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ED": {
+      "conc": 7,
+      "guarda": 7
+     }
+    }
+   },
+   "D": {
+    "texto": "Duração definida por padrão: mínimo de 10 dias corridos, podendo variar manualmente.",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "APOS",
+     "ref": "PUB_ED",
+     "n": 60,
+     "un": "dc",
+     "minimo": false,
+     "editavel": false,
+     "cond": null,
+     "periodo_apos": false
+    },
+    "n": 10,
+    "un": "dc",
+    "minimo": true,
+    "editavel": true,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ED": {
+      "conc": 7,
+      "guarda": 7
+     }
+    }
+   }
+  },
+  "fase": "base"
+ },
+ {
+  "id": "A010",
+  "linha": 10,
+  "nome": "Resultado preliminar da Solicitação de Isenção",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "5 dias úteis após o encerramento",
+    "tipo": "APOS",
+    "ref": "ENCERR",
+    "n": 5,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "periodo_apos": false,
+    "ref_linhas": {
+     "ENCERR": {
+      "conc": 8,
+      "guarda": 8
+     }
+    }
+   },
+   "D": {
+    "texto": "Duração definida por padrão: mínimo de 2 dias úteis após o encerramento, podendo variar manualmente.",
+    "tipo": "APOS",
+    "ref": "ENCERR",
+    "n": 2,
+    "un": "du",
+    "minimo": true,
+    "editavel": true,
+    "cond": null,
+    "periodo_apos": false,
+    "ref_linhas": {
+     "ENCERR": {
+      "conc": 8,
+      "guarda": 8
+     }
+    }
+   }
+  },
+  "fase": "isencao"
+ },
+ {
+  "id": "A011",
+  "linha": 11,
+  "nome": "Abertura de recurso contra resultado preliminar da Solicitação de Isenção",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Início no 1º dia útil seguinte ao resultado preliminar; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: 3 dias úteis",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 10,
+      "guarda": 10
+     }
+    }
+   },
+   "D": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: mínimo 1 dia útil, podendo variar manualmente",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 1,
+    "un": "du",
+    "minimo": true,
+    "editavel": true,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 10,
+      "guarda": 10
+     }
+    }
+   }
+  },
+  "fase": "isencao"
+ },
+ {
+  "id": "A012",
+  "linha": 12,
+  "nome": "Análise da Banca dos recursos contra Solicitação de Isenção",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Início e fim em dia útil; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "2 dias úteis, podendo variar manualmente",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": true,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "2 dias úteis, podendo variar manualmente",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": true,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "isencao"
+ },
+ {
+  "id": "A013",
+  "linha": 13,
+  "nome": "Resultado pós-recurso da Solicitação de Isenção",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso, antes da data final das inscrições",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": "antes do fim das inscrições",
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 12,
+      "guarda": 12
+     }
+    }
+   },
+   "D": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso, antes da data final das inscrições",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": "antes do fim das inscrições",
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 12,
+      "guarda": 12
+     }
+    }
+   }
+  },
+  "fase": "isencao"
+ },
+ {
+  "id": "A014",
+  "linha": 14,
+  "nome": "Data-limite para Pagamento do Boleto",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "Primeiro dia útil seguinte ao último dia de inscrição",
+    "tipo": "SEG",
+    "ref": "INSCR",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "INSCR": {
+      "conc": 9,
+      "guarda": 9
+     }
+    }
+   },
+   "D": {
+    "texto": "Primeiro dia útil seguinte ao último dia de inscrição",
+    "tipo": "SEG",
+    "ref": "INSCR",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "INSCR": {
+      "conc": 9,
+      "guarda": 9
+     }
+    }
+   }
+  },
+  "fase": "base"
+ },
+ {
+  "id": "A015",
+  "linha": 15,
+  "nome": "Resultado preliminar Inscrições/PcD/Negros/Solic Condição Especial",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "5 dias úteis após a data limite de pagamento.",
+    "tipo": "APOS",
+    "ref": "PAG",
+    "n": 5,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "periodo_apos": false,
+    "ref_linhas": {
+     "PAG": {
+      "conc": 14,
+      "guarda": 14
+     }
+    }
+   },
+   "D": {
+    "texto": "3 dias úteis após o encerramento",
+    "tipo": "APOS",
+    "ref": "ENCERR",
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "periodo_apos": false,
+    "ref_linhas": {
+     "ENCERR": {
+      "conc": 9,
+      "guarda": 9
+     }
+    }
+   }
+  },
+  "fase": "base"
+ },
+ {
+  "id": "A016",
+  "linha": 16,
+  "nome": "Abertura de recurso contra resultado preliminar Inscrições/PcD/Negros/Solic Condição Especial",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Início no 1º dia útil seguinte ao resultado preliminar; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: 3 dias úteis",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 15,
+      "guarda": 15
+     }
+    }
+   },
+   "D": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: mínimo 1 dia útil, podendo variar manualmente",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 1,
+    "un": "du",
+    "minimo": true,
+    "editavel": true,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 15,
+      "guarda": 15
+     }
+    }
+   }
+  },
+  "fase": "base"
+ },
+ {
+  "id": "A017",
+  "linha": 17,
+  "nome": "Análise da Banca dos recursos contra resultado preliminar Inscrições/PcD/Negros/Solic Condição Especial",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Início e fim em dia útil; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "2 dias úteis, podendo variar manualmente",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": true,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "2 dias úteis, podendo variar manualmente",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": true,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "base"
+ },
+ {
+  "id": "A018",
+  "linha": 18,
+  "nome": "Resultado pós-recurso Inscrições/PcD/Negros/Solic Condição Especial",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 17,
+      "guarda": 17
+     }
+    }
+   },
+   "D": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 17,
+      "guarda": 17
+     }
+    }
+   }
+  },
+  "fase": "base"
+ },
+ {
+  "id": "A019",
+  "linha": 19,
+  "nome": "COMPROVANTE DEFINITIVO DE INSCRIÇÃO (CDI) - PUBLICAÇÃO DO LOCAL DE PROVA",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Segunda-feira anterior à prova (se não for dia útil, sexta-feira anterior)",
+  "regras": {
+   "C": {
+    "texto": "Sempre na segunda-feira anterior à prova; se a segunda-feira não for dia útil, na sexta-feira imediatamente anterior Pode ser definido manualmente",
+    "tipo": "DIA",
+    "ref": "PROVA_SEG",
+    "dow": "segunda",
+    "dire": "ant",
+    "fallback": "sexta anterior",
+    "editavel": true,
+    "ref_linhas": {
+     "PROVA_SEG": {
+      "conc": 20,
+      "guarda": 20
+     }
+    }
+   },
+   "D": {
+    "texto": "Sempre na segunda-feira anterior à prova; se a segunda-feira não for dia útil, na sexta-feira imediatamente anterior Pode ser definido manualmente",
+    "tipo": "DIA",
+    "ref": "PROVA_SEG",
+    "dow": "segunda",
+    "dire": "ant",
+    "fallback": "sexta anterior",
+    "editavel": true,
+    "ref_linhas": {
+     "PROVA_SEG": {
+      "conc": 20,
+      "guarda": 20
+     }
+    }
+   }
+  },
+  "fase": "base"
+ },
+ {
+  "id": "A020",
+  "linha": 20,
+  "nome": "Prova Objetiva e Prova Discursiva (Discursiva somente quando marcada a etapa)",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Padrão: sábado e/ou domingo (perguntar se haverá sábado)",
+  "regras": {
+   "C": {
+    "texto": "Padrão: sábado e/ou domingo; 30 dias corridos após o término das inscrições (padrão) O sistema deve perguntar se haverá sábado, podendo variar manualmente",
+    "tipo": "FDS",
+    "ref": "INSCR_FIM",
+    "n": 30,
+    "un": "dc",
+    "pergunta_sabado": true,
+    "editavel": true,
+    "cond": null,
+    "ref_linhas": {
+     "INSCR_FIM": {
+      "conc": 9,
+      "guarda": 9
+     }
+    }
+   },
+   "D": {
+    "texto": "Padrão: sábado e/ou domingo O sistema deve perguntar se haverá sábado",
+    "tipo": "FDS",
+    "ref": null,
+    "n": 0,
+    "un": "dc",
+    "pergunta_sabado": true,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "base"
+ },
+ {
+  "id": "A021",
+  "linha": 21,
+  "nome": "Gabarito preliminar",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Mesmo dia da prova (livre)",
+  "regras": {
+   "C": {
+    "texto": "No dia da prova objetiva",
+    "tipo": "MESMO",
+    "ref": "PROVA_OBJ",
+    "cond": null,
+    "ref_linhas": {
+     "PROVA_OBJ": {
+      "conc": 20,
+      "guarda": 20
+     }
+    }
+   },
+   "D": {
+    "texto": "No dia da prova objetiva",
+    "tipo": "MESMO",
+    "ref": "PROVA_OBJ",
+    "cond": null,
+    "ref_linhas": {
+     "PROVA_OBJ": {
+      "conc": 20,
+      "guarda": 20
+     }
+    }
+   }
+  },
+  "fase": "base"
+ },
+ {
+  "id": "A022",
+  "linha": 22,
+  "nome": "Abertura de recurso contra Questões Prova Objetiva",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Início no 1º dia útil seguinte ao resultado preliminar; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: 3 dias úteis, podendo variar manualmente",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": true,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 21,
+      "guarda": 21
+     }
+    }
+   },
+   "D": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: mínimo 1 dia útil, podendo variar manualmente",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 1,
+    "un": "du",
+    "minimo": true,
+    "editavel": true,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 21,
+      "guarda": 21
+     }
+    }
+   }
+  },
+  "fase": "base"
+ },
+ {
+  "id": "A023",
+  "linha": 23,
+  "nome": "Análise da Banca dos recursos contra Questões Prova Objetiva",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Exceção: dias corridos; início após o fechamento do recurso; se terminar em dia não útil, prorroga-se até o dia útil subsequente",
+  "regras": {
+   "C": {
+    "texto": "10 dias corridos, contados após o fechamento dos recursos contra Questões da Prova Objetiva Se terminar em dia não útil, estende-se até o dia útil subsequente",
+    "tipo": "DUR",
+    "n": 10,
+    "un": "dc",
+    "editavel": false,
+    "estende_fim_util": true,
+    "inicio_apos_fechamento": true,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "5 dias corridos, contados após o fechamento dos recursos contra Questões da Prova Objetiva Pode variar ou ser definido manualmente",
+    "tipo": "DUR",
+    "n": 5,
+    "un": "dc",
+    "editavel": true,
+    "estende_fim_util": true,
+    "inicio_apos_fechamento": true,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "base"
+ },
+ {
+  "id": "A024",
+  "linha": 24,
+  "nome": "Gabarito pós-recurso",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "—",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 23,
+      "guarda": 23
+     }
+    }
+   },
+   "D": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 23,
+      "guarda": 23
+     }
+    }
+   }
+  },
+  "fase": "base"
+ },
+ {
+  "id": "A025",
+  "linha": 25,
+  "nome": "Abertura de recurso contra Gabarito pós-recurso (se houver alteração/anulação de questões)",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Início no 1º dia útil seguinte ao Gabarito pós-recurso; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "Início no 1º dia útil seguinte à publicação do Gabarito pós-recurso Duração: 3 dias úteis",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "GAB_POS",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "faixa": null,
+    "sempre_incluir": true,
+    "ref_linhas": {
+     "GAB_POS": {
+      "conc": 24,
+      "guarda": 24
+     }
+    }
+   },
+   "D": {
+    "texto": "Início no 1º dia útil seguinte à publicação do Gabarito pós-recurso, exclusivamente se houver alteração/anulação Duração: mínimo 1 dia útil, podendo variar manualmente",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "GAB_POS",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 1,
+    "un": "du",
+    "minimo": true,
+    "editavel": true,
+    "cond": null,
+    "faixa": null,
+    "sempre_incluir": true,
+    "ref_linhas": {
+     "GAB_POS": {
+      "conc": 24,
+      "guarda": 24
+     }
+    }
+   }
+  },
+  "fase": "base"
+ },
+ {
+  "id": "A026",
+  "linha": 26,
+  "nome": "Análise da Banca dos recursos contra Gabarito pós-recurso",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Início e fim em dia útil; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "5 dias úteis",
+    "tipo": "DUR",
+    "n": 5,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "3 dias úteis",
+    "tipo": "DUR",
+    "n": 3,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "base"
+ },
+ {
+  "id": "A027",
+  "linha": 27,
+  "nome": "Gabarito Definitivo (se houver alteração/anulação de questões)",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "sempre_incluir": true,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 26,
+      "guarda": 26
+     }
+    }
+   },
+   "D": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "sempre_incluir": true,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 26,
+      "guarda": 26
+     }
+    }
+   }
+  },
+  "fase": "base"
+ },
+ {
+  "id": "A028",
+  "linha": 28,
+  "nome": "Resultado preliminar da Totalização da Prova Objetiva - Disponibilização de Espelhos da Folha de Respostas da Prova Objetiva",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte a publicação do Gabarito Definitivo (se houver alteração/anulação de questões)",
+    "tipo": "SEG",
+    "ref": "GAB_DEF",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "sempre_incluir": true,
+    "ref_linhas": {
+     "GAB_DEF": {
+      "conc": 27,
+      "guarda": 27
+     }
+    }
+   },
+   "D": {
+    "texto": "1º dia útil seguinte a publicação do Gabarito Definitivo (se houver alteração/anulação de questões)",
+    "tipo": "SEG",
+    "ref": "GAB_DEF",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "sempre_incluir": true,
+    "ref_linhas": {
+     "GAB_DEF": {
+      "conc": 27,
+      "guarda": 27
+     }
+    }
+   }
+  },
+  "fase": "base"
+ },
+ {
+  "id": "A029",
+  "linha": 29,
+  "nome": "Enviar Provas Discursivas para correção",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao resultado preliminar da totalização da prova objetiva.",
+    "tipo": "SEG",
+    "ref": "TOTALIZ",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "TOTALIZ": {
+      "conc": 28,
+      "guarda": 28
+     }
+    }
+   },
+   "D": {
+    "texto": "No dia do resultado preliminar da prova objetiva",
+    "tipo": "MESMO",
+    "ref": "TOTALIZ",
+    "cond": null,
+    "ref_linhas": {
+     "TOTALIZ": {
+      "conc": 28,
+      "guarda": 28
+     }
+    }
+   }
+  },
+  "fase": "discursiva"
+ },
+ {
+  "id": "A030",
+  "linha": 30,
+  "nome": "Organização Prova Prática/Prova de Capacidade Física",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao resultado preliminar da totalização da prova objetiva.",
+    "tipo": "SEG",
+    "ref": "TOTALIZ",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "TOTALIZ": {
+      "conc": 28,
+      "guarda": 28
+     }
+    }
+   },
+   "D": {
+    "texto": "No dia do resultado preliminar da prova objetiva",
+    "tipo": "MESMO",
+    "ref": "TOTALIZ",
+    "cond": null,
+    "ref_linhas": {
+     "TOTALIZ": {
+      "conc": 28,
+      "guarda": 28
+     }
+    }
+   }
+  },
+  "fase": "pratica"
+ },
+ {
+  "id": "A031",
+  "linha": 31,
+  "nome": "Abertura de recurso contra Totalização da Prova Objetiva",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Início no 1º dia útil seguinte ao resultado preliminar; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: 3 dias úteis",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 28,
+      "guarda": 28
+     }
+    }
+   },
+   "D": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: mínimo 1 dia útil, podendo variar manualmente",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 1,
+    "un": "du",
+    "minimo": true,
+    "editavel": true,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 28,
+      "guarda": 28
+     }
+    }
+   }
+  },
+  "fase": "base"
+ },
+ {
+  "id": "A032",
+  "linha": 32,
+  "nome": "Análise da Banca dos recursos contra Totalização da Prova Objetiva",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Início e fim em dia útil; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "2 dias úteis, podendo variar manualmente",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": true,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "2 dias úteis, podendo variar manualmente",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": true,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "base"
+ },
+ {
+  "id": "A033",
+  "linha": 33,
+  "nome": "Resultado pós-recurso da Totalização da Prova Objetiva",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 32,
+      "guarda": 32
+     }
+    }
+   },
+   "D": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 32,
+      "guarda": 32
+     }
+    }
+   }
+  },
+  "fase": "base"
+ },
+ {
+  "id": "A034",
+  "linha": 34,
+  "nome": "Resultado preliminar da Prova Discursiva - Disponibilização de Espelhos da Correção da Prova Discursiva",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "2º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 2,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 33,
+      "guarda": 33
+     }
+    }
+   },
+   "D": {
+    "texto": "2º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 2,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 33,
+      "guarda": 33
+     }
+    }
+   }
+  },
+  "fase": "discursiva"
+ },
+ {
+  "id": "A035",
+  "linha": 35,
+  "nome": "Abertura de recurso contra o resultado da Prova Discursiva",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Início no 1º dia útil seguinte ao resultado preliminar; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: 3 dias úteis",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 34,
+      "guarda": 34
+     }
+    }
+   },
+   "D": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: mínimo 1 dia útil, podendo variar manualmente",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 1,
+    "un": "du",
+    "minimo": true,
+    "editavel": true,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 34,
+      "guarda": 34
+     }
+    }
+   }
+  },
+  "fase": "discursiva"
+ },
+ {
+  "id": "A036",
+  "linha": 36,
+  "nome": "Análise da Banca dos recursos da Prova Discursiva",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Início e fim em dia útil; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "3 dias úteis, podendo variar manualmente",
+    "tipo": "DUR",
+    "n": 3,
+    "un": "du",
+    "editavel": true,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "2 dias úteis, podendo variar manualmente",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": true,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "discursiva"
+ },
+ {
+  "id": "A037",
+  "linha": 37,
+  "nome": "Resultado pós-recurso da Prova Discursiva",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 36,
+      "guarda": 36
+     }
+    }
+   },
+   "D": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 36,
+      "guarda": 36
+     }
+    }
+   }
+  },
+  "fase": "discursiva"
+ },
+ {
+  "id": "A038",
+  "linha": 38,
+  "nome": "Convocação para Prova de Títulos",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao resultado após recurso da etapa anterior",
+    "tipo": "SEG",
+    "ref": "RES_POS_ANT",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "1º dia útil seguinte ao resultado após recurso da etapa anterior",
+    "tipo": "SEG",
+    "ref": "RES_POS_ANT",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "titulos"
+ },
+ {
+  "id": "A039",
+  "linha": 39,
+  "nome": "Período para envio dos títulos",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "3 dias úteis após a data da convocação, podendo variar manualmente",
+    "tipo": "APOS",
+    "ref": "CONVOC",
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": true,
+    "cond": null,
+    "periodo_apos": true,
+    "ref_linhas": {
+     "CONVOC": {
+      "conc": 38,
+      "guarda": 38
+     }
+    }
+   },
+   "D": {
+    "texto": "2 dias úteis, podendo variar manualmente",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": true,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "titulos"
+ },
+ {
+  "id": "A040",
+  "linha": 40,
+  "nome": "Período para análise dos títulos",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Início e fim em dia útil; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "7 dias úteis após o encerramento do envio, Podendo varia manualmente.",
+    "tipo": "APOS",
+    "ref": "ENVIO",
+    "n": 7,
+    "un": "du",
+    "minimo": false,
+    "editavel": true,
+    "cond": null,
+    "periodo_apos": true,
+    "ref_linhas": {
+     "ENVIO": {
+      "conc": 39,
+      "guarda": 39
+     }
+    }
+   },
+   "D": {
+    "texto": "4 dias úteis após o encerramento do envio, Podendo varia manualmente.",
+    "tipo": "APOS",
+    "ref": "ENVIO",
+    "n": 4,
+    "un": "du",
+    "minimo": false,
+    "editavel": true,
+    "cond": null,
+    "periodo_apos": true,
+    "ref_linhas": {
+     "ENVIO": {
+      "conc": 39,
+      "guarda": 39
+     }
+    }
+   }
+  },
+  "fase": "titulos"
+ },
+ {
+  "id": "A041",
+  "linha": 41,
+  "nome": "Resultado preliminar Prova de Títulos",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil após o término de análise dos títulos",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 40,
+      "guarda": 40
+     }
+    }
+   },
+   "D": {
+    "texto": "1º dia útil após o término de análise dos títulos",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 40,
+      "guarda": 40
+     }
+    }
+   }
+  },
+  "fase": "titulos"
+ },
+ {
+  "id": "A042",
+  "linha": 42,
+  "nome": "Organização Avaliação Psicológica",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "No dia do resultado preliminar da etapa anterior",
+    "tipo": "MESMO",
+    "ref": "RES_PRELIM_ANT",
+    "cond": null,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "No dia do resultado preliminar da etapa anterior",
+    "tipo": "MESMO",
+    "ref": "RES_PRELIM_ANT",
+    "cond": null,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "psicologica"
+ },
+ {
+  "id": "A043",
+  "linha": 43,
+  "nome": "Abertura de recurso contra o Resultado Prova de Títulos",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Início no 1º dia útil seguinte ao resultado preliminar; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: 3 dias úteis",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 41,
+      "guarda": 41
+     }
+    }
+   },
+   "D": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: mínimo 1 dia útil, podendo variar manualmente",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 1,
+    "un": "du",
+    "minimo": true,
+    "editavel": true,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 41,
+      "guarda": 41
+     }
+    }
+   }
+  },
+  "fase": "titulos"
+ },
+ {
+  "id": "A044",
+  "linha": 44,
+  "nome": "Análise da Banca dos recursos da Prova de Títulos",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Início e fim em dia útil; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "3 dias úteis, podendo variar manualmente",
+    "tipo": "DUR",
+    "n": 3,
+    "un": "du",
+    "editavel": true,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "2 dias úteis, podendo variar manualmente",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": true,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "titulos"
+ },
+ {
+  "id": "A045",
+  "linha": 45,
+  "nome": "Resultado pós-recurso da Prova de Títulos",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 44,
+      "guarda": 44
+     }
+    }
+   },
+   "D": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 44,
+      "guarda": 44
+     }
+    }
+   }
+  },
+  "fase": "titulos"
+ },
+ {
+  "id": "A046",
+  "linha": 46,
+  "nome": "Publicação da Classificação preliminar da totalização das notas",
+  "aplicavel": "Guarda",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "No dia do resultado após recurso da etapa anterior.",
+    "tipo": "MESMO",
+    "ref": "RES_POS_ANT",
+    "cond": null,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "No dia do resultado após recurso da etapa anterior.",
+    "tipo": "MESMO",
+    "ref": "RES_POS_ANT",
+    "cond": null,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "guarda_classif"
+ },
+ {
+  "id": "A047",
+  "linha": 47,
+  "nome": "Abertura de recurso contra Classificação preliminar da totalização das notas",
+  "aplicavel": "Guarda",
+  "formato_data": "periodo",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: 3 dias úteis",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 41,
+      "guarda": 46
+     }
+    }
+   },
+   "D": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: 2 dias úteis, podendo variar manualmente",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 2,
+    "un": "du",
+    "minimo": false,
+    "editavel": true,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 41,
+      "guarda": 46
+     }
+    }
+   }
+  },
+  "fase": "guarda_classif"
+ },
+ {
+  "id": "A048",
+  "linha": 48,
+  "nome": "Resultado pós-recurso da Classificação preliminar da totalização das notas",
+  "aplicavel": "Guarda",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 47,
+      "guarda": 47
+     }
+    }
+   },
+   "D": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 47,
+      "guarda": 47
+     }
+    }
+   }
+  },
+  "fase": "guarda_classif"
+ },
+ {
+  "id": "A049",
+  "linha": 49,
+  "nome": "Período para envio dos documentos da Solicitação para Adaptação da Prova de Capacidade Física para candidatos PcD",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "3 dias úteis (Somente se tiver etapa de Prova Prática/Prova de Capacidade Física) - Começando a partir da publicação da Classificação preliminar da totalização das notas. (Mudar \"Prova de Capacidade Física\" para \"Prova prática\" quando for o caso)",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "CLASSIF_TOTALIZ",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": "somente se houver Prova Prática/Prova de Capacidade Física",
+    "faixa": null,
+    "ref_linhas": {
+     "CLASSIF_TOTALIZ": {
+      "conc": 33,
+      "guarda": 46
+     }
+    }
+   },
+   "D": {
+    "texto": "2 dias úteis (Somente se tiver etapa de Prova Prática/Prova de Capacidade Física) - Começando a partir da publicação da Classificação preliminar da totalização das notas.",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "CLASSIF_TOTALIZ",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 2,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": "somente se houver Prova Prática/Prova de Capacidade Física",
+    "faixa": null,
+    "ref_linhas": {
+     "CLASSIF_TOTALIZ": {
+      "conc": 33,
+      "guarda": 46
+     }
+    }
+   }
+  },
+  "fase": "adaptacao"
+ },
+ {
+  "id": "A050",
+  "linha": 50,
+  "nome": "Período para análise da adaptação da prova de capacidade física.",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "3 dias úteis após o encerramento do envio (Mudar \"Prova de Capacidade Física\" para \"Prova prática\" quando for o caso)",
+    "tipo": "APOS",
+    "ref": "ENVIO",
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "periodo_apos": true,
+    "ref_linhas": {
+     "ENVIO": {
+      "conc": 49,
+      "guarda": 49
+     }
+    }
+   },
+   "D": {
+    "texto": "1 dia útil após o encerramento do envio",
+    "tipo": "APOS",
+    "ref": "ENVIO",
+    "n": 1,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "periodo_apos": true,
+    "ref_linhas": {
+     "ENVIO": {
+      "conc": 49,
+      "guarda": 49
+     }
+    }
+   }
+  },
+  "fase": "adaptacao"
+ },
+ {
+  "id": "A051",
+  "linha": 51,
+  "nome": "Resultado preliminar da Solicitação para Adaptação da Prova de Capacidade Física para candidatos PcD",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao término da análise da adaptação",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 50,
+      "guarda": 50
+     }
+    }
+   },
+   "D": {
+    "texto": "1º dia útil seguinte ao término da análise da adaptação",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 50,
+      "guarda": 50
+     }
+    }
+   }
+  },
+  "fase": "adaptacao"
+ },
+ {
+  "id": "A052",
+  "linha": 52,
+  "nome": "Abertura de recurso contra a solicitação para Adaptação da Prova de Capacidade Física para candidatos PcD",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Início no 1º dia útil seguinte ao resultado preliminar; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: 3 dias úteis",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 51,
+      "guarda": 51
+     }
+    }
+   },
+   "D": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: mínimo 1 dia útil, podendo variar manualmente",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 1,
+    "un": "du",
+    "minimo": true,
+    "editavel": true,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 51,
+      "guarda": 51
+     }
+    }
+   }
+  },
+  "fase": "adaptacao"
+ },
+ {
+  "id": "A053",
+  "linha": 53,
+  "nome": "Análise da Banca dos recursos da solicitação para Adaptação da Prova de Capacidade Física para candidatos PcD",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Início e fim em dia útil; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "2 dias úteis",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "2 dias úteis",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "adaptacao"
+ },
+ {
+  "id": "A054",
+  "linha": 54,
+  "nome": "Resultado pós-recurso da solicitação para Adaptação da Prova de Capacidade Física para candidatos PcD",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 53,
+      "guarda": 53
+     }
+    }
+   },
+   "D": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 53,
+      "guarda": 53
+     }
+    }
+   }
+  },
+  "fase": "adaptacao"
+ },
+ {
+  "id": "A055",
+  "linha": 55,
+  "nome": "Convocação para Prova Prática/Prova de Capacidade Física",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "tipo": "DIA",
+    "ref": "RES_POS_ANT",
+    "dow": "segunda",
+    "dire": "seg",
+    "fallback": "terça-feira",
+    "editavel": false,
+    "texto": "Sempre na segunda-feira anterior à prova; se a segunda-feira não for dia útil, na sexta-feira imediatamente anterior Pode ser definido manualmente",
+    "decisao": "Resposta 3 (consequência): convocação na segunda-feira seguinte ao resultado pós-recurso da etapa anterior; se não for dia útil, terça-feira",
+    "ref_linhas": {}
+   },
+   "D": {
+    "tipo": "DIA",
+    "ref": "RES_POS_ANT",
+    "dow": "segunda",
+    "dire": "seg",
+    "fallback": "terça-feira",
+    "editavel": false,
+    "texto": "Sempre na segunda-feira anterior à prova; se a segunda-feira não for dia útil, na sexta-feira imediatamente anterior Pode ser definido manualmente",
+    "decisao": "Resposta 3 (consequência): convocação na segunda-feira seguinte ao resultado pós-recurso da etapa anterior; se não for dia útil, terça-feira",
+    "ref_linhas": {}
+   }
+  },
+  "fase": "pratica"
+ },
+ {
+  "id": "A056",
+  "linha": 56,
+  "nome": "Realização Prova Prática/Prova de Capacidade Física",
+  "aplicavel": "Todos",
+  "formato_data": "fim_de_semana",
+  "dia_semana": "Sábado e/ou domingo",
+  "regras": {
+   "C": {
+    "tipo": "FDS",
+    "ref": "CONVOC",
+    "n": 0,
+    "un": "dc",
+    "pergunta_sabado": false,
+    "editavel": false,
+    "cond": null,
+    "texto": "Sábado e/ou domingo",
+    "decisao": "Resposta 3: sábado e/ou domingo seguinte à convocação",
+    "ref_linhas": {
+     "CONVOC": {
+      "conc": 55,
+      "guarda": 55
+     }
+    }
+   },
+   "D": {
+    "tipo": "FDS",
+    "ref": "CONVOC",
+    "n": 0,
+    "un": "dc",
+    "pergunta_sabado": false,
+    "editavel": false,
+    "cond": null,
+    "texto": "Sábado e/ou domingo",
+    "decisao": "Resposta 3: sábado e/ou domingo seguinte à convocação",
+    "ref_linhas": {
+     "CONVOC": {
+      "conc": 55,
+      "guarda": 55
+     }
+    }
+   }
+  },
+  "fase": "pratica"
+ },
+ {
+  "id": "A057",
+  "linha": 57,
+  "nome": "Resultado preliminar Prova Prática/Prova de Capacidade Física",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "7 dias após a prova",
+    "tipo": "APOS",
+    "ref": "REALIZ",
+    "n": 7,
+    "un": "dc",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "periodo_apos": false,
+    "ref_linhas": {
+     "REALIZ": {
+      "conc": 56,
+      "guarda": 56
+     }
+    }
+   },
+   "D": {
+    "texto": "4 dias após a prova",
+    "tipo": "APOS",
+    "ref": "REALIZ",
+    "n": 4,
+    "un": "dc",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "periodo_apos": false,
+    "ref_linhas": {
+     "REALIZ": {
+      "conc": 56,
+      "guarda": 56
+     }
+    }
+   }
+  },
+  "fase": "pratica"
+ },
+ {
+  "id": "A058",
+  "linha": 58,
+  "nome": "Abertura de recurso contra o Resultado Prova Prática/Prova de Capacidade Física",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Início no 1º dia útil seguinte ao resultado preliminar; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: 3 dias úteis",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 57,
+      "guarda": 57
+     }
+    }
+   },
+   "D": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: mínimo 1 dia útil, podendo variar manualmente",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 1,
+    "un": "du",
+    "minimo": true,
+    "editavel": true,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 57,
+      "guarda": 57
+     }
+    }
+   }
+  },
+  "fase": "pratica"
+ },
+ {
+  "id": "A059",
+  "linha": 59,
+  "nome": "Análise da Banca dos recursos da Prova Prática/Prova de Capacidade Física",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Início e fim em dia útil; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "3 dias úteis",
+    "tipo": "DUR",
+    "n": 3,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "2 dias úteis",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "pratica"
+ },
+ {
+  "id": "A060",
+  "linha": 60,
+  "nome": "Resultado pós-recurso da Prova Prática/Prova de Capacidade Física",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 59,
+      "guarda": 59
+     }
+    }
+   },
+   "D": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 59,
+      "guarda": 59
+     }
+    }
+   }
+  },
+  "fase": "pratica"
+ },
+ {
+  "id": "A061",
+  "linha": 61,
+  "nome": "Solicitar Comissão a Publicação de Portaria com composição equipe Investigação Social",
+  "aplicavel": "Guarda",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "Na convocação da Prova Prática/Prova de Capacidade Física",
+    "tipo": "MESMO",
+    "ref": "CONVOC_PRATICA",
+    "cond": null,
+    "ref_linhas": {
+     "CONVOC_PRATICA": {
+      "conc": 55,
+      "guarda": 55
+     }
+    }
+   },
+   "D": {
+    "texto": "Na convocação da Prova Prática/Prova de Capacidade Física",
+    "tipo": "MESMO",
+    "ref": "CONVOC_PRATICA",
+    "cond": null,
+    "ref_linhas": {
+     "CONVOC_PRATICA": {
+      "conc": 55,
+      "guarda": 55
+     }
+    }
+   }
+  },
+  "fase": "sindicancia"
+ },
+ {
+  "id": "A062",
+  "linha": 62,
+  "nome": "Publicação de Portaria com composição equipe Investigação Social",
+  "aplicavel": "Guarda",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "No mesmo dia do resultado após recurso da etapa anterior",
+    "tipo": "MESMO",
+    "ref": "RES_POS_ANT",
+    "cond": null,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "No mesmo dia do resultado após recurso da etapa anterior",
+    "tipo": "MESMO",
+    "ref": "RES_POS_ANT",
+    "cond": null,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "sindicancia"
+ },
+ {
+  "id": "A063",
+  "linha": 63,
+  "nome": "Convocação para a Entrega da Documentação para Sindicância Social",
+  "aplicavel": "Guarda",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "No mesmo dia da publicação da portaria",
+    "tipo": "MESMO",
+    "ref": "PORTARIA",
+    "cond": null,
+    "ref_linhas": {
+     "PORTARIA": {
+      "conc": null,
+      "guarda": 62
+     }
+    }
+   },
+   "D": {
+    "texto": "No mesmo dia da publicação da portaria",
+    "tipo": "MESMO",
+    "ref": "PORTARIA",
+    "cond": null,
+    "ref_linhas": {
+     "PORTARIA": {
+      "conc": null,
+      "guarda": 62
+     }
+    }
+   }
+  },
+  "fase": "sindicancia"
+ },
+ {
+  "id": "A064",
+  "linha": 64,
+  "nome": "Período de Entrega da Documentação para Sindicância Social",
+  "aplicavel": "Guarda",
+  "formato_data": "periodo",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "3 dias úteis após a data da convocação",
+    "tipo": "APOS",
+    "ref": "CONVOC",
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "periodo_apos": true,
+    "ref_linhas": {
+     "CONVOC": {
+      "conc": 55,
+      "guarda": 63
+     }
+    }
+   },
+   "D": {
+    "texto": "2 dias úteis após a data da convocação",
+    "tipo": "APOS",
+    "ref": "CONVOC",
+    "n": 2,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "periodo_apos": true,
+    "ref_linhas": {
+     "CONVOC": {
+      "conc": 55,
+      "guarda": 63
+     }
+    }
+   }
+  },
+  "fase": "sindicancia"
+ },
+ {
+  "id": "A065",
+  "linha": 65,
+  "nome": "Análise pela Comissão da Documentação de Sindicância Social",
+  "aplicavel": "Guarda",
+  "formato_data": "periodo",
+  "dia_semana": "—",
+  "regras": {
+   "C": {
+    "texto": "30 dias corridos",
+    "tipo": "DUR",
+    "n": 30,
+    "un": "dc",
+    "editavel": false,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "30 dias corridos",
+    "tipo": "DUR",
+    "n": 30,
+    "un": "dc",
+    "editavel": false,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "sindicancia"
+ },
+ {
+  "id": "A066",
+  "linha": 66,
+  "nome": "Resultado preliminar da Sindicância Social",
+  "aplicavel": "Guarda",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil após encerramento da análise",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 65,
+      "guarda": 65
+     }
+    }
+   },
+   "D": {
+    "texto": "30 dias corridos após o recebimento da documentação, podendo ser definido manualmente",
+    "tipo": "APOS",
+    "ref": "ENVIO",
+    "n": 30,
+    "un": "dc",
+    "minimo": false,
+    "editavel": true,
+    "cond": null,
+    "periodo_apos": true,
+    "ref_linhas": {
+     "ENVIO": {
+      "conc": 49,
+      "guarda": 64
+     }
+    }
+   }
+  },
+  "fase": "sindicancia"
+ },
+ {
+  "id": "A067",
+  "linha": 67,
+  "nome": "Abertura de recursos contra resultado da Sindicância Social",
+  "aplicavel": "Guarda",
+  "formato_data": "periodo",
+  "dia_semana": "Início no 1º dia útil seguinte ao resultado preliminar; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: 3 dias úteis",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 57,
+      "guarda": 66
+     }
+    }
+   },
+   "D": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: mínimo 1 dia útil, podendo variar manualmente",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 1,
+    "un": "du",
+    "minimo": true,
+    "editavel": true,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 57,
+      "guarda": 66
+     }
+    }
+   }
+  },
+  "fase": "sindicancia"
+ },
+ {
+  "id": "A068",
+  "linha": 68,
+  "nome": "Análise da Banca dos recursos contra Sindicância Social",
+  "aplicavel": "Guarda",
+  "formato_data": "periodo",
+  "dia_semana": "Início e fim em dia útil; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "4 dias úteis",
+    "tipo": "DUR",
+    "n": 4,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "2 dias úteis",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "sindicancia"
+ },
+ {
+  "id": "A069",
+  "linha": 69,
+  "nome": "Resultado pós-recurso contra Sindicância Social",
+  "aplicavel": "Guarda",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 68,
+      "guarda": 68
+     }
+    }
+   },
+   "D": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 68,
+      "guarda": 68
+     }
+    }
+   }
+  },
+  "fase": "sindicancia"
+ },
+ {
+  "id": "A070",
+  "linha": 70,
+  "nome": "Convocação para Avaliação Psicológica",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "tipo": "DIA",
+    "ref": "RES_POS_ANT",
+    "dow": "segunda",
+    "dire": "seg",
+    "fallback": "terça-feira",
+    "editavel": false,
+    "texto": "Sempre na segunda-feira anterior à prova; se a segunda-feira não for dia útil, na sexta-feira imediatamente anterior Pode ser definido manualmente",
+    "decisao": "Resposta 3 (consequência): convocação na segunda-feira seguinte ao resultado pós-recurso da etapa anterior; se não for dia útil, terça-feira",
+    "ref_linhas": {}
+   },
+   "D": {
+    "tipo": "DIA",
+    "ref": "RES_POS_ANT",
+    "dow": "segunda",
+    "dire": "seg",
+    "fallback": "terça-feira",
+    "editavel": false,
+    "texto": "Sempre na segunda-feira anterior à prova; se a segunda-feira não for dia útil, na sexta-feira imediatamente anterior Pode ser definido manualmente",
+    "decisao": "Resposta 3 (consequência): convocação na segunda-feira seguinte ao resultado pós-recurso da etapa anterior; se não for dia útil, terça-feira",
+    "ref_linhas": {}
+   }
+  },
+  "fase": "psicologica"
+ },
+ {
+  "id": "A071",
+  "linha": 71,
+  "nome": "Realização Avaliação Psicológica",
+  "aplicavel": "Todos",
+  "formato_data": "fim_de_semana",
+  "dia_semana": "Sábado e/ou domingo",
+  "regras": {
+   "C": {
+    "tipo": "FDS",
+    "ref": "CONVOC",
+    "n": 0,
+    "un": "dc",
+    "pergunta_sabado": false,
+    "editavel": false,
+    "cond": null,
+    "texto": "Sábado e/ou domingo",
+    "decisao": "Resposta 3: sábado e/ou domingo seguinte à convocação",
+    "ref_linhas": {
+     "CONVOC": {
+      "conc": 70,
+      "guarda": 70
+     }
+    }
+   },
+   "D": {
+    "tipo": "FDS",
+    "ref": "CONVOC",
+    "n": 0,
+    "un": "dc",
+    "pergunta_sabado": false,
+    "editavel": false,
+    "cond": null,
+    "texto": "Sábado e/ou domingo",
+    "decisao": "Resposta 3: sábado e/ou domingo seguinte à convocação",
+    "ref_linhas": {
+     "CONVOC": {
+      "conc": 70,
+      "guarda": 70
+     }
+    }
+   }
+  },
+  "fase": "psicologica"
+ },
+ {
+  "id": "A072",
+  "linha": 72,
+  "nome": "Correção dos testes da Avaliação Psicológica",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "5 dias úteis após a realização da avaliação",
+    "tipo": "APOS",
+    "ref": "REALIZ",
+    "n": 5,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "periodo_apos": true,
+    "ref_linhas": {
+     "REALIZ": {
+      "conc": 71,
+      "guarda": 71
+     }
+    }
+   },
+   "D": {
+    "texto": "3 dias úteis após a realização da avaliação",
+    "tipo": "APOS",
+    "ref": "REALIZ",
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "periodo_apos": true,
+    "ref_linhas": {
+     "REALIZ": {
+      "conc": 71,
+      "guarda": 71
+     }
+    }
+   }
+  },
+  "fase": "psicologica"
+ },
+ {
+  "id": "A073",
+  "linha": 73,
+  "nome": "Resultado preliminar da Avaliação Psicológica",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil após o término da correção",
+    "tipo": "SEG",
+    "ref": "ANTERIOR",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANTERIOR": {
+      "conc": 72,
+      "guarda": 72
+     }
+    }
+   },
+   "D": {
+    "texto": "1º dia útil após o término da correção",
+    "tipo": "SEG",
+    "ref": "ANTERIOR",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANTERIOR": {
+      "conc": 72,
+      "guarda": 72
+     }
+    }
+   }
+  },
+  "fase": "psicologica"
+ },
+ {
+  "id": "A074",
+  "linha": 74,
+  "nome": "Manifestação de Interesse de receber Entrevista Devolutiva",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "2 dias úteis",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "2 dias úteis",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "psicologica"
+ },
+ {
+  "id": "A075",
+  "linha": 75,
+  "nome": "Convocação para Realização da Entrevista Devolutiva.",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil após a manifestação",
+    "tipo": "SEG",
+    "ref": "MANIFEST",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "MANIFEST": {
+      "conc": 74,
+      "guarda": 74
+     }
+    }
+   },
+   "D": {
+    "texto": "1º dia útil após a manifestação",
+    "tipo": "SEG",
+    "ref": "MANIFEST",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "MANIFEST": {
+      "conc": 74,
+      "guarda": 74
+     }
+    }
+   }
+  },
+  "fase": "psicologica"
+ },
+ {
+  "id": "A076",
+  "linha": 76,
+  "nome": "Realização Entrevista Devolutiva",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "2º dia útil à convocação da realização da entrevista devolutiva",
+    "tipo": "SEG",
+    "ref": "CONVOC",
+    "ordn": 2,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "CONVOC": {
+      "conc": 75,
+      "guarda": 75
+     }
+    }
+   },
+   "D": {
+    "texto": "No dia seguinte à convocação da manifestação",
+    "tipo": "SEG",
+    "ref": "CONVOC",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "CONVOC": {
+      "conc": 75,
+      "guarda": 75
+     }
+    }
+   }
+  },
+  "fase": "psicologica"
+ },
+ {
+  "id": "A077",
+  "linha": 77,
+  "nome": "Abertura de recurso contra a Avaliação Psicológica",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Início no 1º dia útil seguinte à devolutiva; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "Início no 1º dia útil seguinte à data da devolutiva Duração: 3 dias úteis",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "DEVOLUTIVA",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "DEVOLUTIVA": {
+      "conc": 76,
+      "guarda": 76
+     }
+    }
+   },
+   "D": {
+    "texto": "Início no 1º dia útil seguinte à data da devolutiva Duração: mínimo 1 dia útil, podendo variar manualmente",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "DEVOLUTIVA",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 1,
+    "un": "du",
+    "minimo": true,
+    "editavel": true,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "DEVOLUTIVA": {
+      "conc": 76,
+      "guarda": 76
+     }
+    }
+   }
+  },
+  "fase": "psicologica"
+ },
+ {
+  "id": "A078",
+  "linha": 78,
+  "nome": "Análise da Banca dos recursos da Avaliação Psicológica",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Início e fim em dia útil; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "4 dias úteis",
+    "tipo": "DUR",
+    "n": 4,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "2 dias úteis",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "psicologica"
+ },
+ {
+  "id": "A079",
+  "linha": 79,
+  "nome": "Resultado pós-recurso da Avaliação Psicológica",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 78,
+      "guarda": 78
+     }
+    }
+   },
+   "D": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 78,
+      "guarda": 78
+     }
+    }
+   }
+  },
+  "fase": "psicologica"
+ },
+ {
+  "id": "A080",
+  "linha": 80,
+  "nome": "Organização Avaliação Médica",
+  "aplicavel": "Guarda",
+  "formato_data": "periodo",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "No dia do resultado preliminar da etapa anterior",
+    "tipo": "MESMO",
+    "ref": "RES_PRELIM_ANT",
+    "cond": null,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "No dia do resultado preliminar da etapa anterior",
+    "tipo": "MESMO",
+    "ref": "RES_PRELIM_ANT",
+    "cond": null,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "medica"
+ },
+ {
+  "id": "A081",
+  "linha": 81,
+  "nome": "Convocação para Avaliação Médica",
+  "aplicavel": "Guarda",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "Na segunda-feira seguinte a publicação do resultado após recurso da etapa anterior; se não for dia útil, na terça-feira",
+    "tipo": "DIA",
+    "ref": "RES_POS_ANT",
+    "dow": "segunda",
+    "dire": "seg",
+    "fallback": "terça-feira",
+    "editavel": false,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "Na segunda-feira seguinte a publicação do resultado após recurso da etapa anterior; se não for dia útil, na terça-feira",
+    "tipo": "DIA",
+    "ref": "RES_POS_ANT",
+    "dow": "segunda",
+    "dire": "seg",
+    "fallback": "terça-feira",
+    "editavel": false,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "medica"
+ },
+ {
+  "id": "A082",
+  "linha": 82,
+  "nome": "Realização da Avaliação Médica",
+  "aplicavel": "Guarda",
+  "formato_data": "fim_de_semana",
+  "dia_semana": "Sábado e/ou domingo",
+  "regras": {
+   "C": {
+    "texto": "15 dias corridos após a convocação (não pode dar menos de 15 dias da convocação para a realização), sempre Sábado e/ou domingo",
+    "tipo": "FDS",
+    "ref": "CONVOC",
+    "n": 15,
+    "un": "dc",
+    "pergunta_sabado": false,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "CONVOC": {
+      "conc": 75,
+      "guarda": 81
+     }
+    }
+   },
+   "D": {
+    "texto": "15 dias corridos após a convocação (não pode dar menos de 15 dias da convocação para a realização), sempre Sábado e/ou domingo",
+    "tipo": "FDS",
+    "ref": "CONVOC",
+    "n": 15,
+    "un": "dc",
+    "pergunta_sabado": false,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "CONVOC": {
+      "conc": 75,
+      "guarda": 81
+     }
+    }
+   }
+  },
+  "fase": "medica"
+ },
+ {
+  "id": "A083",
+  "linha": 83,
+  "nome": "Resultado preliminar da Avaliação Médica",
+  "aplicavel": "Guarda",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "Na sexta-feira seguinte; se não for dia útil, no próximo dia útil",
+    "tipo": "DIA",
+    "ref": "REALIZ",
+    "dow": "sexta",
+    "dire": "seg",
+    "fallback": "próximo dia útil",
+    "editavel": false,
+    "ref_linhas": {
+     "REALIZ": {
+      "conc": 76,
+      "guarda": 82
+     }
+    }
+   },
+   "D": {
+    "texto": "Na sexta-feira seguinte; se não for dia útil, no próximo dia útil",
+    "tipo": "DIA",
+    "ref": "REALIZ",
+    "dow": "sexta",
+    "dire": "seg",
+    "fallback": "próximo dia útil",
+    "editavel": false,
+    "ref_linhas": {
+     "REALIZ": {
+      "conc": 76,
+      "guarda": 82
+     }
+    }
+   }
+  },
+  "fase": "medica"
+ },
+ {
+  "id": "A084",
+  "linha": 84,
+  "nome": "Abertura de recursos contra resultado da Avaliação Médica",
+  "aplicavel": "Guarda",
+  "formato_data": "periodo",
+  "dia_semana": "Início no 1º dia útil seguinte ao resultado preliminar; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: 3 dias úteis",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 73,
+      "guarda": 83
+     }
+    }
+   },
+   "D": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: mínimo 1 dia útil, podendo variar manualmente",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 1,
+    "un": "du",
+    "minimo": true,
+    "editavel": true,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 73,
+      "guarda": 83
+     }
+    }
+   }
+  },
+  "fase": "medica"
+ },
+ {
+  "id": "A085",
+  "linha": 85,
+  "nome": "Análise da Banca dos recursos contra a Avaliação Médica",
+  "aplicavel": "Guarda",
+  "formato_data": "periodo",
+  "dia_semana": "Início e fim em dia útil; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "3 dias úteis",
+    "tipo": "DUR",
+    "n": 3,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "2 dias úteis",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "medica"
+ },
+ {
+  "id": "A086",
+  "linha": 86,
+  "nome": "Resultado pós-recurso da Avaliação Médica",
+  "aplicavel": "Guarda",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 85,
+      "guarda": 85
+     }
+    }
+   },
+   "D": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 85,
+      "guarda": 85
+     }
+    }
+   }
+  },
+  "fase": "medica"
+ },
+ {
+  "id": "A087",
+  "linha": 87,
+  "nome": "Organização Entrevista por Competências",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "No dia do resultado preliminar da etapa anterior",
+    "tipo": "MESMO",
+    "ref": "RES_PRELIM_ANT",
+    "cond": null,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "No dia do resultado preliminar da etapa anterior",
+    "tipo": "MESMO",
+    "ref": "RES_PRELIM_ANT",
+    "cond": null,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "competencias"
+ },
+ {
+  "id": "A088",
+  "linha": 88,
+  "nome": "Convocação para Entrevista por Competências",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "Na segunda-feira seguinte a publicação do resultado após recurso da etapa anterior; se não for dia útil, na terça-feira",
+    "tipo": "DIA",
+    "ref": "RES_POS_ANT",
+    "dow": "segunda",
+    "dire": "seg",
+    "fallback": "terça-feira",
+    "editavel": false,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "Na segunda-feira seguinte a publicação do resultado após recurso da etapa anterior; se não for dia útil, na terça-feira",
+    "tipo": "DIA",
+    "ref": "RES_POS_ANT",
+    "dow": "segunda",
+    "dire": "seg",
+    "fallback": "terça-feira",
+    "editavel": false,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "competencias"
+ },
+ {
+  "id": "A089",
+  "linha": 89,
+  "nome": "Realização Entrevista por Competências",
+  "aplicavel": "Todos",
+  "formato_data": "fim_de_semana",
+  "dia_semana": "Sábado e/ou domingo",
+  "regras": {
+   "C": {
+    "texto": "5 dias após a convocação (não pode ser menos de 5 dias da convocação para realização). Sábado e/ou domingo",
+    "tipo": "FDS",
+    "ref": "CONVOC",
+    "n": 5,
+    "un": "dc",
+    "pergunta_sabado": false,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "CONVOC": {
+      "conc": 88,
+      "guarda": 88
+     }
+    }
+   },
+   "D": {
+    "texto": "5 dias após a convocação (não pode ser menos de 5 dias da convocação para realização). Sábado e/ou domingo",
+    "tipo": "FDS",
+    "ref": "CONVOC",
+    "n": 5,
+    "un": "dc",
+    "pergunta_sabado": false,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "CONVOC": {
+      "conc": 88,
+      "guarda": 88
+     }
+    }
+   }
+  },
+  "fase": "competencias"
+ },
+ {
+  "id": "A090",
+  "linha": 90,
+  "nome": "Resultado preliminar da Entrevista por Competências",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "3º dia útil após o término das entrevistas",
+    "tipo": "SEG",
+    "ref": "REALIZ",
+    "ordn": 3,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "REALIZ": {
+      "conc": 89,
+      "guarda": 89
+     }
+    }
+   },
+   "D": {
+    "texto": "3º dia útil após o término das entrevistas",
+    "tipo": "SEG",
+    "ref": "REALIZ",
+    "ordn": 3,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "REALIZ": {
+      "conc": 89,
+      "guarda": 89
+     }
+    }
+   }
+  },
+  "fase": "competencias"
+ },
+ {
+  "id": "A091",
+  "linha": 91,
+  "nome": "Organização Curso Formação Introdutória Básica",
+  "aplicavel": "Concurso + PSS + PSP",
+  "formato_data": "periodo",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "No dia do resultado preliminar da etapa anterior",
+    "tipo": "MESMO",
+    "ref": "RES_PRELIM_ANT",
+    "cond": null,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "No dia do resultado preliminar da etapa anterior",
+    "tipo": "MESMO",
+    "ref": "RES_PRELIM_ANT",
+    "cond": null,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "curso_intro"
+ },
+ {
+  "id": "A092",
+  "linha": 92,
+  "nome": "Organização Curso de Formação",
+  "aplicavel": "Guarda",
+  "formato_data": "periodo",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "No dia do resultado preliminar da etapa anterior",
+    "tipo": "MESMO",
+    "ref": "RES_PRELIM_ANT",
+    "cond": null,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "No dia do resultado preliminar da etapa anterior",
+    "tipo": "MESMO",
+    "ref": "RES_PRELIM_ANT",
+    "cond": null,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "curso_guarda"
+ },
+ {
+  "id": "A093",
+  "linha": 93,
+  "nome": "Abertura de recurso contra a Entrevista por Competências",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Início no 1º dia útil seguinte ao resultado preliminar; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: 3 dias úteis",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 90,
+      "guarda": 90
+     }
+    }
+   },
+   "D": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: mínimo 1 dia útil, podendo variar manualmente",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 1,
+    "un": "du",
+    "minimo": true,
+    "editavel": true,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 90,
+      "guarda": 90
+     }
+    }
+   }
+  },
+  "fase": "competencias"
+ },
+ {
+  "id": "A094",
+  "linha": 94,
+  "nome": "Análise da Banca dos recursos da Entrevista por Competências",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Início e fim em dia útil; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "3 dias úteis",
+    "tipo": "DUR",
+    "n": 3,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "2 dias úteis",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "competencias"
+ },
+ {
+  "id": "A095",
+  "linha": 95,
+  "nome": "Resultado pós-recurso da Entrevista por Competências",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 94,
+      "guarda": 94
+     }
+    }
+   },
+   "D": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 94,
+      "guarda": 94
+     }
+    }
+   }
+  },
+  "fase": "competencias"
+ },
+ {
+  "id": "A096",
+  "linha": 96,
+  "nome": "Organização do Procedimento Heteroidentificação",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "No dia do resultado preliminar da etapa anterior",
+    "tipo": "MESMO",
+    "ref": "RES_PRELIM_ANT",
+    "cond": null,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "No dia do resultado preliminar da etapa anterior",
+    "tipo": "MESMO",
+    "ref": "RES_PRELIM_ANT",
+    "cond": null,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "hetero"
+ },
+ {
+  "id": "A097",
+  "linha": 97,
+  "nome": "Convocação Procedimento Heteroidentificação",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "Se for presencial na segunda-feira seguinte a publicação do resultado após recurso da etapa anterior; se não for dia útil, na terça-feira. Se for online, no mesmo dia do resultado pós-recurso da etapa anterior.",
+    "tipo": "MODALIDADE",
+    "online": {
+     "tipo": "MESMO",
+     "ref": "RES_POS_ANT",
+     "cond": null
+    },
+    "presencial": {
+     "tipo": "DIA",
+     "ref": "RES_POS_ANT",
+     "dow": "segunda",
+     "dire": "seg",
+     "fallback": "terça-feira",
+     "editavel": false
+    },
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "Se for presencial na segunda-feira seguinte a publicação do resultado após recurso da etapa anterior; se não for dia útil, na terça-feira. Se for online, no mesmo dia do resultado pós-recurso da etapa anterior.",
+    "tipo": "MODALIDADE",
+    "online": {
+     "tipo": "MESMO",
+     "ref": "RES_POS_ANT",
+     "cond": null
+    },
+    "presencial": {
+     "tipo": "DIA",
+     "ref": "RES_POS_ANT",
+     "dow": "segunda",
+     "dire": "seg",
+     "fallback": "terça-feira",
+     "editavel": false
+    },
+    "ref_linhas": {}
+   }
+  },
+  "fase": "hetero"
+ },
+ {
+  "id": "A098",
+  "linha": 98,
+  "nome": "Envio Foto/Vídeo para Procedimento Heteroidentificação (se for online)",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "3 dias úteis",
+    "tipo": "DUR",
+    "n": 3,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "2 dias úteis",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "hetero"
+ },
+ {
+  "id": "A099",
+  "linha": 99,
+  "nome": "Procedimento Heteroidentificação - avaliação da banca",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "5 dias após a convocação (não pode ser menos de 5 dias da convocação para realização). Sábado e/ou domingo. Se for online 4 dias úteis",
+    "tipo": "MODALIDADE",
+    "online": {
+     "tipo": "APOS",
+     "ref": "CONVOC",
+     "n": 4,
+     "un": "du",
+     "minimo": false,
+     "editavel": false,
+     "cond": null,
+     "periodo_apos": false
+    },
+    "presencial": {
+     "tipo": "FDS",
+     "ref": "CONVOC",
+     "n": 5,
+     "un": "dc",
+     "pergunta_sabado": false,
+     "editavel": false,
+     "cond": null
+    },
+    "ref_linhas": {
+     "CONVOC": {
+      "conc": 97,
+      "guarda": 97
+     }
+    }
+   },
+   "D": {
+    "texto": "5 dias após a convocação (não pode ser menos de 5 dias da convocação para realização). Sábado e/ou domingo. Se for online 2 dias úteis",
+    "tipo": "MODALIDADE",
+    "online": {
+     "tipo": "APOS",
+     "ref": "CONVOC",
+     "n": 2,
+     "un": "du",
+     "minimo": false,
+     "editavel": false,
+     "cond": null,
+     "periodo_apos": false
+    },
+    "presencial": {
+     "tipo": "FDS",
+     "ref": "CONVOC",
+     "n": 5,
+     "un": "dc",
+     "pergunta_sabado": false,
+     "editavel": false,
+     "cond": null
+    },
+    "ref_linhas": {
+     "CONVOC": {
+      "conc": 97,
+      "guarda": 97
+     }
+    }
+   }
+  },
+  "fase": "hetero"
+ },
+ {
+  "id": "A100",
+  "linha": 100,
+  "nome": "Resultado preliminar do Procedimento Heteroidentificação",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "Se for online 1º dia útil após o término do procedimento, Se for presencial 3 dias úteis após o procedimento.",
+    "tipo": "MODALIDADE",
+    "online": {
+     "tipo": "SEG",
+     "ref": "PROCED",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "presencial": {
+     "tipo": "APOS",
+     "ref": "PROCED",
+     "n": 3,
+     "un": "du",
+     "minimo": false,
+     "editavel": false,
+     "cond": null,
+     "periodo_apos": false
+    },
+    "ref_linhas": {
+     "PROCED": {
+      "conc": 99,
+      "guarda": 99
+     }
+    }
+   },
+   "D": {
+    "texto": "Se for online 1º dia útil após o término do procedimento, Se for presencial 3 dias úteis após o procedimento.",
+    "tipo": "MODALIDADE",
+    "online": {
+     "tipo": "SEG",
+     "ref": "PROCED",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "presencial": {
+     "tipo": "APOS",
+     "ref": "PROCED",
+     "n": 3,
+     "un": "du",
+     "minimo": false,
+     "editavel": false,
+     "cond": null,
+     "periodo_apos": false
+    },
+    "ref_linhas": {
+     "PROCED": {
+      "conc": 99,
+      "guarda": 99
+     }
+    }
+   }
+  },
+  "fase": "hetero"
+ },
+ {
+  "id": "A101",
+  "linha": 101,
+  "nome": "Abertura de recurso contra o resultado do Procedimento Heteroidentificação",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Início no 1º dia útil seguinte ao resultado preliminar; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: 3 dias úteis",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 100,
+      "guarda": 100
+     }
+    }
+   },
+   "D": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: mínimo 1 dia útil, podendo variar manualmente",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 1,
+    "un": "du",
+    "minimo": true,
+    "editavel": true,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 100,
+      "guarda": 100
+     }
+    }
+   }
+  },
+  "fase": "hetero"
+ },
+ {
+  "id": "A102",
+  "linha": 102,
+  "nome": "Análise da Banca dos recursos do Procedimento Heteroidentificação",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Início e fim em dia útil; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "3 dias úteis",
+    "tipo": "DUR",
+    "n": 3,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "2 dias úteis",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "hetero"
+ },
+ {
+  "id": "A103",
+  "linha": 103,
+  "nome": "Resultado pós-recurso do Procedimento Heteroidentificação",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 102,
+      "guarda": 102
+     }
+    }
+   },
+   "D": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 102,
+      "guarda": 102
+     }
+    }
+   }
+  },
+  "fase": "hetero"
+ },
+ {
+  "id": "A104",
+  "linha": 104,
+  "nome": "Convocação Curso Formação",
+  "aplicavel": "Concurso + PSS + PSP",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "Na segunda-feira seguinte a publicação do resultado após recurso da etapa anterior; se não for dia útil, na sexta-feira.",
+    "tipo": "DIA",
+    "ref": "RES_POS_ANT",
+    "dow": "segunda",
+    "dire": "seg",
+    "fallback": "sexta-feira da mesma semana",
+    "editavel": false,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "Na segunda-feira seguinte a publicação do resultado após recurso da etapa anterior; se não for dia útil, na sexta-feira.",
+    "tipo": "DIA",
+    "ref": "RES_POS_ANT",
+    "dow": "segunda",
+    "dire": "seg",
+    "fallback": "sexta-feira da mesma semana",
+    "editavel": false,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "curso_intro"
+ },
+ {
+  "id": "A105",
+  "linha": 105,
+  "nome": "Realização Curso Formação - 40 horas (A carga horária vai ser definida no cadastro)",
+  "aplicavel": "Concurso + PSS + PSP",
+  "formato_data": "periodo",
+  "dia_semana": "Livre",
+  "regras": {
+   "C": {
+    "texto": "Iniciando na segunda-feira seguinte a convocação, podendo variar manualmente (horário por dia e carga horária total) de acordo com a carga horária.",
+    "tipo": "CURSO_CH",
+    "ref": "CONVOC",
+    "inicio_dow": "segunda",
+    "editavel": true,
+    "ref_linhas": {
+     "CONVOC": {
+      "conc": 104,
+      "guarda": 97
+     }
+    }
+   },
+   "D": {
+    "texto": "Iniciando na segunda-feira seguinte a convoação, podendo váriar manualmente (horário por dia e carga horária total) de acordo com a carga horária.",
+    "tipo": "CURSO_CH",
+    "ref": "CONVOC",
+    "inicio_dow": "segunda",
+    "editavel": true,
+    "ref_linhas": {
+     "CONVOC": {
+      "conc": 104,
+      "guarda": 97
+     }
+    }
+   }
+  },
+  "fase": "curso_intro"
+ },
+ {
+  "id": "A106",
+  "linha": 106,
+  "nome": "COMPROVANTE DEFINITIVO DE INSCRIÇÃO (CDI) - PUBLICAÇÃO DO LOCAL DE PROVA (CURSO DE FORMAÇÃO)",
+  "aplicavel": "Concurso + PSS + PSP",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "Na sexta-feira seguinte; se não for dia útil, na quinta anterior.",
+    "tipo": "DIA",
+    "ref": "CONVOC",
+    "dow": "sexta",
+    "dire": "seg",
+    "fallback": "quinta-feira anterior",
+    "editavel": false,
+    "ref_linhas": {
+     "CONVOC": {
+      "conc": 104,
+      "guarda": 97
+     }
+    }
+   },
+   "D": {
+    "texto": "Na sexta-feira seguinte; se não for dia útil, na quinta anterior.",
+    "tipo": "DIA",
+    "ref": "CONVOC",
+    "dow": "sexta",
+    "dire": "seg",
+    "fallback": "quinta-feira anterior",
+    "editavel": false,
+    "ref_linhas": {
+     "CONVOC": {
+      "conc": 104,
+      "guarda": 97
+     }
+    }
+   }
+  },
+  "fase": "curso_intro"
+ },
+ {
+  "id": "A107",
+  "linha": 107,
+  "nome": "Realização da prova do curso de formação",
+  "aplicavel": "Concurso + PSS + PSP",
+  "formato_data": "data",
+  "dia_semana": "Domingo",
+  "regras": {
+   "C": {
+    "texto": "No domingo após encerramento do curso.",
+    "tipo": "DIA",
+    "ref": "CURSO_FIM",
+    "dow": "domingo",
+    "dire": "seg",
+    "fallback": "—",
+    "editavel": false,
+    "ref_linhas": {
+     "CURSO_FIM": {
+      "conc": 105,
+      "guarda": 105
+     }
+    }
+   },
+   "D": {
+    "texto": "No domingo após encerramento do curso.",
+    "tipo": "DIA",
+    "ref": "CURSO_FIM",
+    "dow": "domingo",
+    "dire": "seg",
+    "fallback": "—",
+    "editavel": false,
+    "ref_linhas": {
+     "CURSO_FIM": {
+      "conc": 105,
+      "guarda": 105
+     }
+    }
+   }
+  },
+  "fase": "curso_intro"
+ },
+ {
+  "id": "A108",
+  "linha": 108,
+  "nome": "Publicação do Gabarito preliminar Curso Formação",
+  "aplicavel": "Concurso + PSS + PSP",
+  "formato_data": "data",
+  "dia_semana": "Mesmo dia da prova (livre)",
+  "regras": {
+   "C": {
+    "texto": "No dia da prova final do Curso de Formação (último dia do curso)",
+    "tipo": "MESMO",
+    "ref": "PROVA_CURSO",
+    "cond": null,
+    "ref_linhas": {
+     "PROVA_CURSO": {
+      "conc": 107,
+      "guarda": 107
+     }
+    }
+   },
+   "D": {
+    "texto": "No dia da prova final do Curso de Formação (último dia do curso)",
+    "tipo": "MESMO",
+    "ref": "PROVA_CURSO",
+    "cond": null,
+    "ref_linhas": {
+     "PROVA_CURSO": {
+      "conc": 107,
+      "guarda": 107
+     }
+    }
+   }
+  },
+  "fase": "curso_intro"
+ },
+ {
+  "id": "A109",
+  "linha": 109,
+  "nome": "Abertura de recurso contra o Gabarito preliminar Curso Formação",
+  "aplicavel": "Concurso + PSS + PSP",
+  "formato_data": "periodo",
+  "dia_semana": "Início no 1º dia útil seguinte ao gabarito preliminar; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "Início no 1º dia útil seguinte à publicação do gabarito preliminar Duração: 3 dias úteis",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 108,
+      "guarda": 100
+     }
+    }
+   },
+   "D": {
+    "texto": "Início no 1º dia útil seguinte à publicação do gabarito preliminar Duração: mínimo 1 dia útil, podendo variar manualmente",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 1,
+    "un": "du",
+    "minimo": true,
+    "editavel": true,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 108,
+      "guarda": 100
+     }
+    }
+   }
+  },
+  "fase": "curso_intro"
+ },
+ {
+  "id": "A110",
+  "linha": 110,
+  "nome": "Análise da Banca dos recursos contra o Gabarito Curso Formação",
+  "aplicavel": "Concurso + PSS + PSP",
+  "formato_data": "data",
+  "dia_semana": "Início e fim em dia útil; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "2 dias úteis",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "2 dias úteis",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "curso_intro"
+ },
+ {
+  "id": "A111",
+  "linha": 111,
+  "nome": "Publicação do Gabarito Definitivo e resultado preliminar Curso Formação",
+  "aplicavel": "Concurso + PSS + PSP",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 110,
+      "guarda": 110
+     }
+    }
+   },
+   "D": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 110,
+      "guarda": 110
+     }
+    }
+   }
+  },
+  "fase": "curso_intro"
+ },
+ {
+  "id": "A112",
+  "linha": 112,
+  "nome": "Abertura de recurso contra o resultado Curso Formação",
+  "aplicavel": "Concurso + PSS + PSP",
+  "formato_data": "periodo",
+  "dia_semana": "Início no 1º dia útil seguinte ao resultado preliminar; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: 3 dias úteis",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 111,
+      "guarda": 100
+     }
+    }
+   },
+   "D": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: mínimo 1 dia útil, podendo variar manualmente",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 1,
+    "un": "du",
+    "minimo": true,
+    "editavel": true,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 111,
+      "guarda": 100
+     }
+    }
+   }
+  },
+  "fase": "curso_intro"
+ },
+ {
+  "id": "A113",
+  "linha": 113,
+  "nome": "Análise da Banca dos recursos contra resultado Curso Formação",
+  "aplicavel": "Concurso + PSS + PSP",
+  "formato_data": "data",
+  "dia_semana": "Início e fim em dia útil; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "2 dias úteis",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "2 dias úteis",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "curso_intro"
+ },
+ {
+  "id": "A114",
+  "linha": 114,
+  "nome": "Publicação do resultado pós-recurso Curso Formação",
+  "aplicavel": "Concurso + PSS + PSP",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 113,
+      "guarda": 113
+     }
+    }
+   },
+   "D": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 113,
+      "guarda": 113
+     }
+    }
+   }
+  },
+  "fase": "curso_intro"
+ },
+ {
+  "id": "A115",
+  "linha": 115,
+  "nome": "Classificação preliminar",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao resultado após recurso da etapa anterior",
+    "tipo": "SEG",
+    "ref": "RES_POS_ANT",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "No mesmo dia do resultado da etapa anterior",
+    "tipo": "MESMO",
+    "ref": "RES_POS_ANT",
+    "cond": null,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "base"
+ },
+ {
+  "id": "A116",
+  "linha": 116,
+  "nome": "Abertura de recurso contra Classificação preliminar",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Início no 1º dia útil seguinte ao resultado preliminar; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: 3 dias úteis",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 115,
+      "guarda": 115
+     }
+    }
+   },
+   "D": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: mínimo 1 dia útil, podendo variar manualmente",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 1,
+    "un": "du",
+    "minimo": true,
+    "editavel": true,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 115,
+      "guarda": 115
+     }
+    }
+   }
+  },
+  "fase": "base"
+ },
+ {
+  "id": "A117",
+  "linha": 117,
+  "nome": "Análise da Banca dos recursos contra Classificação preliminar",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Início e fim em dia útil; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "3 dias úteis",
+    "tipo": "DUR",
+    "n": 3,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "2 dias úteis",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "base"
+ },
+ {
+  "id": "A118",
+  "linha": 118,
+  "nome": "Classificação Final",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 117,
+      "guarda": 117
+     }
+    }
+   },
+   "D": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 117,
+      "guarda": 117
+     }
+    }
+   }
+  },
+  "fase": "base"
+ },
+ {
+  "id": "A119",
+  "linha": 119,
+  "nome": "Organização Avaliação Biopsicossocial (Perícia Médica e Avaliação Social)",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "No mesmo dia da publicação da classificação preliminar",
+    "tipo": "MESMO",
+    "ref": "CLASSIF",
+    "cond": null,
+    "ref_linhas": {
+     "CLASSIF": {
+      "conc": 115,
+      "guarda": 115
+     }
+    }
+   },
+   "D": {
+    "texto": "No mesmo dia da publicação da classificação preliminar",
+    "tipo": "MESMO",
+    "ref": "CLASSIF",
+    "cond": null,
+    "ref_linhas": {
+     "CLASSIF": {
+      "conc": 115,
+      "guarda": 115
+     }
+    }
+   }
+  },
+  "fase": "biopsicossocial"
+ },
+ {
+  "id": "A120",
+  "linha": 120,
+  "nome": "Convocação Avaliação Biopsicossocial (Perícia Médica e Avaliação Social)",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "Na segunda-feira seguinte a publicação do resultado após recurso da etapa anterior; se não for dia útil, na terça-feira.",
+    "tipo": "DIA",
+    "ref": "RES_POS_ANT",
+    "dow": "segunda",
+    "dire": "seg",
+    "fallback": "terça-feira",
+    "editavel": false,
+    "ref_linhas": {}
+   },
+   "D": {
+    "texto": "Na segunda-feira seguinte a publicação do resultado após recurso da etapa anterior; se não for dia útil, na terça-feira.",
+    "tipo": "DIA",
+    "ref": "RES_POS_ANT",
+    "dow": "segunda",
+    "dire": "seg",
+    "fallback": "terça-feira",
+    "editavel": false,
+    "ref_linhas": {}
+   }
+  },
+  "fase": "biopsicossocial"
+ },
+ {
+  "id": "A121",
+  "linha": 121,
+  "nome": "Avaliação Biopsicossocial (Perícia Médica e Avaliação Social)",
+  "aplicavel": "Todos",
+  "formato_data": "fim_de_semana",
+  "dia_semana": "Sábado e/ou domingo",
+  "regras": {
+   "C": {
+    "texto": "5 dias após a convocação (não pode ser menos de 5 dias da convocação para realização). Sábado e/ou domingo",
+    "tipo": "FDS",
+    "ref": "CONVOC",
+    "n": 5,
+    "un": "dc",
+    "pergunta_sabado": false,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "CONVOC": {
+      "conc": 120,
+      "guarda": 120
+     }
+    }
+   },
+   "D": {
+    "texto": "5 dias após a convocação (não pode ser menos de 5 dias da convocação para realização). Sábado e/ou domingo",
+    "tipo": "FDS",
+    "ref": "CONVOC",
+    "n": 5,
+    "un": "dc",
+    "pergunta_sabado": false,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "CONVOC": {
+      "conc": 120,
+      "guarda": 120
+     }
+    }
+   }
+  },
+  "fase": "biopsicossocial"
+ },
+ {
+  "id": "A122",
+  "linha": 122,
+  "nome": "Resultado preliminar da Avaliação Biopsicossocial (Perícia Médica e Avaliação Social)",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "tipo": "APOS",
+    "ref": "REALIZ",
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "periodo_apos": false,
+    "texto": "No mesmo dia do resultado preliminar da Heteroidentificação",
+    "decisao": "Rodada 2, ponto 1: a Biopsicossocial não depende da Heteroidentificação (hetero é antes da classificação; biopsicossocial é depois). Resultado preliminar: 3 dias úteis após a avaliação (mesmo padrão da Heteroidentificação presencial) — a confirmar.",
+    "ref_linhas": {
+     "REALIZ": {
+      "conc": 121,
+      "guarda": 121
+     }
+    }
+   },
+   "D": {
+    "tipo": "APOS",
+    "ref": "REALIZ",
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "periodo_apos": false,
+    "texto": "No mesmo dia do resultado preliminar da Heteroidentificação",
+    "decisao": "Rodada 2, ponto 1: a Biopsicossocial não depende da Heteroidentificação (hetero é antes da classificação; biopsicossocial é depois). Resultado preliminar: 3 dias úteis após a avaliação (mesmo padrão da Heteroidentificação presencial) — a confirmar.",
+    "ref_linhas": {
+     "REALIZ": {
+      "conc": 121,
+      "guarda": 121
+     }
+    }
+   }
+  },
+  "fase": "biopsicossocial"
+ },
+ {
+  "id": "A123",
+  "linha": 123,
+  "nome": "Abertura de recurso contra o resultado da Avaliação Biopsicossocial (Perícia Médica e Avaliação Social)",
+  "aplicavel": "Todos",
+  "formato_data": "periodo",
+  "dia_semana": "Início no 1º dia útil seguinte ao resultado preliminar; duração em dias úteis",
+  "regras": {
+   "C": {
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "faixa": null,
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar (junto com a Heteroidentificação) Duração: 3 dias úteis",
+    "decisao": "Rodada 2, ponto 1: a Biopsicossocial não depende da Heteroidentificação (hetero é antes da classificação; biopsicossocial é depois). Recurso padrão: início no 1º dia útil seguinte ao resultado, 3 dias úteis.",
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 122,
+      "guarda": 122
+     }
+    }
+   },
+   "D": {
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 1,
+    "un": "du",
+    "minimo": true,
+    "editavel": true,
+    "cond": null,
+    "faixa": null,
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar (junto com a Heteroidentificação) Duração: mínimo 1 dia útil, podendo variar manualmente",
+    "decisao": "Rodada 2, ponto 1: a Biopsicossocial não depende da Heteroidentificação (hetero é antes da classificação; biopsicossocial é depois). Recurso padrão (PSS): mínimo 1 dia útil.",
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 122,
+      "guarda": 122
+     }
+    }
+   }
+  },
+  "fase": "biopsicossocial"
+ },
+ {
+  "id": "A124",
+  "linha": 124,
+  "nome": "Resultado pós-recurso da Avaliação Biopsicossocial (Perícia Médica e Avaliação Social)",
+  "aplicavel": "Todos",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "tipo": "SEG",
+    "ref": "ANTERIOR",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "texto": "1º dia útil seguinte ao término da análise do recurso (junto com a Heteroidentificação)",
+    "decisao": "Rodada 2, ponto 1: a Biopsicossocial não depende da Heteroidentificação (hetero é antes da classificação; biopsicossocial é depois). Sem linha de análise no bloco: 1º dia útil seguinte ao fim do recurso.",
+    "ref_linhas": {
+     "ANTERIOR": {
+      "conc": 123,
+      "guarda": 123
+     }
+    }
+   },
+   "D": {
+    "tipo": "SEG",
+    "ref": "ANTERIOR",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "texto": "1º dia útil seguinte ao término da análise do recurso (junto com a Heteroidentificação)",
+    "decisao": "Rodada 2, ponto 1: a Biopsicossocial não depende da Heteroidentificação (hetero é antes da classificação; biopsicossocial é depois). Sem linha de análise no bloco: 1º dia útil seguinte ao fim do recurso.",
+    "ref_linhas": {
+     "ANTERIOR": {
+      "conc": 123,
+      "guarda": 123
+     }
+    }
+   }
+  },
+  "fase": "biopsicossocial"
+ },
+ {
+  "id": "A125",
+  "linha": 125,
+  "nome": "Convocação para Matrícula do Curso de Formação",
+  "aplicavel": "Guarda",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "No mesmo dia do resultado da etapa anterior",
+    "tipo": "MESMO",
+    "ref": "RES_POS_ANT",
+    "cond": null,
+    "ref_linhas": {}
+   },
+   "D": null
+  },
+  "fase": "curso_guarda"
+ },
+ {
+  "id": "A126",
+  "linha": 126,
+  "nome": "Período de envio da documentação para Matrícula do Curso de Formação",
+  "aplicavel": "Guarda",
+  "formato_data": "periodo",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "3 dias úteis",
+    "tipo": "DUR",
+    "n": 3,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   },
+   "D": null
+  },
+  "fase": "curso_guarda"
+ },
+ {
+  "id": "A127",
+  "linha": 127,
+  "nome": "Análise da Banca da documentação da Matrícula do Curso de Formação",
+  "aplicavel": "Guarda",
+  "formato_data": "periodo",
+  "dia_semana": "Início e fim em dia útil; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "3 dias úteis",
+    "tipo": "DUR",
+    "n": 3,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   },
+   "D": null
+  },
+  "fase": "curso_guarda"
+ },
+ {
+  "id": "A128",
+  "linha": 128,
+  "nome": "Resultado preliminar da Matrícula do Curso de Formação",
+  "aplicavel": "Guarda",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil após o término da avaliação",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 127,
+      "guarda": 127
+     }
+    }
+   },
+   "D": null
+  },
+  "fase": "curso_guarda"
+ },
+ {
+  "id": "A129",
+  "linha": 129,
+  "nome": "Abertura de recurso contra resultado preliminar da Matrícula do Curso de Formação",
+  "aplicavel": "Guarda",
+  "formato_data": "periodo",
+  "dia_semana": "Início no 1º dia útil seguinte ao resultado preliminar; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: 3 dias úteis",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 122,
+      "guarda": 128
+     }
+    }
+   },
+   "D": null
+  },
+  "fase": "curso_guarda"
+ },
+ {
+  "id": "A130",
+  "linha": 130,
+  "nome": "Análise da Banca dos recursos contra Matrícula do Curso de Formação",
+  "aplicavel": "Guarda",
+  "formato_data": "periodo",
+  "dia_semana": "Início e fim em dia útil; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "2 dias úteis",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   },
+   "D": null
+  },
+  "fase": "curso_guarda"
+ },
+ {
+  "id": "A131",
+  "linha": 131,
+  "nome": "Resultado pós-recurso da Matrícula do Curso de Formação",
+  "aplicavel": "Guarda",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 130,
+      "guarda": 130
+     }
+    }
+   },
+   "D": null
+  },
+  "fase": "curso_guarda"
+ },
+ {
+  "id": "A132",
+  "linha": 132,
+  "nome": "Convocação de candidatos excedentes para Matrícula do Curso de Formação (se houver)",
+  "aplicavel": "Guarda",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "No mesmo dia da publicação do resultado anterior",
+    "tipo": "MESMO",
+    "ref": "RES_POS_ANT",
+    "cond": null,
+    "ref_linhas": {}
+   },
+   "D": null
+  },
+  "fase": "curso_guarda"
+ },
+ {
+  "id": "A133",
+  "linha": 133,
+  "nome": "Período de envio da documentação para Matrícula do Curso de Formação de candidatos excedentes (se houver)",
+  "aplicavel": "Guarda",
+  "formato_data": "periodo",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "3 dias úteis",
+    "tipo": "DUR",
+    "n": 3,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   },
+   "D": null
+  },
+  "fase": "curso_guarda"
+ },
+ {
+  "id": "A134",
+  "linha": 134,
+  "nome": "Análise da Banca da documentação da Matrícula do Curso de Formação de candidatos excedentes (se houver)",
+  "aplicavel": "Guarda",
+  "formato_data": "periodo",
+  "dia_semana": "Início e fim em dia útil; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "2 dias úteis",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   },
+   "D": null
+  },
+  "fase": "curso_guarda"
+ },
+ {
+  "id": "A135",
+  "linha": 135,
+  "nome": "Resultado preliminar da Matrícula do Curso de Formação de candidatos excedentes (se houver)",
+  "aplicavel": "Guarda",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil após o término da avaliação",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 134,
+      "guarda": 134
+     }
+    }
+   },
+   "D": null
+  },
+  "fase": "curso_guarda"
+ },
+ {
+  "id": "A136",
+  "linha": 136,
+  "nome": "Abertura de recurso contra resultado preliminar da Matrícula do Curso de Formação de candidatos excedentes (se houver)",
+  "aplicavel": "Guarda",
+  "formato_data": "periodo",
+  "dia_semana": "Início no 1º dia útil seguinte ao resultado preliminar; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: 3 dias úteis",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 122,
+      "guarda": 135
+     }
+    }
+   },
+   "D": null
+  },
+  "fase": "curso_guarda"
+ },
+ {
+  "id": "A137",
+  "linha": 137,
+  "nome": "Análise da Banca dos recursos contra Matrícula do Curso de Formação de candidatos excedentes (se houver)",
+  "aplicavel": "Guarda",
+  "formato_data": "periodo",
+  "dia_semana": "Início e fim em dia útil; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "2 dias úteis",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   },
+   "D": null
+  },
+  "fase": "curso_guarda"
+ },
+ {
+  "id": "A138",
+  "linha": 138,
+  "nome": "Resultado após recurso da Matrícula do Curso de Formação de candidatos excedentes (se houver)",
+  "aplicavel": "Guarda",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 137,
+      "guarda": 137
+     }
+    }
+   },
+   "D": null
+  },
+  "fase": "curso_guarda"
+ },
+ {
+  "id": "A139",
+  "linha": 139,
+  "nome": "Convocação para Realização do Curso de Formação",
+  "aplicavel": "Guarda",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "No mesmo dia da publicação do resultado anterior",
+    "tipo": "MESMO",
+    "ref": "RES_POS_ANT",
+    "cond": null,
+    "ref_linhas": {}
+   },
+   "D": null
+  },
+  "fase": "curso_guarda"
+ },
+ {
+  "id": "A140",
+  "linha": 140,
+  "nome": "Aula Magna do Curso de Formação",
+  "aplicavel": "Guarda",
+  "formato_data": "data",
+  "dia_semana": "Segunda-feira",
+  "regras": {
+   "C": {
+    "tipo": "DIA",
+    "ref": "CONVOC139",
+    "dow": "segunda",
+    "dire": "seg",
+    "fallback": "próximo dia útil",
+    "editavel": true,
+    "texto": "Segunda-feira, 1º dia útil antes do início do curso, podendo variar manualmente",
+    "decisao": "Resposta 4: Aula Magna na segunda-feira seguinte à convocação (L139)",
+    "ref_linhas": {
+     "CONVOC139": {
+      "conc": 139,
+      "guarda": 139
+     }
+    }
+   },
+   "D": null
+  },
+  "fase": "curso_guarda"
+ },
+ {
+  "id": "A141",
+  "linha": 141,
+  "nome": "Realização do Curso de Formação",
+  "aplicavel": "Guarda",
+  "formato_data": "periodo",
+  "dia_semana": "Terça-feira",
+  "regras": {
+   "C": {
+    "tipo": "CURSO_CH",
+    "ref": "AULA_MAGNA",
+    "inicio_dow": "terça",
+    "editavel": true,
+    "texto": "Terça-feira, 1º dia útil após a Aula Magna (se houver) Duração do curso definida manualmente (Deve informar a hora por dia e a carga horária total para ser calculado os dias do curso, considerando de segunda a sexta esse prazo)",
+    "decisao": "Resposta 4: terça-feira após a Aula Magna; sem Aula Magna, segunda-feira seguinte à convocação",
+    "ref_linhas": {
+     "AULA_MAGNA": {
+      "conc": 140,
+      "guarda": 140
+     }
+    }
+   },
+   "D": null
+  },
+  "fase": "curso_guarda"
+ },
+ {
+  "id": "A142",
+  "linha": 142,
+  "nome": "Gabarito preliminar da Prova Final do Curso de Formação",
+  "aplicavel": "Guarda",
+  "formato_data": "data",
+  "dia_semana": "Mesmo dia da prova (livre)",
+  "regras": {
+   "C": {
+    "tipo": "MESMO",
+    "ref": "PROVA_FINAL_CURSO",
+    "cond": null,
+    "texto": "Após a realização da prova final",
+    "decisao": "Resposta 5: data da prova final = último dia do curso (editável); gabarito preliminar no mesmo dia",
+    "ref_linhas": {
+     "PROVA_FINAL_CURSO": {
+      "conc": null,
+      "guarda": null
+     }
+    }
+   },
+   "D": null
+  },
+  "fase": "curso_guarda"
+ },
+ {
+  "id": "A143",
+  "linha": 143,
+  "nome": "Abertura de recursos contra o gabarito da Prova Final do Curso de Formação",
+  "aplicavel": "Guarda",
+  "formato_data": "periodo",
+  "dia_semana": "Início no 1º dia útil seguinte ao resultado preliminar; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: 3 dias úteis",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 122,
+      "guarda": 142
+     }
+    }
+   },
+   "D": null
+  },
+  "fase": "curso_guarda"
+ },
+ {
+  "id": "A144",
+  "linha": 144,
+  "nome": "Análise da Banca dos recursos do gabarito da Prova Final do Curso de Formação",
+  "aplicavel": "Guarda",
+  "formato_data": "periodo",
+  "dia_semana": "Início e fim em dia útil; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "2 dias úteis",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   },
+   "D": null
+  },
+  "fase": "curso_guarda"
+ },
+ {
+  "id": "A145",
+  "linha": 145,
+  "nome": "Gabarito Definitivo da Prova Final do Curso de Formação",
+  "aplicavel": "Guarda",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 144,
+      "guarda": 144
+     }
+    }
+   },
+   "D": null
+  },
+  "fase": "curso_guarda"
+ },
+ {
+  "id": "A146",
+  "linha": 146,
+  "nome": "Resultado preliminar do Curso de Formação",
+  "aplicavel": "Guarda",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "No mesmo dia da publicação do Gabarito Definitivo",
+    "tipo": "MESMO",
+    "ref": "GAB_DEF",
+    "cond": null,
+    "ref_linhas": {
+     "GAB_DEF": {
+      "conc": 111,
+      "guarda": 145
+     }
+    }
+   },
+   "D": null
+  },
+  "fase": "curso_guarda"
+ },
+ {
+  "id": "A147",
+  "linha": 147,
+  "nome": "Abertura de recursos contra o Curso de Formação",
+  "aplicavel": "Guarda",
+  "formato_data": "periodo",
+  "dia_semana": "Início no 1º dia útil seguinte ao resultado preliminar; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "Início no 1º dia útil seguinte à publicação do resultado preliminar Duração: 3 dias úteis",
+    "tipo": "PERIODO",
+    "inicio": {
+     "tipo": "SEG",
+     "ref": "PUB_ANT",
+     "ordn": 1,
+     "editavel": false,
+     "cond": null
+    },
+    "n": 3,
+    "un": "du",
+    "minimo": false,
+    "editavel": false,
+    "cond": null,
+    "faixa": null,
+    "ref_linhas": {
+     "PUB_ANT": {
+      "conc": 122,
+      "guarda": 146
+     }
+    }
+   },
+   "D": null
+  },
+  "fase": "curso_guarda"
+ },
+ {
+  "id": "A148",
+  "linha": 148,
+  "nome": "Análise da Banca dos recursos do Curso de Formação",
+  "aplicavel": "Guarda",
+  "formato_data": "periodo",
+  "dia_semana": "Início e fim em dia útil; duração em dias úteis",
+  "regras": {
+   "C": {
+    "texto": "2 dias úteis",
+    "tipo": "DUR",
+    "n": 2,
+    "un": "du",
+    "editavel": false,
+    "ref_linhas": {}
+   },
+   "D": null
+  },
+  "fase": "curso_guarda"
+ },
+ {
+  "id": "A149",
+  "linha": 149,
+  "nome": "Resultado final do Curso de Formação",
+  "aplicavel": "Guarda",
+  "formato_data": "data",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "texto": "1º dia útil seguinte ao término da análise do recurso",
+    "tipo": "SEG",
+    "ref": "ANALISE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "ref_linhas": {
+     "ANALISE": {
+      "conc": 148,
+      "guarda": 148
+     }
+    }
+   },
+   "D": null
+  },
+  "fase": "curso_guarda"
+ },
+ {
+  "id": "A150",
+  "linha": 150,
+  "nome": "Homologação",
+  "aplicavel": "Todos",
+  "formato_data": "apos",
+  "dia_semana": "Sempre dia útil",
+  "regras": {
+   "C": {
+    "tipo": "SEG",
+    "ref": "HOMOLOG_BASE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "texto": "1 dia após a data de publicação da classificação final",
+    "decisao": "Rodada 2, ponto 3: Guarda (com curso) ancora no Resultado final do Curso (L149); nos demais casos, na Classificação Final (L118).",
+    "ref_linhas": {
+     "HOMOLOG_BASE": {
+      "conc": 118,
+      "guarda": 149
+     }
+    }
+   },
+   "D": {
+    "tipo": "SEG",
+    "ref": "HOMOLOG_BASE",
+    "ordn": 1,
+    "editavel": false,
+    "cond": null,
+    "texto": "1 dia após a data de publicação da classificação final",
+    "decisao": "Rodada 2, ponto 3: Guarda (com curso) ancora no Resultado final do Curso (L149); nos demais casos, na Classificação Final (L118).",
+    "ref_linhas": {
+     "HOMOLOG_BASE": {
+      "conc": 118,
+      "guarda": 149
+     }
+    }
+   }
+  },
+  "fase": "base"
+ }
+]
