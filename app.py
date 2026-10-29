@@ -108,22 +108,40 @@ def trocar_codigo(code):
               "redirect_uri":REDIRECT_URI,"scope":SCOPES})
     return r.json()
 
-def obter_token_servico():
-    """Usa um refresh_token de uma conta Microsoft (salvo em st.secrets como
-    SERVICE_REFRESH_TOKEN) para obter um access_token válido. Permite que contas
-    de login local (sem Microsoft), como as de perfil operacional, também
-    consigam ler as tarefas do Planner."""
+def _trocar_refresh_servico():
+    """Troca o refresh_token de uma conta Microsoft (salvo em st.secrets como SERVICE_REFRESH_TOKEN)
+    por um access_token válido. Devolve (token, erro): se falhar, 'erro' explica o motivo."""
     rt = st.secrets.get("SERVICE_REFRESH_TOKEN")
     if not rt:
-        return None
+        return None, "o segredo SERVICE_REFRESH_TOKEN não está configurado"
     try:
         r = requests.post(
             f"https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/token",
             data={"client_id":CLIENT_ID,"client_secret":st.secrets["CLIENT_SECRET"],
                   "grant_type":"refresh_token","refresh_token":rt,"scope":SCOPES})
-        return r.json().get("access_token")
-    except Exception:
-        return None
+        j = r.json()
+    except KeyError as e:
+        return None, f"falta o segredo {e.args[0]} nas configurações do app"
+    except Exception as e:
+        return None, f"falha ao contatar a Microsoft ({type(e).__name__})"
+    tok = j.get("access_token")
+    if tok:
+        return tok, None
+    cod  = j.get("error", "erro desconhecido")
+    desc = (j.get("error_description") or "").split("\n")[0].strip()[:140]
+    return None, f"a Microsoft recusou o token de serviço ({cod}: {desc})"
+
+def obter_token_servico():
+    """Permite que contas de login local (sem Microsoft), como as de perfil operacional,
+    também consigam ler as tarefas do Planner. O motivo de uma falha fica em session_state."""
+    tok, erro = _trocar_refresh_servico()
+    st.session_state["_svc_erro"] = erro
+    return tok
+
+@st.cache_data(ttl=600, show_spinner=False)
+def _erro_token_servico():
+    """Usado só para avisar as gestoras (verifica no máximo a cada 10 minutos)."""
+    return _trocar_refresh_servico()[1]
 
 params = st.query_params
 code   = params.get("code")
@@ -394,6 +412,21 @@ with st.spinner("Carregando tarefas..."):
     _ferias_json = json.dumps(carregar_ferias())
     _conclusoes_json = json.dumps(carregar_conclusoes_individuais())
     tarefas, concluidas, concluidas_todas, buckets, plano_id = buscar_tarefas(token or "", _ferias_json, _conclusoes_json)
+
+# ── AVISOS: acesso ao Planner (quem usa login local depende do token de serviço) ─────────
+if logado_local and not token:
+    st.warning("⚠️ Não consegui acessar o Planner para o seu usuário (login local), por isso sua lista de tarefas está vazia. "
+               f"Motivo: {st.session_state.get('_svc_erro') or 'desconhecido'}. Avise a gestora para renovar o token de serviço.")
+elif logado_local and token and not plano_id:
+    st.warning("⚠️ Conectei à Microsoft, mas não encontrei o plano do Planner IBGP, por isso sua lista de tarefas está vazia. "
+               "A conta do token de serviço provavelmente não participa do grupo do plano. Avise a gestora.")
+elif is_gestora:
+    _erro_svc = _erro_token_servico()
+    if _erro_svc:
+        st.warning(f"⚠️ O acesso de serviço ao Planner está com problema ({_erro_svc}). Enquanto isso, quem usa login local "
+                   "(Amílcar e Jordan) não vê nenhuma tarefa. Para corrigir: entre com Microsoft, abra o painel "
+                   "'🔑 Token de serviço para contas locais' no fim desta página, copie o valor e atualize o segredo "
+                   "SERVICE_REFRESH_TOKEN em Manage app → Settings → Secrets.")
 
 # ── MONTAR DADOS_INICIAIS ─────────────────────────────────────────────
 cron_result  = st.session_state.pop("cron_result", None)
