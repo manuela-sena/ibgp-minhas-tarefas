@@ -138,9 +138,15 @@ def obter_token_servico():
     st.session_state["_svc_erro"] = erro
     return tok
 
+def _impressao(tok):
+    """Identificação curta (6 caracteres) de um token, para comparar sem expor o valor."""
+    import hashlib
+    return hashlib.sha256(tok.encode()).hexdigest()[:6] if tok else "—"
+
 @st.cache_data(ttl=600, show_spinner=False)
-def _erro_token_servico():
-    """Usado só para avisar as gestoras (verifica no máximo a cada 10 minutos)."""
+def _erro_token_servico(impressao):
+    """Usado só para avisar as gestoras. O parâmetro 'impressao' faz a verificação ser refeita
+    na hora quando o segredo muda (senão o resultado ficaria em cache por até 10 minutos)."""
     return _trocar_refresh_servico()[1]
 
 params = st.query_params
@@ -421,12 +427,14 @@ elif logado_local and token and not plano_id:
     st.warning("⚠️ Conectei à Microsoft, mas não encontrei o plano do Planner IBGP, por isso sua lista de tarefas está vazia. "
                "A conta do token de serviço provavelmente não participa do grupo do plano. Avise a gestora.")
 elif is_gestora:
-    _erro_svc = _erro_token_servico()
+    _fp_cfg   = _impressao(st.secrets.get("SERVICE_REFRESH_TOKEN"))
+    _erro_svc = _erro_token_servico(_fp_cfg)
     if _erro_svc:
         st.warning(f"⚠️ O acesso de serviço ao Planner está com problema ({_erro_svc}). Enquanto isso, quem usa login local "
                    "(Amílcar e Jordan) não vê nenhuma tarefa. Para corrigir: entre com Microsoft, abra o painel "
                    "'🔑 Token de serviço para contas locais' no fim desta página, copie o valor e atualize o segredo "
-                   "SERVICE_REFRESH_TOKEN em Manage app → Settings → Secrets.")
+                   "SERVICE_REFRESH_TOKEN em Manage app → Settings → Secrets (substitua a linha existente, não adicione uma segunda). "
+                   f"Impressão digital do token que o app está lendo nos segredos: {_fp_cfg}.")
 
 # ── MONTAR DADOS_INICIAIS ─────────────────────────────────────────────
 cron_result  = st.session_state.pop("cron_result", None)
@@ -673,6 +681,10 @@ if logado_microsoft and is_gestora:
         if rt_atual:
             st.caption("Copie o valor abaixo e salve em **Manage app → Settings → Secrets** como:")
             st.code(f'SERVICE_REFRESH_TOKEN = "{rt_atual}"', language="toml")
+            st.caption(f"Impressão digital deste token: **{_impressao(rt_atual)}**. Depois de salvar nos segredos, se o aviso amarelo "
+                       "do topo ainda aparecer, ele mostra a impressão digital do token que o app está lendo: se for diferente desta, o segredo "
+                       "não foi atualizado (confira se não ficou a linha antiga de SERVICE_REFRESH_TOKEN e se a nova está no começo do arquivo, "
+                       "antes de qualquer linha entre colchetes).")
             st.caption("Isso permite que contas de login local (como a do Jordan) também vejam as tarefas do Planner. Sem isso configurado, elas continuam sem tarefas. Se parar de funcionar depois de um tempo, basta gerar um novo aqui e atualizar o secret.")
         else:
             st.caption("Nenhum refresh token disponível nesta sessão — saia e entre novamente com Microsoft para gerar um novo.")
