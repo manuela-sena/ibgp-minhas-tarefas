@@ -131,6 +131,25 @@ def _trocar_refresh_servico():
     desc = (j.get("error_description") or "").split("\n")[0].strip()[:140]
     return None, f"a Microsoft recusou o token de serviço ({cod}: {desc})"
 
+def _renovar_refresh(rt):
+    """Pede à Microsoft um refresh_token NOVO a partir do refresh_token da sessão. Devolve (novo, erro)."""
+    if not rt:
+        return None, "esta sessão não tem token de origem"
+    try:
+        r = requests.post(
+            f"https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/token",
+            data={"client_id":CLIENT_ID,"client_secret":st.secrets["CLIENT_SECRET"],
+                  "grant_type":"refresh_token","refresh_token":rt,"scope":SCOPES})
+        j = r.json()
+    except KeyError as e:
+        return None, f"falta o segredo {e.args[0]} nas configurações do app"
+    except Exception as e:
+        return None, f"falha ao contatar a Microsoft ({type(e).__name__})"
+    if j.get("refresh_token"):
+        return j["refresh_token"], None
+    desc = (j.get("error_description") or "").split("\n")[0].strip()[:140]
+    return None, f"a Microsoft recusou ({j.get('error','erro desconhecido')}: {desc})"
+
 def obter_token_servico():
     """Permite que contas de login local (sem Microsoft), como as de perfil operacional,
     também consigam ler as tarefas do Planner. O motivo de uma falha fica em session_state."""
@@ -676,9 +695,19 @@ html = html.replace("// PLACEHOLDER_ATRIB",
 st.markdown("<style>[data-testid='stChatInput'],[data-testid='stBottom']{display:none!important}</style>", unsafe_allow_html=True)
 
 if logado_microsoft and is_gestora:
-    with st.expander("🔑 Token de serviço para contas locais (avançado)"):
+    with st.expander("🔑 Token de serviço para contas locais (avançado)", expanded=bool(st.session_state.get("_rt_gerado_em"))):
+        if st.button("🔄 Gerar um novo token agora", key="btn_novo_rt"):
+            _novo_rt, _err_rt = _renovar_refresh(st.session_state.get("refresh_token"))
+            if _novo_rt:
+                from datetime import datetime as _dt, timezone as _tz, timedelta as _td
+                st.session_state["refresh_token"] = _novo_rt
+                st.session_state["_rt_gerado_em"] = _dt.now(_tz(_td(hours=-3))).strftime("%d/%m/%Y %H:%M:%S")
+            else:
+                st.error(f"Não consegui gerar um novo token: {_err_rt}. Recarregue a página e entre de novo com Microsoft.")
         rt_atual = st.session_state.get("refresh_token")
         if rt_atual:
+            if st.session_state.get("_rt_gerado_em"):
+                st.success(f"Token NOVO gerado em {st.session_state['_rt_gerado_em']} (horário de Brasília). Copie-o abaixo.")
             st.caption("Copie o valor abaixo e salve em **Manage app → Settings → Secrets** como:")
             st.code(f'SERVICE_REFRESH_TOKEN = "{rt_atual}"', language="toml")
             st.caption(f"Impressão digital deste token: **{_impressao(rt_atual)}**. Depois de salvar nos segredos, se o aviso amarelo "
