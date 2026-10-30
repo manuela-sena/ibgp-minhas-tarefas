@@ -40,6 +40,18 @@ const proxDowApos=(d,w)=>{ let r=addDays(d,1); while(r.getDay()!==w) r=addDays(r
 const prevDowAntes=(d,w)=>{ let r=addDays(d,-1); while(r.getDay()!==w) r=addDays(r,-1); return r; };
 const primeiraDataComDow=(d,fn)=>{ let r=sod(d); while(!fn(r.getDay())) r=addDays(r,1); return r; };
 
+/* ── NOMES DAS ATIVIDADES DE INSCRIÇÃO: só entram as reservas/solicitações que o concurso tem ── */
+const RESERVA_LABEL={pcd:'PcD',negros:'Negros',indigenas:'Indígenas',quilombolas:'Quilombolas',mulheres:'Mulheres'};
+const RESERVAS_PADRAO=['pcd','negros','cond','laudos'];
+function nomeComReservas(nome,linha,reservas){
+  const m=nome.match(/^(.*?Inscrições)(\/.*)?$/); if(!m) return nome;
+  const sel=new Set(reservas||RESERVAS_PADRAO), partes=[];
+  ['pcd','negros','indigenas','quilombolas','mulheres'].forEach(k=>{ if(sel.has(k)) partes.push(RESERVA_LABEL[k]); });
+  if(sel.has('cond')) partes.push(linha===9?'Solicitação Cond. Especial':'Solic Condição Especial');
+  if(linha===9&&sel.has('laudos')) partes.push('Envio Laudos');
+  return m[1]+(partes.length?'/'+partes.join('/'):'');
+}
+
 /* ── MOTOR ──────────────────────────────────────────────────────────────── */
 const TIPOS_COL_C=['CONCURSO','GUARDA','PSP'], TIPOS_CONC=['CONCURSO','PSS','PSP'];
 function gerar(cfg,REGRAS){
@@ -138,7 +150,7 @@ function gerar(cfg,REGRAS){
     return {ini:ds[0],fim:ds[ds.length-1],datas:ds};
   }
   function cursoCH(a,g,R){
-    const horas=cfg.cargaHoraria||40, hpd=cfg.horasPorDia||8, dias=Math.max(1,Math.ceil(horas/hpd)); let ini;
+    const horas=cfg.cargaHoraria||40, hpd=cfg.horasPorDia||8, dias=(cfg.duracoes&&cfg.duracoes[a.linha])||Math.max(1,Math.ceil(horas/hpd)); let ini;
     if(g.ref==='CONVOC'){ const P=get(Math.abs(R('CONVOC'))); ini=cal.proxUtil(proxDowApos(P.fim,1)); }
     else if(pos[140]!==undefined){ ini=cal.addDU(get(140).fim,1); }
     else { const P=get(139); ini=cal.proxUtil(proxDowApos(P.fim,1)); }
@@ -147,18 +159,26 @@ function gerar(cfg,REGRAS){
   const nomeAtiv=a=>{ let n=a.nome; const np=cfg.nomePratica||'Prova Prática/Prova de Capacidade Física';
       if(np!=='Prova Prática/Prova de Capacidade Física'){ n=n.replace(/Prova Prática\/Prova de Capacidade Física/g,np).replace(/Prova de Capacidade Física/g,np).replace(/prova de capacidade física/g,np.toLowerCase()); }
       if(a.linha===20) n=F.discursiva?'Prova Objetiva e Prova Discursiva':'Prova Objetiva';
+      if([9,15,16,17,18].includes(a.linha)) n=nomeComReservas(n,a.linha,cfg.reservas);
       return n; };
-  const tarefas=ativ.map((a,i)=>{ const r=get(a.linha); return {seq:i+1,linha:a.linha,fase:a.fase,atividade:nomeAtiv(a),nome_original:a.nome,
-      data_inicio:r.ini,data_fim:r.fim,datas:r.datas||null,formato:a.formato_data,dia_semana:a.dia_semana,regra:regraDe(a).tipo,dias:r.dias}; });
+  const tarefas=ativ.map((a,i)=>{ const r=get(a.linha); const g=regraDe(a);
+      const gg=g.tipo==='MODALIDADE'?(cfg.modalidadeHetero==='online'?g.online:g.presencial):g;      // regra efetivamente usada
+      const temDur=['PERIODO','DUR','APOS','CURSO_CH'].includes(gg.tipo);
+      return {seq:i+1,linha:a.linha,fase:a.fase,atividade:nomeAtiv(a),nome_original:a.nome,
+      data_inicio:r.ini,data_fim:r.fim,datas:r.datas||null,formato:a.formato_data,dia_semana:a.dia_semana,regra:g.tipo,dias:r.dias,
+      editavel:!!gg.editavel&&g.tipo!=='MANUAL', tem_duracao:temDur, n:temDur?(gg.tipo==='CURSO_CH'?r.dias:ne(a,gg)):null, un:gg.tipo==='CURSO_CH'?'du':(gg.un||'du'),
+      ajuste:(cfg.manuais&&cfg.manuais[a.linha])?'data':((cfg.duracoes&&cfg.duracoes[a.linha])?'duracao':null)}; });
   // ── conferências automáticas (viram avisos para a tela) ──
   const T=Object.fromEntries(tarefas.map(t=>[t.linha,t]));
   for(let i=1;i<tarefas.length;i++){ const p=tarefas[i-1],t=tarefas[i];
     if(p.fase===t.fase&&t.linha!==106&&t.data_inicio<p.data_inicio) avisos.push(`Ordem cronológica: "${t.atividade}" (${t.data_inicio.toLocaleDateString('pt-BR')}) ficou antes de "${p.atividade}" (${p.data_inicio.toLocaleDateString('pt-BR')}). Confira as regras dessa etapa.`); }
   if(T[54]&&T[56]&&T[54].data_fim>=T[56].data_inicio) avisos.push('O resultado pós-recurso da adaptação PcD ('+T[54].data_fim.toLocaleDateString('pt-BR')+') não pode ficar depois do início da Prova Prática ('+T[56].data_inicio.toLocaleDateString('pt-BR')+').');
   if(T[150]&&T[124]&&T[150].data_inicio<=T[124].data_fim) avisos.push('A Homologação ('+T[150].data_inicio.toLocaleDateString('pt-BR')+') sai antes do fim da Avaliação Biopsicossocial ('+T[124].data_fim.toLocaleDateString('pt-BR')+').');
+  tarefas.forEach(t=>{ if(cfg.manuais&&cfg.manuais[t.linha]&&/^(Sempre dia útil|Início e fim em dia útil|Início no 1º dia útil)/.test(t.dia_semana||'')&&!(cal.isUtil(t.data_inicio)&&cal.isUtil(t.data_fim)))
+      avisos.push('Ajuste manual: "'+t.atividade+'" caiu em dia não útil ('+t.data_inicio.toLocaleDateString('pt-BR')+').'); });
   if(T[13]&&T[9]&&T[13].data_fim>T[9].data_fim) avisos.push('O resultado pós-recurso da isenção saiu depois do fim das inscrições (deve ser antes).');
   return {tarefas,avisos,cal};
 }
-const api={Calendario,gerar,pascoa,addDays,dk};
+const api={Calendario,gerar,pascoa,addDays,dk,nomeComReservas};
 if(typeof module!=='undefined'&&module.exports) module.exports=api; else root.CronogramaMotor=api;
 })(typeof window!=='undefined'?window:globalThis);
