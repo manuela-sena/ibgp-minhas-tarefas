@@ -2590,7 +2590,7 @@ function abrirAjuste(seq,voltar){
     <div style="font-size:12px;color:#8a9ab5;margin-bottom:14px">Hoje: <strong>${fmtPeriodoTarefa(t,(a,b)=>fmtBR(a)+(a.getTime()===b.getTime()?'':' a '+fmtBR(b)))}</strong>${t.ajuste?' · <span style="color:#a06c12;font-weight:600">já ajustada'+(t.sem_cascata?' (sem cascata)':'')+'</span>':''}</div>
     ${t.tem_duracao?`<label class="form-label">Duração (${un})</label>
     <input id="aj-dur" class="form-input" type="number" min="1" value="${durV}" style="max-width:170px">
-    <div style="font-size:11.5px;color:#8a9ab5;margin:4px 0 14px">Altere a duração <strong>ou</strong> a data abaixo.</div>`:''}
+    <div style="font-size:11.5px;color:${/^Abertura de recursos?/i.test(t.atividade)?'#1f4e8c':'#8a9ab5'};margin:4px 0 14px">${/^Abertura de recursos?/i.test(t.atividade)?'<strong>A duração vale para todas as etapas de recurso.</strong> ':''}Altere a duração <strong>ou</strong> a data abaixo.</div>`:''}
     <label class="form-label">${unico?'Data':'Datas'}</label>
     <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
       <input id="aj-ini" class="form-input" type="date" style="max-width:190px" value="${iniV}">
@@ -2613,6 +2613,7 @@ function salvarAjuste(seq){
   const mudouData=iniS!==_isoLocal(t.data_inicio)||fimS!==_isoLocal(t.data_fim);
   const n=parseInt(durS)||0, mudouDur=!!t.tem_duracao&&n>0&&n!==t.n;
   if(!mudouData&&!mudouDur){ fecharAjuste(); return; }          // nada mudou
+  if(!mudouData&&mudouDur&&/^Abertura de recursos?/i.test(t.atividade)){ aplicarRecursoGeral(n,t.linha); return; }   // período de recurso: o mesmo para todas as etapas
   _ajPend={seq,linha:t.linha,tipo:mudouData?'data':'duracao',iniS,fimS,durS,n};
   const o=_ajPend.tipo==='data'?(unico?'a data':'as datas'):'a duração';
   document.getElementById('ajuste-corpo').innerHTML=`
@@ -2626,6 +2627,13 @@ function salvarAjuste(seq){
       <div style="font-weight:700">Não, alterar só esta atividade</div>
       <div style="font-size:11.5px;font-weight:500;opacity:.8">As demais mantêm as datas que têm hoje.</div></button>
     <div style="text-align:right"><button class="btn-secondary" onclick="abrirAjuste(${t.seq},true)">Voltar</button></div>`;
+}
+function aplicarRecursoGeral(n,linhaEditada){
+  if(!_lastParams) return; _lastParams.diasRecurso=n;                 // vale para TODAS as etapas de recurso
+  const f=document.getElementById('g-dias-recurso'); if(f) f.value=n;  // o formulário passa a mostrar o mesmo valor
+  _cronResultado.forEach(t=>{ if(/^Abertura de recursos?/i.test(t.atividade)){ delete _ajustes.duracoes[t.linha]; if(!_ajustes.manuais[t.linha]) delete _ajustes.semCascata[t.linha]; } });
+  delete _ajustes.manuais[linhaEditada]; delete _ajustes.semCascata[linhaEditada];   // a linha editada passa a seguir a duração geral
+  _ajPend=null; fecharAjuste(); reexecutarCronograma();
 }
 function aplicarAjuste(cascata){
   const p=_ajPend; if(!p) return; const D=x=>new Date(x+'T12:00:00');
@@ -2692,7 +2700,7 @@ const TIPO_IDS=['CONCURSO','GUARDA','PSP','PSS','CERTIFICACAO','OUTROS'];
 const TIPOS_COLUNA_D=['PSS','CERTIFICACAO','OUTROS'];          // prazos da coluna D do CRONOGRAMA GERAL
 const _fx={nomePratica:'Prova Prática',heteroMod:'presencial',ch:'',hpd:8,aula:true,exced:true,volTitulos:''};
 function setTipo(t){
-  tipoAtual=t; _ajustes.duracoes={}; _ajustes.manuais={}; _ajustes.semCascata={};
+  tipoAtual=t; _ajustes.duracoes={}; _ajustes.manuais={}; _ajustes.semCascata={}; { const dr=document.getElementById('g-dias-recurso'); if(dr) dr.value=''; }
   TIPO_IDS.forEach(id=>{
     const el=document.getElementById('r-'+id); if(!el) return;
     if(id===t){ el.style.borderColor='#1f4e8c'; el.style.background='#e9f1fb'; el.innerHTML='<div class="radio-dot"></div>'; }
