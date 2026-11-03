@@ -69,10 +69,13 @@ function gerar(cfg,REGRAS){
       if(a.linha===140) return cfg.aulaMagna!==false; return true; };
   const ativ=REGRAS.filter(a=>aplica(a)&&faseOn(a)&&extra(a));
   const pos={}; ativ.forEach((a,i)=>pos[a.linha]=i);
-  const memo={}, pilha=new Set(); const regraDe=a=>a.regras[col]||a.regras.C;
+  const memo={}, exib={}, pilha=new Set(); const regraDe=a=>a.regras[col]||a.regras.C;
   const get=l=>{ if(memo[l]) return memo[l]; if(pilha.has(l)) throw new Error('Dependência circular em L'+l);
-      pilha.add(l); const r=avaliar(ativ[pos[l]]); pilha.delete(l); return memo[l]=r; };
-  const ne=(a,g)=> (cfg.duracoes&&cfg.duracoes[a.linha])||(a.linha===8&&cfg.diasIsencao)||(a.linha===9&&cfg.diasInscricao)||g.n;
+      pilha.add(l); const a=ativ[pos[l]]; const r=avaliar(a,false);
+      const editada=(cfg.manuais&&cfg.manuais[l])||(cfg.duracoes&&cfg.duracoes[l]);
+      exib[l]=r; memo[l]=(editada&&cfg.semCascata&&cfg.semCascata[l])?avaliar(a,true):r;   // sem cascata: só esta atividade muda; as seguintes usam a data original
+      pilha.delete(l); return memo[l]; };
+  const ne=(a,g,ign)=> (!ign&&cfg.duracoes&&cfg.duracoes[a.linha])||(cfg.diasRecurso&&/^Abertura de recursos?\b/i.test(a.nome)&&cfg.diasRecurso)||(a.linha===8&&cfg.diasIsencao)||(a.linha===9&&cfg.diasInscricao)||g.n;   // período de recurso único para todas as etapas
   const RE={RES_POS_ANT:/^(resultado pós-recurso|resultado após recurso|publicação do resultado pós|classificação final)/i,
             RES_PRELIM_ANT:/^(resultado preliminar|publicação da classificação|classificação preliminar|gabarito preliminar)/i};
   function refLinha(kw,a,g){
@@ -85,14 +88,14 @@ function gerar(cfg,REGRAS){
     return (l in pos)?l:-l;                       // negativo = a atividade referida está desligada
   }
   const ant=a=>ativ[pos[a.linha]-1];
-  function avaliarRegra(a,g){
-    const manual=cfg.manuais&&cfg.manuais[a.linha];
-    if(manual){ const i=sod(manual.ini||manual.fim), f=sod(manual.fim||manual.ini); return {ini:i,fim:f}; }
+  function avaliarRegra(a,g,ign){
+    const manual=!ign&&cfg.manuais&&cfg.manuais[a.linha];
+    if(manual){ const i=sod(manual.ini||manual.fim), f=sod(manual.fim||manual.ini); const o={ini:i,fim:f}; if(g.tipo==='FDS') o.datas=(i.getTime()===f.getTime())?[i]:[i,f]; return o; }
     const R=kw=>{ const l=refLinha(kw,a,g); if(l==null) throw new Error(`L${a.linha} (${a.nome}): referência ${kw} não encontrada`); return l; };
     switch(g.tipo){
       case 'MANUAL': { const d=a.linha===3?cfg.dataEscopo:(a.linha===7?cfg.dataPublicacaoEdital:null);
           if(!d) throw new Error(`Informe a data de "${a.nome}"`); const x=cal.proxUtil(sod(d)); return {ini:x,fim:x}; }
-      case 'APOS': { const l=R(g.ref); if(l<0) throw new Error(`L${a.linha}: ${g.ref} desligada`); const P=get(l), n=ne(a,g);
+      case 'APOS': { const l=R(g.ref); if(l<0) throw new Error(`L${a.linha}: ${g.ref} desligada`); const P=get(l), n=ne(a,g,ign);
           if(g.periodo_apos||a.formato_data==='periodo'){ const ini=cal.proxUtilApos(P.fim);
               return {ini,fim:g.un==='du'?cal.addDU(ini,n-1):cal.proxUtil(addDays(ini,n-1))}; }
           const d=g.un==='du'?cal.addDU(P.fim,n):cal.proxUtil(addDays(P.fim,n)); return {ini:d,fim:d}; }
@@ -105,17 +108,17 @@ function gerar(cfg,REGRAS){
           if(I.tipo==='APOS'&&I.ref==='PUB_ED'){ const pub=get(7).fim; ini=cal.proxUtil(cfg.inicioInscricoes?sod(cfg.inicioInscricoes):addDays(pub,I.n)); }
           else if(I.tipo==='SEG'){ const l=R(I.ref); ini=cal.addDU(get(Math.abs(l)).fim,I.ordn); }
           else if(I.tipo==='MESMO_INICIO'){ const l=R(I.ref); ini=l<0?cal.proxUtilApos(get(ant(a).linha).fim):get(l).ini; }
-          const n=ne(a,g); return {ini,fim:g.un==='du'?cal.addDU(ini,n-1):cal.proxUtil(addDays(ini,n-1))}; }
-      case 'DUR': { const P=get(ant(a).linha), n=ne(a,g); const ini=cal.proxUtilApos(P.fim);
+          const n=ne(a,g,ign); return {ini,fim:g.un==='du'?cal.addDU(ini,n-1):cal.proxUtil(addDays(ini,n-1))}; }
+      case 'DUR': { const P=get(ant(a).linha), n=ne(a,g,ign); const ini=cal.proxUtilApos(P.fim);
           if(g.un==='du') return {ini,fim:cal.addDU(ini,n-1)};
           let fim=cal.proxUtil(addDays(P.fim,n)); if(fim<ini) fim=ini; return {ini,fim}; }
       case 'FDS': return fimDeSemana(a,g,R);
-      case 'MODALIDADE': return avaliarRegra(a,cfg.modalidadeHetero==='online'?Object.assign({ref_linhas:g.ref_linhas},g.online):Object.assign({ref_linhas:g.ref_linhas},g.presencial));
-      case 'CURSO_CH': return cursoCH(a,g,R);
+      case 'MODALIDADE': return avaliarRegra(a,cfg.modalidadeHetero==='online'?Object.assign({ref_linhas:g.ref_linhas},g.online):Object.assign({ref_linhas:g.ref_linhas},g.presencial),ign);
+      case 'CURSO_CH': return cursoCH(a,g,R,ign);
     }
     throw new Error('Tipo de regra desconhecido: '+g.tipo);
   }
-  const avaliar=a=>avaliarRegra(a,regraDe(a));
+  const avaliar=(a,ign)=>avaliarRegra(a,regraDe(a),ign);
   function diaRel(a,g,R){
     const w=DOW[g.dow]; let base,d;
     if(g.ref==='CURSO_FIM'){ const P=get(R(g.ref)); d=proxDowApos(P.fim,0); return {ini:d,fim:d}; }
@@ -149,8 +152,8 @@ function gerar(cfg,REGRAS){
     else { const d=primeiraDataComDow(base,w=>w===6||w===0); ds=d.getDay()===6?[d,addDays(d,1)]:[d]; }
     return {ini:ds[0],fim:ds[ds.length-1],datas:ds};
   }
-  function cursoCH(a,g,R){
-    const horas=cfg.cargaHoraria||40, hpd=cfg.horasPorDia||8, dias=(cfg.duracoes&&cfg.duracoes[a.linha])||Math.max(1,Math.ceil(horas/hpd)); let ini;
+  function cursoCH(a,g,R,ign){
+    const horas=cfg.cargaHoraria||40, hpd=cfg.horasPorDia||8, dias=(!ign&&cfg.duracoes&&cfg.duracoes[a.linha])||Math.max(1,Math.ceil(horas/hpd)); let ini;
     if(g.ref==='CONVOC'){ const P=get(Math.abs(R('CONVOC'))); ini=cal.proxUtil(proxDowApos(P.fim,1)); }
     else if(pos[140]!==undefined){ ini=cal.addDU(get(140).fim,1); }
     else { const P=get(139); ini=cal.proxUtil(proxDowApos(P.fim,1)); }
@@ -161,13 +164,14 @@ function gerar(cfg,REGRAS){
       if(a.linha===20) n=F.discursiva?'Prova Objetiva e Prova Discursiva':'Prova Objetiva';
       if([9,15,16,17,18].includes(a.linha)) n=nomeComReservas(n,a.linha,cfg.reservas);
       return n; };
-  const tarefas=ativ.map((a,i)=>{ const r=get(a.linha); const g=regraDe(a);
+  const tarefas=ativ.map((a,i)=>{ get(a.linha); const r=exib[a.linha]; const g=regraDe(a);
       const gg=g.tipo==='MODALIDADE'?(cfg.modalidadeHetero==='online'?g.online:g.presencial):g;      // regra efetivamente usada
       const temDur=['PERIODO','DUR','APOS','CURSO_CH'].includes(gg.tipo);
       return {seq:i+1,linha:a.linha,fase:a.fase,atividade:nomeAtiv(a),nome_original:a.nome,
       data_inicio:r.ini,data_fim:r.fim,datas:r.datas||null,formato:a.formato_data,dia_semana:a.dia_semana,regra:g.tipo,dias:r.dias,
-      editavel:!!gg.editavel&&g.tipo!=='MANUAL', tem_duracao:temDur, n:temDur?(gg.tipo==='CURSO_CH'?r.dias:ne(a,gg)):null, un:gg.tipo==='CURSO_CH'?'du':(gg.un||'du'),
-      ajuste:(cfg.manuais&&cfg.manuais[a.linha])?'data':((cfg.duracoes&&cfg.duracoes[a.linha])?'duracao':null)}; });
+      editavel:true, sugere_ajuste:!!gg.editavel&&g.tipo!=='MANUAL', tem_duracao:temDur, n:temDur?(gg.tipo==='CURSO_CH'?r.dias:ne(a,gg)):null, un:gg.tipo==='CURSO_CH'?'du':(gg.un||'du'),
+      ajuste:(cfg.manuais&&cfg.manuais[a.linha])?'data':((cfg.duracoes&&cfg.duracoes[a.linha])?'duracao':null),
+      sem_cascata:!!((cfg.manuais&&cfg.manuais[a.linha])||(cfg.duracoes&&cfg.duracoes[a.linha]))&&!!(cfg.semCascata&&cfg.semCascata[a.linha])}; });
   // ── conferências automáticas (viram avisos para a tela) ──
   const T=Object.fromEntries(tarefas.map(t=>[t.linha,t]));
   for(let i=1;i<tarefas.length;i++){ const p=tarefas[i-1],t=tarefas[i];
