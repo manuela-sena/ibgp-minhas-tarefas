@@ -1,7 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
 from urllib.parse import urlencode
-import requests, json, re, secrets, hashlib
+import requests, json, re, secrets, hashlib, unicodedata
 from datetime import datetime, date
 
 CLIENT_ID    = "cf858739-80c5-4bf0-bc5c-6f5b0cefb70d"
@@ -64,6 +64,21 @@ OPERACIONAIS  = usuarios_com_perfil(USUARIOS, "operacional")
 
 _atrib_raw = open("/mount/src/ibgp-minhas-tarefas/atribuicoes.js").read()
 ATRIBUICOES = {k: v for k, v in re.findall(r'"([^"]+)":\s*"([^"]+)"', _atrib_raw)}
+
+# Busca do responsável tolerante: ignora maiúsculas/minúsculas, acentos e pontuação, e a lista de reservas que vem depois de
+# "Inscrições" (ex.: "Inscrições/PcD/Negros/..."). Assim "Resultado preliminar Inscrições/PcD" e "RESULTADO PRELIMINAR INSCRIÇÕES/PCD/NEGROS" são a mesma tarefa.
+_RESERVAS_TITULO = {"PCD","NEGROS","INDIGENAS","QUILOMBOLAS","MULHERES","SOLIC","SOLICITACAO","COND","CONDICAO","CONDICOES","ESPECIAL","ENVIO","LAUDOS","LAUDO"}
+def _norm_titulo(s):
+    s = unicodedata.normalize("NFD", s).encode("ascii", "ignore").decode().upper()
+    t = re.sub(r"[^A-Z0-9]+", " ", s).strip().split()
+    if "INSCRICOES" in t:
+        i = t.index("INSCRICOES") + 1
+        while i < len(t) and t[i] in _RESERVAS_TITULO: del t[i]
+    return " ".join(t)
+_ATRIB_NORM = {}
+for _k, _v in ATRIBUICOES.items(): _ATRIB_NORM.setdefault(_norm_titulo(_k), _v)
+def resp_de(nome):
+    return ATRIBUICOES.get(nome) or _ATRIB_NORM.get(_norm_titulo(nome))
 
 def carregar_ferias():
     try:
@@ -371,7 +386,7 @@ def buscar_tarefas(token, ferias_json="[]", conclusoes_json="{}"):
     limite_48h = datetime.utcnow().replace(tzinfo=timezone.utc) - timedelta(hours=48)
     for t in _g_all(f"https://graph.microsoft.com/v1.0/planner/plans/{plano_id}/tasks"):
         nome = (t.get("title") or "").strip()
-        resp_raw = ATRIBUICOES.get(nome)
+        resp_raw = resp_de(nome)
         if not resp_raw: continue
         # Suporta múltiplos responsáveis na mesma tarefa: "Fulano, Beltrano"
         responsaveis = [r.strip() for r in resp_raw.split(",") if r.strip()]
