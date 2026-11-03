@@ -3556,7 +3556,7 @@ function _addClassificacaoGuarda(add,ref,p){
 
 // ── ANÁLISE DE CONFLITOS E SOBRECARGA ──────────────────────────────────
 // Tarefas com "PERÍODO DE INSCRIÇÕES" são ignoradas na sobrecarga
-const IGNORAR_SOBRECARGA = ['PERÍODO DE INSCRIÇÕES','PERÍODO SOLICITAÇÃO DE ISENÇÃO'];
+const IGNORAR_SOBRECARGA = ['PERÍODO DE INSCRIÇÕES','PERÍODO SOLICITAÇÃO DE ISENÇÃO','COMPROVANTE DEFINITIVO DE INSCRIÇÃO (CDI)'];   // CDI: não precisa informar sobrecarga
 
 function dateKey(d){ return d.toISOString().substring(0,10); }
 
