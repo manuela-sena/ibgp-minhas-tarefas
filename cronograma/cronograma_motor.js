@@ -145,6 +145,8 @@ function gerar(cfg,REGRAS){
     else { // PSS/Certificação/Outros: data da prova informada pelo usuário
       if(cfg.dataProva) base=sod(cfg.dataProva);
       else { avisos.push(`L${a.linha}: data da prova não informada — usei 30 dias corridos após as inscrições`); base=addDays(get(9).fim,30); } }
+    if(a.linha===20&&cfg.manuais&&cfg.manuais[19]&&!(cfg.semCascata&&cfg.semCascata[19])){   // CDI ajustado EM CASCATA: a prova é o próximo fim de semana depois do CDI
+      const c=cfg.manuais[19]; base=addDays(sod(c.fim||c.ini),1); }
     const op=a.linha===20?(cfg.haSabado?'sab_dom':'dom'):(cfg.fimDeSemanaEtapas||'sab_dom');
     let ds;
     if(op==='dom'){ const d=primeiraDataComDow(base,w=>w===0); ds=[d]; }
