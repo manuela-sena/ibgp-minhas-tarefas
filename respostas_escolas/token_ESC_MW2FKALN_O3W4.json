@@ -1,11 +1,182 @@
 {
   "token": "ESC_MW2FKALN_O3W4",
-  "criadoEm": "2026-11-04T18:08:38.315Z",
+  "enviadoEm": "2026-11-04T18:54:29.687Z",
+  "protocolo": "ESC_MW2FKALN_O3W4_1793818469687",
   "concurso": {
     "concurso": "BELO VALE - EDITAL Nº 01/2026 - PROCESSO SELETIVO PÚBLICO",
     "municipio": "BELO VALE/MG",
     "dataProva": "06/12/2026",
     "escola": "EM MARIA DA CONCEICAO MONTEIRO DE CASTRO SOARES",
     "idEscola": "ESC_MW2FKALN_O3W4"
-  }
+  },
+  "instituicao": {
+    "nome": "EM MARIA DA CONCEICAO MONTEIRO DE CASTRO SOARES",
+    "cnpj": "12.457.778/0001-03",
+    "razao": "CAIXA ESCOLAR MARIA DA CONCEIÇÃO MONTEIRO DE CASTRO SOARES",
+    "endereco": "RUA JOSÉ AUGUSTO DE REZENDE",
+    "numero": "112",
+    "complemento": "",
+    "bairro": "CENTRO",
+    "cidade": "BELO VALE",
+    "uf": "MG",
+    "cep": "35473-000",
+    "responsavel": {
+      "nome": "PATRÍCIA ELIANE FERREIRA MAIA BRAGA",
+      "cargo": "DIRETORA",
+      "email": "patriciamb226@gmail.com",
+      "tel": "(31) 99286-7874"
+    },
+    "diretor": {
+      "nome": "PATRÍCIA ELIANE FERREIRA MAIA BRAGA",
+      "email": "patriciamb226@gmail.com"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "6",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "6",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 2",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 3",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 4",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 5",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 6",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "1º ANDAR",
+      "sala": "SALA 7",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "1º ANDAR",
+      "sala": "SALA 8",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "1º ANDAR",
+      "sala": "SALA 9",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "1º ANDAR",
+      "sala": "SALA 10",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 1",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA BIBLIOTECA",
+      "capacidade": 5,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA AEE",
+      "capacidade": 10,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    }
+  ]
 }
