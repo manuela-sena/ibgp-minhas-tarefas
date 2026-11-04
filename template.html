@@ -844,7 +844,7 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
             </button>
             <button class="tab" id="tab-analise" onclick="setTab('analise')">
               <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
-              Análise de Inscrições <span class="tab-badge" id="tb-analise">0</span>
+              Análises <span class="tab-badge" id="tb-analise">0</span>
             </button>
           </div>
         </div>
@@ -1726,6 +1726,14 @@ const EXCECOES_PENDENTE = new Set([
   "PERÍODO SOLICITAÇÃO DE ISENÇÃO",
 ]);
 
+// Atividades "só para consulta" (períodos de análise/recurso etc.): aparecem só na aba Análises e NÃO contam como tarefas a fazer.
+let _consultaNorm=null;
+function ehConsulta(titulo){
+  if(EXCECOES_PENDENTE.has(titulo)) return true;
+  if(!_consultaNorm) _consultaNorm=new Set((typeof TAREFAS_CONSULTA_JS!=='undefined'?TAREFAS_CONSULTA_JS:[]).map(normTitulo));
+  return _consultaNorm.has(normTitulo(titulo));
+}
+
 function chipD(dias,data,pendenteForcado){
   if(pendenteForcado) return `<span class="chip-d chip-nodate">Pendente</span>`;
   if(dias===null) return `<span class="chip-d chip-nodate">Sem data</span>`;
@@ -1762,7 +1770,7 @@ function loadTarefas(){
     const due=parseISO(t.due);
     let dias = diffDays(due);
     let pendenteForcado = false;
-    const isAnaliseInscricao = EXCECOES_PENDENTE.has(t.tarefa);
+    const isAnaliseInscricao = ehConsulta(t.tarefa);
     if(isAnaliseInscricao && dias!==null && dias<0){
       dias = null;
       pendenteForcado = true;
@@ -1837,7 +1845,7 @@ function updateKPIs(tasks){
   const analise=tasks.filter(t=>t._isAnaliseInscricao);
   const fut=tasks.filter(t=>!t._isAnaliseInscricao&&(t.dias===null||t.dias>7));
   ['total','venc','hoje','7d'].forEach(k=>{
-    const v=k==='total'?tasks.length:k==='venc'?venc.length:k==='hoje'?hoje.length:sem.length;
+    const v=k==='total'?tasks.filter(t=>!t._isAnaliseInscricao).length:k==='venc'?venc.length:k==='hoje'?hoje.length:sem.length;
     const el=document.getElementById('kpi-'+k);
     if(el) el.textContent=v;
   });
@@ -2137,7 +2145,7 @@ document.addEventListener('click',e=>{ if(!e.target.closest('#notif-btn')&&!e.ta
 
 // ── DASHBOARD ────────────────────────────────────────────────────────
 function renderDashboard(){
-  const all=_allTasks;
+  const all=_allTasks.filter(t=>!t._isAnaliseInscricao);          // tarefas "só para consulta" não contam como a fazer
   const venc=all.filter(t=>t.dias!==null&&t.dias<0);
   const hoje=all.filter(t=>t.dias===0);
   const sem=all.filter(t=>t.dias!==null&&t.dias>=1&&t.dias<=7);
@@ -3588,9 +3596,11 @@ function analisarConflitos(novosCron){
     const kt=normTitulo(t.tarefa);                       // conflito: mesma atividade mesmo com grafia diferente (maiúsculas, acentos, reservas)
     if(!porAtividade[kt]) porAtividade[kt]=[];
     porAtividade[kt].push({municipio:t.municipio,responsavel:t.responsavel,dk});
-    const pk=`${t.responsavel}|${dk}`;
-    if(!porPessoaDia[pk]) porPessoaDia[pk]=[];
-    porPessoaDia[pk].push({tarefa:t.tarefa,municipio:t.municipio});
+    if(!ehConsulta(t.tarefa)){                           // tarefa só para consulta não pesa na sobrecarga
+      const pk=`${t.responsavel}|${dk}`;
+      if(!porPessoaDia[pk]) porPessoaDia[pk]=[];
+      porPessoaDia[pk].push({tarefa:t.tarefa,municipio:t.municipio});
+    }
   }
 
   for(const t of novosCron){
@@ -3603,7 +3613,7 @@ function analisarConflitos(novosCron){
       }
     }
     // 2. Sobrecarga — ignorar tarefas de inscrição
-    const ignorar=IGNORAR_SOBRECARGA.some(k=>t.atividade.toUpperCase().includes(k));
+    const ignorar=IGNORAR_SOBRECARGA.some(k=>t.atividade.toUpperCase().includes(k))||ehConsulta(t.atividade);
     if(!ignorar){
       const resp=atribDe(t.atividade);
       if(resp){
