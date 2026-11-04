@@ -3605,8 +3605,8 @@ function analisarConflitos(novosCron){
 
   for(const t of novosCron){
     const dkFim=dateKey(t.data_fim);
-    // 1. Conflito de data: mesma atividade, mesma data_fim, outro concurso
-    for(const ex of (porAtividade[normTitulo(t.atividade)]||[])){
+    // 1. Conflito de data: mesma atividade, mesma data_fim, outro concurso (atividades "só para consulta" não entram)
+    if(!ehConsulta(t.atividade)) for(const ex of (porAtividade[normTitulo(t.atividade)]||[])){
       if(ex.dk===dkFim && ex.municipio!==_cronNome){
         conflitos.push({seq:t.seq,atividade:t.atividade,dataFim:fmtBR(t.data_fim),
           conflitoCom:ex.municipio,responsavel:ex.responsavel,data_fim_obj:t.data_fim});
