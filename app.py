@@ -80,6 +80,13 @@ for _k, _v in ATRIBUICOES.items(): _ATRIB_NORM.setdefault(_norm_titulo(_k), _v)
 def resp_de(nome):
     return ATRIBUICOES.get(nome) or _ATRIB_NORM.get(_norm_titulo(nome))
 
+# Atividades "só para consulta" (períodos de análise/recurso etc.): aparecem só na aba Análises e não contam como tarefas a fazer.
+# A lista vem de tarefas_consulta.json (gerada a partir da coluna "tipo" da planilha de responsáveis).
+try:
+    TAREFAS_CONSULTA = [(x["titulo"] if isinstance(x, dict) else x) for x in json.load(open("/mount/src/ibgp-minhas-tarefas/tarefas_consulta.json", encoding="utf-8"))]
+except Exception:
+    TAREFAS_CONSULTA = []
+
 def carregar_ferias():
     try:
         with open("/mount/src/ibgp-minhas-tarefas/ferias.json", "r", encoding="utf-8") as f:
@@ -704,7 +711,7 @@ const IS_OPERACIONAL = {'true' if is_operacional else 'false'};
 const NOME_USUARIO  = {json.dumps(nome_interno)};
 const DADOS_INICIAIS = {dados_iniciais};""")
 html = html.replace("// PLACEHOLDER_ATRIB",
-    f"const ATRIBUICOES_JS = {json.dumps(ATRIBUICOES)};")
+    f"const ATRIBUICOES_JS = {json.dumps(ATRIBUICOES)};\nconst TAREFAS_CONSULTA_JS = {json.dumps(TAREFAS_CONSULTA)};")
 
 # ── BOTÕES DE NAVEGAÇÃO PARA RESULTADOS (fora do iframe) ─────────────
 st.markdown("<style>[data-testid='stChatInput'],[data-testid='stBottom']{display:none!important}</style>", unsafe_allow_html=True)
