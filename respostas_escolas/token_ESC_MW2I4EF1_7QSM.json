@@ -1,11 +1,262 @@
 {
   "token": "ESC_MW2I4EF1_7QSM",
-  "criadoEm": "2026-11-04T19:20:15.613Z",
+  "enviadoEm": "2026-11-04T20:50:27.757Z",
+  "protocolo": "ESC_MW2I4EF1_7QSM_1793825427757",
   "concurso": {
     "concurso": "CÂMARA MUNICIPAL DE CANDEIAS DO JAMARI/RO - EDITAL Nº 01/2026 - CONCURSO",
     "municipio": "CANDEIAS DO JAMARI/RO",
     "dataProva": "22/11/2026",
     "escola": "EEEFM CARLOS DRUMMOND DE ANDRADE",
     "idEscola": "ESC_MW2I4EF1_7QSM"
-  }
+  },
+  "instituicao": {
+    "nome": "MARIA PAULA ALVES LIMA",
+    "cnpj": "00.771.420/0000-1",
+    "razao": "CARLOS DRUMMOND DE ANDRAD E",
+    "endereco": "TANCREDO NEVES 14 87",
+    "numero": "14 87",
+    "complemento": "CANDEIAS DO JAMARI",
+    "bairro": "UNIÃO",
+    "cidade": "RO / CANDEIAS DO JAMARI",
+    "uf": "RO",
+    "cep": "76860-000",
+    "responsavel": {
+      "nome": "ROSINÉIA ALVES CIRINO",
+      "cargo": "DIRETOR",
+      "email": "cdacandeias@seduc.ro.gov.br",
+      "tel": "(69) 99268-9200"
+    },
+    "diretor": {
+      "nome": "ROSINÉIA ALVES CIRINO",
+      "email": "rosicirino@seduc.ro.gov.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": true,
+      "arcond": true,
+      "ventilador": false
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "14",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "14",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "01",
+      "andar": "",
+      "sala": "SALA 01",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "01",
+      "andar": "",
+      "sala": "SALA 02",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "01",
+      "andar": "",
+      "sala": "SALA 03",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "01",
+      "andar": "",
+      "sala": "SALA 04",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "01",
+      "andar": "",
+      "sala": "SALA 05",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "01",
+      "andar": "",
+      "sala": "SALA 06",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "01",
+      "andar": "",
+      "sala": "SALA 07",
+      "capacidade": 31,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "01",
+      "andar": "",
+      "sala": "SALA 08",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "02",
+      "andar": "",
+      "sala": "SALA 09",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "02",
+      "andar": "",
+      "sala": "SALA 10",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "02",
+      "andar": "",
+      "sala": "SALA 11",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "03",
+      "andar": "",
+      "sala": "SALA 12",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "03",
+      "andar": "",
+      "sala": "SALA 13",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "03",
+      "andar": "",
+      "sala": "SALA 14",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "03",
+      "andar": "",
+      "sala": "SALA 15",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "SALA EXTRA",
+      "andar": "",
+      "sala": "SALA DOS PROF",
+      "capacidade": 10,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "01SALA EXTRA",
+      "andar": "",
+      "sala": "SALA RECURSO",
+      "capacidade": 5,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "01SALA EXTRA",
+      "andar": "",
+      "sala": "SALA DE INFORMATICA",
+      "capacidade": 5,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "01SALA EXTRA",
+      "andar": "",
+      "sala": "SALA LEITRUA",
+      "capacidade": 5,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "01SALA EXTRA",
+      "andar": "",
+      "sala": "SALA APOIO DA COORDENAÇÃO",
+      "capacidade": 5,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": true
+    }
+  ]
 }
