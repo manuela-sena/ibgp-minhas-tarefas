@@ -5698,6 +5698,12 @@ function carregarUploadsInscricoes(input){
   });
 }
 
+// Lê uma aba do relatório geral: cabeçalho na linha 2 (padrão do relatório) ou, se o título da primeira linha tiver sido removido, na linha 1.
+function _lerFolhaInsc(ws){
+  const tem=r=>r.length&&Object.keys(r[0]).some(k=>/^INSCRI[ÇC][ÃA]O$/i.test(k.replace(/\s+/g,' ').trim()));
+  const a=XLSX.utils.sheet_to_json(ws,{defval:'',range:1}); if(tem(a)) return a;
+  const b=XLSX.utils.sheet_to_json(ws,{defval:''}); return tem(b)?b:a;
+}
 function carregarArquivoInscricoes(input){
   const file=input.files[0]; if(!file) return;
   const status=document.getElementById('insc-status');
@@ -5710,7 +5716,7 @@ function carregarArquivoInscricoes(input){
       // Ler todas as abas com header na linha 2 (range:1)
       let todos=[];
       for(const nome of _inscWorkbook.SheetNames){
-        const rows=XLSX.utils.sheet_to_json(_inscWorkbook.Sheets[nome],{defval:'',range:1});
+        const rows=_lerFolhaInsc(_inscWorkbook.Sheets[nome]);
         todos=todos.concat(rows);
       }
       // Normalizar chaves (remover espaços extras)
@@ -5902,13 +5908,20 @@ async function _processarInscricoesUm(procs){
         const STATUS_ATIVOS=['pago','deferida','deferido'];
         let todos=[];
         for(const nome of _inscWorkbook.SheetNames){
-          const rows=XLSX.utils.sheet_to_json(_inscWorkbook.Sheets[nome],{defval:'',range:1});
+          const rows=_lerFolhaInsc(_inscWorkbook.Sheets[nome]);
           todos=todos.concat(rows);
         }
         todos=todos.map(r=>{
           const n={};
           Object.keys(r).forEach(k=>{const kn=k.replace(/\n/g,' ').replace(/\s+/g,' ').trim();n[kn]=typeof r[k]==='string'?r[k].trim():r[k];});
           return n;
+        });
+        // STATUS robusto: acha a coluna mesmo com outro nome/caixa (Status, SITUAÇÃO…) e padroniza o valor (espaços, NBSP, maiúsculas)
+        const _semAc=x=>String(x).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/\s+/g,' ').trim();
+        const _canonSt={pago:'Pago',deferida:'Deferida',deferido:'Deferido',cancelada:'Cancelada',pendente:'Pendente',indeferida:'Indeferida',indeferido:'Indeferido'};
+        todos.forEach(r=>{
+          if(!('STATUS' in r)){ const k=Object.keys(r).find(x=>['STATUS','SITUACAO','STATUS DA INSCRICAO','STATUS INSCRICAO'].includes(_semAc(x))); if(k) r['STATUS']=r[k]; }
+          if('STATUS' in r){ const v=String(r['STATUS']==null?'':r['STATUS']).replace(/[\s\u00a0\u200b]+/g,' ').trim(); r['STATUS']=_canonSt[v.toLowerCase()]||v; }
         });
         if(!todos.length) throw new Error('Nenhum dado encontrado.');
 
@@ -6243,7 +6256,9 @@ async function _processarInscricoesUm(procs){
         await criarAbaAlocacao(wbAloc,'ALOCAÇÃO',todasCols,aloc,true);
         if(!aloc.length){                                   // ninguém elegível: avisa o motivo (a planilha sai só com o cabeçalho)
           const st={}; todos.forEach(r=>{ const k=(r['STATUS']||'(vazio)').toString(); st[k]=(st[k]||0)+1; });
-          avisosCodigos.push('Nenhum candidato elegível para a alocação (só entram STATUS Pago ou Deferido): a planilha de alocação saiu apenas com o cabeçalho. STATUS encontrados neste relatório: '+Object.entries(st).map(([k,v])=>k+' ('+v+')').join(', ')+'.');
+          avisosCodigos.push(('STATUS' in (todos[0]||{}))
+            ? 'Nenhum candidato elegível para a alocação (só entram STATUS Pago ou Deferido): a planilha de alocação saiu apenas com o cabeçalho. STATUS encontrados neste relatório: '+Object.entries(st).map(([k,v])=>k+' ('+v+')').join(', ')+'.'
+            : 'O relatório não tem a coluna STATUS, então nenhum candidato foi considerado elegível e a planilha de alocação saiu apenas com o cabeçalho. Colunas encontradas: '+Object.keys(todos[0]||{}).slice(0,14).join(', ')+'…');
         }
 
         // Aba RETIRADOS: candidatos retirados pela regra de conjuntos (status original mantido)
