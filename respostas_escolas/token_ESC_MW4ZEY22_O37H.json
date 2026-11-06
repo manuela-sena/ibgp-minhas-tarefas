@@ -1,11 +1,72 @@
 {
   "token": "ESC_MW4ZEY22_O37H",
-  "criadoEm": "2026-11-06T12:59:53.450Z",
+  "enviadoEm": "2026-11-06T13:01:50.709Z",
+  "protocolo": "ESC_MW4ZEY22_O37H_1793970110709",
   "concurso": {
     "concurso": "ASSEMBLEIA/ES – CONCURSO AGENTE – EDITAL Nº 02/2025",
     "municipio": "VITÓRIA/ES",
     "dataProva": "09/11/2026",
     "escola": "SENAI Porto",
     "idEscola": "ESC_MW4ZEY22_O37H"
-  }
+  },
+  "instituicao": {
+    "nome": "SENAI Porto",
+    "cnpj": "",
+    "razao": "",
+    "endereco": "AV. GETÚLIO VARGAS",
+    "numero": "556",
+    "complemento": "",
+    "bairro": "BENTO FERREIRA",
+    "cidade": "VITÓRIA",
+    "uf": "ES",
+    "cep": "29010-420",
+    "responsavel": {
+      "nome": "TESTE",
+      "cargo": "",
+      "email": "concursos@ibgp.org.br",
+      "tel": "(31) 99222-1465"
+    },
+    "diretor": {
+      "nome": "",
+      "email": ""
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": false,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": false
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "1",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "1",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA CURSO DE FORMAÇÃO",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    }
+  ]
 }
