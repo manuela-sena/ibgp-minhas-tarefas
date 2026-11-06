@@ -6071,7 +6071,7 @@ async function _processarInscricoesUm(procs){
                 val=String(val).trim().toUpperCase();
                 if(val==='PENDENTE') val='PENDENTE DE PAGAMENTO';
               }
-              c.value=String(val);
+              c.value=lim32k(String(val));
               c.font={name:FONTE,size:9};
               c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
               c.alignment={vertical:'middle',horizontal:(col==='STATUS DE PAGAMENTO'||col.includes('NASC')||col==='RESULTADO'||col==='INSCRIÇÃO')?'center':undefined};
@@ -6106,8 +6106,9 @@ async function _processarInscricoesUm(procs){
           }
           return s;
         }
-        async function criarAbaAlocacao(wb, nomeAba, todasCols, dados){
-          if(!dados.length) return;
+        const lim32k=v=>{ const s=String(v); return s.length>32767?s.slice(0,32764)+'...':s; };   // o Excel aceita no máximo 32.767 caracteres por célula
+        async function criarAbaAlocacao(wb, nomeAba, todasCols, dados, obrigatoria){
+          if(!dados.length && !obrigatoria) return;      // ALOCAÇÃO é obrigatória: sem nenhuma aba o arquivo fica corrompido no Excel
           const ws=wb.addWorksheet(nomeAba);
           const bordaThin={top:{style:'thin',color:{argb:'FF000000'}},bottom:{style:'thin',color:{argb:'FF000000'}},left:{style:'thin',color:{argb:'FF000000'}},right:{style:'thin',color:{argb:'FF000000'}}};
           const FONTE='Times New Roman';
@@ -6128,7 +6129,7 @@ async function _processarInscricoesUm(procs){
           dados.forEach((row,ri)=>{
             todasCols.forEach((col,ci)=>{
               const c=ws.getCell(ri+2,ci+1);
-              let val=formatarValorAloc(row[col]);
+              let val=lim32k(formatarValorAloc(row[col]));
               c.value=val;
               c.font={name:FONTE,size:9};
               c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFFFF'}};
@@ -6239,7 +6240,11 @@ async function _processarInscricoesUm(procs){
           !retirar.has(r['INSCRIÇÃO']?.toString())
         );
         const todasCols=Object.keys(todos[0]||{}).filter(k=>!k.startsWith('_'));
-        await criarAbaAlocacao(wbAloc,'ALOCAÇÃO',todasCols,aloc);
+        await criarAbaAlocacao(wbAloc,'ALOCAÇÃO',todasCols,aloc,true);
+        if(!aloc.length){                                   // ninguém elegível: avisa o motivo (a planilha sai só com o cabeçalho)
+          const st={}; todos.forEach(r=>{ const k=(r['STATUS']||'(vazio)').toString(); st[k]=(st[k]||0)+1; });
+          avisosCodigos.push('Nenhum candidato elegível para a alocação (só entram STATUS Pago ou Deferido): a planilha de alocação saiu apenas com o cabeçalho. STATUS encontrados neste relatório: '+Object.entries(st).map(([k,v])=>k+' ('+v+')').join(', ')+'.');
+        }
 
         // Aba RETIRADOS: candidatos retirados pela regra de conjuntos (status original mantido)
         if(conjuntos.length&&retirar.size){
