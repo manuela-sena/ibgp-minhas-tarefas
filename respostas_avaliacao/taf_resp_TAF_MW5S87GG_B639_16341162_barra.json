@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliador": "ANDERSON FAGNER",
+  "prova": "barra",
+  "turma": "46333 · 07h · AZUL",
+  "candidato": {
+    "inscricao": "16341162",
+    "nome": "ISABELA DOS SANTOS FERNANDES",
+    "cargo": "301 - GUARDA CIVIL MUNICIPAL"
+  },
+  "sexo": "F",
+  "valor": 38,
+  "pontos": 50,
+  "eliminado": false,
+  "horaInicio": "2026-11-07T11:28:15.033Z",
+  "horaFim": "2026-11-07T11:30:23.893Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MW5S87GG_B639_16341162_barra.jpg",
+  "observacoes": "",
+  "enviadoEm": "2026-11-07T11:30:27.763Z"
+}
