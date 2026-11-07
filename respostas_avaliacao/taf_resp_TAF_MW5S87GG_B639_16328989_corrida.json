@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliador": "WALLACE VIANA",
+  "prova": "corrida",
+  "turma": "",
+  "candidato": {
+    "inscricao": "16328989",
+    "nome": "GABRIEL WITHOR LIMA VIEIRA SANTOS",
+    "cargo": "301 - GUARDA CIVIL MUNICIPAL"
+  },
+  "sexo": "M",
+  "valor": 2000,
+  "pontos": 0,
+  "eliminado": true,
+  "horaInicio": "2026-11-07T21:57:51.993Z",
+  "horaFim": "2026-11-07T22:10:28.998Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MW5S87GG_B639_corrida_grupo_1794089963382.jpg",
+  "observacoes": "Corrida em grupo — 5 volta(s) completa(s) de 400m + 0m.",
+  "enviadoEm": "2026-11-07T22:19:29.382Z"
+}
