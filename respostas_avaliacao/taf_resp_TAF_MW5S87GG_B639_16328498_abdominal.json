@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliador": "PEDRO DRUMOND",
+  "prova": "abdominal",
+  "turma": "46333 · 15h · VERMELHO",
+  "candidato": {
+    "inscricao": "16328498",
+    "nome": "RONALD FILEMON ALVES DE AGUILAR",
+    "cargo": "301 - GUARDA CIVIL MUNICIPAL"
+  },
+  "sexo": "M",
+  "valor": 20,
+  "pontos": 34,
+  "eliminado": false,
+  "horaInicio": "2026-11-07T19:56:35.540Z",
+  "horaFim": "2026-11-07T19:57:41.456Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MW5S87GG_B639_16328498_abdominal.jpg",
+  "observacoes": "",
+  "enviadoEm": "2026-11-07T19:57:54.665Z"
+}
