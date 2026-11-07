@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliador": "WALLACE VIANA",
+  "prova": "corrida",
+  "turma": "",
+  "candidato": {
+    "inscricao": "16327212",
+    "nome": "ELIVELTON CESAR BATISTA",
+    "cargo": "301 - GUARDA CIVIL MUNICIPAL"
+  },
+  "sexo": "M",
+  "valor": 2400,
+  "pontos": 30,
+  "eliminado": false,
+  "horaInicio": "2026-11-07T21:57:51.993Z",
+  "horaFim": "2026-11-07T22:10:28.998Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MW5S87GG_B639_corrida_grupo_1794089963382.jpg",
+  "observacoes": "Corrida em grupo — 6 volta(s) completa(s) de 400m + 0m.",
+  "enviadoEm": "2026-11-07T22:19:27.533Z"
+}
