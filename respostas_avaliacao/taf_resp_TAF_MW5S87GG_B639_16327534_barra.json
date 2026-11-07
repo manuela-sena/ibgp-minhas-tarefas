@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliador": "ANDERSON FAGNER",
+  "prova": "barra",
+  "turma": "46333 · 15h · VERMELHO",
+  "candidato": {
+    "inscricao": "16327534",
+    "nome": "RAFAEL SILVA INACIO",
+    "cargo": "301 - GUARDA CIVIL MUNICIPAL"
+  },
+  "sexo": "M",
+  "valor": 9,
+  "pontos": 46,
+  "eliminado": false,
+  "horaInicio": "2026-11-07T22:40:54.667Z",
+  "horaFim": "2026-11-07T22:42:27.750Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MW5S87GG_B639_16327534_barra.jpg",
+  "observacoes": "",
+  "enviadoEm": "2026-11-07T22:42:32.133Z"
+}
