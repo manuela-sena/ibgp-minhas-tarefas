@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliador": "ANDERSON REUBEN",
+  "prova": "abdominal",
+  "turma": "46333 · 07h · AZUL",
+  "candidato": {
+    "inscricao": "16327648",
+    "nome": "MALU MORAIS DOS SANTOS",
+    "cargo": "301 - GUARDA CIVIL MUNICIPAL"
+  },
+  "sexo": "F",
+  "valor": 24,
+  "pontos": 38,
+  "eliminado": false,
+  "horaInicio": "2026-11-07T11:28:35.278Z",
+  "horaFim": "2026-11-07T11:29:11.309Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MW5S87GG_B639_16327648_abdominal.jpg",
+  "observacoes": "",
+  "enviadoEm": "2026-11-07T11:29:28.149Z"
+}
