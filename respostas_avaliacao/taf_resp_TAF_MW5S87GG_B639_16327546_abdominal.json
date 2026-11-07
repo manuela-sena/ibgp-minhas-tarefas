@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliador": "ANDERSON REUBEN",
+  "prova": "abdominal",
+  "turma": "46333 · 07h · AZUL",
+  "candidato": {
+    "inscricao": "16327546",
+    "nome": "JESSICA AMARAL GAUDARD VAROTTO TRISTAO",
+    "cargo": "301 - GUARDA CIVIL MUNICIPAL"
+  },
+  "sexo": "F",
+  "valor": 26,
+  "pontos": 40,
+  "eliminado": false,
+  "horaInicio": "2026-11-07T11:19:32.685Z",
+  "horaFim": "2026-11-07T11:20:05.709Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MW5S87GG_B639_16327546_abdominal.jpg",
+  "observacoes": "",
+  "enviadoEm": "2026-11-07T11:20:20.180Z"
+}
