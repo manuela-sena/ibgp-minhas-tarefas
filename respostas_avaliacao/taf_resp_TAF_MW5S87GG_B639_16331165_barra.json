@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliador": "ANDERSON FAGNER",
+  "prova": "barra",
+  "turma": "46333 · 15h · VERMELHO",
+  "candidato": {
+    "inscricao": "16331165",
+    "nome": "HYGOR APOLINARIO",
+    "cargo": "301 - GUARDA CIVIL MUNICIPAL"
+  },
+  "sexo": "M",
+  "valor": 9,
+  "pontos": 46,
+  "eliminado": false,
+  "horaInicio": "2026-11-07T19:39:07.345Z",
+  "horaFim": "2026-11-07T19:40:29.660Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MW5S87GG_B639_16331165_barra.jpg",
+  "observacoes": "",
+  "enviadoEm": "2026-11-07T19:40:33.620Z"
+}
