@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliador": "PEDRO DRUMOND",
+  "prova": "abdominal",
+  "turma": "46333 · 13h · BRANCO",
+  "candidato": {
+    "inscricao": "16327373",
+    "nome": "RODRIGO DOS ANJOS MOURA",
+    "cargo": "301 - GUARDA CIVIL MUNICIPAL"
+  },
+  "sexo": "M",
+  "valor": 26,
+  "pontos": 40,
+  "eliminado": false,
+  "horaInicio": "2026-11-07T18:07:13.973Z",
+  "horaFim": "2026-11-07T18:08:09.671Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MW5S87GG_B639_16327373_abdominal.jpg",
+  "observacoes": "",
+  "enviadoEm": "2026-11-07T18:08:20.109Z"
+}
