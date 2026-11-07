@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliador": "PEDRO DRUMOND",
+  "prova": "abdominal",
+  "turma": "46333 · 09h · PRETO",
+  "candidato": {
+    "inscricao": "16332560",
+    "nome": "FILIPE DAMASCENO VIEIRA",
+    "cargo": "301 - GUARDA CIVIL MUNICIPAL"
+  },
+  "sexo": "M",
+  "valor": 24,
+  "pontos": 38,
+  "eliminado": false,
+  "horaInicio": "2026-11-07T13:14:46.558Z",
+  "horaFim": "2026-11-07T13:15:44.370Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MW5S87GG_B639_16332560_abdominal.jpg",
+  "observacoes": "",
+  "enviadoEm": "2026-11-07T13:16:07.402Z"
+}
