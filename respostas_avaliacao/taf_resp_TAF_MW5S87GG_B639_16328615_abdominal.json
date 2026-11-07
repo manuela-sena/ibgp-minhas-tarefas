@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliador": "PEDRO DRUMOND",
+  "prova": "abdominal",
+  "turma": "46333 · 07h · AZUL",
+  "candidato": {
+    "inscricao": "16328615",
+    "nome": "THAIS LUIZA RAIMUNDI DANTAS",
+    "cargo": "301 - GUARDA CIVIL MUNICIPAL"
+  },
+  "sexo": "F",
+  "valor": 18,
+  "pontos": 32,
+  "eliminado": false,
+  "horaInicio": "2026-11-07T11:44:36.018Z",
+  "horaFim": "2026-11-07T11:45:34.593Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MW5S87GG_B639_16328615_abdominal.jpg",
+  "observacoes": "",
+  "enviadoEm": "2026-11-07T11:45:38.973Z"
+}
