@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliador": "ANDERSON REUBEN",
+  "prova": "abdominal",
+  "turma": "46333 · 09h · PRETO",
+  "candidato": {
+    "inscricao": "16330827",
+    "nome": "ROMULO DE SOUZA CIPRIANO",
+    "cargo": "301 - GUARDA CIVIL MUNICIPAL"
+  },
+  "sexo": "M",
+  "valor": 30,
+  "pontos": 46,
+  "eliminado": false,
+  "horaInicio": "2026-11-07T13:31:57.542Z",
+  "horaFim": "2026-11-07T13:32:31.526Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MW5S87GG_B639_16330827_abdominal.jpg",
+  "observacoes": "",
+  "enviadoEm": "2026-11-07T13:32:42.219Z"
+}
