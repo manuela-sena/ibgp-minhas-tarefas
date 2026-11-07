@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliador": "ANDERSON FAGNER",
+  "prova": "barra",
+  "turma": "46333 · 09h · PRETO",
+  "candidato": {
+    "inscricao": "16338255",
+    "nome": "GUSTAVO KAORU KURIIWA SILVEIRA",
+    "cargo": "301 - GUARDA CIVIL MUNICIPAL"
+  },
+  "sexo": "M",
+  "valor": 10,
+  "pontos": 50,
+  "eliminado": false,
+  "horaInicio": "2026-11-07T13:23:32.361Z",
+  "horaFim": "2026-11-07T13:24:05.287Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MW5S87GG_B639_16338255_barra.jpg",
+  "observacoes": "",
+  "enviadoEm": "2026-11-07T13:25:07.424Z"
+}
