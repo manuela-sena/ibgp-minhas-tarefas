@@ -1,0 +1,27 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliador": "ANDERSON REUBEN",
+  "prova": "corrida",
+  "turma": "",
+  "candidato": {
+    "inscricao": "16337686",
+    "nome": "JOSÉ BENEDITO CÂNDIDO",
+    "cargo": "301 - GUARDA CIVIL MUNICIPAL"
+  },
+  "sexo": "M",
+  "valor": 2700,
+  "pontos": 36,
+  "eliminado": false,
+  "horaInicio": "2026-11-07T13:26:00.000Z",
+  "horaFim": "2026-11-07T13:42:00.000Z",
+  "fotoPath": "",
+  "observacoes": "Corrida em grupo — distância total de 2700m (nº de peito 5). [Lançado manualmente em 07/11/2026 a partir das anotações do avaliador, após queda de internet no envio do grupo.]",
+  "enviadoEm": "2026-11-07T16:42:38.000Z",
+  "lancamentoManual": {
+    "em": "2026-11-07T16:42:38.000Z",
+    "por": "Manuela (gestora)",
+    "motivo": "Queda de internet impediu o envio do grupo pelo formulário; resultados recuperados das anotações do avaliador.",
+    "origem": "planilha TAF_POUSO_ALEGRE_CORRIDA_A_RECUPERAR (grupo do Anderson)"
+  }
+}
