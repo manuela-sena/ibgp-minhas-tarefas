@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliador": "LEANDRO LACERDA",
+  "prova": "corrida",
+  "turma": "",
+  "candidato": {
+    "inscricao": "16328586",
+    "nome": "LUCAS SILVA DA ANUNCIAÇÃO",
+    "cargo": "301 - GUARDA CIVIL MUNICIPAL"
+  },
+  "sexo": "M",
+  "valor": 2500,
+  "pontos": 32,
+  "eliminado": false,
+  "horaInicio": "2026-11-07T21:57:50.541Z",
+  "horaFim": "2026-11-07T22:09:53.126Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MW5S87GG_B639_corrida_grupo_1794089749621.jpg",
+  "observacoes": "Corrida em grupo — 6 volta(s) completa(s) de 400m + 100m.",
+  "enviadoEm": "2026-11-07T22:15:58.173Z"
+}
