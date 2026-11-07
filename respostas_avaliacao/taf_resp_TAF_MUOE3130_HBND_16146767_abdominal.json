@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MUOE3130_HBND",
+  "concursoNome": "ALEES - EDITAL Nº 01/2025 - CONCURSO PÚBLICO",
+  "avaliador": "MANUELA",
+  "prova": "abdominal",
+  "turma": "22.02.2026 · 07H30",
+  "candidato": {
+    "inscricao": "16146767",
+    "nome": "BRUNO SANDERSON COSTA*",
+    "cargo": "101 - AGENTE DE POLÍCIA LEGISLATIVA"
+  },
+  "sexo": "M",
+  "valor": 24,
+  "pontos": 38,
+  "eliminado": false,
+  "horaInicio": "2026-11-07T08:39:54.813Z",
+  "horaFim": "2026-11-07T08:39:58.432Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MUOE3130_HBND_16146767_abdominal.jpg",
+  "observacoes": "",
+  "enviadoEm": "2026-11-07T08:40:04.907Z"
+}
