@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliador": "ANDERSON FAGNER",
+  "prova": "barra",
+  "turma": "46333 · 13h · BRANCO",
+  "candidato": {
+    "inscricao": "16335308",
+    "nome": "LUIS FELIPE MOKARZEL BERALDO",
+    "cargo": "301 - GUARDA CIVIL MUNICIPAL"
+  },
+  "sexo": "M",
+  "valor": 6,
+  "pontos": 38,
+  "eliminado": false,
+  "horaInicio": "2026-11-07T18:01:03.447Z",
+  "horaFim": "2026-11-07T18:02:01.725Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MW5S87GG_B639_16335308_barra.jpg",
+  "observacoes": "",
+  "enviadoEm": "2026-11-07T18:02:04.863Z"
+}
