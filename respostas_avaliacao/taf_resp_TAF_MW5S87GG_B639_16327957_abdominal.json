@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliador": "ANDERSON REUBEN",
+  "prova": "abdominal",
+  "turma": "46333 · 09h · PRETO",
+  "candidato": {
+    "inscricao": "16327957",
+    "nome": "PEDRO TIAGO DA SILVA",
+    "cargo": "301 - GUARDA CIVIL MUNICIPAL"
+  },
+  "sexo": "M",
+  "valor": 24,
+  "pontos": 38,
+  "eliminado": false,
+  "horaInicio": "2026-11-07T13:30:35.388Z",
+  "horaFim": "2026-11-07T13:31:17.841Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MW5S87GG_B639_16327957_abdominal.jpg",
+  "observacoes": "",
+  "enviadoEm": "2026-11-07T13:31:22.990Z"
+}
