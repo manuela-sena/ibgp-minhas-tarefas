@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliador": "ANDERSON REUBEN",
+  "prova": "abdominal",
+  "turma": "46333 · 13h · BRANCO",
+  "candidato": {
+    "inscricao": "16327937",
+    "nome": "ALEF CAIQUE DIVINO GALDINO",
+    "cargo": "301 - GUARDA CIVIL MUNICIPAL"
+  },
+  "sexo": "M",
+  "valor": 26,
+  "pontos": 40,
+  "eliminado": false,
+  "horaInicio": "2026-11-07T16:48:28.484Z",
+  "horaFim": "2026-11-07T16:49:02.427Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MW5S87GG_B639_16327937_abdominal.jpg",
+  "observacoes": "",
+  "enviadoEm": "2026-11-07T16:49:20.564Z"
+}
