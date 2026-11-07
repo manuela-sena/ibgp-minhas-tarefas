@@ -1,0 +1,2772 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "criadoEm": "2026-11-07T02:26:27.904Z",
+  "atualizadoEm": "2026-11-07T02:26:27.905Z",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "concursoId": "GlVweeXplEyP2VbcD_6biGUAMUkc",
+  "avaliadores": [
+    "ANDERSON FAGNER",
+    "PEDRO DRUMOND",
+    "LEANDRO LACERDA",
+    "ANDERSON REUBEN",
+    "WALLACE VIANA",
+    "PEDRO SANTOS"
+  ],
+  "candidatos": [
+    {
+      "inscricao": "16328216",
+      "nome": "LUANA SANTANA DE OLIVEIRA E SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16327495",
+      "nome": "VIVIAN PEREIRA SANTOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16327546",
+      "nome": "JESSICA AMARAL GAUDARD VAROTTO TRISTAO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16327492",
+      "nome": "MARIANA FONSECA DE PAULA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16327599",
+      "nome": "SARAH JUNQUEIRA FERRAZ",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16328853",
+      "nome": "IASMIN RESENDE GIAROLA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16327305",
+      "nome": "BRENDA ALVES RODRIGUES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16331387",
+      "nome": "SAMIRA CARDOSO SILVA PASCHOAL",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16327295",
+      "nome": "RITA DE CASSIA RODRIGUES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16327648",
+      "nome": "MALU MORAIS DOS SANTOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16328370",
+      "nome": "JHENIFER SANTOS DE SOUSA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16327860",
+      "nome": "JOYCE VEIGA BERNARDES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16334185",
+      "nome": "THAIS FERNANDA DO PRADO FREITAS PEREIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16328102",
+      "nome": "ANGELITA SOUZA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16332894",
+      "nome": "HERISLANE RODRIGUES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16327732",
+      "nome": "NATALIA SOUZA DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16339901",
+      "nome": "BRUNA MICHELY DE OLIVEIRA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16327709",
+      "nome": "DAILA CARENE OLIVEIRA BRANDÃO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16333274",
+      "nome": "CLEIDIELE GONÇALVES MAIA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16331215",
+      "nome": "KÊNIA FONSECA MATIAS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16327431",
+      "nome": "MARCELA ALVES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16340566",
+      "nome": "MYRIAN LUIZA LIMA DE OLIVEIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16328099",
+      "nome": "SAMIRA FERREIRA SANTOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16332516",
+      "nome": "ANA CLARA FERNANDES CARLOS TOTTI",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16332840",
+      "nome": "ANA JULIA SOUSA DE JESUS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16334409",
+      "nome": "WELLEN NARA ELOI ROMANHOL",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16327221",
+      "nome": "MIRELLA CRISTINA DA COSTA BRAGA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16331328",
+      "nome": "JULIANA LAGUNA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16328615",
+      "nome": "THAIS LUIZA RAIMUNDI DANTAS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16327440",
+      "nome": "ESTEFANI CAROLAINE ALVES VITORINO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16327564",
+      "nome": "PALOMA LUZINETE DE FARIAS MATOS LEMES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16331363",
+      "nome": "BRUNA DOS SANTOS ANJOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16327906",
+      "nome": "CAROLINE DOS SANTOS CONCEIÇÃO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16333498",
+      "nome": "ANA LÍVIA PINTO CABRAL",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16338922",
+      "nome": "GISLAINE APA DE CASTRO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16340888",
+      "nome": "MARIA ALICE PONCE",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16328060",
+      "nome": "POLIANA DOMINGOS PEREIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16327493",
+      "nome": "THAIS CAROLINE DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16331494",
+      "nome": "PAMELA SILVA VIANA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16341162",
+      "nome": "ISABELA DOS SANTOS FERNANDES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16331364",
+      "nome": "LARISSA MARIANA DE SOUZA RIBEIRO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16328271",
+      "nome": "CAMILA SOUZA NOWACK",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16333676",
+      "nome": "DIANA APARECIDA FERNANDES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16332584",
+      "nome": "GYOVANNA NERI PEREIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16337222",
+      "nome": "LUAMARA DA SILVA MORAES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16327768",
+      "nome": "RAFAELE MARIA DIAS FARIA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16327505",
+      "nome": "ANA CAROLINA CEZARIO SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16328401",
+      "nome": "KETLEN MARQUES DOS SANTOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16330942",
+      "nome": "LIDIANI ALVES SARTORI",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16337571",
+      "nome": "LIVIA MARIA FINAMOR",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16328997",
+      "nome": "NATHALIA AMANDA MARCELINO QUIRINO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16328026",
+      "nome": "ANA CECILIA NASCIMENTO DE OLIVEIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16329565",
+      "nome": "BIANCA CARVALHO DE BRITO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16337284",
+      "nome": "JESSICA MARIANE NUCIO DOS SANTOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16337701",
+      "nome": "JOYCE RIBEIRO DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16333367",
+      "nome": "LETÍCIA CRISTINA FERREIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16340946",
+      "nome": "FRANCIELE PEREIRA DE SOUZA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16327791",
+      "nome": "IZABELLA RODRIGUES MARQUES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16327285",
+      "nome": "ALICE RAFAELA FERREIRA DUARTE",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16333207",
+      "nome": "ANA CAROLYNA PEREIRA DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16327482",
+      "nome": "CAMILA CARVALHO DE PAULA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16334720",
+      "nome": "GERLIANE DAMAZIO DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16329439",
+      "nome": "LETÍCIA DAIANE OLIVEIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16329309",
+      "nome": "SAVANA RODRIGUES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16330658",
+      "nome": "GIULIA CONSTANCIA SANTOS FARIAS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16328963",
+      "nome": "MANUELLA DE MELO LOPES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16330272",
+      "nome": "REBECA DOS SANTOS MIGUEL",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16329888",
+      "nome": "GABRIELLY GIORDANA COSTA SETOLIN",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16332535",
+      "nome": "LIDIA SENHORINI DOS REIS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16335802",
+      "nome": "NICOLLE MARIA NOGUEIRA SEVERINO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16334192",
+      "nome": "THAIS ANDRESA FERREIRA  SANTOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16330009",
+      "nome": "ANA TALITA DE AZEVEDO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16339578",
+      "nome": "FERNANDA BRANDÃO DE ALBUQUERQUE",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16328103",
+      "nome": "MARINA LOUISE DO NASCIMENTO BARBOSA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16334166",
+      "nome": "MELIELE RAFAELE DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16334498",
+      "nome": "RUBIA YASMIN DE FARIA MEIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16332594",
+      "nome": "VIVIANE SANTOS DE MELO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "07h",
+      "turma": "AZUL"
+    },
+    {
+      "inscricao": "16331658",
+      "nome": "DANIELA FERNANDES DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16334095",
+      "nome": "DIULIA JENNIFFER ROBERTO ALVARENGA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16327262",
+      "nome": "EDUARDA SILVA COSTA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16328612",
+      "nome": "NATALIA VAZ DA SILVA AZEVEDO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16327641",
+      "nome": "ANA LÍVIA DE ARAÚJO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16328235",
+      "nome": "JENNIFER SANTOS OLIVEIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16338061",
+      "nome": "MARIA EDUARDA SILVA DA CUNHA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16338651",
+      "nome": "VALÉRIA CORRÊA RIBEIRO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16328691",
+      "nome": "DANIELE DE CASSIA MOREIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16327322",
+      "nome": "FABRICIA FERNANDES DE SOUZA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16337019",
+      "nome": "JULIANA CRISTINA DE OLIVEIRA CAMPOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16327867",
+      "nome": "MARIA LUIZA DE SOUZA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16327324",
+      "nome": "PRISCILA MARTINS DE OLIVEIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16329060",
+      "nome": "BÁRBARA STÉFANE DE ALMEIDA MOREIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16327962",
+      "nome": "LARISSA GABRIELA RODRIGUES VENANCIO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16341289",
+      "nome": "RAFAELA BORGES MURAD SOUZA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16329374",
+      "nome": "RAISSA JORGE OLIVEIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16339415",
+      "nome": "RAISSA MEDEIROS NAVES COSTA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16328156",
+      "nome": "TATIANE PEREIRA CORDEIRO E SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16328482",
+      "nome": "ANNE KAROLINE DA SILVA BORGES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16333712",
+      "nome": "GEISY MARIELLY RODRIGUES BITENCOURT",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16327208",
+      "nome": "IZABELA CRISTINA PEREIRA CARVALHO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16337749",
+      "nome": "POLIANA MATIAS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16330392",
+      "nome": "ANA GABRIELA FERREIRA LEITE",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16340897",
+      "nome": "CAMILA SILVA DE SOUZA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16331203",
+      "nome": "EDUARDA MIRANDA MARQUES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16333189",
+      "nome": "FERLANE SOUSA BONANI",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16332320",
+      "nome": "INGRID KAROLINA GARCIA DA SILVEIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16333478",
+      "nome": "LAURA POLESI DE SOUZA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16341195",
+      "nome": "NUBIA OLIVEIRA FERREIRA DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16327975",
+      "nome": "UNA HARIANY NEVES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16328655",
+      "nome": "VITÓRIA FERNANDA PEREIRA DE OLIVEIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16329968",
+      "nome": "JOAO EDUARDO ROCHA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16331799",
+      "nome": "JOÃO CAMILLO LÚCIO DOS SANTOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16329359",
+      "nome": "MATHEUS LIMA SOARES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16327434",
+      "nome": "HARLEY DAVIDSON VIEIRA DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16328018",
+      "nome": "JONATHAN WILLIAM MENEGAZZO DICKMANN",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16327570",
+      "nome": "CLAITON DIAS ROCHA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16329860",
+      "nome": "RAMON VITOR SANTOS DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16337658",
+      "nome": "TULIO PEREIRA DOS SANTOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16337686",
+      "nome": "JOSÉ BENEDITO CÂNDIDO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16327957",
+      "nome": "PEDRO TIAGO DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16328419",
+      "nome": "WELLINGTON HENRIQUE DE OLIVEIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16329365",
+      "nome": "ARTHUR DA SILVA DE SOUZA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16327986",
+      "nome": "EVANDRO DE CÁSSIA DOS SANTOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16336057",
+      "nome": "LUCAS VINICIUS ASSUMPÇÃO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16332560",
+      "nome": "FILIPE DAMASCENO VIEIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16332549",
+      "nome": "FRANCISCO ALDERLANIO MACIEL",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16328718",
+      "nome": "NATAN SURIEL NASCIMENTO FLORES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16339173",
+      "nome": "RAFAEL ANTÔNIO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16327374",
+      "nome": "GABRIEL DE JESUS EUGENIO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16330510",
+      "nome": "WEBERT LUCAS AQUINO TEIXEIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16327880",
+      "nome": "JONATAS ALVES DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16331342",
+      "nome": "CLEYSON RIBEIRO SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16328078",
+      "nome": "ELIOMAR RODRIGUES BARROS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16340171",
+      "nome": "GABRIEL GUEDES SILVA MIRANDA SANTOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16337881",
+      "nome": "LUCAS EDUARDO RIBEIRO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16329748",
+      "nome": "ALAN FRANK BARROS DE SÁ",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16327288",
+      "nome": "LUCAS ANDRADE DE OLIVEIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16330683",
+      "nome": "NÍCOLAS GABRIEL DE SOUSA BRAZ",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16328720",
+      "nome": "VICTOR FONSECA ESTEVIS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16331690",
+      "nome": "DAVID DE ARAUJO DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16340746",
+      "nome": "ENDRESS WILLER BARCELOS DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16330241",
+      "nome": "JOAO PAULO DE SOUZA BRITO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16328395",
+      "nome": "PEDRO NETTO TEIXEIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16337560",
+      "nome": "ADRIANO JÚNIOR SIMÕES PEREIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16338255",
+      "nome": "GUSTAVO KAORU KURIIWA SILVEIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16328381",
+      "nome": "RENATO ESTEVES DE ABREU",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16337429",
+      "nome": "MARLON VITOR DOS  SANTOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16340881",
+      "nome": "MIGUEL RIBEIRO DO ROSÁRIO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16338678",
+      "nome": "PEDRO HENRIQUE SOUZA SANTOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16337678",
+      "nome": "WESLEY DA SILVA RODRIGUES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16331752",
+      "nome": "FERNANDO DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16327563",
+      "nome": "LUIZ GABRIEL FERREIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16330827",
+      "nome": "ROMULO DE SOUZA CIPRIANO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16334529",
+      "nome": "VINICIUS JOSÉ CORREIA DE OLIVEIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16337477",
+      "nome": "ANDRÉ MARTINS DE SOUZA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16335837",
+      "nome": "EMANNUEL DE CASTRO BRITO SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16328166",
+      "nome": "LUCAS EDUARDO DE ANDRADE MIRANDA ALVES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16331020",
+      "nome": "MARCUS VINICIUS LIMA DA SILVA MAIA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "09h",
+      "turma": "PRETO"
+    },
+    {
+      "inscricao": "16340140",
+      "nome": "HILTON CLEMENTE BUENO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16328842",
+      "nome": "JULIO CESAR VALENTIM GREGORIO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16329945",
+      "nome": "KAIO HENRIQUE LOPES MARINHO DE LUCIA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16328244",
+      "nome": "LUCAS GUILHERME DE SOUZA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16338673",
+      "nome": "MARCOS V M MONTEIRO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16335178",
+      "nome": "PAULO EDUARDO SOUZA DE MELOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16331886",
+      "nome": "WANDERSON PEREIRA DOS SANTOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16330759",
+      "nome": "YURI ALVES MARTINS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16332918",
+      "nome": "DAVY COURINOS SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16334703",
+      "nome": "MARCO HENRIQUE ALVES ROSA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16328926",
+      "nome": "ALEX SANDRO ANTUNES DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16327526",
+      "nome": "ANDERSON FERNANDES SOARES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16327236",
+      "nome": "BRYAN GUIMEL RIZZO KIND",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16340197",
+      "nome": "FABIANO RIBEIRO CASTRO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16328239",
+      "nome": "JONATHAN DOS SANTOS TEIXEIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16327855",
+      "nome": "JONATHAN NUNES ALVES DOS REIS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16336174",
+      "nome": "JÚLIO CÉSAR DA SILVA SILVESTRE",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16327748",
+      "nome": "LEONARDO ARANTES TOTI",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16329349",
+      "nome": "LUCAS MOREIRA PINTO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16330102",
+      "nome": "MATHEUS COUTO MATHEUS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16334131",
+      "nome": "ALISSON ARAÚJO XAVIER BRANDAO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16327765",
+      "nome": "IANKE GREGORY CANDIDO SALES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16328336",
+      "nome": "IGOR SILVA MOREIRA MIRANDA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16328080",
+      "nome": "LEANDRO GARCIA DE ARAÚJO GOMIDE",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16334587",
+      "nome": "LUIZ HENRIQUE DE OLIVEIRA SANTOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16338682",
+      "nome": "MATHEUS SUDAN QUINTINO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16327524",
+      "nome": "MATIAS DA SILVA CAMPOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16331325",
+      "nome": "BRUNO EVAIR COSTA SANTOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16334547",
+      "nome": "CAIO GABRIEL COSTA RIBEIRO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16337766",
+      "nome": "DANIEL JOSE SILVA DOS SANTOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16327298",
+      "nome": "GUILHERME FERNANDO MOREIRA DIAS DA CRUZ",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16328013",
+      "nome": "JEAN FIGUEREDO FREITAS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16328160",
+      "nome": "LEANDRO CARVALHO ALVES MASCARENHAS FAGUNDES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16327900",
+      "nome": "PEDRO PAULO DIAS FERREIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16332711",
+      "nome": "RAFAEL MIRANDA MENDONCA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16328823",
+      "nome": "RAPHAEL PEIXOTO MARTINS ASSUMPÇÃO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16327413",
+      "nome": "GUILHERME GONÇALVES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16340433",
+      "nome": "LUIZ FERNANDO PIAZZA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16341307",
+      "nome": "ANDRÉ LUIZ LOPES DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16340823",
+      "nome": "BRENO DE ANDRADE",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16334527",
+      "nome": "DANIEL RAMOS DOS ANJOS JUNIOR",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16340159",
+      "nome": "JOÃO CARLOS BARBOSA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16330602",
+      "nome": "JOÃO LUCAS MACHADO ARRUDA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16341118",
+      "nome": "TIAGO ANTONIO DE BRITO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16328860",
+      "nome": "AQUILLES ENGERT MILWARD DE AZEVEDO ARAUJO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16328623",
+      "nome": "JEAN PATRICK SILVA BARBOSA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16327433",
+      "nome": "JOÃO CLEBER DOS SANTOS DONIZETTI",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16335308",
+      "nome": "LUIS FELIPE MOKARZEL BERALDO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16327408",
+      "nome": "RAFAEL FERREIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16333192",
+      "nome": "RAFAEL FRAISSAT PEREIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16327373",
+      "nome": "RODRIGO DOS ANJOS MOURA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16328956",
+      "nome": "YURI SILVEIRA SANTOS DE OLIVEIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16327937",
+      "nome": "ALEF CAIQUE DIVINO GALDINO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16331820",
+      "nome": "CARLOS EDUARDO LEÃO ROMÃO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16329608",
+      "nome": "GABRIEL DE PAIVA ASSIS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16331491",
+      "nome": "GILMAR DE SOUZA JUNIOR",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16328552",
+      "nome": "HUDSON NUNES QUIRINO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16328339",
+      "nome": "JHONATAN ADRIEL DE OLIVEIRA SANTOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16327368",
+      "nome": "JONATHAN LAMEU XAVIER",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16327258",
+      "nome": "LEONARDO DE ALMEIDA BRAGA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16327299",
+      "nome": "MATEUS FELIPE DE CARVALHO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16328185",
+      "nome": "PEDRO HENRIQUE NOVA ALVES STERENBERG",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16328606",
+      "nome": "VICTOR EMANUEL SIMÕES ALVES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16327745",
+      "nome": "DANIEL NUNES FERREIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16328335",
+      "nome": "DENNER DE FARIA AMANTINO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16327689",
+      "nome": "ELIEZER BEZALEEL RAIMUNDO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16333552",
+      "nome": "GUILHERME DALBEN FERREIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16327903",
+      "nome": "GUILHERME DE ALMEIDA FERNANDES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16327231",
+      "nome": "ISRAEL FELIPE DIAS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16334298",
+      "nome": "JEAN DAMASCENA DE OLIVEIRA BATISTA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16339586",
+      "nome": "JOÃO PAULO DE CARVALHO MENDES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16337304",
+      "nome": "LEONARDO NEUNILSON NUNES DA MATA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16331052",
+      "nome": "SAMUEL DE CARVALHO ARRUDA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16330899",
+      "nome": "SAMUEL GERALDO DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16327618",
+      "nome": "VITOR GUSTAVO FERREIRA MATOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16332313",
+      "nome": "ALAN FERREIRA DA SILVA NASCIMENTO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16328030",
+      "nome": "ALEXANDRE SOARES PEREIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16327362",
+      "nome": "GABRIEL ANTONIO DE OLIVEIRA ENEAS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16329618",
+      "nome": "JOÃO GABRIEL SOUZA PEREIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16329855",
+      "nome": "TULIO VINÍCIUS DUARTE BORGES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16328170",
+      "nome": "YGOR MAXIMIANO RODRIGUES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16327593",
+      "nome": "BRENDON CRISTIANO DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16328426",
+      "nome": "FABIO HENRIQUE FELIX DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16327711",
+      "nome": "FELIPE HENRIQUE DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "13h",
+      "turma": "BRANCO"
+    },
+    {
+      "inscricao": "16328845",
+      "nome": "GUSTAVO FERREIRA FERNANDES DE OLIVEIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16341241",
+      "nome": "JOÃO GABRIEL AGUIAR VILA NOVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16327817",
+      "nome": "KAUA SOUZA LOPES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16328122",
+      "nome": "LEONARDO LIMA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16331947",
+      "nome": "LUIS OTÁVIO RODRIGUES CARNEIRO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16330255",
+      "nome": "TIARLESON ROMENY BERNARDES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16327651",
+      "nome": "WESLEY CAETANO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16330377",
+      "nome": "ADRIANO JÚNIO VILAS BOAS BARBOSA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16337700",
+      "nome": "CLAUDIO JUNIOR CORREIA SANTOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16340227",
+      "nome": "DANILO JARDIM DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16331388",
+      "nome": "GUILHERME PASCHOAL RODRIGUES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16331165",
+      "nome": "HYGOR APOLINARIO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16332693",
+      "nome": "IGOR EDUARDO FERNANDES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16331344",
+      "nome": "JOEL JUNIOR SANTOS EVANGELISTA ALVES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16331213",
+      "nome": "LEIDFER FRANKLIN DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16333390",
+      "nome": "MATHEUS MACIEL SOUSA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16331595",
+      "nome": "OTAVIO BATISTA DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16333597",
+      "nome": "RAFAEL MARQUES MANSO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16330286",
+      "nome": "SAVIO ELIAS COSTA OLIVEIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16331300",
+      "nome": "VINICIUS DA SILVA RIBEIRO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16334458",
+      "nome": "JOABE GABRIEL FERREIRA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16327363",
+      "nome": "MICHEL PEREIRA DE ANDRADE",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16328854",
+      "nome": "PEDRO RICARDO FERREIRA FELIPE",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16332239",
+      "nome": "JOSÉ ÉZAQUEU URBANO DOS SANTOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16327403",
+      "nome": "MARCONE PEREIRA SANTOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16327743",
+      "nome": "VINICIUS ALKMIN DE OLIVEIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16331839",
+      "nome": "ALLYSON CAPUTO DOS SANTOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16329940",
+      "nome": "FELIPE DA SILVA CASSIANO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16340711",
+      "nome": "LUCIANO MOREIRA GUERRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16327264",
+      "nome": "ARNON HENRIQUE DE ANDRADE GOMES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16334482",
+      "nome": "BERNARDO LINO MADEIRA DE OLIVEIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16327393",
+      "nome": "EVERTON BARROS DE OLIVEIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16327773",
+      "nome": "LUCAS LEMES CORDEIRO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16332280",
+      "nome": "LUIZ FELIPE DANIEL GARCIA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16330135",
+      "nome": "RAFAEL FELIPE DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16328498",
+      "nome": "RONALD FILEMON ALVES DE AGUILAR",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16327212",
+      "nome": "ELIVELTON CESAR BATISTA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16328586",
+      "nome": "LUCAS SILVA DA ANUNCIAÇÃO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16327534",
+      "nome": "RAFAEL SILVA INACIO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16327591",
+      "nome": "RUBENS ALVES LINO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16328649",
+      "nome": "THIAGO MENDES SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16334557",
+      "nome": "JEAN AUGUSTO CÂNDIDO FERREIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16327738",
+      "nome": "MARCELO AUGUSTO HILÁRIO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16328745",
+      "nome": "RICHARD ERLON DOMINGUES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16330906",
+      "nome": "ISRAEL COSTA FERREIRA BORGES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16327464",
+      "nome": "JHANS VITOR DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16328780",
+      "nome": "JOAMERSON DOS SANTOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16331901",
+      "nome": "ALEF SILVÉRIO PEDRO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16332512",
+      "nome": "NICOLAU VITOR SILVA RODRIGUES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16329210",
+      "nome": "PETERSON GIFFONI COELHO ARAÚJO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16334691",
+      "nome": "VITOR PAULO AMBROSIO JUNIOR",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16331196",
+      "nome": "ISAAC EVANDRO SANTANA VASCONCELOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16336815",
+      "nome": "JOAO LENON TEODORO FERMINO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16328603",
+      "nome": "ROARE FERREIRA ALVES SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16327822",
+      "nome": "ROBERTH CARDOSO MACEDO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16328238",
+      "nome": "ANTÔNIO MARCOS GONÇALVES SOARES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16328241",
+      "nome": "CLEBERSON GONÇALO  CAROLINO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16328297",
+      "nome": "ELCIO DOS SANTOS MARTINS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16337740",
+      "nome": "JEAN PAULO COSTA SIQUEIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16336483",
+      "nome": "EVERTON HENRIQUE",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16327585",
+      "nome": "EVERTON JUNIOR LOPES DE ASSIS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16337574",
+      "nome": "ISRAEL VINICIUS PEREIRA PAULINO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16341028",
+      "nome": "THALLES ANDRÉ DA SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16328455",
+      "nome": "CICERO JOSÉ DOS SANTOS SILVA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16327993",
+      "nome": "DOUGLAS SANTOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16337348",
+      "nome": "GEOVAN DE JESUS GOMES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16327691",
+      "nome": "JOÃO MARCOS DA SILVA PEREIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16328739",
+      "nome": "RONNY CARDOSO ANDRADE",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16329228",
+      "nome": "SALOMÃO RICHARD DA SILVA OLIVEIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16340618",
+      "nome": "VICTOR BRYAN LIMA DE ABREU",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16328989",
+      "nome": "GABRIEL WITHOR LIMA VIEIRA SANTOS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16328721",
+      "nome": "JONATHAN ALVES FERREIRA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16340208",
+      "nome": "RICHARD JESUS DE CASTRO LIMA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16328968",
+      "nome": "THONIELSON AQUINO MENDES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16340811",
+      "nome": "ADRIAN OLIVEIRA PIRES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16328519",
+      "nome": "ANDRÉ LUCAS DE LIMA GALLO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16331426",
+      "nome": "ARIELTON BATISTA DAS DORES",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16327463",
+      "nome": "DALVAN ALVES RI",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16328168",
+      "nome": "DIÊGO DA SILVA LOBO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16341070",
+      "nome": "EMANUEL DAVI VICENTE COSTA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16328515",
+      "nome": "JOÃO GABRIEL DA ROCHA RIMAS",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16330427",
+      "nome": "LUCAS HIGINO DE JESUS ROCHA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16327401",
+      "nome": "MAICON BRUNER APARECIDO ARAUJO",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    },
+    {
+      "inscricao": "16330269",
+      "nome": "RAMON DE OLIVEIRA ROCHA",
+      "cargo": "301 - GUARDA CIVIL MUNICIPAL",
+      "data": "46333",
+      "horario": "15h",
+      "turma": "VERMELHO"
+    }
+  ],
+  "tabelaPontos": {
+    "corrida": {
+      "unidadeM": "metros",
+      "unidadeF": "metros",
+      "linhas": [
+        {
+          "pontos": 30,
+          "m": 2400,
+          "f": 2000
+        },
+        {
+          "pontos": 32,
+          "m": 2500,
+          "f": 2100
+        },
+        {
+          "pontos": 34,
+          "m": 2600,
+          "f": 2200
+        },
+        {
+          "pontos": 36,
+          "m": 2700,
+          "f": 2300
+        },
+        {
+          "pontos": 38,
+          "m": 2800,
+          "f": 2400
+        },
+        {
+          "pontos": 40,
+          "m": 2900,
+          "f": 2500
+        },
+        {
+          "pontos": 44,
+          "m": 3000,
+          "f": 2600
+        },
+        {
+          "pontos": 46,
+          "m": 3100,
+          "f": 2700
+        },
+        {
+          "pontos": 50,
+          "m": 3200,
+          "f": 2800
+        }
+      ]
+    },
+    "abdominal": {
+      "unidadeM": "repetições",
+      "unidadeF": "repetições",
+      "linhas": [
+        {
+          "pontos": 30,
+          "m": 16,
+          "f": 16
+        },
+        {
+          "pontos": 32,
+          "m": 18,
+          "f": 18
+        },
+        {
+          "pontos": 34,
+          "m": 20,
+          "f": 20
+        },
+        {
+          "pontos": 36,
+          "m": 22,
+          "f": 22
+        },
+        {
+          "pontos": 38,
+          "m": 24,
+          "f": 24
+        },
+        {
+          "pontos": 40,
+          "m": 26,
+          "f": 26
+        },
+        {
+          "pontos": 44,
+          "m": 28,
+          "f": 28
+        },
+        {
+          "pontos": 46,
+          "m": 30,
+          "f": 30
+        },
+        {
+          "pontos": 50,
+          "m": 31,
+          "f": 31
+        }
+      ]
+    },
+    "barra": {
+      "unidadeM": "repetições",
+      "unidadeF": "segundos",
+      "linhas": [
+        {
+          "pontos": 30,
+          "m": 2,
+          "f": 5
+        },
+        {
+          "pontos": 32,
+          "m": 3,
+          "f": 10
+        },
+        {
+          "pontos": 34,
+          "m": 4,
+          "f": 14
+        },
+        {
+          "pontos": 36,
+          "m": 5,
+          "f": 18
+        },
+        {
+          "pontos": 38,
+          "m": 6,
+          "f": 22
+        },
+        {
+          "pontos": 40,
+          "m": 7,
+          "f": 26
+        },
+        {
+          "pontos": 44,
+          "m": 8,
+          "f": 30
+        },
+        {
+          "pontos": 46,
+          "m": 9,
+          "f": 34
+        },
+        {
+          "pontos": 50,
+          "m": 10,
+          "f": 38
+        }
+      ]
+    }
+  }
+}
