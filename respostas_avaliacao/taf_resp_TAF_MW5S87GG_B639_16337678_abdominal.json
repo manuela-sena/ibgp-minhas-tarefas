@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliador": "PEDRO DRUMOND",
+  "prova": "abdominal",
+  "turma": "46333 · 09h · PRETO",
+  "candidato": {
+    "inscricao": "16337678",
+    "nome": "WESLEY DA SILVA RODRIGUES",
+    "cargo": "301 - GUARDA CIVIL MUNICIPAL"
+  },
+  "sexo": "M",
+  "valor": 22,
+  "pontos": 36,
+  "eliminado": false,
+  "horaInicio": "2026-11-07T13:34:54.394Z",
+  "horaFim": "2026-11-07T13:35:48.306Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MW5S87GG_B639_16337678_abdominal.jpg",
+  "observacoes": "",
+  "enviadoEm": "2026-11-07T13:35:52.823Z"
+}
