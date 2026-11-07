@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliador": "ANDERSON FAGNER",
+  "prova": "barra",
+  "turma": "46333 · 09h · PRETO",
+  "candidato": {
+    "inscricao": "16327867",
+    "nome": "MARIA LUIZA DE SOUZA",
+    "cargo": "301 - GUARDA CIVIL MUNICIPAL"
+  },
+  "sexo": "F",
+  "valor": 10,
+  "pontos": 32,
+  "eliminado": false,
+  "horaInicio": "2026-11-07T13:06:08.069Z",
+  "horaFim": "2026-11-07T13:07:57.715Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MW5S87GG_B639_16327867_barra.jpg",
+  "observacoes": "",
+  "enviadoEm": "2026-11-07T13:08:01.567Z"
+}
