@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliador": "ANDERSON REUBEN",
+  "prova": "abdominal",
+  "turma": "46333 · 13h · BRANCO",
+  "candidato": {
+    "inscricao": "16341307",
+    "nome": "ANDRÉ LUIZ LOPES DA SILVA",
+    "cargo": "301 - GUARDA CIVIL MUNICIPAL"
+  },
+  "sexo": "M",
+  "valor": 28,
+  "pontos": 44,
+  "eliminado": false,
+  "horaInicio": "2026-11-07T16:52:15.708Z",
+  "horaFim": "2026-11-07T16:52:50.511Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MW5S87GG_B639_16341307_abdominal.jpg",
+  "observacoes": "",
+  "enviadoEm": "2026-11-07T16:53:07.446Z"
+}
