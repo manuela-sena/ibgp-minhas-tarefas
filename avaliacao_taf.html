@@ -366,6 +366,10 @@
     </div>
 
     <div id="fluxo-corrida-grupo" style="display:none">
+      <div id="grupo-salvo-box" style="display:none;margin-bottom:12px;padding:10px 14px;border-radius:9px;background:#EAF3E3;color:#2f5d1c;font-size:12.5px;font-weight:600">
+        <span id="grupo-salvo-info"></span>
+        <button type="button" onclick="descartarGrupoSalvo()" style="float:right;margin-left:10px;border:1px solid currentColor;background:transparent;color:inherit;border-radius:6px;font-size:11.5px;padding:2px 8px;cursor:pointer">descartar grupo</button>
+      </div>
       <div class="tab-cols"><div class="tab-col">
       <div class="card">
         <div class="card-header">
@@ -544,9 +548,10 @@ function montarForm(){
     _RASCUNHO_PENDENTE = rascunho;
     mostrarBannerRascunho(rascunho);
   }
+  restaurarGrupoSeHouver();       // grupo de corrida salvo no aparelho (queda de internet / página recarregada)
 }
 
-function onCabecalhoChange(){ atualizarBotaoEnviar(); verificarAvaliacaoExistente(); }
+function onCabecalhoChange(){ atualizarBotaoEnviar(); verificarAvaliacaoExistente(); salvarRascunhoGrupo(); }
 
 // Checa se ESSE candidato já tem resposta salva NESSA prova (mesmo arquivo
 // que enviarAvaliacao grava) — se tiver, mostra um aviso com o registro
@@ -1006,7 +1011,9 @@ function registrarOutro(){
 // zera o grupo, a foto e o cronômetro.
 function registrarOutroGrupo(){
   GRUPO_CORRIDA = [];
-  GRUPO_FOTO_DATA_URL = null;
+  GRUPO_FOTO_DATA_URL = null; GRUPO_FOTO_PATH = null; GRUPO_FOTO_ENVIADA = false; _GRUPO_ENVIO_PENDENTE = false; _GRUPO_ENVIADO_OK = false;
+  if(_GRUPO_RETRY_TIMER){ clearTimeout(_GRUPO_RETRY_TIMER); _GRUPO_RETRY_TIMER = null; }
+  limparRascunhoGrupo(); mostrarSalvoGrupo(null);
   CRONO_GRUPO_INICIO = null;
   CRONO_GRUPO_FIM = null;
   if(CRONO_GRUPO_TIMER){ clearInterval(CRONO_GRUPO_TIMER); CRONO_GRUPO_TIMER = null; }
@@ -1143,6 +1150,124 @@ let CRONO_GRUPO_FIM = null;
 let CRONO_GRUPO_TIMER = null;
 let GRUPO_CANDIDATO_TEMP = null; // candidato clicado na busca, aguardando número/sexo antes de confirmar
 let GRUPO_SEXO_TEMP = null;
+let GRUPO_FOTO_PATH = null;        // caminho da foto do grupo no repositório (fixo durante as tentativas de envio)
+let GRUPO_FOTO_ENVIADA = false;    // a foto já subiu: não sobe de novo nas tentativas seguintes
+let _GRUPO_ENVIANDO = false, _GRUPO_ENVIO_PENDENTE = false, _GRUPO_RETRY_TIMER = null, _RESTAURANDO_GRUPO = false, _ULTIMA_FOTO_SALVA = null, _GRUPO_ENVIADO_OK = false;
+
+// ── RASCUNHO DO GRUPO DE CORRIDA (autosave no aparelho) ─────────────────────
+// Guarda corredores, voltas, posição final, pista, cronômetro e foto. Se a internet cair, a página for
+// recarregada ou o navegador fechar, o grupo volta sozinho ao reabrir. Só é apagado depois do envio com sucesso.
+function chaveRascunhoGrupo(){ return 'ibgp_avalTaf_grupo_' + TOKEN; }
+function mostrarSalvoGrupo(ok, msg){
+  const box = document.getElementById('grupo-salvo-box'), el = document.getElementById('grupo-salvo-info');
+  if(!box || !el) return;
+  if(ok === null){ box.style.display = 'none'; return; }
+  box.style.display = 'block';
+  box.style.background = ok ? '#EAF3E3' : '#FBE0DF'; box.style.color = ok ? '#2f5d1c' : '#8a1f1f';
+  el.textContent = msg;
+}
+function salvarRascunhoGrupo(limparSeVazio){
+  if(_RESTAURANDO_GRUPO || _GRUPO_ENVIADO_OK || !TOKEN) return;      // depois do envio com sucesso nada mais é salvo
+  const vazio = !GRUPO_CORRIDA.length && !GRUPO_FOTO_DATA_URL && !CRONO_GRUPO_INICIO;
+  if(vazio){ if(limparSeVazio) limparRascunhoGrupo(); return; }        // nunca sobrescreve um rascunho existente com um estado vazio
+  const hh = new Date().toLocaleTimeString('pt-BR', {hour12:false});
+  const r = {
+    v: 1, avaliador: (document.getElementById('f-avaliador')||{}).value || '',
+    metros: METROS_POR_VOLTA, grupo: GRUPO_CORRIDA,
+    inicio: CRONO_GRUPO_INICIO ? CRONO_GRUPO_INICIO.toISOString() : null,
+    fim: CRONO_GRUPO_FIM ? CRONO_GRUPO_FIM.toISOString() : null,
+    temFoto: !!GRUPO_FOTO_DATA_URL, fotoPath: GRUPO_FOTO_PATH, fotoEnviada: GRUPO_FOTO_ENVIADA,
+    envioPendente: _GRUPO_ENVIO_PENDENTE, salvoEm: new Date().toISOString()
+  };
+  let semFoto = false;
+  try{                                                                    // a foto (pesada) fica em outra chave, só regravada quando muda
+    if(GRUPO_FOTO_DATA_URL !== _ULTIMA_FOTO_SALVA){
+      if(GRUPO_FOTO_DATA_URL) localStorage.setItem(chaveRascunhoGrupo()+'_foto', GRUPO_FOTO_DATA_URL);
+      else localStorage.removeItem(chaveRascunhoGrupo()+'_foto');
+      _ULTIMA_FOTO_SALVA = GRUPO_FOTO_DATA_URL;
+    }
+  }catch(e){ semFoto = true; r.temFoto = false; }
+  try{
+    localStorage.setItem(chaveRascunhoGrupo(), JSON.stringify(r));
+    mostrarSalvoGrupo(true, '💾 Grupo salvo neste aparelho às ' + hh + (semFoto ? ' (sem a foto: tire a foto de novo se a página recarregar)' : ''));
+  }catch(e){
+    mostrarSalvoGrupo(false, '⚠️ Não foi possível salvar o grupo neste aparelho. Mantenha esta página aberta até enviar.');
+  }
+}
+function limparRascunhoGrupo(){
+  try{ localStorage.removeItem(chaveRascunhoGrupo()); localStorage.removeItem(chaveRascunhoGrupo()+'_foto'); }catch(e){}
+  _ULTIMA_FOTO_SALVA = null;
+}
+function carregarRascunhoGrupo(){
+  try{
+    const raw = localStorage.getItem(chaveRascunhoGrupo()); if(!raw) return null;
+    const r = JSON.parse(raw); if(!r || !Array.isArray(r.grupo)) return null;
+    r.foto = r.temFoto ? localStorage.getItem(chaveRascunhoGrupo()+'_foto') : null;
+    return r;
+  }catch(e){ return null; }
+}
+function restaurarGrupoSeHouver(){
+  const r = carregarRascunhoGrupo();
+  if(!r || !r.grupo.length) return;
+  _RESTAURANDO_GRUPO = true;
+  try{
+    const sa = document.getElementById('f-avaliador');
+    if(r.avaliador && Array.from(sa.options).some(o=>o.value===r.avaliador)) sa.value = r.avaliador;
+    document.getElementById('f-prova').value = 'corrida';
+    onProvaChange();                                                      // abre o fluxo de grupo
+    if(r.metros){ METROS_POR_VOLTA = r.metros; document.getElementById('f-metros-volta').value = r.metros; }
+    GRUPO_CORRIDA = r.grupo; renderGrupo();
+    document.getElementById('card-foto-grupo').style.display = 'block';
+    document.getElementById('card-crono-grupo').style.display = 'block';
+    if(r.foto){
+      GRUPO_FOTO_DATA_URL = r.foto; _ULTIMA_FOTO_SALVA = r.foto;
+      document.getElementById('foto-grupo-preview').src = r.foto;
+      document.getElementById('foto-grupo-wrap').style.display = 'none';
+      document.getElementById('foto-grupo-preview-wrap').style.display = 'block';
+    }
+    if(r.inicio){
+      CRONO_GRUPO_INICIO = new Date(r.inicio);
+      document.getElementById('crono-grupo-horarios').style.display = 'none';
+      document.getElementById('btn-crono-grupo-iniciar').style.display = 'none';
+      document.getElementById('card-voltas').style.display = 'block';
+      renderGridVoltas();
+      if(r.fim){                                                          // corrida já finalizada
+        CRONO_GRUPO_FIM = new Date(r.fim);
+        atualizarCronoGrupoDisplay();
+        document.getElementById('crono-grupo-display').classList.remove('rodando');
+        document.getElementById('btn-crono-grupo-finalizar').style.display = 'none';
+        document.getElementById('crono-grupo-horarios').style.display = 'flex';
+        document.getElementById('crono-grupo-hora-inicio').textContent = fmtHora(CRONO_GRUPO_INICIO);
+        document.getElementById('crono-grupo-hora-fim').textContent = fmtHora(CRONO_GRUPO_FIM);
+        document.getElementById('card-posicao-final').style.display = 'block';
+        renderPosicaoFinal();
+      } else {                                                            // corrida ainda rodando: o relógio continua do início real
+        document.getElementById('crono-grupo-display').classList.add('rodando');
+        document.getElementById('btn-crono-grupo-finalizar').style.display = 'block';
+        if(CRONO_GRUPO_TIMER) clearInterval(CRONO_GRUPO_TIMER);
+        CRONO_GRUPO_TIMER = setInterval(atualizarCronoGrupoDisplay, 250);
+        atualizarCronoGrupoDisplay();
+      }
+    }
+    GRUPO_FOTO_PATH = r.fotoPath || null; GRUPO_FOTO_ENVIADA = !!r.fotoEnviada; _GRUPO_ENVIO_PENDENTE = !!r.envioPendente;
+  } finally { _RESTAURANDO_GRUPO = false; }
+  atualizarBotaoEnviarGrupo();
+  let quando = ''; try{ quando = new Date(r.salvoEm).toLocaleTimeString('pt-BR', {hour12:false}); }catch(e){}
+  mostrarSalvoGrupo(true, '♻️ Grupo restaurado (salvo às ' + quando + ') — ' + GRUPO_CORRIDA.length + ' corredor(es)' + (_GRUPO_ENVIO_PENDENTE ? ' · envio pendente: reenviando…' : ''));
+  if(_GRUPO_ENVIO_PENDENTE) agendarReenvioGrupo(2500);
+}
+function agendarReenvioGrupo(ms){
+  if(_GRUPO_RETRY_TIMER) clearTimeout(_GRUPO_RETRY_TIMER);
+  _GRUPO_RETRY_TIMER = setTimeout(()=>{ if(_GRUPO_ENVIO_PENDENTE && !_GRUPO_ENVIANDO) enviarAvaliacaoGrupo(); }, ms || 15000);
+}
+function descartarGrupoSalvo(){
+  if(!confirm('Descartar este grupo? Os resultados que ainda NÃO foram enviados serão perdidos.')) return;
+  _GRUPO_ENVIO_PENDENTE = false; if(_GRUPO_RETRY_TIMER) clearTimeout(_GRUPO_RETRY_TIMER);
+  registrarOutroGrupo();
+}
+window.addEventListener('online', ()=>{ if(_GRUPO_ENVIO_PENDENTE && !_GRUPO_ENVIANDO) enviarAvaliacaoGrupo(); });
+window.addEventListener('pagehide', ()=>salvarRascunhoGrupo());
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState === 'hidden') salvarRascunhoGrupo(); });
 
 function onMetrosVoltaChange(){
   const v = parseFloat(document.getElementById('f-metros-volta').value);
@@ -1233,6 +1358,7 @@ function removerDoGrupo(inscricao){
     document.getElementById('card-crono-grupo').style.display = 'none';
   }
   atualizarBotaoEnviarGrupo();
+  salvarRascunhoGrupo(true);      // se o grupo ficou vazio, apaga o rascunho
 }
 
 function renderGrupo(){
@@ -1254,7 +1380,7 @@ function onFotoGrupoSelecionada(input){
   const file = input.files[0];
   if(!file) return;
   comprimirFoto(file, (dataUrl)=>{
-    GRUPO_FOTO_DATA_URL = dataUrl;
+    GRUPO_FOTO_DATA_URL = dataUrl; GRUPO_FOTO_PATH = null; GRUPO_FOTO_ENVIADA = false;      // foto nova: sobe de novo
     document.getElementById('foto-grupo-preview').src = GRUPO_FOTO_DATA_URL;
     document.getElementById('foto-grupo-wrap').style.display = 'none';
     document.getElementById('foto-grupo-preview-wrap').style.display = 'block';
@@ -1263,7 +1389,7 @@ function onFotoGrupoSelecionada(input){
 }
 
 function retirarFotoGrupo(){
-  GRUPO_FOTO_DATA_URL = null;
+  GRUPO_FOTO_DATA_URL = null; GRUPO_FOTO_PATH = null; GRUPO_FOTO_ENVIADA = false;
   const inp = document.getElementById('f-foto-grupo-input');
   if(inp) inp.value = '';
   document.getElementById('foto-grupo-wrap').style.display = 'block';
@@ -1332,6 +1458,7 @@ function incrementarVolta(inscricao){
   g.voltas++;
   const el = document.getElementById('voltas-'+inscricao);
   if(el) el.textContent = g.voltas;
+  salvarRascunhoGrupo();
 }
 
 function decrementarVolta(inscricao){
@@ -1340,6 +1467,7 @@ function decrementarVolta(inscricao){
   g.voltas = Math.max(0, g.voltas-1);
   const el = document.getElementById('voltas-'+inscricao);
   if(el) el.textContent = g.voltas;
+  salvarRascunhoGrupo();
 }
 
 function renderPosicaoFinal(){
@@ -1404,9 +1532,11 @@ function atualizarBotaoEnviarGrupo(){
     !!CRONO_GRUPO_INICIO && !!CRONO_GRUPO_FIM &&
     GRUPO_CORRIDA.every(g=>g.posicaoParcial!==null && g.posicaoParcial!==undefined);
   btn.disabled = !ok;
+  salvarRascunhoGrupo();
 }
 
 async function enviarAvaliacaoGrupo(){
+  if(_GRUPO_ENVIANDO) return;
   const avaliador = document.getElementById('f-avaliador').value;
   const alertEl = document.getElementById('alert-envio-grupo');
   if(!avaliador || !METROS_POR_VOLTA || !GRUPO_CORRIDA.length || !GRUPO_FOTO_DATA_URL ||
@@ -1416,12 +1546,15 @@ async function enviarAvaliacaoGrupo(){
     return;
   }
 
+  _GRUPO_ENVIANDO = true; _GRUPO_ENVIO_PENDENTE = true;
   const btn = document.getElementById('btn-enviar-grupo');
   btn.disabled = true; btn.textContent = 'Enviando...';
+  salvarRascunhoGrupo();                       // garante o grupo guardado no aparelho antes de tentar enviar
 
   try{
-    const fotoPath = `respostas_avaliacao/fotos/taf_${TOKEN}_corrida_grupo_${Date.now()}.jpg`;
-    await enviarFoto(fotoPath, GRUPO_FOTO_DATA_URL);
+    if(!GRUPO_FOTO_PATH) GRUPO_FOTO_PATH = `respostas_avaliacao/fotos/taf_${TOKEN}_corrida_grupo_${Date.now()}.jpg`;
+    const fotoPath = GRUPO_FOTO_PATH;          // o mesmo caminho em todas as tentativas (não duplica foto)
+    if(!GRUPO_FOTO_ENVIADA){ await enviarFoto(fotoPath, GRUPO_FOTO_DATA_URL); GRUPO_FOTO_ENVIADA = true; salvarRascunhoGrupo(); }
 
     for(const g of GRUPO_CORRIDA){
       const distanciaTotal = g.voltas*METROS_POR_VOLTA + (g.posicaoParcial||0);
@@ -1453,14 +1586,22 @@ async function enviarAvaliacaoGrupo(){
       if(!r.ok){ const err = await r.json().catch(()=>({})); throw new Error('Erro ao salvar resposta de '+g.nome+': '+(err.message||'')); }
     }
 
+    _GRUPO_ENVIO_PENDENTE = false; _GRUPO_ENVIADO_OK = true;
+    if(_GRUPO_RETRY_TIMER){ clearTimeout(_GRUPO_RETRY_TIMER); _GRUPO_RETRY_TIMER = null; }
+    limparRascunhoGrupo(); mostrarSalvoGrupo(null);
     document.getElementById('form-wrap').style.display='none';
     document.getElementById('page-success').style.display='block';
     document.getElementById('success-resumo').textContent = `${GRUPO_CORRIDA.length} candidato(s) da corrida registrados com sucesso.`;
     window.scrollTo({top:0, behavior:'smooth'});
   }catch(e){
+    const semNet = !navigator.onLine || /failed to fetch|networkerror|load failed|network request/i.test(e.message||'');
     alertEl.className='alert alert-error'; alertEl.style.display='block';
-    alertEl.textContent = 'Erro ao enviar: '+e.message+'. Tente novamente.';
-    btn.disabled = false; btn.textContent = 'Confirmar e enviar resultados do grupo';
+    alertEl.textContent = (semNet ? 'Sem conexão com a internet.' : 'Erro ao enviar: '+e.message+'.') +
+      ' O grupo está SALVO neste aparelho — não feche nem apague nada. Vou tentar de novo sozinho (ou toque em "Tentar enviar novamente").';
+    btn.disabled = false; btn.textContent = 'Tentar enviar novamente';
+    salvarRascunhoGrupo(); agendarReenvioGrupo();
+  }finally{
+    _GRUPO_ENVIANDO = false;
   }
 }
 
