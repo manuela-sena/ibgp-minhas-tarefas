@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliador": "WALLACE VIANA",
+  "prova": "corrida",
+  "turma": "",
+  "candidato": {
+    "inscricao": "16328519",
+    "nome": "ANDRÉ LUCAS DE LIMA GALLO",
+    "cargo": "301 - GUARDA CIVIL MUNICIPAL"
+  },
+  "sexo": "M",
+  "valor": 2500,
+  "pontos": 32,
+  "eliminado": false,
+  "horaInicio": "2026-11-07T19:43:09.468Z",
+  "horaFim": "2026-11-07T19:55:37.550Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MW5S87GG_B639_corrida_grupo_1794081591024.jpg",
+  "observacoes": "Corrida em grupo — 6 volta(s) completa(s) de 400m + 100m.",
+  "enviadoEm": "2026-11-07T20:04:25.231Z"
+}
