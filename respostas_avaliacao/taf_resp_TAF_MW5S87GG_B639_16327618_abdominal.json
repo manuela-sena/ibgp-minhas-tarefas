@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliador": "ANDERSON REUBEN",
+  "prova": "abdominal",
+  "turma": "46333 · 13h · BRANCO",
+  "candidato": {
+    "inscricao": "16327618",
+    "nome": "VITOR GUSTAVO FERREIRA MATOS",
+    "cargo": "301 - GUARDA CIVIL MUNICIPAL"
+  },
+  "sexo": "M",
+  "valor": 30,
+  "pontos": 46,
+  "eliminado": false,
+  "horaInicio": "2026-11-07T18:16:50.683Z",
+  "horaFim": "2026-11-07T18:17:40.363Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MW5S87GG_B639_16327618_abdominal.jpg",
+  "observacoes": "",
+  "enviadoEm": "2026-11-07T18:17:47.475Z"
+}
