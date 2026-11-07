@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliador": "WALLACE VIANA",
+  "prova": "corrida",
+  "turma": "",
+  "candidato": {
+    "inscricao": "16327285",
+    "nome": "ALICE RAFAELA FERREIRA DUARTE",
+    "cargo": "301 - GUARDA CIVIL MUNICIPAL"
+  },
+  "sexo": "F",
+  "valor": 2000,
+  "pontos": 30,
+  "eliminado": false,
+  "horaInicio": "2026-11-07T12:26:35.334Z",
+  "horaFim": "2026-11-07T12:38:36.805Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MW5S87GG_B639_corrida_grupo_1794055812746.jpg",
+  "observacoes": "Corrida em grupo — 5 volta(s) completa(s) de 400m + 0m.",
+  "enviadoEm": "2026-11-07T12:50:27.500Z"
+}
