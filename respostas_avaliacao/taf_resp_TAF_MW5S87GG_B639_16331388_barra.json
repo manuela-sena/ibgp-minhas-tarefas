@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliador": "ANDERSON FAGNER",
+  "prova": "barra",
+  "turma": "46333 · 15h · VERMELHO",
+  "candidato": {
+    "inscricao": "16331388",
+    "nome": "GUILHERME PASCHOAL RODRIGUES",
+    "cargo": "301 - GUARDA CIVIL MUNICIPAL"
+  },
+  "sexo": "M",
+  "valor": 10,
+  "pontos": 50,
+  "eliminado": false,
+  "horaInicio": "2026-11-07T19:37:17.015Z",
+  "horaFim": "2026-11-07T19:38:16.048Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MW5S87GG_B639_16331388_barra.jpg",
+  "observacoes": "",
+  "enviadoEm": "2026-11-07T19:38:20.089Z"
+}
