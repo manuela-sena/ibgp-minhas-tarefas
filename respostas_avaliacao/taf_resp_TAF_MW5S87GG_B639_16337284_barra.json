@@ -1,0 +1,21 @@
+{
+  "token": "TAF_MW5S87GG_B639",
+  "concursoNome": "POUSO ALEGRE GCM - EDITAL Nº 01/2026 - CONCURSO PÚBLICO",
+  "avaliador": "ANDERSON FAGNER",
+  "prova": "barra",
+  "turma": "46333 · 07h · AZUL",
+  "candidato": {
+    "inscricao": "16337284",
+    "nome": "JESSICA MARIANE NUCIO DOS SANTOS",
+    "cargo": "301 - GUARDA CIVIL MUNICIPAL"
+  },
+  "sexo": "F",
+  "valor": 38,
+  "pontos": 50,
+  "eliminado": false,
+  "horaInicio": "2026-11-07T11:30:55.641Z",
+  "horaFim": "2026-11-07T11:32:17.175Z",
+  "fotoPath": "respostas_avaliacao/fotos/taf_TAF_MW5S87GG_B639_16337284_barra.jpg",
+  "observacoes": "",
+  "enviadoEm": "2026-11-07T11:32:23.747Z"
+}
