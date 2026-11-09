@@ -1381,6 +1381,13 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
         <div id="insc-modelo-dica" style="display:none;margin-top:10px;padding:9px 12px;background:#fff4d6;border:1px solid #f0dfa0;border-radius:8px;font-size:12.5px;color:#a06c12"></div>
         <div id="insc-sc-opcoes" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid #eef1f6">
           <div style="font-size:12.5px;color:#41506b;margin-bottom:10px">Gera <strong>um arquivo com todos os editais selecionados</strong>, uma aba por tipo (só entram abas que têm candidatos). A reserva de vaga sai como <strong>Ações Afirmativas</strong>; a coluna <strong>VAGA?</strong> guarda internamente qual é (NEGRO, INDÍGENA ou o tipo de deficiência). Use o <strong>Relatório de Uploads</strong> para preencher os links dos documentos.</div>
+          <div style="font-size:12.5px;font-weight:600;color:#1f2a3d;margin-bottom:6px">Arquivos a gerar</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px 24px;font-size:13px;margin-bottom:6px">
+            <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="sc-gerar-res" checked> Resultado preliminar das inscrições</label>
+            <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="sc-gerar-aloc" checked> Planilha de alocação (por grupos)</label>
+          </div>
+          <div style="font-size:12px;color:#8a9ab5;margin-bottom:12px;line-height:1.5"><strong>Alocação:</strong> Residência Médica + Especialização Médica do mesmo ano são analisadas como uma só prova. Quem tem mais de uma inscrição no <strong>mesmo grupo</strong> conta uma vez só, com a <strong>última</strong> inscrição (as outras vão para a aba RETIRADOS). Grupo 1 = todos os cargos de entrada direta; os pré-requisitos e o fellowship têm grupos por especialidade; a multiprofissional/uniprofissional não tem grupos (uma inscrição por candidato).</div>
+          <div style="font-size:12.5px;font-weight:600;color:#1f2a3d;margin-bottom:6px">Abas do resultado</div>
           <div style="display:flex;flex-wrap:wrap;gap:8px 24px;font-size:13px">
             <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="sc-prouni" checked> Cotista PROUNI/SISU</label>
             <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="sc-afirm" checked> Ações Afirmativas</label>
@@ -5927,7 +5934,7 @@ function carregarJSZip(cb){
 // Processa os processos (editais) selecionados JUNTOS: o cancelamento por duplicidade e a retirada por "cargos com mesma
 // prova" consideram TODOS os editais. A ALOCAÇÃO sai uma só (todos os editais); o RESULTADO sai um por edital (para publicar).
 // Devolve {resumo, arquivos}; quem baixa é processarInscricoes().
-async function _processarInscricoesUm(procs){
+async function _processarInscricoesUm(procs,sc){
         const STATUS_ATIVOS=['pago','deferida','deferido'];
         let todos=[];
         for(const nome of _inscWorkbook.SheetNames){
@@ -5955,7 +5962,7 @@ async function _processarInscricoesUm(procs){
         }
 
         const conjuntos=[];
-        document.querySelectorAll('[id^="conj-"]').forEach(inp=>{
+        (sc?[]:document.querySelectorAll('[id^="conj-"]')).forEach(inp=>{
           const cods=inp.value.split(',').map(c=>c.trim()).filter(Boolean);
           if(cods.length>=2) conjuntos.push(cods);
         });
@@ -5980,7 +5987,7 @@ async function _processarInscricoesUm(procs){
         todos.forEach(r=>{ r._dt=new Date(r['DATA INSCRICAO']||r['DATA INSCRIÇÃO']||0).getTime()||0; });
 
         // Regra 1: duplicata no mesmo turno (mesma data/horário de prova) → cancela, mantém a mais recente
-        const byTurnoCpf=groupBy(todos,r=>{
+        const byTurnoCpf=sc?{}:groupBy(todos,r=>{
           const cpf = (r['CPF']||'').replace(/\D/g,'');
           const turno = (r['DATA REALIZAÇÃO PROVA']||r['DATA PROVA']||'').toString().trim();
           return `${cpf}__${turno}`;
@@ -6011,6 +6018,8 @@ async function _processarInscricoesUm(procs){
             ativos.slice(0,-1).forEach(r=>retirar.add(r['INSCRIÇÃO']?.toString()));
           });
         });
+
+        if(sc) scRegrasAlocacao(todos,retirar,STATUS_ATIVOS,avisosCodigos);      // Santa Casa: grupos de mesma prova (só a última inscrição conta)
 
         // Aplicar cancelamentos (só regra 1 muda o status)
         todos.forEach(r=>{if(cancelar.has(r['INSCRIÇÃO']?.toString())) r['STATUS']='Cancelada';});
@@ -6285,7 +6294,7 @@ async function _processarInscricoesUm(procs){
         }
 
         // Aba RETIRADOS: candidatos retirados pela regra de conjuntos (status original mantido)
-        if(conjuntos.length&&retirar.size){
+        if((conjuntos.length||sc)&&retirar.size){
           const retiradosRows=todos.filter(r=>retirar.has(r['INSCRIÇÃO']?.toString()));
           if(retiradosRows.length){
             await criarAbaAlocacao(wbAloc,'RETIRADOS',todasCols,retiradosRows);
@@ -6297,6 +6306,11 @@ async function _processarInscricoesUm(procs){
         const editais=(colProc && procs && procs.length>1)?procs:[(procs&&procs[0])||null];
         const alocSet=new Set(aloc);
         const bufAloc=await wbAloc.xlsx.writeBuffer();
+        if(sc){                                               // Santa Casa: devolve só a alocação + o resumo por prova/grupo
+          const stat={}; todos.forEach(r=>{ if(!r._unid) return; const k=r._unid+'|'+(r['GRUPO']||'—'); const o=stat[k]||(stat[k]={unid:r._unid,grupo:r['GRUPO']||'—',aloc:0,ret:0});
+            if(alocSet.has(r)) o.aloc++; else if(retirar.has(String(r['INSCRIÇÃO']))) o.ret++; });
+          return {bufAloc, sc:{aloc:aloc.length, retirados:retirar.size, stat:Object.values(stat), avisos:avisosCodigos.slice()}};
+        }
         const porEdital=[], resultados=[];
         for(const ed of editais){
           nomeConcurso=ed||'CONCURSO';                       // o título das abas leva o nome do próprio edital
@@ -6456,6 +6470,71 @@ function scVaga(r){                                             // qual reserva 
 }
 function scTemReserva(r){ return ['CONCORRE VAGA DEFICIÊNCIA','CONCORRE VAGA NEGRO','CONCORRE VAGA INDÍGENA','CONCORRE VAGA QUILOMBOLA','CONCORRE VAGA TRANS'].some(c=>scSemAcento(r[c]).trim()==='SIM'); }
 
+
+// ── GRUPOS (mesma prova): definidos por edital. Residência Médica + Especialização Médica do mesmo ano = uma prova só ──
+const SC_GRUPOS_MEDICA={2:['CARDIOLOGIA','ENDOCRINOLOGIA','GASTROENTEROLOGIA','NEFROLOGIA','ONCOLOGIA CLINICA','PNEUMOLOGIA','REUMATOLOGIA'],
+  3:['CIRURGIA PEDIATRICA','CIRURGIA PLASTICA','CIRURGIA TORACICA','CIRURGIA VASCULAR','COLOPROCTOLOGIA','UROLOGIA'],
+  4:['CIRURGIA DA MAO','CIRURGIA DE MAO'],
+  5:['CARDIOLOGIA PEDIATRICA','MEDICINA INTENSIVA PEDIATRICA','NEFROLOGIA PEDIATRICA','NEONATOLOGIA','ONCOLOGIA PEDIATRICA'],
+  6:['MASTOLOGIA'],7:['CIRURGIA DE CABECA E PESCOCO']};
+const SC_GRUPOS_FELLOW={1:['ARRITMOLOGIA CLINICA'],2:['CIRURGIA GINECOLOGICA','CIRURGIA GINECOLOGICA EM ONCOLOGIA'],
+  3:['CIRURGIA REFRATIVA E CERATOCONE','CORNEA E LENTE DE CONTATO','PLASTICA OCULAR VIAS LACRIMAIS E ORBITA COM ENFASE EM ORBITA'],
+  4:['MEDICINA HOSPITALAR'],5:['RECONSTRUCAO MAMARIA E TECNICAS DE ONCOPLASTIA MAMARIA'],6:['TRANSPLANTE DE MEDULA OSSEA'],7:['RESSONANCIA MAGNETICA']};
+function scEspec(cargo){
+  let c=scSemAcento(scCargoBase(cargo)).replace(/\s+/g,' ').trim();
+  c=c.replace(/^\d+\s*\/?\s*\d*\s*-\s*/,'').replace(/\s*-\s*(PRE-?REQUISITO|ENTRADA DIRETA).*$/,'');
+  return c.trim();
+}
+function scTipoProcesso(nome){
+  const n=scSemAcento(nome);
+  if(/FELLOWSHIP/.test(n)) return 'FELLOW';
+  if(/MULTIPROFISSIONAL|UNIPROFISSIONAL/.test(n)) return 'MULTI';
+  if(/RESIDENCIA MEDICA|ESPECIALIZACAO MEDICA/.test(n)) return 'MEDICA';
+  return 'OUTRO';
+}
+function scGrupoNum(tipo,cargo){
+  if(tipo==='MEDICA'){
+    if(/ENTRADA DIRETA/.test(scSemAcento(cargo))) return 1;             // grupo 1 = todos os cargos de entrada direta
+    const e=scEspec(cargo); for(const g in SC_GRUPOS_MEDICA) if(SC_GRUPOS_MEDICA[g].includes(e)) return +g; return null;
+  }
+  if(tipo==='FELLOW'){ const e=scEspec(cargo); for(const g in SC_GRUPOS_FELLOW) if(SC_GRUPOS_FELLOW[g].includes(e)) return +g; return null; }
+  return null;
+}
+function scGrupoTxt(tipo,cargo){
+  const g=scGrupoNum(tipo,cargo); if(g) return 'GRUPO '+g;
+  if(tipo==='MULTI'){ const c=scCargoBase(cargo).replace(/^\d+\s*\/?\s*\d*\s*-\s*/,''); const m=c.match(/^([^-]+)/); return m?m[1].trim().toUpperCase():''; }   // multiprofissional: só informativo (a profissão)
+  return '';
+}
+// Alocação: quem tem mais de uma inscrição no MESMO grupo faz a mesma prova → conta uma vez só, com a inscrição mais recente.
+function scRegrasAlocacao(todos,retirar,ATIVOS,avisos){
+  const col=window._inscColProcesso||'CONCURSO', semGrupo=new Set();
+  todos.forEach(r=>{
+    const proc=String(r[col]||''), tipo=scTipoProcesso(proc), ed=scEdital(proc);
+    r._tipo=tipo; r._unid=(tipo==='MEDICA')?`${ed.ano}|MEDICA`:`${String(ed.num).padStart(3,'0')}/${ed.ano}|${tipo}`;   // Residência + Especialização Médica = analisadas juntas
+    r._g=scGrupoNum(tipo,r['CARGO']); r['GRUPO']=scGrupoTxt(tipo,r['CARGO']);
+    if(!r._g&&(tipo==='MEDICA'||tipo==='FELLOW')) semGrupo.add(scCargoBase(r['CARGO']));
+  });
+  const ativo=r=>ATIVOS.includes(String(r['STATUS']||'').toLowerCase()), cpfDe=r=>String(r['CPF']||'').replace(/\D/g,'');
+  const grupos={}; let paresMulti=0;
+  todos.filter(r=>ativo(r)&&r._g).forEach(r=>{ const k=`${r._unid}__${r._g}__${cpfDe(r)}`; (grupos[k]=grupos[k]||[]).push(r); });
+  let candidatosComMais=0;
+  Object.values(grupos).forEach(arr=>{
+    if(arr.length<2) return; candidatosComMais++;
+    arr.sort((a,b)=>(a._dt-b._dt)||((parseInt(a['INSCRIÇÃO'],10)||0)-(parseInt(b['INSCRIÇÃO'],10)||0)));
+    arr.slice(0,-1).forEach(r=>retirar.add(String(r['INSCRIÇÃO'])));                    // fica a ÚLTIMA inscrição
+  });
+  // multiprofissional/uniprofissional: só pode haver uma inscrição por candidato — apenas avisa se houver mais
+  const multi={}; todos.filter(r=>ativo(r)&&r._tipo==='MULTI').forEach(r=>{ const k=r._unid+'__'+cpfDe(r); multi[k]=(multi[k]||0)+1; });
+  const multiRep=Object.values(multi).filter(n=>n>1).length;
+  if(multiRep) avisos.push(`${multiRep} candidato(s) da Residência Multiprofissional/Uniprofissional têm mais de uma inscrição ativa (o edital permite uma só): todas foram mantidas na alocação; confira.`);
+  if(semGrupo.size) avisos.push(`Cargos sem grupo definido (ficam fora da regra de "uma inscrição por grupo"): ${[...semGrupo].join('; ')}.`);
+  // conflito: mesma pessoa em grupos diferentes no mesmo horário de prova (não consegue fazer as duas)
+  const hor={}; todos.filter(r=>ativo(r)&&r._g&&!retirar.has(String(r['INSCRIÇÃO']))).forEach(r=>{ const k=cpfDe(r)+'__'+r._unid.split('|')[0]+'__'+String(r['DATA REALIZAÇÃO PROVA']); (hor[k]=hor[k]||new Set()).add(r._g); });
+  const conf=Object.values(hor).filter(s=>s.size>1).length;
+  if(conf) avisos.push(`${conf} candidato(s) estão em grupos diferentes no MESMO horário de prova (não conseguem fazer as duas provas); nenhum foi retirado, confira.`);
+  return {candidatosComMais};
+}
+
 function scMontarAba(wb,nomeAba,spec,titulo,linhas,publicacao){
   const ws=wb.addWorksheet(nomeAba,{views:[{state:'frozen',ySplit:2,zoomScale:60}]});
   const nc=spec.cols.length, F=(o)=>Object.assign({name:'Times New Roman',size:10},o||{});
@@ -6509,11 +6588,12 @@ function scProcessar(opts){
     const nn=String(b.ed.num).padStart(2,'0')+(usados[b.ed.num]>1?'-'+b.ed.ano:'');
     const base=b.rows.map(r=>({r,insc:parseInt(r['INSCRIÇÃO'],10),status:scStatus(r),statusSistema:scStatus(r),cot:SC_COTISTA_RE.test(String(r['CARGO']||'')),cargo:scCargoBase(r['CARGO']),
       nome:scTxt(r['CANDIDATO']),serial:scSerial(r['DATA REALIZAÇÃO PROVA'])}))
+      .map(x=>{ x.grupo=['PAGO','DEFERIDA','INDEFERIDA'].includes(x.status)?scGrupoTxt(scTipoProcesso(b.proc),x.cargo):''; return x; })
       .filter(x=>!isNaN(x.insc))
       .map(x=>{ if(x.cot&&x.status==='DEFERIDA') x.status='PAGO'; return x; })      // cotista "Deferida" no sistema: pagou; o resultado do PROUNI é que decide
       .sort((a,b2)=>x2(a.cargo,b2.cargo)||x2(a.nome,b2.nome));
     function x2(a,b2){ return a.localeCompare(b2,'pt-BR'); }
-    const mk=(x,extra)=>[x.insc,x.nome,scCpf(x.r['CPF']),scData(x.r['DATA NASCIMENTO']),b.nome,'',x.cargo,x.status,x.serial==null?null:{serial:x.serial}].concat(extra||[]);
+    const mk=(x,extra)=>[x.insc,x.nome,scCpf(x.r['CPF']),scData(x.r['DATA NASCIMENTO']),b.nome,x.grupo,x.cargo,x.status,x.serial==null?null:{serial:x.serial}].concat(extra||[]);
     const titulo=t=>`${b.nome}\n\nRESULTADO PRELIMINAR DAS INSCRIÇÕES - ${t}`;
     const doc=(x,t)=>{ const u=(up[String(x.insc)]||{})[t]; return u?{link:u.url}:(temUploads?'NÃO ENVIADO':''); };
     // PROUNI/SISU: cargo de cotista e já pago (ou com resultado no sistema)
@@ -6543,7 +6623,7 @@ function scProcessar(opts){
     if(opts.afirmativas){
       const af=base.filter(x=>x.statusSistema==='PAGO'&&scTemReserva(x.r));
       if(af.length){
-        const linhas=af.map(x=>[x.insc,x.nome,scCpf(x.r['CPF']),scData(x.r['DATA NASCIMENTO']),b.nome,'',x.cargo,x.status,'SIM','','',scVaga(x.r),doc(x,'afirmativa')]);
+        const linhas=af.map(x=>[x.insc,x.nome,scCpf(x.r['CPF']),scData(x.r['DATA NASCIMENTO']),b.nome,x.grupo,x.cargo,x.status,'SIM','','',scVaga(x.r),doc(x,'afirmativa')]);
         scMontarAba(wb,`${SC_ABAS.AFIRMATIVAS.prefixo} ED Nº${nn}`,SC_ABAS.AFIRMATIVAS,titulo(SC_ABAS.AFIRMATIVAS.rotulo),linhas,opts.publicacao); cont.afirm=af.length;
         const multi=af.filter(x=>scVaga(x.r).includes(' + ')).length; if(multi) avisos.push(`Edital ${nn}: ${multi} candidato(s) concorrem a mais de uma ação afirmativa; a coluna VAGA? lista todas (ex.: "NEGRO + PCD: Física").`);
       }
@@ -6551,14 +6631,14 @@ function scProcessar(opts){
     if(opts.especial){
       const es=base.filter(x=>x.statusSistema==='PAGO'&&scSemAcento(x.r['PRECISA ATENDIMENTO ESPECIAL']).trim()==='SIM');
       if(es.length){
-        const linhas=es.map(x=>[x.insc,x.nome,scCpf(x.r['CPF']),scData(x.r['DATA NASCIMENTO']),b.nome,'',x.cargo,x.status,scTxt(x.r['ATENDIMENTO ESPECIAL']).replace(/^-$/,''),'','',x.serial==null?null:{serial:x.serial},doc(x,'especial')]);
+        const linhas=es.map(x=>[x.insc,x.nome,scCpf(x.r['CPF']),scData(x.r['DATA NASCIMENTO']),b.nome,x.grupo,x.cargo,x.status,scTxt(x.r['ATENDIMENTO ESPECIAL']).replace(/^-$/,''),'','',x.serial==null?null:{serial:x.serial},doc(x,'especial')]);
         scMontarAba(wb,`${SC_ABAS.ESPECIAL.prefixo} ED Nº${nn}`,SC_ABAS.ESPECIAL,titulo(SC_ABAS.ESPECIAL.rotulo),linhas,opts.publicacao); cont.espec=es.length;
       }
     }
     if(opts.bonificacao&&temUploads){
       const bo=base.filter(x=>x.statusSistema==='PAGO'&&up[String(x.insc)]?.bonif);
       if(bo.length){
-        const linhas=bo.map(x=>{ const u=up[String(x.insc)]; const l=[x.insc,x.nome,scCpf(x.r['CPF']),scData(x.r['DATA NASCIMENTO']),b.nome,'',x.cargo,x.status,'','','',x.serial==null?null:{serial:x.serial},{link:u.bonif.url}];
+        const linhas=bo.map(x=>{ const u=up[String(x.insc)]; const l=[x.insc,x.nome,scCpf(x.r['CPF']),scData(x.r['DATA NASCIMENTO']),b.nome,x.grupo,x.cargo,x.status,'','','',x.serial==null?null:{serial:x.serial},{link:u.bonif.url}];
           if(u.bonif_compl) l[12]=u.bonif.url+'\nCOMPLEMENTAÇÃO: '+u.bonif_compl.url; return l; });
         scMontarAba(wb,`${SC_ABAS.BONIFICACAO.prefixo} ED Nº${nn}`,SC_ABAS.BONIFICACAO,titulo(SC_ABAS.BONIFICACAO.rotulo),linhas,opts.publicacao); cont.bonif=bo.length;
         const compl=bo.filter(x=>up[String(x.insc)].bonif_compl).length;
@@ -6570,7 +6650,6 @@ function scProcessar(opts){
     base.forEach(x=>{ if(x.cargo) cargosPorGrupo.add(x.cargo); });
     resumo.push(cont);
   });
-  avisos.push('A coluna GRUPO (oculta) fica em branco: o relatório geral não traz o grupo de cada cargo.');
   return {wb,resumo,avisos};
 }
 
@@ -6591,24 +6670,51 @@ function atualizarDicaModelo(){
     el.innerHTML='Os processos marcados parecem ser da <strong>Santa Casa</strong>. <button class="btn-secondary" style="height:28px;padding:0 10px;font-size:12px;margin-left:6px" onclick="document.querySelector(\'input[name=insc-modelo][value=santacasa]\').checked=true;definirModeloInsc()">Usar o modelo Santa Casa</button>';
   } else el.style.display='none';
 }
+function scRotuloUnidade(u){
+  const [k,t]=String(u).split('|');
+  if(t==='MEDICA') return `Residência Médica + Especialização Médica ${k}`;
+  if(t==='MULTI') return `Residência Multiprofissional e Uniprofissional ${k}`;
+  if(t==='FELLOW') return `Fellowship ${k}`;
+  return String(u);
+}
 async function processarSantaCasa(){
   if(typeof _inscWorkbook==='undefined'||!_inscWorkbook){ alert('Carregue o arquivo primeiro.'); return; }
   if(!window._inscColProcesso){ alert('O modelo Santa Casa precisa da coluna CONCURSO no relatório geral.'); return; }
   const procs=(window._inscProcessos||[]).filter(p=>window._inscProcessosSel&&window._inscProcessosSel.has(p));
   if(!procs.length){ alert('Selecione ao menos um processo antes de processar.'); return; }
+  const chk=id=>!!document.getElementById(id)?.checked;
+  const querRes=chk('sc-gerar-res'), querAloc=chk('sc-gerar-aloc');
+  if(!querRes&&!querAloc){ alert('Marque ao menos um arquivo para gerar: o resultado e/ou a planilha de alocação.'); return; }
   const btn=event?.target; if(btn){ btn.disabled=true; btn.textContent='Processando...'; }
   const prev=document.getElementById('insc-preview-content'); prev.innerHTML='<div style="font-size:13px;color:#41506b">Montando as planilhas…</div>';
-  const chk=id=>!!document.getElementById(id)?.checked;
+  const baixar=(arq)=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([arq.buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})); a.download=arq.nome; a.click(); };
   carregarSheetJS(()=>{ carregarExcelJS(async()=>{
     try{
-      const {wb,resumo,avisos}=scProcessar({procs,prouni:chk('sc-prouni'),afirmativas:chk('sc-afirm'),especial:chk('sc-esp'),bonificacao:chk('sc-bonif'),publicacao:chk('sc-pub')});
-      const buf=await wb.xlsx.writeBuffer(); const nome='RESULTADO_PRELIMINAR_DAS_INSCRIÇÕES_SANTA_CASA.xlsx';
-      const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})); a.download=nome; a.click();
-      const th='style="padding:6px 10px;text-align:center;font-size:11.5px;color:#41506b;border-bottom:1px solid #e2e7ef"', td='style="padding:6px 10px;text-align:center;font-size:12.5px;border-bottom:1px solid #f0f3f7"';
-      const linhas=resumo.map(c=>`<tr><td style="padding:6px 10px;font-size:12.5px;border-bottom:1px solid #f0f3f7;text-align:left">Edital ${c.nn}</td><td ${td}>${c.total}</td><td ${td}>${c.pagos}</td><td ${td}>${c.pend}</td><td ${td}>${c.indef}</td><td ${td}>${c.prouni||'—'}</td><td ${td}>${c.afirm||'—'}</td><td ${td}>${c.espec||'—'}</td><td ${td}>${c.bonif||'—'}</td></tr>`).join('');
-      prev.innerHTML=`<div style="overflow-x:auto;margin-bottom:12px"><table style="width:100%;border-collapse:collapse"><thead><tr><th ${th} style="text-align:left;padding:6px 10px;font-size:11.5px;color:#41506b;border-bottom:1px solid #e2e7ef">Edital</th><th ${th}>Inscrições</th><th ${th}>Pagos</th><th ${th}>Pendentes</th><th ${th}>Indeferidas</th><th ${th}>PROUNI</th><th ${th}>Afirmativas</th><th ${th}>Cond. especial</th><th ${th}>Bonificação</th></tr></thead><tbody>${linhas}</tbody></table></div>`
-        +`<div style="font-size:13px;color:#2e7d52;font-weight:600">✅ Gerado: <strong>${nome}</strong> (${wb.worksheets.length} abas).</div>`
+      const arquivos=[]; let resumo=[], avisos=[], alocInfo=null, abas=0;
+      if(querRes){
+        const r=scProcessar({procs,prouni:chk('sc-prouni'),afirmativas:chk('sc-afirm'),especial:chk('sc-esp'),bonificacao:chk('sc-bonif'),publicacao:chk('sc-pub')});
+        resumo=r.resumo; avisos=r.avisos.slice(); abas=r.wb.worksheets.length;
+        arquivos.push({nome:'RESULTADO_PRELIMINAR_DAS_INSCRIÇÕES_SANTA_CASA.xlsx',buf:await r.wb.xlsx.writeBuffer()});
+      }
+      if(querAloc){
+        const r=await _processarInscricoesUm(procs,{santaCasa:true});
+        alocInfo=r.sc; r.sc.avisos.forEach(a=>{ if(!avisos.includes(a)) avisos.push(a); });
+        arquivos.push({nome:'ALOCACAO_SANTA_CASA.xlsx',buf:r.bufAloc});
+      }
+      for(let i=0;i<arquivos.length;i++){ baixar(arquivos[i]); if(i<arquivos.length-1) await new Promise(res=>setTimeout(res,800)); }
+      const th='style="padding:6px 10px;text-align:center;font-size:11.5px;color:#41506b;border-bottom:1px solid #e2e7ef"', td='style="padding:6px 10px;text-align:center;font-size:12.5px;border-bottom:1px solid #f0f3f7"', tdl='style="padding:6px 10px;text-align:left;font-size:12.5px;border-bottom:1px solid #f0f3f7"';
+      let html='';
+      if(resumo.length){
+        const linhas=resumo.map(c=>`<tr><td ${tdl}>Edital ${c.nn}</td><td ${td}>${c.total}</td><td ${td}>${c.pagos}</td><td ${td}>${c.pend}</td><td ${td}>${c.indef}</td><td ${td}>${c.prouni||'—'}</td><td ${td}>${c.afirm||'—'}</td><td ${td}>${c.espec||'—'}</td><td ${td}>${c.bonif||'—'}</td></tr>`).join('');
+        html+=`<div style="font-size:12.5px;font-weight:600;color:#1f2a3d;margin:2px 0 6px">Resultado preliminar</div><div style="overflow-x:auto;margin-bottom:14px"><table style="width:100%;border-collapse:collapse"><thead><tr><th ${th} style="text-align:left;padding:6px 10px;font-size:11.5px;color:#41506b;border-bottom:1px solid #e2e7ef">Edital</th><th ${th}>Inscrições</th><th ${th}>Pagos</th><th ${th}>Pendentes</th><th ${th}>Indeferidas</th><th ${th}>PROUNI</th><th ${th}>Afirmativas</th><th ${th}>Cond. especial</th><th ${th}>Bonificação</th></tr></thead><tbody>${linhas}</tbody></table></div>`;
+      }
+      if(alocInfo){
+        const linhas=alocInfo.stat.sort((a,b)=>String(a.unid+a.grupo).localeCompare(String(b.unid+b.grupo))).map(x=>`<tr><td ${tdl}>${scRotuloUnidade(x.unid)}</td><td ${td}>${x.grupo}</td><td ${td}>${x.aloc}</td><td ${td}>${x.ret||'—'}</td></tr>`).join('');
+        html+=`<div style="font-size:12.5px;font-weight:600;color:#1f2a3d;margin:2px 0 6px">Alocação: <span style="color:#2e7d52">${alocInfo.aloc} candidatos alocados</span> · ${alocInfo.retirados} inscrições retiradas (mesmo grupo, só a última conta)</div><div style="overflow-x:auto;margin-bottom:14px"><table style="width:100%;border-collapse:collapse"><thead><tr><th ${th} style="text-align:left;padding:6px 10px;font-size:11.5px;color:#41506b;border-bottom:1px solid #e2e7ef">Prova</th><th ${th}>Grupo</th><th ${th}>Alocados</th><th ${th}>Retirados</th></tr></thead><tbody>${linhas}</tbody></table></div>`;
+      }
+      html+=`<div style="font-size:13px;color:#2e7d52;font-weight:600">✅ Gerado${arquivos.length>1?'s':''}: ${arquivos.map(a=>'<strong>'+a.nome+'</strong>').join(' e ')}${abas?` (resultado com ${abas} abas)`:''}.</div>`
         +avisos.map(x=>`<div style="margin-top:8px;font-size:12.5px;color:#a06c12">⚠️ ${x}</div>`).join('');
+      prev.innerHTML=html;
     }catch(e){ prev.innerHTML=`<div style="color:#c0322f">Erro: ${e.message}</div>`; console.error(e); }
     if(btn){ btn.disabled=false; btn.textContent='⚙️ Processar e baixar'; }
   }); });
@@ -10134,12 +10240,15 @@ async function processarAlocacao(){
         if(fileCond){
           const bufCond = await fileCond.arrayBuffer();
           const wbCond = XLSX.read(bufCond, {type:'array', cellDates:true});
-          const nomeAba = wbCond.SheetNames.find(n=>{
+          let nomesAbas = wbCond.SheetNames.filter(n=>{
             const u = n.toUpperCase();
             return u.includes('COND') && u.includes('ESPECIAL');
-          }) || wbCond.SheetNames[0];
+          });
+          // Santa Casa: o resultado tem uma aba "ESPECIAL ED Nº05", "ESPECIAL ED Nº06"… (uma por edital) — lê todas
+          if(!nomesAbas.length) nomesAbas = wbCond.SheetNames.filter(n=>/^ESPECIAL\b/.test(String(n).normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toUpperCase()));
+          if(!nomesAbas.length) nomesAbas = [wbCond.SheetNames[0]];
           // a aba tem uma linha de título antes do cabeçalho (range:1 pula essa linha)
-          const condRows = XLSX.utils.sheet_to_json(wbCond.Sheets[nomeAba], {defval:'', range:1});
+          const condRows = nomesAbas.flatMap(n=>XLSX.utils.sheet_to_json(wbCond.Sheets[n], {defval:'', range:1}));
           condRows.forEach(r=>{
             const insc = String(r['INSCRIÇÃO']||'').trim();
             if(!insc) return;
