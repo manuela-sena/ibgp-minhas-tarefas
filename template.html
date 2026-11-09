@@ -1372,6 +1372,24 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
           onchange="carregarUploadsInscricoes(this)">
         <div id="insc-uploads-status" style="margin-top:8px;font-size:12.5px;color:#8a9ab5"></div>
       </div>
+      <div class="card card-pad" id="insc-modelo-wrap">
+        <label class="form-label">Modelo do resultado</label>
+        <div style="display:flex;gap:26px;flex-wrap:wrap;font-size:13.5px">
+          <label style="display:flex;align-items:center;gap:7px;cursor:pointer"><input type="radio" name="insc-modelo" value="padrao" checked onchange="definirModeloInsc()"> Padrão IBGP <span style="color:#8a9ab5;font-size:12px">(AMPLA, PCD, PNP, indígena…)</span></label>
+          <label style="display:flex;align-items:center;gap:7px;cursor:pointer"><input type="radio" name="insc-modelo" value="santacasa" onchange="definirModeloInsc()"> Santa Casa <span style="color:#8a9ab5;font-size:12px">(AMPLA, PROUNI/SISU, Ações Afirmativas, Bonificação, Condição Especial)</span></label>
+        </div>
+        <div id="insc-modelo-dica" style="display:none;margin-top:10px;padding:9px 12px;background:#fff4d6;border:1px solid #f0dfa0;border-radius:8px;font-size:12.5px;color:#a06c12"></div>
+        <div id="insc-sc-opcoes" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid #eef1f6">
+          <div style="font-size:12.5px;color:#41506b;margin-bottom:10px">Gera <strong>um arquivo com todos os editais selecionados</strong>, uma aba por tipo (só entram abas que têm candidatos). A reserva de vaga sai como <strong>Ações Afirmativas</strong>; a coluna <strong>VAGA?</strong> guarda internamente qual é (NEGRO, INDÍGENA ou o tipo de deficiência). Use o <strong>Relatório de Uploads</strong> para preencher os links dos documentos.</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px 24px;font-size:13px">
+            <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="sc-prouni" checked> Cotista PROUNI/SISU</label>
+            <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="sc-afirm" checked> Ações Afirmativas</label>
+            <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="sc-esp" checked> Condição Especial</label>
+            <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="sc-bonif" checked> Bonificação (PRMFC / Mais Médicos)</label>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;margin-top:10px"><input type="checkbox" id="sc-pub"> Versão para publicar <span style="color:#8a9ab5;font-size:12px">(oculta também os links e a coluna VAGA?)</span></label>
+        </div>
+      </div>
       <div id="insc-sel-processo-wrap" style="display:none" class="card card-pad"></div>
       <div id="insc-conjuntos-wrap" style="display:none" class="card card-pad">
         <div style="font-size:13px;font-weight:600;color:#1f2a3d;margin-bottom:12px">Cargos com mesma prova <span style="font-size:11px;color:#8a9ab5;font-weight:400">(opcional)</span></div>
@@ -5682,6 +5700,8 @@ function carregarUploadsInscricoes(input){
             INSCRICAO: normInscUp(kn['INSCRIÇÃO']),
             NOME: (kn['NOME']||'').toString().trim(),
             URL: (kn['URL']||'').toString().trim().replace('admin.ibgpconcursos.com.br','gestor.ibgpconcursos.com.br'),
+            ENVIADO: String(kn['STATUS_1']||'').trim().toUpperCase()==='ENVIADO'||String(kn['DOWNLOAD']||'').trim().toUpperCase()==='BAIXAR',
+            DATA: kn['DATA UPLOAD']||'',
           };
         }).filter(r=>r.INSCRICAO && r.INSCRICAO!=='NaN');
         const porTipo={};
@@ -5823,6 +5843,7 @@ function carregarArquivoInscricoes(input){
 
       wrapConj.style.display='block';
       wrapPreview.style.display='block';
+      definirModeloInsc();                                  // Santa Casa: esconde conjuntos e reservas do padrão IBGP
       document.getElementById('insc-preview-content').innerHTML=
         colProcesso
           ? `<div style="font-size:13px;color:#41506b">Selecione o processo acima antes de processar.</div>`
@@ -5870,7 +5891,9 @@ function atualizarResumoProcessos(){
   if(el) el.innerHTML=sel.length
     ? `✅ <strong style="color:#1f4e8c">${sel.length}</strong> processo(s) selecionado(s) — ${reg} registros`
     : 'Nenhum processo selecionado.';
+  atualizarDicaModelo();
   const prev=document.getElementById('insc-preview-content');
+  if(prev&&window._inscModelo==='santacasa'){ prev.innerHTML=sel.length?`<div style="font-size:13px;color:#2e7d52;font-weight:500">✅ ${sel.length>1?'Processos selecionados':'Processo selecionado'}. Marque as abas desejadas acima e clique em <strong>Processar e baixar</strong>.</div>`:`<div style="font-size:13px;color:#41506b">Selecione o processo acima antes de processar.</div>`; return; }
   if(prev) prev.innerHTML=sel.length
     ? `<div style="font-size:13px;color:#2e7d52;font-weight:500">✅ ${sel.length>1?'Processos selecionados':'Processo selecionado'}. Configure os conjuntos se necessário e clique em <strong>Processar e baixar</strong>.${sel.length>1?' Os editais marcados são processados juntos: cancelamentos e retiradas consideram todos eles. A ALOCAÇÃO sai em um arquivo só e o RESULTADO sai um por edital (em um .zip).':''}</div>`
     : `<div style="font-size:13px;color:#41506b">Selecione o processo acima antes de processar.</div>`;
@@ -6353,7 +6376,246 @@ function _tabelaPorEditalInsc(r){
 
 // Processa o(s) edital(is) marcado(s) e baixa: 1 edital = RESULTADO + ALOCACAO (como sempre); 2+ = um .zip com a ALOCAÇÃO única
 // (todos os editais) e um RESULTADO por edital.
+// ══════════════════════════════════════════════════════════════════════════
+// MODELO SANTA CASA — resultado preliminar das inscrições (AMPLA, PROUNI/SISU,
+// AÇÕES AFIRMATIVAS, CONDIÇÃO ESPECIAL e BONIFICAÇÃO), um arquivo com todos os editais.
+// ══════════════════════════════════════════════════════════════════════════
+const SC_COTISTA_RE=/COTISTA\s+SISU\s*[|/]\s*PROUNI/i;
+const SC_SUFIXO_RE=/\s*-?\s*COTISTA\s+SISU\s*[|/]\s*PROUNI\s*$/i;
+const SC_ABAS={
+  AMPLA:{rotulo:'AMPLA',prefixo:'AMPLA',merge:8,ocultas:[3,5,6,9],larg:[26.4,67.1,17.7,25.7,29.3,41.1,94.6,40.9,46.7],
+    cols:['INSCRIÇÃO','CANDIDATO','CPF','DATA DE\n NASCIMENTO','CONCURSO','GRUPO','CARGO','STATUS DE \nPAGAMENTO','DATA REALIZAÇÃO PROVA']},
+  PROUNI:{rotulo:'COTISTA DO PROUNI/SISU',prefixo:'PROUNI',merge:12,ocultas:[3,5,6,8,9,10],larg:[24.7,63.4,17.7,28.1,72.9,26.9,94.6,25.1,21.7,19,28.7,91.3],resultado:11,
+    cols:['INSCRIÇÃO','CANDIDATO','CPF','DATA DE\n NASCIMENTO','CONCURSO','GRUPO','CARGO','STATUS DE \nPAGAMENTO','DATA REALIZAÇÃO PROVA','BAIXAR','RESULTADO SISU/PROUNI','JUSTIFICATIVA'],publicacao:[10]},
+  AFIRMATIVAS:{rotulo:'AÇÕES AFIRMATIVAS',prefixo:'AFIRMATIVAS',merge:11,ocultas:[3,5,6,9],larg:[22,67.1,17.7,25.7,35,17.7,85.9,19.6,19.9,29.3,78.1,40,45],resultado:10,
+    cols:['INSCRIÇÃO','CANDIDATO','CPF','DATA DE\n NASCIMENTO','CONCURSO','GRUPO','CARGO','STATUS DE \nPAGAMENTO','AÇÕES \nAFIRMATIVAS','RESULTADO AÇÕES\nAFIRMATIVAS','JUSTIFICATIVA','VAGA?','LINK'],publicacao:[12,13]},
+  ESPECIAL:{rotulo:'CONDIÇÃO ESPECIAL',prefixo:'ESPECIAL',merge:11,ocultas:[3,4,5,6,8,12],larg:[26.4,67.1,17.7,21.7,23.1,26.1,88,22.4,66.9,34.6,72.7,46.7,45],resultado:10,
+    cols:['INSCRIÇÃO','CANDIDATO','CPF','DATA DE\n NASCIMENTO','CONCURSO','GRUPO','CARGO','STATUS DE \nPAGAMENTO','ATENDIMENTO ESPECIAL','RESULTADO','JUSTIFICATIVA','DATA REALIZAÇÃO PROVA','LINK'],publicacao:[13]},
+  BONIFICACAO:{rotulo:'BONIFICAÇÃO',prefixo:'BONIFICAÇÃO',merge:11,ocultas:[3,5,6,10,12],larg:[26.4,67.1,17.7,18.1,67.7,17.3,103,20.3,21.7,25.6,126.7,46.7,45],resultado:9,
+    cols:['INSCRIÇÃO','CANDIDATO','CPF','DATA DE\n NASCIMENTO','CONCURSO','GRUPO','CARGO','STATUS DE \nPAGAMENTO','RESULTADO\nBONIFICAÇÃO','PROGRAMA','JUSTIFICATIVA','DATA REALIZAÇÃO PROVA','PROVAB LINK'],publicacao:[13]}
+};
+function scSemAcento(s){ return String(s==null?'':s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase(); }
+function scCargoBase(c){ return String(c||'').replace(/[\t\r\n]+/g,' ').replace(SC_SUFIXO_RE,'').replace(/\s+/g,' ').trim(); }
+function scTipoUpload(nome){
+  const n=scSemAcento(nome);
+  if(/PROUNI|SISU/.test(n)) return 'prouni';
+  if(/ACAO AFIRMATIVA/.test(n)) return 'afirmativa';
+  if(/COMPLEMENTACAO.*BONIFICACAO/.test(n)) return 'bonif_compl';
+  if(/PRMFC|PROVAB|PRMGFC|PMMB|BONIFICACAO/.test(n)) return 'bonif';
+  if(/CONDICAO ESPECIAL|NECESSIDADE ESPECIAL/.test(n)) return 'especial';
+  return null;                                                 // heteroidentificação etc.: fora deste resultado
+}
+function scStatus(r){
+  const st=scSemAcento(r['STATUS']).trim(), at=scSemAcento(r['ATIVA']).trim();
+  if(at==='CANCELADA') return 'CANCELADA';
+  return ({PAGO:'PAGO',PENDENTE:'PENDENTE DE PAGAMENTO',CANCELADA:'CANCELADA',INDEFERIDA:'INDEFERIDA',DEFERIDA:'DEFERIDA'})[st]||String(r['STATUS']||'').toUpperCase();
+}
+function scEdital(concurso){
+  const m=String(concurso||'').match(/EDITAL\s*N[ºO°]?\s*0*(\d+)\s*\/\s*(\d{4})/i);
+  return m?{num:parseInt(m[1],10),ano:parseInt(m[2],10)}:{num:0,ano:0};
+}
+function scSerial(v){                                           // data/hora → número serial do Excel (sem depender do fuso)
+  if(v==null||v==='') return null; let d=null;
+  if(v instanceof Date){ if(isNaN(v)) return null; d=Date.UTC(v.getFullYear(),v.getMonth(),v.getDate(),v.getHours(),v.getMinutes(),v.getSeconds()); }
+  else{
+    const m=String(v).match(/(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/);
+    if(m) d=Date.UTC(+m[1],+m[2]-1,+m[3],+m[4],+m[5],+(m[6]||0));
+    else{ const m2=String(v).match(/(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/); if(m2) d=Date.UTC(+m2[3],+m2[2]-1,+m2[1],+(m2[4]||0),+(m2[5]||0),0); }
+  }
+  if(d==null) return null; d=Math.round(d/60000)*60000;           // horário de prova é sempre em minutos cheios
+  return (d-Date.UTC(1899,11,30))/86400000;
+}
+function scTs(v){ if(v instanceof Date) return v.getTime(); const t=Date.parse(String(v||'')); return isNaN(t)?0:t; }
+function scCpf(v){ const d=String(v==null?'':v).replace(/\D/g,''); return d?d.padStart(11,'0'):''; }
+function scData(v){ if(v instanceof Date&&!isNaN(v)) return String(v.getDate()).padStart(2,'0')+'/'+String(v.getMonth()+1).padStart(2,'0')+'/'+v.getFullYear(); return scTxt(v); }
+function scTxt(v){ return String(v==null?'':v).replace(/[ \t]+$/g,'').replace(/\s+$/g,'').trim(); }
+
+function scLerRelatorio(){
+  let todos=[];
+  for(const nome of _inscWorkbook.SheetNames) todos=todos.concat(_lerFolhaInsc(_inscWorkbook.Sheets[nome]));
+  return todos.map(r=>{ const n={}; Object.keys(r).forEach(k=>{ const kn=k.replace(/\n/g,' ').replace(/\s+/g,' ').trim(); n[kn]=typeof r[k]==='string'?r[k].trim():r[k]; }); return n; });
+}
+function scIndiceUploads(){                                     // por inscrição → tipo → upload mais recente (só os ENVIADOS, com link)
+  const idx={};
+  (_inscUploadsRows||[]).forEach(u=>{
+    if(!u.ENVIADO||!u.URL) return; const t=scTipoUpload(u.NOME); if(!t) return;
+    const a=idx[u.INSCRICAO]||(idx[u.INSCRICAO]={}); const ts=scTs(u.DATA);
+    if(!a[t]||ts>=a[t].ts) a[t]={url:u.URL,ts};
+  });
+  return idx;
+}
+function scVaga(r){                                             // qual reserva (uso interno da análise): NEGRO / INDÍGENA / texto da deficiência
+  const sim=c=>scSemAcento(r[c]).trim()==='SIM', t=[];
+  if(sim('CONCORRE VAGA NEGRO')) t.push('NEGRO');
+  if(sim('CONCORRE VAGA INDÍGENA')) t.push('INDÍGENA');
+  if(sim('CONCORRE VAGA QUILOMBOLA')) t.push('QUILOMBOLA');
+  if(sim('CONCORRE VAGA TRANS')) t.push('TRANS');
+  const def=scTxt(r['DEFICIÊNCIA']); const pcd=sim('CONCORRE VAGA DEFICIÊNCIA');
+  if(pcd) t.push(t.length?('PCD'+(def&&def!=='-'?': '+def:'')):(def&&def!=='-'?def:'PCD'));
+  return t.join(' + ');
+}
+function scTemReserva(r){ return ['CONCORRE VAGA DEFICIÊNCIA','CONCORRE VAGA NEGRO','CONCORRE VAGA INDÍGENA','CONCORRE VAGA QUILOMBOLA','CONCORRE VAGA TRANS'].some(c=>scSemAcento(r[c]).trim()==='SIM'); }
+
+function scMontarAba(wb,nomeAba,spec,titulo,linhas,publicacao){
+  const ws=wb.addWorksheet(nomeAba,{views:[{state:'frozen',ySplit:2,zoomScale:60}]});
+  const nc=spec.cols.length, F=(o)=>Object.assign({name:'Times New Roman',size:10},o||{});
+  const borda={top:{style:'thin'},left:{style:'thin'},bottom:{style:'thin'},right:{style:'thin'}};
+  spec.larg.slice(0,nc).forEach((w,i)=>{ ws.getColumn(i+1).width=w; });
+  const ocultas=new Set(spec.ocultas.concat(publicacao?(spec.publicacao||[]):[]));
+  ocultas.forEach(i=>{ ws.getColumn(i).hidden=true; });
+  ws.mergeCells(1,1,1,spec.merge);
+  const c1=ws.getCell(1,1); c1.value=titulo; c1.font=F({bold:true}); c1.alignment={horizontal:'center',vertical:'middle',wrapText:true}; c1.border=borda;
+  ws.getRow(1).height=80;
+  spec.cols.forEach((h,i)=>{ const c=ws.getCell(2,i+1); c.value=h; c.font=F({bold:true}); c.alignment={horizontal:'center',vertical:'middle',wrapText:true};
+    c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFBFBFBF'}}; c.border=borda; });
+  ws.getRow(2).height=30;
+  const esq=new Set([2,7]); spec.cols.forEach((h,i)=>{ if(/JUSTIFICATIVA|ATENDIMENTO|VAGA|LINK|BAIXAR|PROGRAMA/.test(h)) esq.add(i+1); });
+  const qtd=linhas.length;
+  for(let k=0;k<qtd;k++){
+    const row=ws.getRow(3+k); row.height=30; const lin=linhas[k];
+    for(let i=0;i<nc;i++){
+      const c=row.getCell(i+1); let v=lin[i];
+      if(v&&typeof v==='object'&&v.formula!==undefined) c.value={formula:v.formula,result:v.result};
+      else if(v&&typeof v==='object'&&v.serial!==undefined){ c.value=v.serial; c.numFmt='dd/mm/yyyy hh:mm'; }
+      else if(v&&typeof v==='object'&&v.link){ c.value={text:v.link,hyperlink:v.link}; c.font=F({color:{argb:'FF0563C1'},underline:true}); }
+      else c.value=(v===undefined||v===null||v==='')?null:(typeof v==='string'&&v.length>32767?v.slice(0,32764)+'...':v);   // limite de 32.767 caracteres por célula do Excel
+      if(!(v&&typeof v==='object'&&v.link)) c.font=F();
+      c.alignment={horizontal:esq.has(i+1)?'left':'center',vertical:'middle',wrapText:esq.has(i+1)||i+1===7};
+      c.border=borda;
+    }
+  }
+  if(spec.resultado&&qtd){                                      // lista suspensa para os analistas preencherem o resultado
+    const col=ws.getColumn(spec.resultado).letter;
+    ws.dataValidations.add(`${col}3:${col}${Math.max(3,2+qtd+300)}`,{type:'list',allowBlank:true,formulae:['"DEFERIDA,INDEFERIDA"'],showErrorMessage:false});
+  }
+  ws.autoFilter={from:{row:2,column:1},to:{row:2+Math.max(qtd,1),column:nc}};
+  return ws;
+}
+
+function scProcessar(opts){
+  const todos=scLerRelatorio();
+  const col=window._inscColProcesso||'CONCURSO';
+  const procs=opts.procs;
+  const avisos=[], resumo=[], up=scIndiceUploads();
+  const temUploads=!!(_inscUploadsRows&&_inscUploadsRows.length);
+  if(!temUploads) avisos.push('O Relatório de Uploads não foi carregado: as colunas de link (BAIXAR/LINK) ficam em branco e não dá para saber quem enviou o PROVAB/PRMFC (a aba BONIFICAÇÃO sai vazia).');
+  // um bloco por processo, em ordem de número do edital
+  const blocos=procs.map(p=>({proc:p,nome:String(p).replace(/\s+/g,' ').trim(),ed:scEdital(p),rows:todos.filter(r=>String(r[col]||'').trim()===p)}))
+    .sort((a,b)=>(a.ed.ano-b.ed.ano)||(a.ed.num-b.ed.num));
+  const usados={}; blocos.forEach(b=>{ usados[b.ed.num]=(usados[b.ed.num]||0)+1; });
+  const wb=new ExcelJS.Workbook();
+  const cargosPorGrupo=new Set();
+  blocos.forEach(b=>{
+    const nn=String(b.ed.num).padStart(2,'0')+(usados[b.ed.num]>1?'-'+b.ed.ano:'');
+    const base=b.rows.map(r=>({r,insc:parseInt(r['INSCRIÇÃO'],10),status:scStatus(r),statusSistema:scStatus(r),cot:SC_COTISTA_RE.test(String(r['CARGO']||'')),cargo:scCargoBase(r['CARGO']),
+      nome:scTxt(r['CANDIDATO']),serial:scSerial(r['DATA REALIZAÇÃO PROVA'])}))
+      .filter(x=>!isNaN(x.insc))
+      .map(x=>{ if(x.cot&&x.status==='DEFERIDA') x.status='PAGO'; return x; })      // cotista "Deferida" no sistema: pagou; o resultado do PROUNI é que decide
+      .sort((a,b2)=>x2(a.cargo,b2.cargo)||x2(a.nome,b2.nome));
+    function x2(a,b2){ return a.localeCompare(b2,'pt-BR'); }
+    const mk=(x,extra)=>[x.insc,x.nome,scCpf(x.r['CPF']),scData(x.r['DATA NASCIMENTO']),b.nome,'',x.cargo,x.status,x.serial==null?null:{serial:x.serial}].concat(extra||[]);
+    const titulo=t=>`${b.nome}\n\nRESULTADO PRELIMINAR DAS INSCRIÇÕES - ${t}`;
+    const doc=(x,t)=>{ const u=(up[String(x.insc)]||{})[t]; return u?{link:u.url}:(temUploads?'NÃO ENVIADO':''); };
+    // PROUNI/SISU: cargo de cotista e já pago (ou com resultado no sistema)
+    const prouni=opts.prouni?base.filter(x=>x.cot&&['PAGO','DEFERIDA','INDEFERIDA'].includes(x.status)):[];
+    const nomeProuni=`${SC_ABAS.PROUNI.prefixo} ED Nº${nn}`;
+    const idsProuni=new Set(prouni.map(x=>x.insc));
+    // AMPLA: todos; cotista indeferido no PROUNI fica INDEFERIDA aqui (fórmula acompanha o resultado que o analista preencher)
+    const ampla=base.map(x=>{
+      const l=mk(x);
+      if(idsProuni.has(x.insc)&&x.status==='PAGO')
+        l[7]={formula:`IF(IFERROR(VLOOKUP($A{L},'${nomeProuni}'!$A:$K,11,FALSE),"")="INDEFERIDA","INDEFERIDA","PAGO")`,result:'PAGO'};
+      return l;
+    });
+    ampla.forEach((l,i)=>{ if(l[7]&&l[7].formula) l[7].formula=l[7].formula.replace('{L}',String(3+i)); });
+    scMontarAba(wb,`${SC_ABAS.AMPLA.prefixo} ED Nº${nn}`,SC_ABAS.AMPLA,titulo(SC_ABAS.AMPLA.rotulo),ampla,opts.publicacao);
+    const cont={edital:b.nome,nn,total:base.length,pagos:base.filter(x=>x.status==='PAGO').length,pend:base.filter(x=>x.status==='PENDENTE DE PAGAMENTO').length,canc:base.filter(x=>x.status==='CANCELADA').length,indef:base.filter(x=>x.status==='INDEFERIDA').length,prouni:0,afirm:0,espec:0,bonif:0};
+    if(prouni.length){
+      const linhas=prouni.map(x=>{ const l=mk(x,[doc(x,'prouni'),x.statusSistema==='INDEFERIDA'?'INDEFERIDA':'','']); l[7]='PAGO'; return l; });
+      scMontarAba(wb,nomeProuni,SC_ABAS.PROUNI,titulo(SC_ABAS.PROUNI.rotulo),linhas,opts.publicacao); cont.prouni=prouni.length;
+      const sem=prouni.filter(x=>temUploads&&!up[String(x.insc)]?.prouni).length;
+      if(sem) avisos.push(`Edital ${nn}: ${sem} cotista(s) PROUNI/SISU sem documento enviado (coluna BAIXAR com "NÃO ENVIADO").`);
+    }
+    const pendCot=base.filter(x=>x.cot&&x.status==='PENDENTE DE PAGAMENTO').length;
+    if(pendCot) avisos.push(`Edital ${nn}: ${pendCot} cotista(s) PROUNI/SISU com pagamento pendente não entram na aba PROUNI (só os pagos, como no modelo).`);
+    const defCot=base.filter(x=>x.cot&&x.statusSistema==='DEFERIDA').length; if(defCot) avisos.push(`Edital ${nn}: ${defCot} cotista(s) PROUNI/SISU com status "Deferida" no relatório foram tratados como PAGO (pagaram a taxa); o resultado do PROUNI decide se ficam INDEFERIDA na AMPLA.`);
+    const deferidas=base.filter(x=>!x.cot&&x.status==='DEFERIDA').length; if(deferidas) avisos.push(`Edital ${nn}: ${deferidas} inscrição(ões) com status "Deferida" no relatório apareceram como DEFERIDA na AMPLA; confira.`);
+    if(opts.afirmativas){
+      const af=base.filter(x=>x.statusSistema==='PAGO'&&scTemReserva(x.r));
+      if(af.length){
+        const linhas=af.map(x=>[x.insc,x.nome,scCpf(x.r['CPF']),scData(x.r['DATA NASCIMENTO']),b.nome,'',x.cargo,x.status,'SIM','','',scVaga(x.r),doc(x,'afirmativa')]);
+        scMontarAba(wb,`${SC_ABAS.AFIRMATIVAS.prefixo} ED Nº${nn}`,SC_ABAS.AFIRMATIVAS,titulo(SC_ABAS.AFIRMATIVAS.rotulo),linhas,opts.publicacao); cont.afirm=af.length;
+        const multi=af.filter(x=>scVaga(x.r).includes(' + ')).length; if(multi) avisos.push(`Edital ${nn}: ${multi} candidato(s) concorrem a mais de uma ação afirmativa; a coluna VAGA? lista todas (ex.: "NEGRO + PCD: Física").`);
+      }
+    }
+    if(opts.especial){
+      const es=base.filter(x=>x.statusSistema==='PAGO'&&scSemAcento(x.r['PRECISA ATENDIMENTO ESPECIAL']).trim()==='SIM');
+      if(es.length){
+        const linhas=es.map(x=>[x.insc,x.nome,scCpf(x.r['CPF']),scData(x.r['DATA NASCIMENTO']),b.nome,'',x.cargo,x.status,scTxt(x.r['ATENDIMENTO ESPECIAL']).replace(/^-$/,''),'','',x.serial==null?null:{serial:x.serial},doc(x,'especial')]);
+        scMontarAba(wb,`${SC_ABAS.ESPECIAL.prefixo} ED Nº${nn}`,SC_ABAS.ESPECIAL,titulo(SC_ABAS.ESPECIAL.rotulo),linhas,opts.publicacao); cont.espec=es.length;
+      }
+    }
+    if(opts.bonificacao&&temUploads){
+      const bo=base.filter(x=>x.statusSistema==='PAGO'&&up[String(x.insc)]?.bonif);
+      if(bo.length){
+        const linhas=bo.map(x=>{ const u=up[String(x.insc)]; const l=[x.insc,x.nome,scCpf(x.r['CPF']),scData(x.r['DATA NASCIMENTO']),b.nome,'',x.cargo,x.status,'','','',x.serial==null?null:{serial:x.serial},{link:u.bonif.url}];
+          if(u.bonif_compl) l[12]=u.bonif.url+'\nCOMPLEMENTAÇÃO: '+u.bonif_compl.url; return l; });
+        scMontarAba(wb,`${SC_ABAS.BONIFICACAO.prefixo} ED Nº${nn}`,SC_ABAS.BONIFICACAO,titulo(SC_ABAS.BONIFICACAO.rotulo),linhas,opts.publicacao); cont.bonif=bo.length;
+        const compl=bo.filter(x=>up[String(x.insc)].bonif_compl).length;
+        if(compl) avisos.push(`Edital ${nn}: ${compl} candidato(s) da BONIFICAÇÃO enviaram também a "Complementação da documentação"; o link dela está no relatório de uploads (tipo "1. COMPLEMENTAÇÃO…").`);
+      }
+      const soCompl=base.filter(x=>x.statusSistema==='PAGO'&&up[String(x.insc)]?.bonif_compl&&!up[String(x.insc)]?.bonif).length;
+      if(soCompl) avisos.push(`Edital ${nn}: ${soCompl} candidato(s) enviaram só a complementação da bonificação (sem o documento principal) e não entram na aba BONIFICAÇÃO.`);
+    }
+    base.forEach(x=>{ if(x.cargo) cargosPorGrupo.add(x.cargo); });
+    resumo.push(cont);
+  });
+  avisos.push('A coluna GRUPO (oculta) fica em branco: o relatório geral não traz o grupo de cada cargo.');
+  return {wb,resumo,avisos};
+}
+
+function definirModeloInsc(){
+  const sc=document.querySelector('input[name="insc-modelo"]:checked')?.value==='santacasa';
+  window._inscModelo=sc?'santacasa':'padrao';
+  const op=document.getElementById('insc-sc-opcoes'); if(op) op.style.display=sc?'block':'none';
+  const carregado=(typeof _inscWorkbook!=='undefined')&&!!_inscWorkbook;
+  ['insc-conjuntos-wrap','insc-sel-reservas-wrap'].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display=(sc||!carregado)?'none':'block'; });
+  if(carregado&&window._inscProcessosSel) atualizarResumoProcessos(); else atualizarDicaModelo();
+}
+function atualizarDicaModelo(){
+  const el=document.getElementById('insc-modelo-dica'); if(!el) return;
+  const sel=(window._inscProcessos||[]).filter(p=>window._inscProcessosSel&&window._inscProcessosSel.has(p));
+  const parece=sel.some(p=>/SANTA CASA/i.test(p));
+  if(window._inscModelo!=='santacasa'&&parece){
+    el.style.display='block';
+    el.innerHTML='Os processos marcados parecem ser da <strong>Santa Casa</strong>. <button class="btn-secondary" style="height:28px;padding:0 10px;font-size:12px;margin-left:6px" onclick="document.querySelector(\'input[name=insc-modelo][value=santacasa]\').checked=true;definirModeloInsc()">Usar o modelo Santa Casa</button>';
+  } else el.style.display='none';
+}
+async function processarSantaCasa(){
+  if(typeof _inscWorkbook==='undefined'||!_inscWorkbook){ alert('Carregue o arquivo primeiro.'); return; }
+  if(!window._inscColProcesso){ alert('O modelo Santa Casa precisa da coluna CONCURSO no relatório geral.'); return; }
+  const procs=(window._inscProcessos||[]).filter(p=>window._inscProcessosSel&&window._inscProcessosSel.has(p));
+  if(!procs.length){ alert('Selecione ao menos um processo antes de processar.'); return; }
+  const btn=event?.target; if(btn){ btn.disabled=true; btn.textContent='Processando...'; }
+  const prev=document.getElementById('insc-preview-content'); prev.innerHTML='<div style="font-size:13px;color:#41506b">Montando as planilhas…</div>';
+  const chk=id=>!!document.getElementById(id)?.checked;
+  carregarSheetJS(()=>{ carregarExcelJS(async()=>{
+    try{
+      const {wb,resumo,avisos}=scProcessar({procs,prouni:chk('sc-prouni'),afirmativas:chk('sc-afirm'),especial:chk('sc-esp'),bonificacao:chk('sc-bonif'),publicacao:chk('sc-pub')});
+      const buf=await wb.xlsx.writeBuffer(); const nome='RESULTADO_PRELIMINAR_DAS_INSCRIÇÕES_SANTA_CASA.xlsx';
+      const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})); a.download=nome; a.click();
+      const th='style="padding:6px 10px;text-align:center;font-size:11.5px;color:#41506b;border-bottom:1px solid #e2e7ef"', td='style="padding:6px 10px;text-align:center;font-size:12.5px;border-bottom:1px solid #f0f3f7"';
+      const linhas=resumo.map(c=>`<tr><td style="padding:6px 10px;font-size:12.5px;border-bottom:1px solid #f0f3f7;text-align:left">Edital ${c.nn}</td><td ${td}>${c.total}</td><td ${td}>${c.pagos}</td><td ${td}>${c.pend}</td><td ${td}>${c.indef}</td><td ${td}>${c.prouni||'—'}</td><td ${td}>${c.afirm||'—'}</td><td ${td}>${c.espec||'—'}</td><td ${td}>${c.bonif||'—'}</td></tr>`).join('');
+      prev.innerHTML=`<div style="overflow-x:auto;margin-bottom:12px"><table style="width:100%;border-collapse:collapse"><thead><tr><th ${th} style="text-align:left;padding:6px 10px;font-size:11.5px;color:#41506b;border-bottom:1px solid #e2e7ef">Edital</th><th ${th}>Inscrições</th><th ${th}>Pagos</th><th ${th}>Pendentes</th><th ${th}>Indeferidas</th><th ${th}>PROUNI</th><th ${th}>Afirmativas</th><th ${th}>Cond. especial</th><th ${th}>Bonificação</th></tr></thead><tbody>${linhas}</tbody></table></div>`
+        +`<div style="font-size:13px;color:#2e7d52;font-weight:600">✅ Gerado: <strong>${nome}</strong> (${wb.worksheets.length} abas).</div>`
+        +avisos.map(x=>`<div style="margin-top:8px;font-size:12.5px;color:#a06c12">⚠️ ${x}</div>`).join('');
+    }catch(e){ prev.innerHTML=`<div style="color:#c0322f">Erro: ${e.message}</div>`; console.error(e); }
+    if(btn){ btn.disabled=false; btn.textContent='⚙️ Processar e baixar'; }
+  }); });
+}
+
 function processarInscricoes(){
+  if(window._inscModelo==='santacasa') return processarSantaCasa();     // modelo Santa Casa (um arquivo com todos os editais)
   if(!_inscWorkbook){alert('Carregue o arquivo primeiro.');return;}
   let procs=null;
   if(window._inscColProcesso){
