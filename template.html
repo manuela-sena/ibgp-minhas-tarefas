@@ -1386,7 +1386,7 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
             <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="sc-gerar-res" checked> Resultado preliminar das inscrições</label>
             <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="sc-gerar-aloc" checked> Planilha de alocação (por grupos)</label>
           </div>
-          <div style="font-size:12px;color:#8a9ab5;margin-bottom:12px;line-height:1.5"><strong>Alocação:</strong> Residência Médica + Especialização Médica do mesmo ano são analisadas como uma só prova. Quem tem mais de uma inscrição no <strong>mesmo grupo</strong> conta uma vez só, com a <strong>última</strong> inscrição (as outras vão para a aba RETIRADOS). Grupo 1 = todos os cargos de entrada direta; os pré-requisitos e o fellowship têm grupos por especialidade; a multiprofissional/uniprofissional não tem grupos (uma inscrição por candidato).</div>
+          <div style="font-size:12px;color:#8a9ab5;margin-bottom:12px;line-height:1.5"><strong>Grupos = "Cargos com mesma prova":</strong> Residência Médica + Especialização Médica do mesmo ano são analisadas como uma só prova. Inscrições do <strong>mesmo grupo não são canceladas</strong> por duplicidade e, na alocação, só a <strong>última</strong> inscrição do candidato conta (as outras vão para a aba RETIRADOS). Grupo 1 = todos os cargos de entrada direta; pré-requisitos e fellowship têm grupos por especialidade. Fora do grupo, a regra de sempre continua: a mesma pessoa no mesmo horário de prova fica só com a inscrição mais recente (na multiprofissional/uniprofissional vale uma inscrição só).</div>
           <div style="font-size:12.5px;font-weight:600;color:#1f2a3d;margin-bottom:6px">Abas do resultado</div>
           <div style="display:flex;flex-wrap:wrap;gap:8px 24px;font-size:13px">
             <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="sc-prouni" checked> Cotista PROUNI/SISU</label>
@@ -6019,7 +6019,7 @@ async function _processarInscricoesUm(procs,sc){
           });
         });
 
-        if(sc) scRegrasAlocacao(todos,retirar,STATUS_ATIVOS,avisosCodigos);      // Santa Casa: grupos de mesma prova (só a última inscrição conta)
+        if(sc){ const rr=scRegras(todos,STATUS_ATIVOS,avisosCodigos); rr.cancelar.forEach(i=>cancelar.add(i)); rr.retirar.forEach(i=>retirar.add(i)); }      // Santa Casa: grupos = cargos com mesma prova
 
         // Aplicar cancelamentos (só regra 1 muda o status)
         todos.forEach(r=>{if(cancelar.has(r['INSCRIÇÃO']?.toString())) r['STATUS']='Cancelada';});
@@ -6309,7 +6309,7 @@ async function _processarInscricoesUm(procs,sc){
         if(sc){                                               // Santa Casa: devolve só a alocação + o resumo por prova/grupo
           const stat={}; todos.forEach(r=>{ if(!r._unid) return; const k=r._unid+'|'+(r['GRUPO']||'—'); const o=stat[k]||(stat[k]={unid:r._unid,grupo:r['GRUPO']||'—',aloc:0,ret:0});
             if(alocSet.has(r)) o.aloc++; else if(retirar.has(String(r['INSCRIÇÃO']))) o.ret++; });
-          return {bufAloc, sc:{aloc:aloc.length, retirados:retirar.size, stat:Object.values(stat), avisos:avisosCodigos.slice()}};
+          return {bufAloc, sc:{aloc:aloc.length, retirados:retirar.size, cancelados:cancelar.size, stat:Object.values(stat), avisos:avisosCodigos.slice()}};
         }
         const porEdital=[], resultados=[];
         for(const ed of editais){
@@ -6505,34 +6505,42 @@ function scGrupoTxt(tipo,cargo){
   if(tipo==='MULTI'){ const c=scCargoBase(cargo).replace(/^\d+\s*\/?\s*\d*\s*-\s*/,''); const m=c.match(/^([^-]+)/); return m?m[1].trim().toUpperCase():''; }   // multiprofissional: só informativo (a profissão)
   return '';
 }
-// Alocação: quem tem mais de uma inscrição no MESMO grupo faz a mesma prova → conta uma vez só, com a inscrição mais recente.
-function scRegrasAlocacao(todos,retirar,ATIVOS,avisos){
+// O grupo funciona como "Cargos com mesma prova": (1) inscrições do mesmo grupo NÃO são canceladas por duplicidade no mesmo horário;
+// (2) na alocação só a ÚLTIMA inscrição do candidato no grupo conta (as outras vão para RETIRADOS, status mantido).
+// Fora do grupo, a regra de sempre continua: mesma pessoa no mesmo horário de prova → cancela as anteriores e fica a mais recente.
+function scRegras(todos,ATIVOS,avisos){
   const col=window._inscColProcesso||'CONCURSO', semGrupo=new Set();
   todos.forEach(r=>{
     const proc=String(r[col]||''), tipo=scTipoProcesso(proc), ed=scEdital(proc);
     r._tipo=tipo; r._unid=(tipo==='MEDICA')?`${ed.ano}|MEDICA`:`${String(ed.num).padStart(3,'0')}/${ed.ano}|${tipo}`;   // Residência + Especialização Médica = analisadas juntas
     r._g=scGrupoNum(tipo,r['CARGO']); r['GRUPO']=scGrupoTxt(tipo,r['CARGO']);
+    if(r._dt===undefined) r._dt=new Date(r['DATA INSCRIÇÃO']||r['DATA INSCRICAO']||0).getTime()||0;
     if(!r._g&&(tipo==='MEDICA'||tipo==='FELLOW')) semGrupo.add(scCargoBase(r['CARGO']));
   });
   const ativo=r=>ATIVOS.includes(String(r['STATUS']||'').toLowerCase()), cpfDe=r=>String(r['CPF']||'').replace(/\D/g,'');
-  const grupos={}; let paresMulti=0;
-  todos.filter(r=>ativo(r)&&r._g).forEach(r=>{ const k=`${r._unid}__${r._g}__${cpfDe(r)}`; (grupos[k]=grupos[k]||[]).push(r); });
-  let candidatosComMais=0;
-  Object.values(grupos).forEach(arr=>{
-    if(arr.length<2) return; candidatosComMais++;
-    arr.sort((a,b)=>(a._dt-b._dt)||((parseInt(a['INSCRIÇÃO'],10)||0)-(parseInt(b['INSCRIÇÃO'],10)||0)));
-    arr.slice(0,-1).forEach(r=>retirar.add(String(r['INSCRIÇÃO'])));                    // fica a ÚLTIMA inscrição
+  const cod=r=>String(r['CÓDIGO']||r['CODIGO']||'').trim(), turno=r=>String(r['DATA REALIZAÇÃO PROVA']||r['DATA PROVA']||'').trim();
+  const ordem=(a,b)=>(a._dt-b._dt)||((parseInt(a['INSCRIÇÃO'],10)||0)-(parseInt(b['INSCRIÇÃO'],10)||0));
+  const cancelar=new Set(), retirar=new Set(), causa={repetido:0,multi:0,outros:0};
+  // Regra 1: mesma pessoa + mesmo horário de prova → cancela as anteriores (exceto cargos diferentes do MESMO grupo)
+  const porTurno={}; todos.filter(ativo).forEach(r=>{ const k=cpfDe(r)+'__'+turno(r); (porTurno[k]=porTurno[k]||[]).push(r); });
+  Object.values(porTurno).forEach(grp=>{
+    if(grp.length<2) return; grp.sort(ordem);
+    const cods=grp.map(cod), distintos=new Set(cods).size===cods.length, chaves=grp.map(r=>r._g?`${r._unid}|${r._g}`:null);
+    const mesmoGrupo=chaves.every(c=>c!==null)&&new Set(chaves).size===1;
+    if(distintos&&mesmoGrupo) return;                                                    // mesma prova de propósito: quem cuida é a regra 2
+    const todosMulti=grp.every(r=>r._tipo==='MULTI');
+    grp.slice(0,-1).forEach(r=>{ cancelar.add(String(r['INSCRIÇÃO'])); if(mesmoGrupo) causa.repetido++; else if(todosMulti) causa.multi++; else causa.outros++; });
   });
-  // multiprofissional/uniprofissional: só pode haver uma inscrição por candidato — apenas avisa se houver mais
-  const multi={}; todos.filter(r=>ativo(r)&&r._tipo==='MULTI').forEach(r=>{ const k=r._unid+'__'+cpfDe(r); multi[k]=(multi[k]||0)+1; });
-  const multiRep=Object.values(multi).filter(n=>n>1).length;
-  if(multiRep) avisos.push(`${multiRep} candidato(s) da Residência Multiprofissional/Uniprofissional têm mais de uma inscrição ativa (o edital permite uma só): todas foram mantidas na alocação; confira.`);
-  if(semGrupo.size) avisos.push(`Cargos sem grupo definido (ficam fora da regra de "uma inscrição por grupo"): ${[...semGrupo].join('; ')}.`);
-  // conflito: mesma pessoa em grupos diferentes no mesmo horário de prova (não consegue fazer as duas)
-  const hor={}; todos.filter(r=>ativo(r)&&r._g&&!retirar.has(String(r['INSCRIÇÃO']))).forEach(r=>{ const k=cpfDe(r)+'__'+r._unid.split('|')[0]+'__'+String(r['DATA REALIZAÇÃO PROVA']); (hor[k]=hor[k]||new Set()).add(r._g); });
-  const conf=Object.values(hor).filter(s=>s.size>1).length;
-  if(conf) avisos.push(`${conf} candidato(s) estão em grupos diferentes no MESMO horário de prova (não conseguem fazer as duas provas); nenhum foi retirado, confira.`);
-  return {candidatosComMais};
+  // Regra 2: mesmo grupo (mesma prova) → só a última inscrição conta na alocação
+  const grupos={};
+  todos.filter(r=>ativo(r)&&r._g&&!cancelar.has(String(r['INSCRIÇÃO']))).forEach(r=>{ const k=`${r._unid}__${r._g}__${cpfDe(r)}`; (grupos[k]=grupos[k]||[]).push(r); });
+  Object.values(grupos).forEach(arr=>{ if(arr.length<2) return; arr.sort(ordem); arr.slice(0,-1).forEach(r=>retirar.add(String(r['INSCRIÇÃO']))); });
+  if(cancelar.size){
+    const partes=[]; if(causa.repetido) partes.push(`${causa.repetido} por cargo repetido no mesmo grupo`); if(causa.multi) partes.push(`${causa.multi} na Residência Multiprofissional/Uniprofissional (só vale uma inscrição)`); if(causa.outros) partes.push(`${causa.outros} com a mesma pessoa em grupos/editais diferentes no mesmo horário de prova`);
+    avisos.push(`${cancelar.size} inscrição(ões) canceladas por duplicidade no mesmo horário de prova (${partes.join('; ')}); ficou a mais recente.`);
+  }
+  if(semGrupo.size) avisos.push(`Cargos sem grupo definido (ficam fora da regra de "mesma prova"): ${[...semGrupo].join('; ')}.`);
+  return {cancelar,retirar};
 }
 
 function scMontarAba(wb,nomeAba,spec,titulo,linhas,publicacao){
@@ -6576,6 +6584,9 @@ function scProcessar(opts){
   const col=window._inscColProcesso||'CONCURSO';
   const procs=opts.procs;
   const avisos=[], resumo=[], up=scIndiceUploads();
+  const selec=todos.filter(r=>procs.includes(String(r[col]||'').trim()));           // as regras olham todos os editais escolhidos juntos
+  const regras=scRegras(selec,['pago','deferida','deferido'],avisos);
+  selec.forEach(r=>{ if(regras.cancelar.has(String(r['INSCRIÇÃO']))) r['STATUS']='Cancelada'; });
   const temUploads=!!(_inscUploadsRows&&_inscUploadsRows.length);
   if(!temUploads) avisos.push('O Relatório de Uploads não foi carregado: as colunas de link (BAIXAR/LINK) ficam em branco e não dá para saber quem enviou o PROVAB/PRMFC (a aba BONIFICAÇÃO sai vazia).');
   // um bloco por processo, em ordem de número do edital
@@ -6710,7 +6721,7 @@ async function processarSantaCasa(){
       }
       if(alocInfo){
         const linhas=alocInfo.stat.sort((a,b)=>String(a.unid+a.grupo).localeCompare(String(b.unid+b.grupo))).map(x=>`<tr><td ${tdl}>${scRotuloUnidade(x.unid)}</td><td ${td}>${x.grupo}</td><td ${td}>${x.aloc}</td><td ${td}>${x.ret||'—'}</td></tr>`).join('');
-        html+=`<div style="font-size:12.5px;font-weight:600;color:#1f2a3d;margin:2px 0 6px">Alocação: <span style="color:#2e7d52">${alocInfo.aloc} candidatos alocados</span> · ${alocInfo.retirados} inscrições retiradas (mesmo grupo, só a última conta)</div><div style="overflow-x:auto;margin-bottom:14px"><table style="width:100%;border-collapse:collapse"><thead><tr><th ${th} style="text-align:left;padding:6px 10px;font-size:11.5px;color:#41506b;border-bottom:1px solid #e2e7ef">Prova</th><th ${th}>Grupo</th><th ${th}>Alocados</th><th ${th}>Retirados</th></tr></thead><tbody>${linhas}</tbody></table></div>`;
+        html+=`<div style="font-size:12.5px;font-weight:600;color:#1f2a3d;margin:2px 0 6px">Alocação: <span style="color:#2e7d52">${alocInfo.aloc} candidatos alocados</span> · ${alocInfo.retirados} inscrições retiradas (mesmo grupo, só a última conta)${alocInfo.cancelados?` · ${alocInfo.cancelados} canceladas por duplicidade`:''}</div><div style="overflow-x:auto;margin-bottom:14px"><table style="width:100%;border-collapse:collapse"><thead><tr><th ${th} style="text-align:left;padding:6px 10px;font-size:11.5px;color:#41506b;border-bottom:1px solid #e2e7ef">Prova</th><th ${th}>Grupo</th><th ${th}>Alocados</th><th ${th}>Retirados</th></tr></thead><tbody>${linhas}</tbody></table></div>`;
       }
       html+=`<div style="font-size:13px;color:#2e7d52;font-weight:600">✅ Gerado${arquivos.length>1?'s':''}: ${arquivos.map(a=>'<strong>'+a.nome+'</strong>').join(' e ')}${abas?` (resultado com ${abas} abas)`:''}.</div>`
         +avisos.map(x=>`<div style="margin-top:8px;font-size:12.5px;color:#a06c12">⚠️ ${x}</div>`).join('');
