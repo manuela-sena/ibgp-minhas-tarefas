@@ -1386,7 +1386,7 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
             <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="sc-gerar-res" checked> Resultado preliminar das inscrições</label>
             <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="sc-gerar-aloc" checked> Planilha de alocação (por grupos)</label>
           </div>
-          <div style="font-size:12px;color:#8a9ab5;margin-bottom:12px;line-height:1.5"><strong>Grupos = "Cargos com mesma prova":</strong> Residência Médica + Especialização Médica do mesmo ano são analisadas como uma só prova. Inscrições do <strong>mesmo grupo nunca são canceladas</strong> (nem com cargo repetido) e, na alocação, só a <strong>última</strong> inscrição do candidato conta (as outras vão para a aba RETIRADOS). Grupo 1 = todos os cargos de entrada direta; pré-requisitos e fellowship têm grupos por especialidade. Fora do grupo, a regra de sempre continua: a mesma pessoa no mesmo horário de prova fica só com a inscrição mais recente (na multiprofissional/uniprofissional vale uma inscrição só).</div>
+          <div style="font-size:12px;color:#8a9ab5;margin-bottom:12px;line-height:1.5"><strong>Grupos = "Cargos com mesma prova":</strong> Residência Médica + Especialização Médica do mesmo ano são analisadas como uma só prova. Em cargos <strong>diferentes do mesmo grupo</strong> ninguém é cancelado (só vale a última inscrição) e, na alocação, só a <strong>última</strong> inscrição do candidato conta (as outras vão para a aba RETIRADOS). Grupo 1 = todos os cargos de entrada direta; pré-requisitos e fellowship têm grupos por especialidade. <strong>Cancela-se a inscrição repetida no mesmo cargo</strong> (fica a mais recente) e, fora do grupo, a mesma pessoa no mesmo horário de prova fica só com a mais recente (na multiprofissional/uniprofissional vale uma inscrição só).</div>
           <div style="font-size:12.5px;font-weight:600;color:#1f2a3d;margin-bottom:6px">Abas do resultado</div>
           <div style="display:flex;flex-wrap:wrap;gap:8px 24px;font-size:13px">
             <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="sc-prouni" checked> Cotista PROUNI/SISU</label>
@@ -6525,13 +6525,18 @@ function scRegras(todos,ATIVOS,avisos){
   const cod=r=>String(r['CÓDIGO']||r['CODIGO']||'').trim(), turno=r=>String(r['DATA REALIZAÇÃO PROVA']||r['DATA PROVA']||'').trim();
   const ordem=(a,b)=>(a._dt-b._dt)||((parseInt(a['INSCRIÇÃO'],10)||0)-(parseInt(b['INSCRIÇÃO'],10)||0));
   const cancelar=new Set(), retirar=new Set(), causa={repetido:0,multi:0,outros:0};
-  // Regra 1: mesma pessoa + mesmo horário de prova → cancela as anteriores (exceto quando todas são do MESMO grupo)
+  // Regra 1: mesma pessoa + mesmo horário de prova → cancela as anteriores. No MESMO grupo só cancela a inscrição repetida no mesmo cargo.
   const porTurno={}; todos.filter(ativo).forEach(r=>{ const k=cpfDe(r)+'__'+turno(r); (porTurno[k]=porTurno[k]||[]).push(r); });
   Object.values(porTurno).forEach(grp=>{
     if(grp.length<2) return; grp.sort(ordem);
     const cods=grp.map(cod), distintos=new Set(cods).size===cods.length, chaves=grp.map(r=>r._g?`${r._unid}|${r._g}`:null);
     const mesmoGrupo=chaves.every(c=>c!==null)&&new Set(chaves).size===1;
-    if(mesmoGrupo) return;                                                               // mesmo grupo = mesma prova: NUNCA cancela (nem com cargo repetido); quem cuida é a regra 2
+    if(mesmoGrupo){                                                                      // mesmo grupo = mesma prova: cargos DIFERENTES não cancelam (a regra 2 só tira da alocação);
+      const porCargo={};                                                                 // só cancela a inscrição REPETIDA NO MESMO CARGO (fica a mais recente)
+      grp.forEach(r=>{ const k=String(r[col]||'').trim()+'|'+scSemAcento(scCargoBase(r['CARGO'])); (porCargo[k]=porCargo[k]||[]).push(r); });
+      Object.values(porCargo).forEach(l=>{ if(l.length>1){ l.sort(ordem); l.slice(0,-1).forEach(r=>{ cancelar.add(String(r['INSCRIÇÃO'])); causa.repetido++; }); } });
+      return;
+    }
     const todosMulti=grp.every(r=>r._tipo==='MULTI');
     grp.slice(0,-1).forEach(r=>{ cancelar.add(String(r['INSCRIÇÃO'])); if(todosMulti) causa.multi++; else causa.outros++; });
   });
@@ -6540,7 +6545,7 @@ function scRegras(todos,ATIVOS,avisos){
   todos.filter(r=>ativo(r)&&r._g&&!cancelar.has(String(r['INSCRIÇÃO']))).forEach(r=>{ const k=`${r._unid}__${r._g}__${cpfDe(r)}`; (grupos[k]=grupos[k]||[]).push(r); });
   Object.values(grupos).forEach(arr=>{ if(arr.length<2) return; arr.sort(ordem); arr.slice(0,-1).forEach(r=>retirar.add(String(r['INSCRIÇÃO']))); });
   if(cancelar.size){
-    const partes=[]; if(causa.multi) partes.push(`${causa.multi} na Residência Multiprofissional/Uniprofissional (só vale uma inscrição)`); if(causa.outros) partes.push(`${causa.outros} com a mesma pessoa em grupos/editais diferentes no mesmo horário de prova`);
+    const partes=[]; if(causa.repetido) partes.push(`${causa.repetido} por inscrição repetida no mesmo cargo`); if(causa.multi) partes.push(`${causa.multi} na Residência Multiprofissional/Uniprofissional (só vale uma inscrição)`); if(causa.outros) partes.push(`${causa.outros} com a mesma pessoa em grupos/editais diferentes no mesmo horário de prova`);
     avisos.push(`${cancelar.size} inscrição(ões) canceladas por duplicidade no mesmo horário de prova (${partes.join('; ')}); ficou a mais recente.`);
   }
   if(semGrupo.size) avisos.push(`Cargos sem grupo definido (ficam fora da regra de "mesma prova"): ${[...semGrupo].join('; ')}.`);
