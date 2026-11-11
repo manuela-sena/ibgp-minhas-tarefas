@@ -1,11 +1,72 @@
 {
   "token": "ESC_MWC4E29B_C6WZ",
-  "criadoEm": "2026-11-11T12:53:33.551Z",
+  "enviadoEm": "2026-11-11T13:00:09.608Z",
+  "protocolo": "ESC_MWC4E29B_C6WZ_1794402009608",
   "concurso": {
     "concurso": "GCM NOVA LIMA - EDITAL Nº 01/2024 - CONCURSO PÚBLICO",
     "municipio": "NOVA LIMA/MG",
     "dataProva": "12/11/2026",
     "escola": "Centro Universitário Metodista Izabela Hendrix",
     "idEscola": "ESC_MWC4E29B_C6WZ"
-  }
+  },
+  "instituicao": {
+    "nome": "Centro Universitário Metodista Izabela Hendrix",
+    "cnpj": "",
+    "razao": "",
+    "endereco": "RUA GONZALES PECOTCHE",
+    "numero": "300",
+    "complemento": "",
+    "bairro": "VILA DA SERRA",
+    "cidade": "NOVA LIMA",
+    "uf": "MG",
+    "cep": "",
+    "responsavel": {
+      "nome": "XXX",
+      "cargo": "",
+      "email": "concursos@ibgp.org.br",
+      "tel": "(31) 99222-1465"
+    },
+    "diretor": {
+      "nome": "",
+      "email": ""
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": false,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "1",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "1",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA CURSO DE FORMAÇÃO",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    }
+  ]
 }
