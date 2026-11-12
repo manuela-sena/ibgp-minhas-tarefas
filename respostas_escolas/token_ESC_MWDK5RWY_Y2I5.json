@@ -1,11 +1,322 @@
 {
   "token": "ESC_MWDK5RWY_Y2I5",
-  "criadoEm": "2026-11-12T13:02:46.930Z",
+  "enviadoEm": "2026-11-12T14:19:26.626Z",
+  "protocolo": "ESC_MWDK5RWY_Y2I5_1794493166626",
   "concurso": {
     "concurso": "SANTA CASA BH - RESIDÊNCIA MÉDICA - EDITAL Nº 005/2026",
     "municipio": "BELO HORIZONTE/MG",
     "dataProva": "22/11/2026",
     "escola": "UNA CRISTIANO MACHADO",
     "idEscola": "ESC_MWDK5RWY_Y2I5"
-  }
+  },
+  "instituicao": {
+    "nome": "UNA - CRISTIANO MACHADO",
+    "cnpj": "",
+    "razao": "",
+    "endereco": "AV. PASTOR ANSELMO SILVESTRE",
+    "numero": "1495",
+    "complemento": "",
+    "bairro": "DOM JOAQUIM",
+    "cidade": "BELO HORIZONTE",
+    "uf": "MG",
+    "cep": "",
+    "responsavel": {
+      "nome": "THAINA PEREIRA SILVA SOUZA",
+      "cargo": "",
+      "email": "thaina.p.souza@animaeducacao.com.br",
+      "tel": "(31) 99222-1465"
+    },
+    "diretor": {
+      "nome": "",
+      "email": ""
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": false,
+      "universitaria": true,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": false,
+      "elevador": true,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "3",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "3",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "PRÉDIO",
+      "andar": "4º ANDAR",
+      "sala": "SALA 400",
+      "capacidade": 54,
+      "turno": "TARDE",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRÉDIO",
+      "andar": "4º ANDAR",
+      "sala": "SALA 403",
+      "capacidade": 37,
+      "turno": "TARDE",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRÉDIO",
+      "andar": "4º ANDAR",
+      "sala": "SALA 408",
+      "capacidade": 50,
+      "turno": "TARDE",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRÉDIO",
+      "andar": "4º ANDAR",
+      "sala": "SALA 411",
+      "capacidade": 30,
+      "turno": "TARDE",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRÉDIO",
+      "andar": "4º ANDAR",
+      "sala": "SALA 412",
+      "capacidade": 47,
+      "turno": "TARDE",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRÉDIO",
+      "andar": "4º ANDAR",
+      "sala": "SALA 414",
+      "capacidade": 43,
+      "turno": "TARDE",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRÉDIO",
+      "andar": "4º ANDAR",
+      "sala": "SALA 415",
+      "capacidade": 34,
+      "turno": "TARDE",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRÉDIO",
+      "andar": "4º ANDAR",
+      "sala": "SALA 417",
+      "capacidade": 93,
+      "turno": "TARDE",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRÉDIO",
+      "andar": "4º ANDAR",
+      "sala": "SALA 424",
+      "capacidade": 100,
+      "turno": "TARDE",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRÉDIO",
+      "andar": "4º ANDAR",
+      "sala": "SALA 427",
+      "capacidade": 38,
+      "turno": "TARDE",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRÉDIO",
+      "andar": "4º ANDAR",
+      "sala": "SALA 428",
+      "capacidade": 110,
+      "turno": "TARDE",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRÉDIO",
+      "andar": "4º ANDAR",
+      "sala": "SALA 429",
+      "capacidade": 79,
+      "turno": "TARDE",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRÉDIO",
+      "andar": "4º ANDAR",
+      "sala": "SALA 430",
+      "capacidade": 88,
+      "turno": "TARDE",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRÉDIO",
+      "andar": "4º ANDAR",
+      "sala": "SALA 431",
+      "capacidade": 16,
+      "turno": "TARDE",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRÉDIO",
+      "andar": "4º ANDAR",
+      "sala": "SALA 432",
+      "capacidade": 55,
+      "turno": "TARDE",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRÉDIO",
+      "andar": "4º ANDAR",
+      "sala": "SALA 433",
+      "capacidade": 61,
+      "turno": "TARDE",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRÉDIO",
+      "andar": "4º ANDAR",
+      "sala": "SALA 435",
+      "capacidade": 54,
+      "turno": "TARDE",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRÉDIO",
+      "andar": "4º ANDAR",
+      "sala": "SALA 436",
+      "capacidade": 51,
+      "turno": "TARDE",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRÉDIO",
+      "andar": "4º ANDAR",
+      "sala": "SALA 437",
+      "capacidade": 47,
+      "turno": "TARDE",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRÉDIO",
+      "andar": "4º ANDAR",
+      "sala": "SALA 438",
+      "capacidade": 64,
+      "turno": "TARDE",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRÉDIO",
+      "andar": "4º ANDAR",
+      "sala": "SALA 441",
+      "capacidade": 60,
+      "turno": "TARDE",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRÉDIO",
+      "andar": "4º ANDAR",
+      "sala": "SALA 431A",
+      "capacidade": 16,
+      "turno": "TARDE",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRÉDIO",
+      "andar": "4º ANDAR",
+      "sala": "SALA 431B",
+      "capacidade": 16,
+      "turno": "TARDE",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRÉDIO",
+      "andar": "5º ANDAR",
+      "sala": "SALA 507",
+      "capacidade": 55,
+      "turno": "TARDE",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRÉDIO",
+      "andar": "5º ANDAR",
+      "sala": "SALA 509",
+      "capacidade": 45,
+      "turno": "TARDE",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRÉDIO",
+      "andar": "5º ANDAR",
+      "sala": "SALA 510",
+      "capacidade": 100,
+      "turno": "TARDE",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    }
+  ]
 }
