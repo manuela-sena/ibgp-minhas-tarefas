@@ -1,11 +1,172 @@
 {
   "token": "ESC_MWDZBZXO_P5T7",
-  "criadoEm": "2026-11-12T20:07:31.500Z",
+  "enviadoEm": "2026-11-12T20:22:02.941Z",
+  "protocolo": "ESC_MWDZBZXO_P5T7_1794514922941",
   "concurso": {
     "concurso": "CÂMARA MUNICIPAL DE CANDEIAS DO JAMARI/RO - EDITAL Nº 01/2026 - CONCURSO",
     "municipio": "CANDEIAS DO JAMARI/RO",
     "dataProva": "22/11/2026",
     "escola": "EMEF DOM JOÃO BATISTA COSTA",
     "idEscola": "ESC_MWDZBZXO_P5T7"
-  }
+  },
+  "instituicao": {
+    "nome": "LORECI CARNOSKI TEIXEIRA LARA",
+    "cnpj": "00.872.334/0001-55",
+    "razao": "CONSELHO ESCOLAR DA ESCOLA DOM JOÃO BATISTA COSTAL",
+    "endereco": "AIRTON SENNA",
+    "numero": "604",
+    "complemento": "",
+    "bairro": "UNIÃO",
+    "cidade": "CANDEIAS DO JAMARI",
+    "uf": "RO",
+    "cep": "76860-000",
+    "responsavel": {
+      "nome": "LORECI CARNOSKI TEIXEIRA LARA",
+      "cargo": "DIRETOR",
+      "email": "lory_carnoski@hotmail.com",
+      "tel": "(69) 99901-9258"
+    },
+    "diretor": {
+      "nome": "LORECI CARNOSKI TEIXEIRA LARA",
+      "email": "lory_carnoski@hotmail.com"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": false,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "05",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "05",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "1",
+      "andar": "",
+      "sala": "SALA 01",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "1",
+      "andar": "",
+      "sala": "SALA 02",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "2",
+      "andar": "",
+      "sala": "SALA 03",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "2",
+      "andar": "",
+      "sala": "SALA 04",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "3",
+      "andar": "",
+      "sala": "SALA 05",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "3",
+      "andar": "",
+      "sala": "SALA 06",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "3",
+      "andar": "",
+      "sala": "SALA 07",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "3",
+      "andar": "",
+      "sala": "SALA 8",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "3",
+      "andar": "",
+      "sala": "SALA 9",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "4",
+      "andar": "",
+      "sala": "SALA 10",
+      "capacidade": 15,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "4",
+      "andar": "",
+      "sala": "SALA 12",
+      "capacidade": 15,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    }
+  ]
 }
