@@ -10115,7 +10115,7 @@ function copiarLinkPratica(){
 
 // ── MOTOR DE ALOCAÇÃO ─────────────────────────────────────────────────
 const SALA_INDIVIDUAL = ['LEDOR','TRANSCRITOR','TRANSCRIÇÃO','SOFTWARE','SALA INDIVIDUAL','LIBRAS'];
-const MESMA_SALA_GRUPO = ['AMPLIADA','SALA AMAMENTAÇÃO','TEMPO ADICIONAL','APÓS AS 18H','APÓS 18H'];
+const MESMA_SALA_GRUPO = ['AMPLIADA','SALA AMAMENTAÇÃO','SALA PARA AMAMENTAÇÃO','TEMPO ADICIONAL','APÓS AS 18H','APÓS 18H','APÓS ÀS 18'];
 const SEM_RESTRICAO = ['CADEIRA SEPARADA','CADEIRA CANHOTO','CADEIRA PARA CANHOTO','APOIO DE PÉ','PRÓTESE AUDITIVA','BOMBA DE INSULINA'];
 const KEYWORDS_ATENDIMENTO = [...SALA_INDIVIDUAL, ...MESMA_SALA_GRUPO, ...SEM_RESTRICAO];
 
@@ -10134,10 +10134,70 @@ function itensDeJustificativa(justif){
     .filter(s=>s && s.toUpperCase()!=='NÃO' && s.toUpperCase()!=='NAO' && s!=='-');
 }
 
+// ── Condição especial: lê o arquivo de resultado. Padrão = aba "COND ESPECIAL". Santa Casa = uma aba "ESPECIAL ED Nº05", "ESPECIAL ED Nº06"…
+//    (e às vezes também "COND ESPECIAL ED Nº08"): lê TODAS. Só entram linhas com número de inscrição (ignora avisos como "NÃO HOUVE CANDIDATOS…").
+function lerCondEspecial(wbCond){
+  const semAc=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().trim();
+  let nomes=wbCond.SheetNames.filter(n=>{ const u=String(n).toUpperCase(); return (u.includes('COND')&&u.includes('ESPECIAL'))||/^ESPECIAL\b/.test(semAc(n)); });
+  if(!nomes.length) nomes=[wbCond.SheetNames[0]];
+  const out={deferidos:{},indeferidos:{},deferidosCpf:{},indeferidosCpf:{},totalSolicitantes:0,abas:nomes};
+  const soDig=v=>String(v==null?'':v).replace(/\D/g,'');
+  const maisRecente=(mapa,cpf,obj)=>{ const at=mapa[cpf]; if(!at||(parseInt(obj.insc,10)||0)>(parseInt(at.insc,10)||0)) mapa[cpf]=obj; };
+  nomes.forEach(nome=>{
+    // a aba tem uma linha de título antes do cabeçalho (range:1 pula essa linha)
+    XLSX.utils.sheet_to_json(wbCond.Sheets[nome],{defval:'',range:1}).forEach(r=>{
+      const insc=String(r['INSCRIÇÃO']||'').trim();
+      if(!/\d/.test(insc)) return;                                   // linha vazia ou aviso de texto
+      out.totalSolicitantes++;
+      const cpf=soDig(r['CPF']);
+      // A planilha "RESULTADO APÓS RECURSO" tem as colunas duplicadas: a 1ª leva (RESULTADO/ATENDIMENTO ESPECIAL/JUSTIFICATIVA) é a decisão
+      // ORIGINAL e a 2ª leva (SheetJS renomeia para RESULTADO_1/…) é a decisão FINAL, que é sempre a que vale. Sem a 2ª leva, usa a 1ª.
+      const resultadoOriginal=String(r['RESULTADO_1']??r['RESULTADO']??'').trim();
+      const resultado=resultadoOriginal.toUpperCase();
+      const atendCol=String(r['ATENDIMENTO ESPECIAL_1']??r['ATENDIMENTO ESPECIAL']??'').trim();
+      const justif=String(r['JUSTIFICATIVA_1']??r['JUSTIFICATIVA']??'').trim();
+      // Aceita deferimento total e parcial — só INDEFERIDA (e "NÃO DEFERIDA") ficam de fora.
+      if(resultado.startsWith('DEFERIDA')){
+        // O que foi de fato deferido (total ou parcial) está na JUSTIFICATIVA (itens numerados); a coluna ATENDIMENTO ESPECIAL é o que o candidato pediu.
+        const itens=itensDeJustificativa(justif);
+        const obj={insc,cpf,atendimento:itens.length?itens.join(', '):atendCol,justificativa:justif,resultado:resultadoOriginal||'Deferida'};
+        out.deferidos[insc]=obj; if(cpf) maisRecente(out.deferidosCpf,cpf,obj);
+      } else if(/INDEFERID|N[ÃA]O DEFERID/.test(resultado)){
+        const obj={insc,cpf,atendimento:atendCol,justificativa:justif,resultado:resultadoOriginal};
+        out.indeferidos[insc]=obj; if(cpf) maisRecente(out.indeferidosCpf,cpf,obj);
+      }
+    });
+  });
+  return out;
+}
+// Aplica a condição especial nos candidatos. Procura pela INSCRIÇÃO; se a inscrição que foi para a alocação não tem pedido deferido
+// (candidato com várias inscrições: só a última entra), procura pelo CPF, usando o pedido deferido mais recente dele.
+function aplicarCondEspecial(candidatos,lido){
+  const dig=v=>String(v==null?'':v).replace(/\D/g,'');
+  const r={direto:0,porCpf:0,indeferidos:0,deferidasNoArquivo:Object.keys(lido.deferidos).length,deferidasSemCandidato:0};
+  const inscC=new Set(candidatos.map(c=>String(c['INSCRIÇÃO']||'').trim())), cpfC=new Set(candidatos.map(c=>dig(c['CPF'])).filter(Boolean));
+  candidatos.forEach(c=>{
+    const insc=String(c['INSCRIÇÃO']||'').trim(), cpf=dig(c['CPF']);
+    let def=lido.deferidos[insc], viaCpf=false;
+    if(!def&&cpf&&lido.deferidosCpf[cpf]){ def=lido.deferidosCpf[cpf]; viaCpf=true; }
+    const indef=!def?(lido.indeferidos[insc]||(cpf?lido.indeferidosCpf[cpf]:null)||null):null;
+    if(def){ if(viaCpf) r.porCpf++; else r.direto++; } else if(indef) r.indeferidos++;
+    // Só quem está DEFERIDA recebe atendimento especial. Qualquer valor autodeclarado na planilha de candidatos é ignorado.
+    c['ATENDIMENTO ESPECIAL']=def?def.atendimento:'';
+    c['_justificativaEspecial']=def?def.justificativa:(indef?indef.justificativa:'');
+    c['_resultadoEspecial']=def?def.resultado:(indef?indef.resultado:'');
+    // indeferido: não recebe atendimento, mas guarda o que foi pedido para constar na aba AT ESPECIAL
+    c['_indeferidoEspecial']=!!indef;
+    c['_atendimentoSolicitado']=indef?indef.atendimento:'';
+  });
+  Object.values(lido.deferidos).forEach(d=>{ if(!inscC.has(d.insc)&&!(d.cpf&&cpfC.has(d.cpf))) r.deferidasSemCandidato++; });
+  return r;
+}
+
 function abreviarAtendimento(nome){
   const map = {
     'LEDOR':'LEDOR', 'TRANSCRITOR':'TRANSC', 'TRANSCRIÇÃO':'TRANSC', 'SOFTWARE':'SOFTWARE', 'SALA INDIVIDUAL':'IND', 'LIBRAS':'LIBRAS',
-    'AMPLIADA':'AMPL', 'SALA AMAMENTAÇÃO':'AMAMENTAÇÃO', 'TEMPO ADICIONAL':'15MIN', 'APÓS AS 18H':'18H', 'APÓS 18H':'18H',
+    'AMPLIADA':'AMPL', 'SALA AMAMENTAÇÃO':'AMAMENTAÇÃO', 'TEMPO ADICIONAL':'15MIN', 'APÓS AS 18H':'18H', 'APÓS 18H':'18H', 'APÓS ÀS 18':'18H', 'SALA PARA AMAMENTAÇÃO':'AMAMENTAÇÃO',
     'CADEIRA SEPARADA':'CAD.SEP', 'CADEIRA CANHOTO':'CANHOTO', 'CADEIRA PARA CANHOTO':'CANHOTO', 'APOIO DE PÉ':'APOIO PÉ', 'PRÓTESE AUDITIVA':'PRÓTESE AUD', 'BOMBA DE INSULINA':'INSULINA'
   };
   const key = (nome||'').toUpperCase().trim();
@@ -10269,83 +10329,23 @@ async function processarAlocacao(){
         });
 
         // ── Ler planilha de Condição Especial (aba COND ESPECIAL) — só DEFERIDA ──
-        let deferidos = {};
-        let indeferidos = {}; // só pra aba AT ESPECIAL — não recebem atendimento nenhum na alocação
-        let totalSolicitantes = 0;
+        // ── Ler planilha de Condição Especial — só DEFERIDA recebe atendimento ──
+        let condInfo = null;
         if(fileCond){
           const bufCond = await fileCond.arrayBuffer();
           const wbCond = XLSX.read(bufCond, {type:'array', cellDates:true});
-          let nomesAbas = wbCond.SheetNames.filter(n=>{
-            const u = n.toUpperCase();
-            return u.includes('COND') && u.includes('ESPECIAL');
-          });
-          // Santa Casa: o resultado tem uma aba "ESPECIAL ED Nº05", "ESPECIAL ED Nº06"… (uma por edital) — lê todas
-          if(!nomesAbas.length) nomesAbas = wbCond.SheetNames.filter(n=>/^ESPECIAL\b/.test(String(n).normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toUpperCase()));
-          if(!nomesAbas.length) nomesAbas = [wbCond.SheetNames[0]];
-          // a aba tem uma linha de título antes do cabeçalho (range:1 pula essa linha)
-          const condRows = nomesAbas.flatMap(n=>XLSX.utils.sheet_to_json(wbCond.Sheets[n], {defval:'', range:1}));
-          condRows.forEach(r=>{
-            const insc = String(r['INSCRIÇÃO']||'').trim();
-            if(!insc) return;
-            totalSolicitantes++;
-            // A planilha "RESULTADO APÓS RECURSO" tem as colunas duplicadas:
-            // a 1ª leva (RESULTADO/ATENDIMENTO ESPECIAL/JUSTIFICATIVA) é a decisão
-            // ORIGINAL (antes do recurso) e a 2ª leva (SheetJS renomeia para
-            // RESULTADO_1/ATENDIMENTO ESPECIAL_1/JUSTIFICATIVA_1, por terem o
-            // mesmo nome de coluna) é a decisão FINAL, depois do recurso — que é
-            // sempre a que vale. Se o arquivo não tiver essa 2ª leva (formato
-            // sem recurso), cai de volta pra 1ª normalmente.
-            const resultadoOriginal = String(r['RESULTADO_1'] ?? r['RESULTADO'] ?? '').trim();
-            const resultado = resultadoOriginal.toUpperCase();
-            // Aceita tanto deferimento total quanto parcial — só INDEFERIDA (e variações
-            // como "NÃO DEFERIDA") ficam de fora.
-            if(resultado.startsWith('DEFERIDA')){
-              const atendCol = String(r['ATENDIMENTO ESPECIAL_1'] ?? r['ATENDIMENTO ESPECIAL'] ?? '').trim();
-              const justif = String(r['JUSTIFICATIVA_1'] ?? r['JUSTIFICATIVA'] ?? '').trim();
-              // A coluna ATENDIMENTO ESPECIAL é sempre o que o candidato pediu
-              // (autodeclarado) — o que de fato foi deferido (total ou
-              // parcialmente) fica descrito na JUSTIFICATIVA, então é sempre
-              // ela a fonte usada. Extrai os itens numerados da própria
-              // justificativa (no texto original do parecer, não uma palavra-
-              // chave genérica). Só recorre à coluna autodeclarada se a
-              // justificativa não tiver nenhum item numerado reconhecível
-              // (pra não perder o atendimento por completo).
-              const itensJustif = itensDeJustificativa(justif);
-              deferidos[insc] = {
-                atendimento: itensJustif.length ? itensJustif.join(', ') : atendCol,
-                justificativa: justif,
-                resultado: resultadoOriginal || 'Deferida',
-              };
-            } else if(/INDEFERID|N[ÃA]O DEFERID/.test(resultado)){
-              indeferidos[insc] = {
-                atendimento: String(r['ATENDIMENTO ESPECIAL_1'] ?? r['ATENDIMENTO ESPECIAL'] ?? '').trim(),
-                justificativa: String(r['JUSTIFICATIVA_1'] ?? r['JUSTIFICATIVA'] ?? '').trim(),
-                resultado: resultadoOriginal,
-              };
-            }
-          });
+          const lido = lerCondEspecial(wbCond);
+          condInfo = aplicarCondEspecial(candidatos, lido);
+          condInfo.abas = lido.abas; condInfo.total = lido.totalSolicitantes;
         }
-
-        // ── Mesclar: só quem está DEFERIDA recebe atendimento especial.
-        //    Qualquer valor autodeclarado na planilha de candidatos é ignorado. ──
-        candidatos.forEach(c=>{
-          const insc = String(c['INSCRIÇÃO']||'').trim();
-          const def = deferidos[insc];
-          const indef = !def ? indeferidos[insc] : null;
-          c['ATENDIMENTO ESPECIAL'] = def ? def.atendimento : '';
-          c['_justificativaEspecial'] = def ? def.justificativa : (indef ? indef.justificativa : '');
-          c['_resultadoEspecial'] = def ? def.resultado : (indef ? indef.resultado : '');
-          // indeferido: não recebe atendimento (campo acima fica vazio), mas guarda o que
-          // foi pedido pra constar na aba AT ESPECIAL
-          c['_indeferidoEspecial'] = !!indef;
-          c['_atendimentoSolicitado'] = indef ? indef.atendimento : '';
-        });
 
         const resultado = executarMotorAlocacao(candidatos, enviadas);
         await gerarPlanilhaAlocacao(resultado, enviadas);
 
         const avisoCondEspecial = fileCond
-          ? ` 🧩 ${Object.keys(deferidos).length} de ${totalSolicitantes} condições especiais deferidas aplicadas`
+          ? ` 🧩 ${condInfo.direto+condInfo.porCpf} candidato(s) com atendimento especial deferido aplicado (${condInfo.deferidasNoArquivo} inscrição(ões) deferida(s) de ${condInfo.total} solicitações em ${condInfo.abas.length} aba(s))`
+            + (condInfo.porCpf ? ` · ${condInfo.porCpf} localizado(s) pelo CPF, em outra inscrição do candidato` : '')
+            + (condInfo.deferidasSemCandidato ? ` · ⚠️ ${condInfo.deferidasSemCandidato} deferida(s) sem candidato na planilha (inscrição cancelada ou fora da alocação)` : '')
           : ' ⚠️ nenhuma planilha de Condição Especial enviada — ninguém foi marcado com atendimento especial';
 
         // ── Checagem de capacidade: escolas selecionadas suportam a quantidade de candidatos? ──
