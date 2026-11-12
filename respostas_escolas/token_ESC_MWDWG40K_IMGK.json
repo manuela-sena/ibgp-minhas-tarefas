@@ -1,11 +1,92 @@
 {
   "token": "ESC_MWDWG40K_IMGK",
-  "criadoEm": "2026-11-12T18:46:44.564Z",
+  "enviadoEm": "2026-11-12T19:05:09.918Z",
+  "protocolo": "ESC_MWDWG40K_IMGK_1794510309918",
   "concurso": {
     "concurso": "CÂMARA MUNICIPAL DE CANDEIAS DO JAMARI/RO - EDITAL Nº 01/2026 - CONCURSO",
     "municipio": "CANDEIAS DO JAMARI/RO",
     "dataProva": "22/11/2026",
     "escola": "EEEF JAIME BARCESSAT",
     "idEscola": "ESC_MWDWG40K_IMGK"
-  }
+  },
+  "instituicao": {
+    "nome": "EEEF JAIME BARCESSAT",
+    "cnpj": "01.176.224/0001-11",
+    "razao": "CONSELHO ESCOLAR JAIME BARCESSAT",
+    "endereco": "RUA DOM JOAO BOSCO",
+    "numero": "20",
+    "complemento": "",
+    "bairro": "SATELITE",
+    "cidade": "CANDEIAS DO JAMARI",
+    "uf": "RO",
+    "cep": "76860-000",
+    "responsavel": {
+      "nome": "EDINEIA FERREIRA DA SILVA",
+      "cargo": "DIRETORA",
+      "email": "eeefjaimebarcessat@seduc.ro.gov.br",
+      "tel": "(69) 99920-9442"
+    },
+    "diretor": {
+      "nome": "EDINEIA FERREIRA DA SILVA",
+      "email": "sthefany_clara@hotmail.com"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": true,
+      "arcond": true,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "04",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "04",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "A",
+      "andar": "TERREO",
+      "sala": "SALA 5",
+      "capacidade": 175,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "TERREO",
+      "sala": "SALA 6",
+      "capacidade": 210,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "TERREO",
+      "sala": "SALA 01",
+      "capacidade": 120,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    }
+  ]
 }
