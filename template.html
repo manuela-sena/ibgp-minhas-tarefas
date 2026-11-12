@@ -10115,7 +10115,7 @@ function copiarLinkPratica(){
 
 // ── MOTOR DE ALOCAÇÃO ─────────────────────────────────────────────────
 const SALA_INDIVIDUAL = ['LEDOR','TRANSCRITOR','TRANSCRIÇÃO','SOFTWARE','SALA INDIVIDUAL','LIBRAS'];
-const MESMA_SALA_GRUPO = ['AMPLIADA','SALA AMAMENTAÇÃO','SALA PARA AMAMENTAÇÃO','TEMPO ADICIONAL','APÓS AS 18H','APÓS 18H','APÓS ÀS 18'];
+const MESMA_SALA_GRUPO = ['AMPLIADA','SALA AMAMENTAÇÃO','TEMPO ADICIONAL','APÓS AS 18H','APÓS 18H','APÓS ÀS 18'];
 const SEM_RESTRICAO = ['CADEIRA SEPARADA','CADEIRA CANHOTO','CADEIRA PARA CANHOTO','APOIO DE PÉ','PRÓTESE AUDITIVA','BOMBA DE INSULINA'];
 const KEYWORDS_ATENDIMENTO = [...SALA_INDIVIDUAL, ...MESMA_SALA_GRUPO, ...SEM_RESTRICAO];
 
@@ -10194,10 +10194,17 @@ function aplicarCondEspecial(candidatos,lido){
   return r;
 }
 
+// "Sala para amamentação" (Santa Casa): a candidata fica em sala NORMAL, mas precisa de uma sala para o acompanhante ficar.
+function salasAcompanhante(alocados){
+  const porEscola={};
+  (alocados||[]).forEach(a=>{ if(/SALA PARA AMAMENTA/.test(String(a['ATENDIMENTO ESPECIAL']||'').toUpperCase())){ const e=a.ESCOLA||'—'; porEscola[e]=(porEscola[e]||0)+1; } });
+  return Object.entries(porEscola).map(([escola,n])=>({escola,n}));
+}
+
 function abreviarAtendimento(nome){
   const map = {
     'LEDOR':'LEDOR', 'TRANSCRITOR':'TRANSC', 'TRANSCRIÇÃO':'TRANSC', 'SOFTWARE':'SOFTWARE', 'SALA INDIVIDUAL':'IND', 'LIBRAS':'LIBRAS',
-    'AMPLIADA':'AMPL', 'SALA AMAMENTAÇÃO':'AMAMENTAÇÃO', 'TEMPO ADICIONAL':'15MIN', 'APÓS AS 18H':'18H', 'APÓS 18H':'18H', 'APÓS ÀS 18':'18H', 'SALA PARA AMAMENTAÇÃO':'AMAMENTAÇÃO',
+    'AMPLIADA':'AMPL', 'SALA AMAMENTAÇÃO':'AMAMENTAÇÃO', 'TEMPO ADICIONAL':'15MIN', 'APÓS AS 18H':'18H', 'APÓS 18H':'18H', 'APÓS ÀS 18':'18H',
     'CADEIRA SEPARADA':'CAD.SEP', 'CADEIRA CANHOTO':'CANHOTO', 'CADEIRA PARA CANHOTO':'CANHOTO', 'APOIO DE PÉ':'APOIO PÉ', 'PRÓTESE AUDITIVA':'PRÓTESE AUD', 'BOMBA DE INSULINA':'INSULINA'
   };
   const key = (nome||'').toUpperCase().trim();
@@ -10342,11 +10349,16 @@ async function processarAlocacao(){
         const resultado = executarMotorAlocacao(candidatos, enviadas);
         await gerarPlanilhaAlocacao(resultado, enviadas);
 
+        const acomp = salasAcompanhante(resultado.alocados);
+        const avisoAcompanhante = acomp.length
+          ? ` 🍼 ${acomp.reduce((t,x)=>t+x.n,0)} candidata(s) com sala para amamentação ficam em sala normal, mas precisam de uma sala para o acompanhante: ${acomp.map(x=>x.escola+' ('+x.n+')').join('; ')}.`
+          : '';
         const avisoCondEspecial = fileCond
           ? ` 🧩 ${condInfo.direto+condInfo.porCpf} candidato(s) com atendimento especial deferido aplicado (${condInfo.deferidasNoArquivo} inscrição(ões) deferida(s) de ${condInfo.total} solicitações em ${condInfo.abas.length} aba(s))`
             + (condInfo.porCpf ? ` · ${condInfo.porCpf} localizado(s) pelo CPF, em outra inscrição do candidato` : '')
             + (condInfo.deferidasSemCandidato ? ` · ⚠️ ${condInfo.deferidasSemCandidato} deferida(s) sem candidato na planilha (inscrição cancelada ou fora da alocação)` : '')
           : ' ⚠️ nenhuma planilha de Condição Especial enviada — ninguém foi marcado com atendimento especial';
+        const avisoEspeciais = avisoCondEspecial + avisoAcompanhante;
 
         // ── Checagem de capacidade: escolas selecionadas suportam a quantidade de candidatos? ──
         // Nota: a soma bruta das salas (capacidadeTotal) é só informativa — como o motor
@@ -10370,7 +10382,7 @@ async function processarAlocacao(){
         statusEl.innerHTML = `<div style="background:${corBox};border:1px solid ${corBorda};border-radius:9px;padding:12px 16px;font-size:13px;color:${corTexto};font-weight:600">
           ${icone} Alocação gerada! ${resultado.alocados.length} de ${candidatos.length} candidatos alocados · capacidade total selecionada: ${capacidadeTotal} vaga(s)
           ${avisoCapacidade}
-          <div style="margin-top:4px;font-weight:500">${avisoCondEspecial}</div>
+          <div style="margin-top:4px;font-weight:500">${avisoEspeciais}</div>
           ${retiradosIgnorados?`<div style="margin-top:4px;font-weight:500">ℹ️ Aba RETIRADOS ignorada: ${retiradosIgnorados} candidato(s) retirado(s) por mais de uma inscrição não entram na alocação.</div>`:''}
         </div>`;
       }catch(err){
@@ -10561,6 +10573,8 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
   //      de atendimento, ex: todos que pedem prova ampliada juntos). Essas salas
   //      não podem ter nenhum candidato regular nem de outro tipo de atendimento. ──
   function chaveTipoGrupo(c){
+    // "Realização das provas após às 18 horas" (Santa Casa): tratada como a prova ampliada — todos com essa condição ficam na mesma sala
+    if(c._atendimentos.some(a=>a.toUpperCase().includes('APÓS ÀS 18'))) return 'APÓS ÀS 18';
     const tipos = c._atendimentos
       .map(a=>MESMA_SALA_GRUPO.find(k=>a.toUpperCase().includes(k)))
       .filter(Boolean);
@@ -10663,6 +10677,8 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
     return cands[0] || null;
   }
   function nomeComAbrev(c, sala, tipoSala){
+    // grupo "após às 18 horas": todos na mesma sala, então o rótulo é sempre só "18H" (mesmo para quem tem outro atendimento junto)
+    if(tipoSala!=='individual' && c._atendimentos.some(a=>a.toUpperCase().includes('APÓS ÀS 18'))) return sala.salaBase + ' - 18H';
     const keywords = tipoSala==='individual' ? SALA_INDIVIDUAL : MESMA_SALA_GRUPO;
     const abrevs = c._atendimentos.filter(a=>keywords.some(k=>a.toUpperCase().includes(k))).map(abreviarAtendimento);
     return abrevs.length ? (sala.salaBase + ' - ' + abrevs.join(', ')) : sala.salaBase;
