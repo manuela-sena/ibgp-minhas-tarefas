@@ -1,11 +1,252 @@
 {
   "token": "ESC_MWDUDZM3_OBP8",
-  "criadoEm": "2026-11-12T17:49:06.315Z",
+  "enviadoEm": "2026-11-12T18:02:25.816Z",
+  "protocolo": "ESC_MWDUDZM3_OBP8_1794506545816",
   "concurso": {
     "concurso": "VIÇOSA/MG - EDITAL Nº 01/2026 - PSS",
     "municipio": "VIÇOSA/MG",
     "dataProva": "22/11/2026",
     "escola": "CENTRO UNIVERSITÁRIO DE VIÇOSA - UNIVIÇOSA",
     "idEscola": "ESC_MWDUDZM3_OBP8"
-  }
+  },
+  "instituicao": {
+    "nome": "CENTRO UNIVERSITÁRIO DE VIÇOSA - UNIVIÇOSA",
+    "cnpj": "05.131.760/0001-70",
+    "razao": "",
+    "endereco": "AV MARIA DE PAULA SANTANA",
+    "numero": "3815",
+    "complemento": "",
+    "bairro": "SILVESTRE",
+    "cidade": "VIÇOSA",
+    "uf": "MG",
+    "cep": "36576-340",
+    "responsavel": {
+      "nome": "RENATA BOTELHO GOMES",
+      "cargo": "ALOCACAO",
+      "email": "renatabotelho@univicosa.com.br",
+      "tel": "(31) 3899-8027"
+    },
+    "diretor": {
+      "nome": "MATEUS MENDONCA VIEIRA",
+      "email": ""
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": false,
+      "universitaria": true,
+      "canhoto": true,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": false,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": false
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "0",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "0",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "BLOCO C",
+      "andar": "1 ANDAR",
+      "sala": "SALA 102",
+      "capacidade": 70,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "BO",
+      "andar": "Q",
+      "sala": "SALA 103",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "Q",
+      "sala": "SALA 104",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "Q",
+      "sala": "SALA 105",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "Q",
+      "sala": "SALA 106",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "Q",
+      "sala": "SALA 107",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "Q",
+      "sala": "SALA 108",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "Q",
+      "sala": "SALA AUDITORIO 02",
+      "capacidade": 80,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "Q",
+      "sala": "SALA AUDITORIO 03",
+      "capacidade": 80,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "Q",
+      "sala": "SALA AUDITORIO 04",
+      "capacidade": 80,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "Q",
+      "sala": "SALA 201",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "Q",
+      "sala": "SALA 202",
+      "capacidade": 70,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "Q",
+      "sala": "SALA 203",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "Q",
+      "sala": "SALA 204",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "Q",
+      "sala": "SALA 205",
+      "capacidade": 70,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "Q",
+      "sala": "SALA SALA206",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "Q",
+      "sala": "SALA 207",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "Q",
+      "sala": "SALA 208",
+      "capacidade": 70,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "1",
+      "sala": "SALA 209",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    }
+  ]
 }
