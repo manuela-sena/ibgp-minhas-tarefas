@@ -1,11 +1,332 @@
 {
   "token": "ESC_MWDK6OT8_R7AE",
-  "criadoEm": "2026-11-12T13:03:29.564Z",
+  "enviadoEm": "2026-11-12T13:56:17.790Z",
+  "protocolo": "ESC_MWDK6OT8_R7AE_1794491777790",
   "concurso": {
     "concurso": "SANTA CASA BH - RESIDÊNCIA MÉDICA - EDITAL Nº 005/2026",
     "municipio": "BELO HORIZONTE/MG",
     "dataProva": "22/11/2026",
     "escola": "UNA LINHA VERDE",
     "idEscola": "ESC_MWDK6OT8_R7AE"
-  }
+  },
+  "instituicao": {
+    "nome": "UNA - LINHA VERDE",
+    "cnpj": "",
+    "razao": "",
+    "endereco": "AV. CRISTIANO MACHADO",
+    "numero": "11157",
+    "complemento": "",
+    "bairro": "VILA SUZANA",
+    "cidade": "BELO HORIZONTE",
+    "uf": "MG",
+    "cep": "",
+    "responsavel": {
+      "nome": "THAINA PEREIRA SILVA SOUZA",
+      "cargo": "",
+      "email": "thaina.p.souza@animaeducacao.com.br",
+      "tel": "(31) 99222-1465"
+    },
+    "diretor": {
+      "nome": "",
+      "email": ""
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": false,
+      "universitaria": true,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": false,
+      "elevador": true,
+      "gerador": false,
+      "auditorio": true,
+      "arcond": true,
+      "ventilador": false
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "4",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "4",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "ANEXO",
+      "andar": "2º ANDAR",
+      "sala": "SALA 200",
+      "capacidade": 120,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "ANEXO",
+      "andar": "2º ANDAR",
+      "sala": "SALA 201",
+      "capacidade": 80,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "ANEXO",
+      "andar": "2º ANDAR",
+      "sala": "SALA 202",
+      "capacidade": 120,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "ANEXO",
+      "andar": "2º ANDAR",
+      "sala": "SALA 203",
+      "capacidade": 110,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "ANEXO",
+      "andar": "2º ANDAR",
+      "sala": "SALA 204",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "1º ANDAR",
+      "sala": "SALA 127",
+      "capacidade": 60,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "1º ANDAR",
+      "sala": "SALA 128",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "1º ANDAR",
+      "sala": "SALA 129",
+      "capacidade": 60,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "1º ANDAR",
+      "sala": "SALA 131",
+      "capacidade": 60,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "2º ANDAR",
+      "sala": "SALA 203",
+      "capacidade": 80,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "2º ANDAR",
+      "sala": "SALA 204",
+      "capacidade": 100,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "2º ANDAR",
+      "sala": "SALA 210",
+      "capacidade": 60,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "2º ANDAR",
+      "sala": "SALA 211",
+      "capacidade": 100,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "2º ANDAR",
+      "sala": "SALA 213",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "2º ANDAR",
+      "sala": "SALA 214",
+      "capacidade": 60,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "2º ANDAR",
+      "sala": "SALA 215",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "2º ANDAR",
+      "sala": "SALA 217",
+      "capacidade": 100,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "2º ANDAR",
+      "sala": "SALA 219",
+      "capacidade": 120,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "2º ANDAR",
+      "sala": "SALA 222",
+      "capacidade": 90,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "2º ANDAR",
+      "sala": "SALA 225",
+      "capacidade": 85,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "2º ANDAR",
+      "sala": "SALA 227",
+      "capacidade": 90,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "2º ANDAR",
+      "sala": "SALA 229",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "2º ANDAR",
+      "sala": "SALA 230",
+      "capacidade": 60,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "2º ANDAR",
+      "sala": "SALA 231",
+      "capacidade": 120,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "2º ANDAR",
+      "sala": "SALA 233",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "2º ANDAR",
+      "sala": "SALA 235",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "PRINCIPAL",
+      "andar": "2º ANDAR",
+      "sala": "SALA 238",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    }
+  ]
 }
