@@ -1,11 +1,82 @@
 {
   "token": "ESC_MW5B1JBX_RFPP",
-  "criadoEm": "2026-11-06T18:25:23.229Z",
+  "enviadoEm": "2026-11-12T21:02:08.380Z",
+  "protocolo": "ESC_MW5B1JBX_RFPP_1794517328381",
   "concurso": {
     "concurso": "CÂMARA MUNICIPAL DE CANDEIAS DO JAMARI/RO - EDITAL Nº 01/2026 - CONCURSO",
     "municipio": "CANDEIAS DO JAMARI/RO",
     "dataProva": "22/11/2026",
     "escola": "EEEFM TEODORO DE ASSUNCAO",
     "idEscola": "ESC_MW5B1JBX_RFPP"
-  }
+  },
+  "instituicao": {
+    "nome": "EEEFM TEODORO DE ASSUNCAO",
+    "cnpj": "00.988.847/0001-26",
+    "razao": "ESCOLA ESTADUAL DE ENSINO FUNDAMENTAL E MÉDIO TEODORO DE ASSUNÇÃO",
+    "endereco": "RUA 01",
+    "numero": "964",
+    "complemento": "",
+    "bairro": "SANTA ISABEL",
+    "cidade": "CANDEIAS DO JAMARI",
+    "uf": "RO",
+    "cep": "76860-000",
+    "responsavel": {
+      "nome": "CLEIDIENE LUNA FEITOSA",
+      "cargo": "DIRETORA",
+      "email": "dienefeitosa29@seduc.ro.gov.br",
+      "tel": "(69) 99344-8136"
+    },
+    "diretor": {
+      "nome": "CLEIDIENE LUNA FEITOSA",
+      "email": "dienefeitosa29@seduc.ro.gov.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "4",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "4",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "A",
+      "andar": "",
+      "sala": "SALA 3",
+      "capacidade": 90,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "",
+      "sala": "SALA 1",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    }
+  ]
 }
