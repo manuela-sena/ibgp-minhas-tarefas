@@ -10701,8 +10701,16 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
   function nomeComAbrev(c, sala, tipoSala){
     // grupo "após às 18 horas": todos na mesma sala, então o rótulo é sempre só "18H" (mesmo para quem tem outro atendimento junto)
     if(tipoSala!=='individual' && c._atendimentos.some(a=>a.toUpperCase().includes('APÓS ÀS 18'))) return sala.salaBase + ' - 18H';
-    const keywords = tipoSala==='individual' ? SALA_INDIVIDUAL : MESMA_SALA_GRUPO;
-    const abrevs = c._atendimentos.filter(a=>keywords.some(k=>a.toUpperCase().includes(k))).map(abreviarAtendimento);
+    let abrevs;
+    if(tipoSala==='individual'){
+      // sala individual = 1 candidato: o nome traz TODOS os atendimentos reconhecidos dele (ex.: "IND, 15MIN"), individual primeiro
+      abrevs = [];
+      [SALA_INDIVIDUAL, MESMA_SALA_GRUPO, SEM_RESTRICAO].forEach(lista=>c._atendimentos.forEach(a=>{
+        if(lista.some(k=>a.toUpperCase().includes(k))){ const ab = abreviarAtendimento(a); if(!abrevs.includes(ab)) abrevs.push(ab); }
+      }));
+    } else {
+      abrevs = c._atendimentos.filter(a=>MESMA_SALA_GRUPO.some(k=>a.toUpperCase().includes(k))).map(abreviarAtendimento);
+    }
     return abrevs.length ? (sala.salaBase + ' - ' + abrevs.join(', ')) : sala.salaBase;
   }
   function alocarUmExclusivo(c){
