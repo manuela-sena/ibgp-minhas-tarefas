@@ -10195,6 +10195,19 @@ function aplicarCondEspecial(candidatos,lido){
 }
 
 // "Sala para amamentação" (Santa Casa): a candidata fica em sala NORMAL, mas precisa de uma sala para o acompanhante ficar.
+// Resumo por turno (manhã/tarde): as mesmas salas servem aos dois turnos, então a capacidade só faz sentido POR TURNO.
+function resumoPorTurno(candidatos,resultado,escolas){
+  const lab={MANHA:'Manhã',TARDE:'Tarde'}, mapa={};
+  const get=t=>mapa[t]||(mapa[t]={turno:t,candidatos:0,alocados:0,naoAlocados:0,datas:new Set()});
+  candidatos.forEach(c=>{ const o=get(turnoAMPM(c['TURNO'])); o.candidatos++; if(c['DATA PROVA']) o.datas.add(c['DATA PROVA']); });
+  resultado.alocados.forEach(a=>{ get(turnoAMPM(a['TURNO'])).alocados++; });
+  resultado.naoAlocados.forEach(c=>{ get(turnoAMPM(c['TURNO'])).naoAlocados++; });
+  return ['MANHA','TARDE'].filter(t=>mapa[t]).map(t=>{
+    const o=mapa[t];
+    o.capacidade=(escolas||[]).reduce((acc,e)=>acc+(e.salas||[]).reduce((a,s)=>{ const ts=s.turno||'AMBOS'; return a+((ts==='AMBOS'||ts===t)?(parseInt(s.capacidade)||0):0); },0),0);   // sala AMBOS vale inteira em cada turno
+    o.label=lab[t]; o.datas=[...o.datas]; return o;
+  });
+}
 function salasAcompanhante(alocados){
   const porEscola={};
   (alocados||[]).forEach(a=>{ if(/SALA PARA AMAMENTA/.test(String(a['ATENDIMENTO ESPECIAL']||'').toUpperCase())){ const e=a.ESCOLA||'—'; porEscola[e]=(porEscola[e]||0)+1; } });
@@ -10344,6 +10357,9 @@ async function processarAlocacao(){
           const lido = lerCondEspecial(wbCond);
           condInfo = aplicarCondEspecial(candidatos, lido);
           condInfo.abas = lido.abas; condInfo.total = lido.totalSolicitantes;
+        } else {
+          // sem planilha de Condição Especial: ninguém recebe atendimento (o que vem autodeclarado na planilha de candidatos é ignorado)
+          aplicarCondEspecial(candidatos, {deferidos:{},indeferidos:{},deferidosCpf:{},indeferidosCpf:{}});
         }
 
         const resultado = executarMotorAlocacao(candidatos, enviadas);
@@ -10379,8 +10395,14 @@ async function processarAlocacao(){
             </div>`
           : '';
 
+        const nf = n=>Number(n).toLocaleString('pt-BR');
+        const linhasTurno = resumoPorTurno(candidatos, resultado, enviadas).map(t=>
+          `<div style="margin-top:3px;font-weight:500">• ${t.label}${t.datas.length&&t.datas.length<=2?' ('+t.datas.join(', ')+')':''}: ${nf(t.alocados)} de ${nf(t.candidatos)} alocados · capacidade do turno: ${nf(t.capacidade)} vaga(s)${t.naoAlocados?` · ⚠️ ${nf(t.naoAlocados)} sem sala`:''}</div>`
+            + (t.naoAlocados&&t.capacidade>=t.candidatos?`<div style="margin-top:2px;margin-left:12px;font-size:12px;font-weight:400">↳ a capacidade bruta seria suficiente, mas as salas de atendimento especial (individual, ampliada, após às 18h…) ocupam a sala inteira</div>`:'')).join('');
+
         statusEl.innerHTML = `<div style="background:${corBox};border:1px solid ${corBorda};border-radius:9px;padding:12px 16px;font-size:13px;color:${corTexto};font-weight:600">
-          ${icone} Alocação gerada! ${resultado.alocados.length} de ${candidatos.length} candidatos alocados · capacidade total selecionada: ${capacidadeTotal} vaga(s)
+          ${icone} Alocação gerada! ${resultado.alocados.length.toLocaleString('pt-BR')} de ${candidatos.length.toLocaleString('pt-BR')} candidatos alocados
+          ${linhasTurno}
           ${avisoCapacidade}
           <div style="margin-top:4px;font-weight:500">${avisoEspeciais}</div>
           ${retiradosIgnorados?`<div style="margin-top:4px;font-weight:500">ℹ️ Aba RETIRADOS ignorada: ${retiradosIgnorados} candidato(s) retirado(s) por mais de uma inscrição não entram na alocação.</div>`:''}
