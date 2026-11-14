@@ -10213,29 +10213,23 @@ function resumoPorTurno(candidatos,resultado,escolas){
     o.label=lab[t]; o.datas=[...o.datas]; return o;
   });
 }
-// O Gerador de Folhas identifica a sala pelo NOME: se o mesmo nome existe em blocos/andares diferentes da mesma escola (ex.: SALA 102 no bloco C e no H),
-// ele quebra ("too many values to unpack"). Aqui, só nas salas USADAS, o nome repetido ganha o bloco (ou o andar): "SALA 102 BLOCO C", "SALA 102 BLOCO H AMPL".
-function nomesDeSalaUnicos(alocados){
-  const porEscola={};
+// Padroniza o nome de TODAS as salas usadas com o bloco: "SALA 102 BLOCO C" (e "SALA 102 BLOCO H AMPL" quando há atendimento).
+// Motivo: o Gerador de Folhas identifica a sala pelo NOME e quebra ("too many values to unpack") se o mesmo nome existe em blocos diferentes da mesma escola.
+// Com o bloco em todas, os nomes ficam no mesmo padrão e únicos. Sem bloco (vazio, "ÚNICO"…) o nome não muda.
+function padronizarNomesDeSala(alocados){
+  const SEM_BLOCO=['','-','—','UNICO','BLOCO UNICO','N/A','NA','S/N','SEM BLOCO','PRINCIPAL'];
+  const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/\s+/g,' ').trim();
+  const rotuloBloco=b=>{ const t=String(b||'').replace(/\s+/g,' ').trim(); if(SEM_BLOCO.includes(norm(t))) return ''; return /^[A-Za-z0-9]{1,2}$/.test(t) ? 'BLOCO '+t.toUpperCase() : t; };
   alocados.forEach(a=>{
-    const esc=a.ESCOLA||'', base=a._salaBase||a.SALA; const nomes=(porEscola[esc]=porEscola[esc]||{}); const m=(nomes[base]=nomes[base]||new Map());
-    m.set(a.ANDAR+'|'+a.BLOCO,{andar:a.ANDAR,bloco:a.BLOCO});
+    const base=String(a._salaBase||a.SALA).replace(/\s+/g,' ').trim(), bl=rotuloBloco(a.BLOCO);
+    a._salaOriginal=base; a._salaBase=(bl && !norm(base).includes(norm(bl))) ? base+' '+bl : base;
   });
-  const troca={}, repetidos=[];
-  Object.entries(porEscola).forEach(([esc,nomes])=>Object.entries(nomes).forEach(([base,m])=>{
-    if(m.size<2) return;
-    const combos=[...m.values()], blocos=new Set(combos.map(c=>c.bloco)), andares=new Set(combos.map(c=>c.andar));
-    combos.forEach(c=>{
-      const suf = blocos.size===combos.length ? c.bloco : (andares.size===combos.length ? c.andar : (c.bloco+' '+c.andar));
-      troca[esc+'|'+base+'|'+c.andar+'|'+c.bloco] = (base+' '+suf).replace(/\s+/g,' ').trim();
-    });
-    repetidos.push(base);
-  }));
-  alocados.forEach(a=>{
-    const novo=troca[(a.ESCOLA||'')+'|'+(a._salaBase||a.SALA)+'|'+a.ANDAR+'|'+a.BLOCO];
-    if(novo){ a._salaBase=novo; a.SALA=novo+(a._sufixoSala?' '+a._sufixoSala:''); }
-  });
-  return [...new Set(repetidos)];
+  // se, mesmo com o bloco, o nome ainda se repete em andares diferentes da mesma escola, acrescenta o andar
+  const por={}; alocados.forEach(a=>{ const k=(a.ESCOLA||'')+'|'+a._salaBase; (por[k]=por[k]||new Set()).add(a.ANDAR); });
+  const comAndar=new Set();
+  alocados.forEach(a=>{ const k=(a.ESCOLA||'')+'|'+a._salaBase; if(por[k].size>1){ a._salaBase=a._salaBase+' '+String(a.ANDAR||'').trim(); comAndar.add(a._salaOriginal); } });
+  alocados.forEach(a=>{ a.SALA=a._salaBase+(a._sufixoSala?' '+a._sufixoSala:''); });
+  return [...comAndar];
 }
 
 function abreviarAtendimento(nome){
@@ -10387,7 +10381,7 @@ async function processarAlocacao(){
         }
 
         const resultado = executarMotorAlocacao(candidatos, enviadas);
-        const salasRepetidas = nomesDeSalaUnicos(resultado.alocados);      // nome de sala repetido em blocos diferentes ganha o bloco no nome
+        const salasComAndar = padronizarNomesDeSala(resultado.alocados);      // todas as salas passam a ter o bloco no nome (padrão único)
         await gerarPlanilhaAlocacao(resultado, enviadas);
 
         const avisoCondEspecial = fileCond
@@ -10397,7 +10391,7 @@ async function processarAlocacao(){
           : ' ⚠️ nenhuma planilha de Condição Especial enviada — ninguém foi marcado com atendimento especial';
         const nomesComTraco = [...new Set(resultado.alocados.flatMap(a=>[a.ANDAR,a.BLOCO,a._salaBase].filter(v=>/\s-\s/.test(String(v||'')))))];
         const avisoTraco = nomesComTraco.length ? ` ⚠️ O Gerador de Folhas não aceita " - " dentro do nome de andar, bloco ou sala (${nomesComTraco.slice(0,4).join('; ')}${nomesComTraco.length>4?'…':''}): troque o traço por espaço no cadastro da escola antes de gerar as folhas.` : '';
-        const avisoUnicos = salasRepetidas.length ? ` ℹ️ ${salasRepetidas.length} nome(s) de sala se repetiam em blocos ou andares diferentes (${salasRepetidas.slice(0,5).join(', ')}${salasRepetidas.length>5?'…':''}) e ganharam o bloco no nome, por exemplo "${salasRepetidas[0]} BLOCO C": o Gerador de Folhas não aceita nomes de sala repetidos.` : '';
+        const avisoUnicos = salasComAndar.length ? ` ℹ️ ${salasComAndar.length} sala(s) com o mesmo nome e o mesmo bloco em andares diferentes (${salasComAndar.slice(0,5).join(', ')}${salasComAndar.length>5?'…':''}) receberam também o andar no nome.` : '';
         const avisoEspeciais = avisoCondEspecial + avisoTraco + avisoUnicos;
 
         // ── Checagem de capacidade: escolas selecionadas suportam a quantidade de candidatos? ──
