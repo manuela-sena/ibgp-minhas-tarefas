@@ -10217,7 +10217,7 @@ function resumoPorTurno(candidatos,resultado,escolas){
 // Motivo: o Gerador de Folhas identifica a sala pelo NOME e quebra ("too many values to unpack") se o mesmo nome existe em blocos diferentes da mesma escola.
 // Com o bloco em todas, os nomes ficam no mesmo padrão e únicos. Sem bloco (vazio, "ÚNICO"…) o nome não muda.
 function padronizarNomesDeSala(alocados){
-  const SEM_BLOCO=['','-','—','UNICO','BLOCO UNICO','N/A','NA','S/N','SEM BLOCO','PRINCIPAL'];
+  const SEM_BLOCO=['','-','—','UNICO','BLOCO UNICO','N/A','NA','S/N','SEM BLOCO','PRINCIPAL','BLOCO'];     // 'BLOCO' sozinho = o cadastro ficou sem a letra do bloco
   const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/\s+/g,' ').trim();
   const rotuloBloco=b=>{ const t=String(b||'').replace(/\s+/g,' ').trim(); if(SEM_BLOCO.includes(norm(t))) return ''; return /^[A-Za-z0-9]{1,2}$/.test(t) ? 'BLOCO '+t.toUpperCase() : t; };
   alocados.forEach(a=>{
