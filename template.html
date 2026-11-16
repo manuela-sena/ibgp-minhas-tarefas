@@ -10924,11 +10924,17 @@ async function gerarPlanilhaAlocacao(resultado, escolasEnviadas){
     ((parseInt(String(b.CÓDIGO||'').replace(/\D/g,''))||0) - (parseInt(String(a.CÓDIGO||'').replace(/\D/g,''))||0)) ||
     (a.CANDIDATO||'').localeCompare(b.CANDIDATO||'', 'pt-BR', {sensitivity:'base'})
   );
+  // CIDADE da DADOS = cidade da APLICAÇÃO (a da escola), e não a cidade em que o candidato mora
+  const cidadeDaEscola = {};
+  (escolasEnviadas||[]).forEach(esc=>{
+    const nomeEsc = esc.instituicao?.nome || esc.concurso?.escola || esc.token;
+    cidadeDaEscola[nomeEsc] = (esc.instituicao?.cidade || String(esc.concurso?.municipio||'').split('/')[0] || '').trim();
+  });
   const dadosAlocacao = resultado.alocados.map((a,i)=>({
     'Índice': i+1, 'INSCRIÇÃO': a['INSCRIÇÃO'], 'CANDIDATO': a['CANDIDATO'], 'CPF': a['CPF'],
     'DATA NASCIMENTO': a['DATA NASCIMENTO'], 'CONCURSO': a['CONCURSO'], 'CÓDIGO': a['CÓDIGO'], 'CARGO': a['CARGO'],
     'DATA PROVA': a['DATA PROVA'], 'TURNO': a['TURNO'], 'SALA': a['SALA'], 'ANDAR': a['ANDAR'], 'BLOCO': a['BLOCO'],
-    'ESCOLA': a['ESCOLA'], 'CIDADE': a['CIDADE'], 'ATENDIMENTO ESPECIAL': a['ATENDIMENTO ESPECIAL'],
+    'ESCOLA': a['ESCOLA'], 'CIDADE': cidadeDaEscola[a['ESCOLA']] || '', 'ATENDIMENTO ESPECIAL': a['ATENDIMENTO ESPECIAL'],
   }));
   criarAba('DADOS ALOCAÇÃO', dadosAlocacao,
     ['Índice','INSCRIÇÃO','CANDIDATO','CPF','DATA NASCIMENTO','CONCURSO','CÓDIGO','CARGO','DATA PROVA','TURNO','SALA','ANDAR','BLOCO','ESCOLA','CIDADE','ATENDIMENTO ESPECIAL']);
