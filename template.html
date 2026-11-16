@@ -558,6 +558,9 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         Agenda
       </button>
+      <button class="nav-btn" data-page="carga" onclick="goPage('carga')" style="display:none">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Carga da equipe
+      </button>
       <button class="nav-btn" data-page="planejamentos" onclick="goPage('planejamentos')">
         <svg width="16" height="16"><use href="#ico-plan"/></svg>Planejamentos
       </button>
@@ -737,6 +740,16 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- ══ CARGA DA EQUIPE ═════════════════════ -->
+    <div id="page-carga" class="page">
+      <div class="page-header">
+        <div class="page-title-h1">Carga da equipe</div>
+        <div class="page-sub">Quantas tarefas por dia e por semana — para ver em quais dias a equipe fica mais sobrecarregada. Análises e períodos (de recurso, inscrição, envio de documentos…) não entram.</div>
+      </div>
+      <div class="card card-pad" id="carga-controles"></div>
+      <div id="carga-conteudo"></div>
     </div>
 
     <!-- ══ TAREFAS ═════════════════════════════ -->
@@ -1671,6 +1684,7 @@ function goPage(id) {
   if(id==='planejamentos') carregarPlanejamentos();
   if(id==='indicadores') renderIndicadores();
   if(id==='agenda') initAgenda();
+  if(id==='carga') initCarga();
   if(id==='alocacao') initAlocacao();
   if(id==='avaliacao') initAvaliacao();
   if(id==='classificacao') initClassificacao();
@@ -1825,6 +1839,7 @@ function loadTarefas(){
     const w=document.getElementById('filtro-pessoa-wrap');
     if(w) w.style.display='flex';
     const bl=document.getElementById('btn-lista-equipe-wrap'); if(bl) bl.style.display='block';
+    const nc=document.querySelector('[data-page="carga"]'); if(nc) nc.style.display='';
   }
 
   applyFilters();
@@ -1847,6 +1862,160 @@ function clearFilters(){
 }
 
 let _filtered=[];
+// ── CARGA DA EQUIPE ─────────────────────────────────────────────────────────────────────────────────
+// Tarefas por dia/semana (mapa de calor) para ver onde a equipe fica sobrecarregada. Usa as mesmas regras da "Lista da equipe":
+// nunca entram análises e períodos; vencidas ficam à parte (aviso), não entram nos quadrados.
+const _CARGA_COR={Manuela:'#7B5EA7','Natália':'#2F6FDE',Lorena:'#2E8B57',Laryssa:'#D9822B',Marcela:'#B5517D',Jordan:'#0E7490',Tiago:'#8A6D00','Amílcar':'#A04040'};
+const _DSU=['SEG','TER','QUA','QUI','SEX','SÁB','DOM'];
+function _isoDia(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function _dm(d){ return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0'); }
+function _calorRGB(v,lim){
+  if(!v) return [255,255,255]; const t=Math.min(1,v/Math.max(1,lim)), a=[255,255,255], m=[255,230,153], r=[244,112,94];
+  return t<=.5 ? a.map((x,i)=>Math.round(x+(m[i]-x)*(t/.5))) : m.map((x,i)=>Math.round(x+(r[i]-x)*((t-.5)/.5)));
+}
+const _calor=(v,lim)=>'rgb('+_calorRGB(v,lim).join(',')+')';
+const _hexRGB=rgb=>'FF'+rgb.map(x=>x.toString(16).padStart(2,'0')).join('').toUpperCase();
+function cargaOpcoes(){
+  const q=id=>document.getElementById(id);
+  return {pessoas:_PESSOAS_LISTA.filter(p=>q('cg-p-'+p)?.checked), semanas:parseInt(q('cg-sem')?.value)||4, semRep:!!q('cg-rep')?.checked,
+          limP:parseInt(q('cg-limp')?.value)||8, limE:parseInt(q('cg-lime')?.value)||14};
+}
+function cargaCalcular(op){
+  const seg=new Date(TODAY); seg.setDate(seg.getDate()-((TODAY.getDay()+6)%7)); seg.setHours(0,0,0,0);
+  const nd=op.semanas*7, dias=[...Array(nd)].map((_,i)=>{ const d=new Date(seg); d.setDate(seg.getDate()+i); return d; }), fim=dias[nd-1];
+  const sel=_allTasks.filter(t=>op.pessoas.includes(t.responsavel)&&!t._isAnaliseInscricao&&!ehConsulta(t.tarefa)&&!_ehRecursoPeriodo(t.tarefa));
+  const vencidas={}; sel.filter(t=>t.dias!==null&&t.dias<0).forEach(t=>{ vencidas[t.responsavel]=(vencidas[t.responsavel]||0)+1; });
+  let ativas=sel.filter(t=>t.dias!==null&&t.dias>=0&&t.due<=fim);
+  if(op.semRep){ const vistos=new Set(); ativas=ativas.filter(t=>{ const k=[t.responsavel,_isoDia(t.due),normTitulo(t.tarefa),String(t.municipio||'').trim()].join('|'); if(vistos.has(k)) return false; vistos.add(k); return true; }); }
+  const mapa={}, lista={}; dias.forEach(d=>{ mapa[_isoDia(d)]={}; lista[_isoDia(d)]=[]; });
+  ativas.forEach(t=>{ const k=_isoDia(t.due); if(!mapa[k]) return; mapa[k][t.responsavel]=(mapa[k][t.responsavel]||0)+1; lista[k].push(t); });
+  const totDia=d=>Object.values(mapa[_isoDia(d)]).reduce((a,b)=>a+b,0), n=(d,p)=>mapa[_isoDia(d)][p]||0;
+  const semanas=[...Array(op.semanas)].map((_,w)=>{ const ds=dias.slice(w*7,w*7+7); const por={}; op.pessoas.forEach(p=>{ por[p]=ds.reduce((a,d)=>a+n(d,p),0); });
+    return {w,label:`S${w+1} · ${_dm(ds[0])} a ${_dm(ds[6])}`,curto:`${_dm(ds[0])} a ${_dm(ds[6])}`,dias:ds,por,total:ds.reduce((a,d)=>a+totDia(d),0)}; });
+  const porPessoa={}; op.pessoas.forEach(p=>{ porPessoa[p]=dias.reduce((a,d)=>a+n(d,p),0); });
+  const total=dias.reduce((a,d)=>a+totDia(d),0);
+  const diasOrd=[...dias].sort((a,b)=>(totDia(b)-totDia(a))||(a-b));
+  return {op,seg,fim,dias,mapa,lista,totDia,n,semanas,porPessoa,total,vencidas,topDias:diasOrd.slice(0,8),
+          fimDeSemana:dias.filter(d=>d.getDay()===0||d.getDay()===6).reduce((a,d)=>a+totDia(d),0),
+          repetidas:(function(){ const c={}; ativas.forEach(t=>{ const k=[t.responsavel,_isoDia(t.due),normTitulo(t.tarefa),String(t.municipio||'').trim()].join('|'); c[k]=(c[k]||0)+1; }); return Object.values(c).reduce((a,v)=>a+(v>1?v-1:0),0); })()};
+}
+function _cargaCelula(d,v,lim,iso,p,passado){
+  if(passado) return `<td style="background:#F1F3F7;color:#b8c0cf;text-align:center;font-size:12px;height:34px">—</td>`;
+  const cor=_calor(v,lim), peso=v>=lim?'#fff':'#1f2a3d';
+  return `<td onclick="cargaMostrarDia('${iso}',${p?`'${p}'`:'null'})" title="${_dm(d)} · ${v} tarefa${v===1?'':'s'}${p?' · '+p:''} — clique para ver" style="background:${cor};color:${v>=lim?'#fff':peso};text-align:center;font-weight:800;font-size:15px;height:34px;cursor:pointer;border:1px solid #fff">${v?v:'<span style="color:#c5ccd8;font-weight:500">·</span>'}</td>`;
+}
+function _cargaBloco(r,nome,p,lim){
+  const cor=p?(_CARGA_COR[p]||'#1F3A5F'):'#1F3A5F', head=_DSU.map((x,i)=>`<th style="font-size:10px;padding:5px 0;background:${i>=5?'#7C8AA5':'#4A5C7A'};color:#fff">${x}</th>`).join('');
+  let linhas='';
+  r.semanas.forEach(s=>{
+    const dts=s.dias.map((d,j)=>`<td style="text-align:center;font-size:9px;color:#8a9ab5;padding-top:4px;background:${j>=5?'#ECEEF2':'#fff'}">${_dm(d)}</td>`).join('');
+    const vals=s.dias.map(d=>{ const v=p?r.n(d,p):r.totDia(d); return _cargaCelula(d,v,lim,_isoDia(d),p,d<TODAY); }).join('');
+    const tot=p?s.por[p]:s.total;
+    linhas+=`<tr>${`<td rowspan="2" style="text-align:center;font-size:10.5px;font-weight:700;color:#1f3a5f;background:#F2F4F8;padding:2px 4px;line-height:1.25">S${s.w+1}<br><span style="font-weight:500;color:#5b6b85">${s.curto}</span></td>`}${dts}<td rowspan="2" style="text-align:center;font-size:15px;font-weight:800;color:#1f3a5f;background:#F2F4F8">${tot}</td></tr><tr>${vals}</tr>`;
+  });
+  return `<div class="card" style="overflow:hidden"><div style="background:${cor};color:#fff;padding:8px 12px;font-weight:800;font-size:13px">${_escL(nome)}</div><table style="width:100%;border-collapse:collapse;table-layout:fixed"><thead><tr><th style="width:74px;font-size:10px;padding:5px 0;background:#4A5C7A;color:#fff">SEMANA</th>${head}<th style="width:56px;font-size:9.5px;padding:5px 0;background:#4A5C7A;color:#fff">TOTAL</th></tr></thead><tbody>${linhas}</tbody></table></div>`;
+}
+function _cargaGrafico(r){
+  const nd=r.dias.length, W=Math.max(640,nd*24+60), H=230, ml=34, mb=34, mt=14, alt=H-mb-mt, maxV=Math.max(r.op.limE,...r.dias.map(d=>r.totDia(d)),1), bw=Math.max(8,(W-ml-8)/nd-4);
+  let svg=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:100%;display:block">`;
+  const passo=maxV>30?10:(maxV>16?5:2); for(let v=0;v<=maxV;v+=passo){ const y=mt+alt-(v/maxV)*alt; svg+=`<line x1="${ml}" x2="${W-4}" y1="${y}" y2="${y}" stroke="#eef1f6"/><text x="${ml-6}" y="${y+3}" font-size="9" text-anchor="end" fill="#8a9ab5">${v}</text>`; }
+  r.dias.forEach((d,i)=>{
+    const x=ml+i*((W-ml-8)/nd)+2; let y=mt+alt; const fds=d.getDay()===0||d.getDay()===6;
+    if(fds) svg+=`<rect x="${x-2}" y="${mt}" width="${bw+4}" height="${alt}" fill="#F4F5F8"/>`;
+    r.op.pessoas.forEach(p=>{ const v=r.n(d,p); if(!v) return; const h=(v/maxV)*alt; y-=h; svg+=`<rect x="${x}" y="${y}" width="${bw}" height="${h}" fill="${_CARGA_COR[p]||'#888'}"><title>${_dm(d)} · ${p}: ${v}</title></rect>`; });
+    const t=r.totDia(d); if(t) svg+=`<text x="${x+bw/2}" y="${y-3}" font-size="8.5" text-anchor="middle" fill="#41506b" font-weight="700">${t}</text>`;
+    svg+=`<text x="${x+bw/2}" y="${H-mb+12}" font-size="8" text-anchor="middle" fill="${d<TODAY?'#c5ccd8':'#5b6b85'}">${_dm(d)}</text><text x="${x+bw/2}" y="${H-mb+22}" font-size="7.5" text-anchor="middle" fill="#9aa6b8">${_DSU[(d.getDay()+6)%7].toLowerCase()}</text>`;
+  });
+  const yl=mt+alt-(r.op.limE/maxV)*alt; svg+=`<line x1="${ml}" x2="${W-4}" y1="${yl}" y2="${yl}" stroke="#E5533D" stroke-dasharray="4 3"/><text x="${W-6}" y="${yl-3}" font-size="8.5" text-anchor="end" fill="#E5533D">pesado: ${r.op.limE}</text>`;
+  return svg+'</svg>';
+}
+function cargaRender(){
+  const op=cargaOpcoes(), box=document.getElementById('carga-conteudo'); if(!box) return;
+  if(!_allTasks.length){ box.innerHTML='<div class="card card-pad" style="color:#8a9ab5">As tarefas ainda não foram carregadas.</div>'; return; }
+  if(!op.pessoas.length){ box.innerHTML='<div class="card card-pad" style="color:#8a9ab5">Marque ao menos uma pessoa.</div>'; return; }
+  const r=cargaCalcular(op); window._cargaDados=r;
+  const pico=p=>{ const d=r.dias.reduce((m,x)=>r.n(x,p)>r.n(m,p)?x:m,r.dias[0]); return {v:r.n(d,p),d}; };
+  const cards=[`<div class="card card-pad" style="border-left:5px solid #1F3A5F"><div class="kpi-lbl">Total de tarefas</div><div class="kpi-val" style="color:#1F3A5F">${r.total}</div><div class="kpi-sub">${_dm(r.seg)} a ${_dm(r.fim)} · ${op.semanas} semana${op.semanas>1?'s':''}</div></div>`]
+    .concat(op.pessoas.map(p=>{ const k=pico(p); return `<div class="card card-pad" style="border-left:5px solid ${_CARGA_COR[p]||'#888'}"><div class="kpi-lbl">${_escL(p)}</div><div class="kpi-val" style="color:${_CARGA_COR[p]||'#888'}">${r.porPessoa[p]}</div><div class="kpi-sub">pico: ${k.v} em ${_dm(k.d)}${r.vencidas[p]?` · <span style="color:#c0322f;font-weight:700">⚠️ ${r.vencidas[p]} vencida${r.vencidas[p]>1?'s':''}</span>`:''}</div></div>`; }));
+  const sw=[...r.semanas].sort((a,b)=>b.total-a.total)[0], top=r.topDias.filter(d=>r.totDia(d)>0).slice(0,4), conc=op.pessoas.length>1?[...op.pessoas].sort((a,b)=>r.porPessoa[b]-r.porPessoa[a])[0]:null;
+  const leitura=[`Semana mais cheia: <b>${sw.label}</b> com ${sw.total} tarefas.`, top.length?`Dias mais pesados: ${top.map(d=>`<b>${_dm(d)}</b> (${_DSU[(d.getDay()+6)%7].toLowerCase()}) ${r.totDia(d)}`).join(', ')}.`:'', conc?`${_escL(conc)} concentra ${Math.round(100*r.porPessoa[conc]/Math.max(1,r.total))}% das tarefas.`:'', `${r.fimDeSemana} tarefa${r.fimDeSemana===1?'':'s'} caem em sábado ou domingo.`,
+    r.repetidas&&!op.semRep?`${r.repetidas} linha${r.repetidas>1?'s':''} se repete${r.repetidas>1?'m':''} (mesma pessoa, dia, tarefa e concurso) — marque "Não contar repetidas" para ver sem elas.`:'' ].filter(Boolean);
+  const tabSem=`<table style="width:100%;border-collapse:collapse;font-size:12.5px"><thead><tr><th style="text-align:left;padding:6px 8px">Semana</th>${op.pessoas.map(p=>`<th style="padding:6px 4px;color:#fff;background:${_CARGA_COR[p]||'#888'}">${_escL(p)}</th>`).join('')}<th style="padding:6px 4px;color:#fff;background:#1F3A5F">Total</th></tr></thead><tbody>${r.semanas.map(s=>`<tr><td style="padding:6px 8px;font-weight:700;color:#1f3a5f;white-space:nowrap">${s.label}</td>${op.pessoas.map(p=>`<td style="text-align:center;padding:6px 4px;background:${_calor(s.por[p],op.limP*3)}">${s.por[p]}</td>`).join('')}<td style="text-align:center;font-weight:800;padding:6px 4px;background:${_calor(s.total,op.limE*3)}">${s.total}</td></tr>`).join('')}</tbody></table>`;
+  const tabTop=`<table style="width:100%;border-collapse:collapse;font-size:12.5px"><thead><tr><th style="padding:6px 4px">#</th><th style="padding:6px 4px;text-align:left">Dia</th>${op.pessoas.map(p=>`<th style="padding:6px 4px;color:#fff;background:${_CARGA_COR[p]||'#888'}">${_escL(p.slice(0,3))}</th>`).join('')}<th style="padding:6px 4px;color:#fff;background:#1F3A5F">Total</th></tr></thead><tbody>${r.topDias.map((d,i)=>`<tr onclick="cargaMostrarDia('${_isoDia(d)}',null)" style="cursor:pointer"><td style="text-align:center;padding:5px 4px;color:#8a9ab5">${i+1}</td><td style="padding:5px 4px;font-weight:700;color:#1f3a5f;white-space:nowrap">${_dm(d)} <span style="color:#8a9ab5;font-weight:500">${_DSU[(d.getDay()+6)%7].toLowerCase()}</span></td>${op.pessoas.map(p=>`<td style="text-align:center;padding:5px 4px;background:${_calor(r.n(d,p),op.limP)}">${r.n(d,p)}</td>`).join('')}<td style="text-align:center;font-weight:800;padding:5px 4px;background:${_calor(r.totDia(d),op.limE)}">${r.totDia(d)}</td></tr>`).join('')}</tbody></table>`;
+  const blocos=[_cargaBloco(r,'TOTAL — as selecionadas',null,op.limE)].concat(op.pessoas.map(p=>_cargaBloco(r,p.toUpperCase(),p,op.limP))).join('');
+  const legenda=op.pessoas.map(p=>`<span style="display:inline-flex;align-items:center;gap:4px;margin-right:12px"><span style="width:10px;height:10px;border-radius:2px;background:${_CARGA_COR[p]||'#888'}"></span>${_escL(p)}</span>`).join('');
+  box.innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px">${cards.join('')}</div>
+    <div class="card card-pad"><div style="font-weight:800;color:#1f3a5f;font-size:13px;margin-bottom:6px">LEITURA RÁPIDA</div>${leitura.map(x=>`<div style="font-size:13px;color:#2b3a55;margin:3px 0">• ${x}</div>`).join('')}</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px"><div class="card card-pad"><div style="font-weight:800;color:#1f3a5f;font-size:13px;margin-bottom:8px">TAREFAS POR SEMANA</div>${tabSem}</div><div class="card card-pad"><div style="font-weight:800;color:#1f3a5f;font-size:13px;margin-bottom:8px">OS 8 DIAS MAIS PESADOS <span style="font-weight:500;color:#8a9ab5;font-size:11px">(clique para ver as tarefas)</span></div>${tabTop}</div></div>
+    <div style="font-weight:800;color:#1f3a5f;font-size:13px;margin-top:4px">MAPA DE CALOR <span style="font-weight:500;color:#8a9ab5;font-size:11.5px">· quanto mais vermelho, mais tarefas no dia · clique num quadrado para ver as tarefas · pessoa: vermelho a partir de ${op.limP}, equipe: a partir de ${op.limE}</span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:14px">${blocos}</div>
+    <div class="card card-pad"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:6px"><div style="font-weight:800;color:#1f3a5f;font-size:13px">TAREFAS POR DIA</div><div style="font-size:11.5px;color:#41506b">${legenda}</div></div>${_cargaGrafico(r)}</div>
+    <div id="carga-dia"></div>`;
+  if(window._cargaDia) cargaMostrarDia(window._cargaDia.iso,window._cargaDia.p,true);
+}
+function cargaMostrarDia(iso,p,semRolar){
+  const r=window._cargaDados; if(!r) return; window._cargaDia={iso,p}; const box=document.getElementById('carga-dia'); if(!box) return;
+  const [a,m,dd]=iso.split('-').map(Number), d=new Date(a,m-1,dd), tarefas=(r.lista[iso]||[]).filter(t=>!p||t.responsavel===p).sort((x,y)=>String(x.responsavel).localeCompare(String(y.responsavel),'pt-BR')||String(x.tarefa).localeCompare(String(y.tarefa),'pt-BR'));
+  box.innerHTML=`<div class="card card-pad" style="border:2px solid #1F3A5F"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><div style="font-weight:800;color:#1f3a5f;font-size:14px">${_dm(d)} (${_DSU[(d.getDay()+6)%7].toLowerCase()}) · ${tarefas.length} tarefa${tarefas.length===1?'':'s'}${p?' · '+_escL(p):''}</div><button class="btn-secondary" onclick="document.getElementById('carga-dia').innerHTML='';window._cargaDia=null">Fechar</button></div>${tarefas.length?`<table style="width:100%;border-collapse:collapse;margin-top:8px;font-size:12.5px"><tbody>${tarefas.map(t=>`<tr style="border-bottom:1px solid #eef1f6"><td style="padding:5px 8px;width:96px;font-weight:700;color:${_CARGA_COR[t.responsavel]||'#41506b'}">${_escL(t.responsavel)}</td><td style="padding:5px 8px">${_escL(t.tarefa)}</td><td style="padding:5px 8px;color:#41506b;width:32%">${_escL(t.municipio||'')}</td></tr>`).join('')}</tbody></table>`:'<div style="font-size:12.5px;color:#8a9ab5;margin-top:8px">Nenhuma tarefa neste dia.</div>'}</div>`;
+  if(!semRolar) box.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function initCarga(){
+  const ctl=document.getElementById('carga-controles'); if(ctl&&!ctl.dataset.ok){
+    ctl.dataset.ok='1'; const padrao=new Set(['Manuela','Natália','Lorena']);
+    ctl.innerHTML=`<div style="display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px">${_PESSOAS_LISTA.map(p=>`<label style="display:flex;align-items:center;gap:5px"><input type="checkbox" id="cg-p-${p}" ${padrao.has(p)?'checked':''} onchange="cargaRender()"> <span style="font-weight:700;color:${_CARGA_COR[p]||'#41506b'}">${p}</span></label>`).join('')}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:10px;font-size:13px;align-items:center">
+        <label>Período: <select id="cg-sem" onchange="cargaRender()" class="filter-select" style="display:inline-block;width:auto">${[2,3,4,6,8].map(n=>`<option value="${n}" ${n===4?'selected':''}>${n} semanas (a partir de segunda)</option>`).join('')}</select></label>
+        <label style="display:flex;align-items:center;gap:5px"><input type="checkbox" id="cg-rep" onchange="cargaRender()"> Não contar repetidas</label>
+        <label title="Dia em que a cor chega ao vermelho (uma pessoa)">Dia pesado — pessoa a partir de <input id="cg-limp" type="number" min="1" value="8" oninput="cargaRender()" style="width:64px;padding:6px 8px;border:1px solid #d9dee7;border-radius:8px;text-align:center;font-size:13px"></label>
+        <label title="Dia em que a cor chega ao vermelho (equipe)">equipe a partir de <input id="cg-lime" type="number" min="1" value="14" oninput="cargaRender()" style="width:64px;padding:6px 8px;border:1px solid #d9dee7;border-radius:8px;text-align:center;font-size:13px"></label>
+        <span style="flex:1"></span><button class="btn-secondary" onclick="abrirListaEquipe()">📋 Lista da equipe</button><button class="btn-secondary" onclick="cargaBaixarExcel()">⬇️ Baixar Excel</button>
+      </div>`;
+  }
+  cargaRender();
+}
+function cargaBaixarExcel(){
+  const r=window._cargaDados; if(!r||!r.total){ alert('Nenhuma tarefa no período.'); return; }
+  carregarExcelJS(async()=>{
+    const op=r.op, wb=new ExcelJS.Workbook(), AZ='FF1F3A5F', borda={top:{style:'thin',color:{argb:'FFD9DEE7'}},left:{style:'thin',color:{argb:'FFD9DEE7'}},bottom:{style:'thin',color:{argb:'FFD9DEE7'}},right:{style:'thin',color:{argb:'FFD9DEE7'}}};
+    const corP=p=>'FF'+(_CARGA_COR[p]||'#888888').replace('#','').toUpperCase(), fnt=(o)=>Object.assign({name:'Calibri'},o), fill=a=>({type:'pattern',pattern:'solid',fgColor:{argb:a}});
+    const tit=(ws,txt,ate)=>{ ws.mergeCells(1,1,1,ate); const c=ws.getCell(1,1); c.value=txt; c.font=fnt({size:16,bold:true,color:{argb:'FFFFFFFF'}}); c.fill=fill(AZ); c.alignment={vertical:'middle',indent:1}; ws.getRow(1).height=32; };
+    const periodo=`${_dm(r.seg)}/${r.seg.getFullYear()} a ${_dm(r.fim)}/${r.fim.getFullYear()}`;
+    // Calendário
+    const wc=wb.addWorksheet('Calendário',{views:[{showGridLines:false}]}); tit(wc,`Mapa de calor da carga · ${periodo}`,19);
+    const blocos=[['TOTAL — as selecionadas',null,op.limE]].concat(op.pessoas.map(p=>[p.toUpperCase(),p,op.limP]));
+    blocos.forEach(([nome,p,lim],k)=>{
+      const c0=k%2===0?1:11; let row=4+Math.floor(k/2)*(r.semanas.length*2+4);
+      wc.mergeCells(row,c0,row,c0+8); const h=wc.getCell(row,c0); h.value=nome; h.font=fnt({bold:true,size:13,color:{argb:'FFFFFFFF'}}); h.fill=fill(p?corP(p):AZ); wc.getRow(row).height=22; row++;
+      ['Semana',..._DSU,'Total'].forEach((x,i)=>{ const c=wc.getCell(row,c0+i); c.value=x; c.font=fnt({bold:true,size:10,color:{argb:'FFFFFFFF'}}); c.fill=fill(i>=6&&i<=7?'FF7C8AA5':'FF4A5C7A'); c.alignment={horizontal:'center',vertical:'middle'}; });
+      row++;
+      r.semanas.forEach(s=>{
+        wc.mergeCells(row,c0,row+1,c0); const a=wc.getCell(row,c0); a.value=`S${s.w+1}\n${s.curto}`; a.font=fnt({bold:true,size:9.5,color:AZ?{argb:AZ}:undefined}); a.alignment={horizontal:'center',vertical:'middle',wrapText:true}; a.fill=fill('FFF2F4F8');
+        s.dias.forEach((d,j)=>{ const dc=wc.getCell(row,c0+1+j); dc.value=_dm(d); dc.font=fnt({size:9,color:{argb:'FF7C8AA5'}}); dc.alignment={horizontal:'center',vertical:'bottom'};
+          const passado=d<TODAY, v=p?r.n(d,p):r.totDia(d), cc=wc.getCell(row+1,c0+1+j); cc.value=passado?'—':(v||'·'); cc.font=fnt({bold:true,size:15,color:{argb:v>=lim&&!passado?'FFFFFFFF':'FF1F2A3D'}}); cc.alignment={horizontal:'center',vertical:'middle'}; cc.border=borda; cc.fill=fill(passado?'FFF1F3F7':_hexRGB(_calorRGB(v,lim))); });
+        wc.mergeCells(row,c0+8,row+1,c0+8); const t=wc.getCell(row,c0+8); t.value=p?s.por[p]:s.total; t.font=fnt({bold:true,size:14,color:{argb:AZ}}); t.alignment={horizontal:'center',vertical:'middle'}; t.fill=fill('FFF2F4F8'); t.border=borda;
+        wc.getRow(row).height=15; wc.getRow(row+1).height=30; row+=2; });
+    });
+    for(let i=1;i<=19;i++) wc.getColumn(i).width=i===10?3:(i===1||i===11?13:8.5);
+    // Por dia
+    const wd=wb.addWorksheet('Por dia'); tit(wd,`Tarefas por dia · ${periodo}`,op.pessoas.length+5);
+    const cab=['Semana','Data','Dia',...op.pessoas,'Total','Carga do dia']; cab.forEach((x,i)=>{ const c=wd.getCell(3,i+1); c.value=x; c.font=fnt({bold:true,color:{argb:'FFFFFFFF'}}); c.alignment={horizontal:'center',vertical:'middle'}; c.fill=fill(op.pessoas.includes(x)?corP(x):AZ); c.border=borda; });
+    r.dias.forEach((d,i)=>{ const row=4+i, t=r.totDia(d), passado=d<TODAY; const v=[`S${Math.floor(i/7)+1}`,d,_DSU[(d.getDay()+6)%7].toLowerCase(),...op.pessoas.map(p=>r.n(d,p)),t,passado?'(já passou)':(t>=op.limE?'Pesado':(t>=Math.ceil(op.limE*0.57)?'Médio':'Leve'))];
+      v.forEach((x,j)=>{ const c=wd.getCell(row,j+1); c.value=x; c.border=borda; c.alignment={horizontal:'center',vertical:'middle'}; c.font=fnt({size:11,bold:j===3+op.pessoas.length}); if(j===1) c.numFmt='dd/mm';
+        if(j>=3&&j<3+op.pessoas.length&&!passado) c.fill=fill(_hexRGB(_calorRGB(x,op.limP))); if(j===3+op.pessoas.length&&!passado) c.fill=fill(_hexRGB(_calorRGB(x,op.limE)));
+        if(j===4+op.pessoas.length&&!passado){ c.font=fnt({bold:true,color:{argb:x==='Pesado'?'FFFFFFFF':'FF1F2A3D'}}); c.fill=fill(x==='Pesado'?'FFF4705E':(x==='Médio'?'FFFFE699':'FFD5EFDD')); } });
+    });
+    [10,10,7,...op.pessoas.map(()=>11),10,14].forEach((w,i)=>wd.getColumn(i+1).width=w); wd.views=[{state:'frozen',ySplit:3}];
+    // Lista
+    const wl=wb.addWorksheet('Lista'); tit(wl,`${r.total} tarefas · ${periodo}`,6);
+    ['Semana','Data','Dia','Responsável','Tarefa','Concurso'].forEach((x,i)=>{ const c=wl.getCell(3,i+1); c.value=x; c.font=fnt({bold:true,color:{argb:'FFFFFFFF'}}); c.fill=fill(AZ); c.alignment={horizontal:'center',vertical:'middle'}; });
+    let row=4; r.dias.forEach((d,i)=>(r.lista[_isoDia(d)]||[]).slice().sort((a,b)=>op.pessoas.indexOf(a.responsavel)-op.pessoas.indexOf(b.responsavel)||String(a.tarefa).localeCompare(String(b.tarefa),'pt-BR')).forEach(t=>{
+      [`S${Math.floor(i/7)+1}`,d,_DSU[(d.getDay()+6)%7].toLowerCase(),t.responsavel,t.tarefa,String(t.municipio||'').trim()].forEach((x,j)=>{ const c=wl.getCell(row,j+1); c.value=x; c.border=borda; c.font=fnt({size:10.5,bold:j===3,color:j===3?{argb:corP(t.responsavel)}:undefined}); c.alignment={vertical:'middle',wrapText:j>=4,horizontal:j<4?'center':'left'}; if(j===1) c.numFmt='dd/mm/yyyy'; }); row++; }));
+    [9,12,7,13,80,52].forEach((w,i)=>wl.getColumn(i+1).width=w); wl.views=[{state:'frozen',ySplit:3}]; wl.autoFilter={from:{row:3,column:1},to:{row:Math.max(4,row-1),column:6}};
+    const buf=await wb.xlsx.writeBuffer(), a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+    a.download=`CARGA_DE_TAREFAS_${_dm(r.seg).replace('/','-')}_a_${_dm(r.fim).replace('/','-')}.xlsx`; a.click();
+  });
+}
+
 // ── LISTA DA EQUIPE (planejamento) ───────────────────────────────────────────────────────────────────
 // Tarefas de várias pessoas num período. Nunca entram as "só para consulta" (análises, períodos de recurso).
 const _PESSOAS_LISTA=['Manuela','Natália','Lorena','Laryssa','Marcela','Jordan','Tiago','Amílcar'];
