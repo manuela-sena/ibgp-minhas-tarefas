@@ -10997,6 +10997,7 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
     // Sala restrita por sexo só serve pro grupo inteiro se TODOS os candidatos
     // do grupo tiverem o sexo exigido por ela (senão precisa ser AMBOS).
     const grupoAceitaSala = (s)=> grp.candidatos.every(c=>salaAceitaSexo(s,c));
+    const ehGrupo = grp.tipoSala==='grupo' && qtd>1;       // mesma condição (18h, ampliada, tempo adicional, amamentação): o objetivo é ficarem JUNTOS
 
     let salaJuntos = salasEspeciais.find(s=>s.capacidadeDisponivel>=qtd && (!precisaTerreoGrp || salaEhTerrea(s.andar)) && grupoAceitaSala(s));
     if(!salaJuntos){
@@ -11024,7 +11025,7 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
       }
     }
 
-    const usarSeparados = !!planoSeparados && custoSeparados < custoJuntos;
+    const usarSeparados = !ehGrupo && !!planoSeparados && custoSeparados < custoJuntos;     // grupo: nunca espalha se cabe numa sala
 
     if(usarSeparados){
       planoSeparados.forEach(({c,s})=>{
@@ -11048,6 +11049,21 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
       return;
     }
 
+    if(ehGrupo){
+      // nenhuma sala comporta o grupo inteiro: divide no MENOR número de salas (a menor que cabe o resto; senão a maior), em vez de espalhar um por sala
+      let resto=[...grp.candidatos]; const usadas=new Set();
+      const aptas=()=>[...salasEspeciais,...salasNormais].filter(x=>!usadas.has(x)&&x.ocupantes.length===0&&x.capacidadeDisponivel>=2&&(!precisaTerreoGrp||salaEhTerrea(x.andar))&&grupoAceitaSala(x));
+      while(resto.length>1){
+        const ap=aptas(); if(!ap.length) break;
+        const cabe=ap.filter(x=>x.capacidadeDisponivel>=resto.length).sort((a,b)=>a.capacidadeDisponivel-b.capacidadeDisponivel)[0];
+        const sala=cabe||ap.sort((a,b)=>b.capacidadeDisponivel-a.capacidadeDisponivel)[0];
+        usadas.add(sala); const lote=resto.splice(0,Math.min(sala.capacidadeDisponivel,resto.length));
+        lote.forEach(c=>{ sala.ocupantes.push(c); const nome=nomeComAbrev(c,sala,grp.tipoSala);
+          alocados.push({...mapCandidato(c), SALA: nome, ANDAR: sala.andar, BLOCO: sala.bloco, ESCOLA: sala.escola, _tipoSala: grp.tipoSala, _salaEspecialUsada: true, _salaBase: sala.salaBase, _sufixoSala: nome.slice(sala.salaBase.length).trim()}); });
+        sala.capacidadeDisponivel=0;
+      }
+      grp.candidatos=resto;      // se acabaram as salas, quem sobrou vai uma por sala, como antes
+    }
     grp.candidatos.forEach(c=>{
       const s = alocarUmExclusivo(c);
       if(!s){ naoAlocados.push(c); return; }
