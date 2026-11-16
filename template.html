@@ -1217,7 +1217,8 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
             <div style="font-size:13px;font-weight:700;color:#1f2a3d;margin-bottom:4px">🎯 Gerar Alocação</div>
             <div style="font-size:12px;color:#8a9ab5;margin-bottom:12px">Envie a planilha de candidatos para distribuir automaticamente nas salas.</div>
             <div style="font-size:11.5px;color:#8a9ab5;margin-bottom:6px">1. Planilha de candidatos (ALOCAÇÃO)</div>
-            <input type="file" id="aloc-file-candidatos" accept=".xlsx" class="form-input" style="padding:6px;margin-bottom:10px;width:100%;box-sizing:border-box">
+            <input type="file" id="aloc-file-candidatos" accept=".xlsx" class="form-input" style="padding:6px;margin-bottom:10px;width:100%;box-sizing:border-box" onchange="alocLerDuracoes()">
+            <div id="aloc-duracao-wrap" style="display:none;margin-bottom:12px"></div>
             <div style="font-size:11.5px;color:#8a9ab5;margin-bottom:6px">2. Planilha de Condição Especial (aba COND ESPECIAL) — opcional, mas sem ela ninguém recebe atendimento especial</div>
             <input type="file" id="aloc-file-condespecial" accept=".xlsx" class="form-input" style="padding:6px;margin-bottom:12px;width:100%;box-sizing:border-box">
             <button class="btn-primary" style="width:100%" onclick="processarAlocacao()">
@@ -10557,6 +10558,42 @@ async function excluirEscola(token, nomeEscola){
   }
 }
 
+// ── DURAÇÃO DA PROVA (opcional): provas de durações diferentes (ex.: 2h e 3h) não dividem sala ──────────────────────
+// Marcada por GRUPO (cargos com a mesma prova têm a mesma duração) — ou por cargo, se a planilha não tiver GRUPO.
+// Se a planilha já traz a coluna "DURAÇÃO DA PROVA", ela é usada.
+function _alocProcCurto(c){ let t=String(c||'').replace(/\s+/g,' ').trim().toUpperCase(); t=t.replace(/^(PROCESSO SELETIVO( P[ÚU]BLICO)?|CONCURSO P[ÚU]BLICO)\s+(DA|DE|DO|DOS|DAS)\s+/,''); return t.split(' - ')[0].trim().slice(0,70); }
+function _alocChaveDuracao(c){ return _alocProcCurto(c['CONCURSO'])+' · '+String(c['GRUPO']||c['CARGO']||'').replace(/\s+/g,' ').trim(); }
+function _alocSalvarDuracoes(){ try{ localStorage.setItem('aloc_duracoes_v1',JSON.stringify(window._alocDuracoes||{})); }catch(e){} }
+function alocLerDuracoes(){
+  const f=document.getElementById('aloc-file-candidatos').files[0], w=document.getElementById('aloc-duracao-wrap'); if(!w) return;
+  if(!f){ w.style.display='none'; w.innerHTML=''; return; }
+  carregarSheetJSAloc(async()=>{
+    try{
+      const wb=XLSX.read(await f.arrayBuffer(),{type:'array',cellDates:true}); let rows=[];
+      wb.SheetNames.forEach(n=>{ if(/^RETIRAD/.test(String(n).normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toUpperCase())) return; rows=rows.concat(XLSX.utils.sheet_to_json(wb.Sheets[n],{defval:''})); });
+      const cands=rows.map(r=>{ const n={}; Object.keys(r).forEach(k=>{ n[k.replace(/\n/g,' ').replace(/\s+/g,' ').trim()]=r[k]; }); return n; }).filter(c=>c['INSCRIÇÃO']);
+      if(!window._alocDuracoes){ try{ window._alocDuracoes=JSON.parse(localStorage.getItem('aloc_duracoes_v1')||'{}'); }catch(e){ window._alocDuracoes={}; } }
+      if(cands.some(c=>duracaoDaProva(c)!=='')){ w.style.display='block'; w.innerHTML='<div style="font-size:12px;color:#2e7d52;background:#e4f3ea;border-radius:8px;padding:8px 10px">⏱️ A planilha já traz a coluna <b>DURAÇÃO DA PROVA</b>: ela será usada para não misturar durações diferentes na mesma sala.</div>'; return; }
+      const mapa={}; cands.forEach(c=>{ const k=_alocChaveDuracao(c); const o=mapa[k]||(mapa[k]={k,proc:_alocProcCurto(c['CONCURSO']),grupo:String(c['GRUPO']||c['CARGO']||'').replace(/\s+/g,' ').trim(),qtd:0,turnos:new Set()}); o.qtd++; try{ o.turnos.add(parseDataRealizacaoProva(c['DATA REALIZAÇÃO PROVA']).turno); }catch(e){} });
+      const itens=Object.values(mapa); window._alocDurItens=itens;
+      if(itens.length<2){ w.style.display='none'; w.innerHTML=''; return; }
+      const opcoes=['','1','1.5','2','2.5','3','3.5','4','4.5','5'], sel=(id,v,extra)=>`<select class="filter-select" ${extra||''} style="width:92px;height:28px;font-size:12px" data-k="${id}">${opcoes.map(o=>`<option value="${o}" ${String(v||'')===o?'selected':''}>${o?rotuloDuracao(o):'—'}</option>`).join('')}</select>`;
+      const procs=[...new Set(itens.map(i=>i.proc))];
+      w.style.display='block';
+      w.innerHTML=`<details style="border:1.5px solid #e2e7ef;border-radius:10px;padding:8px 12px"><summary style="cursor:pointer;font-size:12.5px;font-weight:700;color:#1f2a3d">⏱️ Duração da prova (opcional) <span id="aloc-dur-resumo" style="font-weight:500;color:#8a9ab5"></span></summary>
+        <div style="font-size:11.5px;color:#8a9ab5;margin:6px 0 8px">Marque a duração de cada prova para <b>não misturar na mesma sala</b> provas de durações diferentes (ex.: 2h e 3h). Grupos sem duração marcada também não se misturam com os marcados.</div>
+        ${procs.map(p=>{ const its=itens.filter(i=>i.proc===p); return `<div style="margin-top:8px"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;background:#F2F4F8;border-radius:7px;padding:5px 8px"><span style="font-size:12px;font-weight:700;color:#1f3a5f">${_escL(p)}</span><span style="font-size:11px;color:#5b6b85">todos deste processo: <select class="filter-select" style="width:84px;height:26px;font-size:12px" onchange="alocDurProcesso(this)" data-p="${_escL(p)}">${opcoes.map(o=>`<option value="${o}">${o?rotuloDuracao(o):'—'}</option>`).join('')}</select></span></div>
+          ${its.map(i=>`<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:3px 8px;font-size:12px;border-bottom:1px solid #eef1f6"><span>${_escL(i.grupo)} <span style="color:#8a9ab5">· ${i.qtd} cand. · ${[...i.turnos].join('/')}</span></span>${sel(_escL(i.k),window._alocDuracoes[i.k],'onchange="alocDurItem(this)"')}</div>`).join('')}</div>`; }).join('')}
+        </details>`;
+      alocDurResumo();
+    }catch(e){ w.style.display='none'; }
+  });
+}
+function alocDurItem(el){ const k=el.dataset.k; if(el.value) window._alocDuracoes[k]=el.value; else delete window._alocDuracoes[k]; _alocSalvarDuracoes(); alocDurResumo(); }
+function alocDurProcesso(el){ const p=el.dataset.p; (window._alocDurItens||[]).filter(i=>i.proc===p).forEach(i=>{ if(el.value) window._alocDuracoes[i.k]=el.value; else delete window._alocDuracoes[i.k]; }); _alocSalvarDuracoes();
+  document.querySelectorAll('#aloc-duracao-wrap select[data-k]').forEach(s=>{ const it=(window._alocDurItens||[]).find(i=>i.k===s.dataset.k); if(it&&it.proc===p) s.value=el.value; }); alocDurResumo(); }
+function alocDurResumo(){ const it=window._alocDurItens||[], n=it.filter(i=>window._alocDuracoes[i.k]).length, e=document.getElementById('aloc-dur-resumo'); if(e) e.textContent = n? `— ${n} de ${it.length} marcadas (${[...new Set(it.map(i=>window._alocDuracoes[i.k]).filter(Boolean))].map(rotuloDuracao).join(', ')})` : `— nenhuma marcada (${it.length} provas)`; }
+
 async function processarAlocacao(){
   const fileCand = document.getElementById('aloc-file-candidatos').files[0];
   const fileCond = document.getElementById('aloc-file-condespecial').files[0];
@@ -10633,6 +10670,10 @@ async function processarAlocacao(){
           aplicarCondEspecial(candidatos, {deferidos:{},indeferidos:{},deferidosCpf:{},indeferidosCpf:{}});
         }
 
+        // duração da prova marcada na tela (se a planilha não traz a coluna "DURAÇÃO DA PROVA")
+        if(!candidatos.some(c=>duracaoDaProva(c)!=='') && window._alocDuracoes){
+          candidatos.forEach(c=>{ const v=window._alocDuracoes[_alocChaveDuracao(c)]; if(v) c['DURAÇÃO DA PROVA']=v; });
+        }
         const resultado = executarMotorAlocacao(candidatos, enviadas);
         const salasComAndar = padronizarNomesDeSala(resultado.alocados);      // todas as salas passam a ter o bloco no nome (padrão único)
         await gerarPlanilhaAlocacao(resultado, enviadas);
@@ -10645,7 +10686,8 @@ async function processarAlocacao(){
         const nomesComTraco = [...new Set(resultado.alocados.flatMap(a=>[a.ANDAR,a.BLOCO,a._salaBase].filter(v=>/\s-\s/.test(String(v||'')))))];
         const avisoTraco = nomesComTraco.length ? ` ⚠️ O Gerador de Folhas não aceita " - " dentro do nome de andar, bloco ou sala (${nomesComTraco.slice(0,4).join('; ')}${nomesComTraco.length>4?'…':''}): troque o traço por espaço no cadastro da escola antes de gerar as folhas.` : '';
         const avisoUnicos = salasComAndar.length ? ` ℹ️ ${salasComAndar.length} sala(s) com o mesmo nome e o mesmo bloco em andares diferentes (${salasComAndar.slice(0,5).join(', ')}${salasComAndar.length>5?'…':''}) receberam também o andar no nome.` : '';
-        const avisoEspeciais = avisoCondEspecial + avisoTraco + avisoUnicos;
+        const avisoDuracao = Object.keys(resultado.duracaoInfo||{}).length ? ` ⏱️ Duração da prova — salas separadas: ${Object.entries(resultado.duracaoInfo).map(([t,m])=>`${({MANHA:'Manhã','MANHÃ':'Manhã',TARDE:'Tarde'})[t]||t}: ${Object.entries(m).sort((a,b)=>(parseFloat(a[0])||1e9)-(parseFloat(b[0])||1e9)).map(([d,o])=>`${d?rotuloDuracao(d):'sem duração'} → ${o.salas} sala${o.salas===1?'':'s'} (${o.cand} cand.)`).join(', ')}`).join(' · ')}.` + (resultado.misturaForcada ? ` ⚠️ ${resultado.misturaForcada} candidato${resultado.misturaForcada>1?'s':''} tiveram de dividir sala com outra duração por falta de salas.` : '') : '';
+        const avisoEspeciais = avisoCondEspecial + avisoTraco + avisoUnicos + avisoDuracao;
 
         // ── Checagem de capacidade: escolas selecionadas suportam a quantidade de candidatos? ──
         // Nota: a soma bruta das salas (capacidadeTotal) é só informativa — como o motor
@@ -10742,6 +10784,15 @@ function salaEhTerrea(andarRaw){
   return false;
 }
 
+// Duração da prova do candidato, em horas (texto): "2", "2.5"… Vazio = não informada. Aceita "2", "2,5", "2h", "2h30", "2 horas".
+function duracaoDaProva(c){
+  const k=Object.keys(c).find(x=>/^DURACAO( DA PROVA)?$/.test(x.normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toUpperCase()));
+  const raw=k?c[k]:''; if(raw===undefined||raw===null||String(raw).trim()==='') return '';
+  const t=String(raw).trim().replace(',','.'), m1=t.match(/^(\d+)\s*h\s*(\d{1,2})?/i), m2=t.match(/(\d+(?:\.\d+)?)/);
+  if(m1) return String(+m1[1]+((+m1[2]||0)/60));
+  return m2?String(parseFloat(m2[1])):t.toUpperCase();
+}
+function rotuloDuracao(d){ const n=parseFloat(d); if(!isFinite(n)) return String(d||'sem duração'); const h=Math.floor(n), m=Math.round((n-h)*60); return m? `${h}h${String(m).padStart(2,'0')}` : `${h}h`; }
 function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
   // ── 1. Montar pool de salas de todas as escolas, ordenado por capacidade desc ──
   function normalizarAndar(v){
@@ -10845,6 +10896,7 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
     c._individual = precisaSalaIndividual(c._atendimentos);
     c._grupoEspecial = !c._individual && precisaSalaGrupo(c._atendimentos);
     c._terreo = precisaTerreo(c);
+    c._dur = duracaoDaProva(c);
   });
   candidatos.sort((a,b)=>
     b._codNum - a._codNum ||
@@ -10854,6 +10906,11 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
 
   const alocados = [];
   const naoAlocados = [];
+
+  // Provas de durações diferentes (ex.: 2h e 3h) NÃO dividem sala: só vale se este turno tiver mais de uma duração entre os candidatos.
+  const separarDur = new Set(candidatos.map(c=>c._dur)).size > 1;
+  const salaAceitaDur = (s,c)=> !separarDur || s.classeDur===undefined || s.classeDur===c._dur;
+  let misturaForcada = 0;      // candidatos que tiveram de dividir sala com outra duração por falta de sala
 
   const individuais   = candidatos.filter(c=>c._individual);
   const grupoEspecial = candidatos.filter(c=>c._grupoEspecial);
@@ -10878,7 +10935,7 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
   {
     const porTipo = {};
     grupoEspecial.forEach(c=>{
-      const chave = chaveTipoGrupo(c);
+      const chave = chaveTipoGrupo(c) + (separarDur ? '|DUR'+c._dur : '');
       (porTipo[chave] = porTipo[chave]||[]).push(c);
     });
     Object.values(porTipo).forEach(grupo=>{ gruposExclusivos.push({candidatos:grupo, tipoSala:'grupo'}); });
@@ -10897,8 +10954,13 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
 
   const naoExclusivos = candidatos.filter(c=>!c._individual && !c._grupoEspecial);
   const filaGeral = naoExclusivos.slice();
+  if(separarDur){      // mesma duração juntas na fila (as menores primeiro): a mistura só poderia acontecer na emenda, e a regra abaixo a impede
+    const ordemDur=[...new Set(candidatos.map(c=>c._dur))].sort((a,b)=>(parseFloat(a)||1e9)-(parseFloat(b)||1e9));
+    filaGeral.sort((a,b)=>ordemDur.indexOf(a._dur)-ordemDur.indexOf(b._dur));
+  }
 
   function seatIn(s, c){
+    if(separarDur && s.classeDur===undefined) s.classeDur = c._dur;
     s.capacidadeDisponivel -= 1;
     alocados.push({...mapCandidato(c), SALA: s.salaBase, ANDAR: s.andar, BLOCO: s.bloco, ESCOLA: s.escola, _tipoSala: c._terreo?'terreo':'regular', _salaBase: s.salaBase, _sufixoSala: ''});
     s.ocupantes.push(c);
@@ -10909,7 +10971,7 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
   // quem não precisava. Continua podendo compartilhar a sala com regulares.
   salasTerreas.forEach(s=>{
     while(s.capacidadeDisponivel > 0){
-      const idx = filaGeral.findIndex(c=>c._terreo && salaAceitaSexo(s,c));
+      const idx = filaGeral.findIndex(c=>c._terreo && salaAceitaSexo(s,c) && salaAceitaDur(s,c));
       if(idx===-1) break;
       const c = filaGeral.splice(idx,1)[0];
       seatIn(s, c);
@@ -10928,7 +10990,7 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
   // filaGeral só tem gente que não precisa de térreo.
   salasRestritasSexo.forEach(s=>{
     while(s.capacidadeDisponivel > 0){
-      const idx = filaGeral.findIndex(c=>salaAceitaSexo(s,c));
+      const idx = filaGeral.findIndex(c=>salaAceitaSexo(s,c) && salaAceitaDur(s,c));
       if(idx===-1) break;
       const c = filaGeral.splice(idx,1)[0];
       seatIn(s, c);
@@ -10940,7 +11002,7 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
   let salaAtualIdx = 0;
   filaGeral.forEach(c=>{
     let salaEscolhida = null;
-    while(salaAtualIdx < salasLivresSexo.length && salasLivresSexo[salaAtualIdx].capacidadeDisponivel <= 0){
+    while(salaAtualIdx < salasLivresSexo.length && (salasLivresSexo[salaAtualIdx].capacidadeDisponivel <= 0 || !salaAceitaDur(salasLivresSexo[salaAtualIdx], c))){
       salaAtualIdx++;
     }
     if(salaAtualIdx < salasLivresSexo.length) salaEscolhida = salasLivresSexo[salaAtualIdx];
@@ -11081,10 +11143,11 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
   for(let i=naoAlocados.length-1; i>=0; i--){
     const c = naoAlocados[i];
     const exclusivo = c._individual || c._grupoEspecial;
-    const salaEscolhida = todasSalasOrdenadas.find(s =>
-      s.capacidadeDisponivel > 0 && salaAceitaCandidato(s, c) && (!exclusivo || s.ocupantes.length===0) && (!s.atendimentoEspecial || exclusivo)
-    );
+    const serve = s => s.capacidadeDisponivel > 0 && salaAceitaCandidato(s, c) && (!exclusivo || s.ocupantes.length===0) && (!s.atendimentoEspecial || exclusivo);
+    let salaEscolhida = todasSalasOrdenadas.find(s => serve(s) && salaAceitaDur(s,c));
+    if(!salaEscolhida && separarDur){ salaEscolhida = todasSalasOrdenadas.find(serve); if(salaEscolhida) misturaForcada++; }      // faltou sala: divide com outra duração, mas ninguém fica sem sala
     if(!salaEscolhida) continue;
+    if(separarDur && salaEscolhida.classeDur===undefined) salaEscolhida.classeDur = c._dur;
     salaEscolhida.capacidadeDisponivel -= 1;
     salaEscolhida.ocupantes.push(c);
     const tipoFinal = c._individual ? 'individual' : c._grupoEspecial ? 'grupo' : c._terreo ? 'terreo' : 'regular';
@@ -11093,7 +11156,7 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
     naoAlocados.splice(i,1);
   }
 
-  return {alocados, naoAlocados: naoAlocados.map(mapCandidato), salasPool};
+  return {alocados, naoAlocados: naoAlocados.map(mapCandidato), salasPool, misturaForcada, separouDur: separarDur};
 }
 
 // Classifica o TURNO bruto do candidato (geralmente um datetime completo tipo
@@ -11120,15 +11183,22 @@ function executarMotorAlocacao(candidatos, escolas){
     (porTurno[t] = porTurno[t]||[]).push(c);
   });
 
-  let alocados = [], naoAlocados = [], salasPool = [];
+  let alocados = [], naoAlocados = [], salasPool = [], misturaForcada = 0;
+  const duracaoInfo = {};      // por turno que teve durações diferentes: duração → candidatos e salas
   Object.entries(porTurno).forEach(([turnoPass, candidatosDoTurno])=>{
     const r = executarMotorAlocacaoUmTurno(candidatosDoTurno, escolas, turnoPass);
     alocados = alocados.concat(r.alocados);
     naoAlocados = naoAlocados.concat(r.naoAlocados);
     salasPool = salasPool.concat(r.salasPool);
+    misturaForcada += r.misturaForcada||0;
+    if(r.separouDur){
+      const info = {};
+      r.alocados.forEach(a=>{ const o=info[a._dur]||(info[a._dur]={cand:0,salas:new Set()}); o.cand++; o.salas.add(a.ESCOLA+'|'+a._salaBase); });
+      duracaoInfo[turnoPass] = Object.fromEntries(Object.entries(info).map(([d,o])=>[d,{cand:o.cand,salas:o.salas.size}]));
+    }
   });
 
-  return {alocados, naoAlocados, salasPool};
+  return {alocados, naoAlocados, salasPool, misturaForcada, duracaoInfo};
 }
 function mapCandidato(c){
   return {
@@ -11141,6 +11211,7 @@ function mapCandidato(c){
     RESULTADO_ESPECIAL: c['_resultadoEspecial']||'',
     INDEFERIDO_ESPECIAL: !!c['_indeferidoEspecial'],
     ATENDIMENTO_SOLICITADO: c['_atendimentoSolicitado']||'',
+    _dur: c._dur||'',
   };
 }
 
