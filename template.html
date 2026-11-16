@@ -746,6 +746,9 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
           <div style="font-size:19px;font-weight:800;color:#1f2a3d" id="page-tarefas-title">Tarefas da Equipe</div>
           <div style="font-size:12.5px;color:#8a9ab5;margin-top:2px" id="page-tarefas-sub">Visão completa · Gestora</div>
         </div>
+        <div id="btn-lista-equipe-wrap" style="display:none">
+          <button class="btn-secondary" onclick="abrirListaEquipe()" title="Lista as tarefas das pessoas que você escolher, num período">📋 Lista da equipe</button>
+        </div>
       </div>
 
       <!-- Filtros compactos -->
@@ -1821,6 +1824,7 @@ function loadTarefas(){
   if(typeof IS_GESTORA!=='undefined' && IS_GESTORA){
     const w=document.getElementById('filtro-pessoa-wrap');
     if(w) w.style.display='flex';
+    const bl=document.getElementById('btn-lista-equipe-wrap'); if(bl) bl.style.display='block';
   }
 
   applyFilters();
@@ -1843,6 +1847,82 @@ function clearFilters(){
 }
 
 let _filtered=[];
+// ── LISTA DA EQUIPE (planejamento) ───────────────────────────────────────────────────────────────────
+// Tarefas de várias pessoas num período. Nunca entram as "só para consulta" (análises, períodos de recurso).
+const _PESSOAS_LISTA=['Manuela','Natália','Lorena','Laryssa','Marcela','Jordan','Tiago','Amílcar'];
+function _ehRecursoPeriodo(titulo){ return /^(ABERTURA DE RECURSOS?|ANALISE DA BANCA DOS RECURSOS)\b/.test(normTitulo(titulo)); }
+function listaEquipeDados(op){
+  const pessoas=new Set(op.pessoas), kw=op.soResultados?normTitulo(op.palavra||'RESULTADO'):'', maxDias=(op.semanas*7)-1;
+  return _allTasks.filter(t=>pessoas.has(t.responsavel)
+      && !t._isAnaliseInscricao && !ehConsulta(t.tarefa) && !_ehRecursoPeriodo(t.tarefa)     // análises e períodos de recurso ficam de fora
+      && t.dias!==null && (t.dias>=0 ? t.dias<=maxDias : !!op.vencidas)
+      && (!kw || normTitulo(t.tarefa).includes(kw)))
+    .sort((a,b)=>(a.due-b.due)||String(a.tarefa).localeCompare(String(b.tarefa),'pt-BR'));
+}
+const _DS=['dom','seg','ter','qua','qui','sex','sáb'];
+function _escL(x){ return String(x==null?'':x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function _lerOpcoesLista(){
+  const q=id=>document.getElementById(id);
+  return {pessoas:[..._PESSOAS_LISTA].filter(p=>q('lq-p-'+p)?.checked), semanas:parseInt(q('lq-sem').value)||3,
+          soResultados:q('lq-res').checked, palavra:q('lq-kw').value.trim()||'RESULTADO', vencidas:q('lq-venc').checked};
+}
+function _linhasLista(op){
+  const dados=listaEquipeDados(op), linhas=[];
+  op.pessoas.forEach(p=>dados.filter(t=>t.responsavel===p).forEach(t=>linhas.push({pessoa:p,data:fmtDate(t.due),dia:_DS[t.due.getDay()],tarefa:t.tarefa,concurso:t.municipio||'',atrasada:t.dias<0})));
+  return linhas;
+}
+function atualizarListaEquipe(){
+  const op=_lerOpcoesLista(), linhas=_linhasLista(op), fim=new Date(TODAY); fim.setDate(fim.getDate()+op.semanas*7-1);
+  document.getElementById('lq-periodo').textContent=`${fmtDate(TODAY)} a ${fmtDate(fim)}`;
+  let h='';
+  op.pessoas.forEach(p=>{
+    const l=linhas.filter(x=>x.pessoa===p);
+    h+=`<div style="margin-top:14px;font-weight:700;color:#1f2a3d;font-size:14px">${_escL(p)} <span style="font-weight:500;color:#8a9ab5;font-size:12.5px">· ${l.length} tarefa${l.length===1?'':'s'}</span></div>`;
+    h+= l.length ? `<table style="width:100%;border-collapse:collapse;margin-top:6px;font-size:12.5px"><tbody>${l.map(x=>`<tr style="border-bottom:1px solid #eef1f6"><td style="padding:5px 8px;white-space:nowrap;width:92px;color:${x.atrasada?'#c0322f':'#41506b'}">${x.data.slice(0,5)} <span style="color:#8a9ab5">${x.dia}</span>${x.atrasada?' ⚠️':''}</td><td style="padding:5px 8px">${_escL(x.tarefa)}</td><td style="padding:5px 8px;color:#41506b;width:34%">${_escL(x.concurso)}</td></tr>`).join('')}</tbody></table>`
+             : `<div style="font-size:12.5px;color:#8a9ab5;margin-top:4px">Nenhuma tarefa neste período.</div>`;
+  });
+  if(!op.pessoas.length) h='<div style="font-size:12.5px;color:#8a9ab5;margin-top:14px">Marque ao menos uma pessoa.</div>';
+  document.getElementById('lq-corpo').innerHTML=h; window._listaEquipeLinhas=linhas;
+  document.getElementById('lq-total').textContent=`${linhas.length} tarefa${linhas.length===1?'':'s'} no total`;
+}
+function abrirListaEquipe(){
+  document.getElementById('lista-equipe-ov')?.remove();
+  const ov=document.createElement('div'); ov.id='lista-equipe-ov';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(20,30,50,.45);z-index:100000;display:flex;align-items:flex-start;justify-content:center;padding:36px 16px;overflow:auto';
+  ov.onclick=e=>{ if(e.target===ov) ov.remove(); };
+  const padrao=new Set(['Manuela','Natália','Lorena']);
+  ov.innerHTML=`<div style="background:#fff;border-radius:14px;max-width:880px;width:100%;padding:20px 22px;box-shadow:0 12px 40px rgba(0,0,0,.25)">
+    <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:17px;font-weight:800;color:#1f2a3d">📋 Lista da equipe</div><button class="btn-secondary" onclick="document.getElementById('lista-equipe-ov').remove()">Fechar</button></div>
+    <div style="font-size:12.5px;color:#8a9ab5;margin-top:2px">Análises e períodos de recurso não entram na lista.</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:12px;font-size:13px">${_PESSOAS_LISTA.map(p=>`<label style="display:flex;align-items:center;gap:5px"><input type="checkbox" id="lq-p-${p}" ${padrao.has(p)?'checked':''} onchange="atualizarListaEquipe()"> ${p}</label>`).join('')}</div>
+    <div style="display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:10px;font-size:13px;align-items:center">
+      <label>Período: <select id="lq-sem" onchange="atualizarListaEquipe()" class="filter-select" style="display:inline-block;width:auto">${[1,2,3,4,6,8].map(n=>`<option value="${n}" ${n===3?'selected':''}>próximas ${n} semana${n>1?'s':''}</option>`).join('')}</select> <span id="lq-periodo" style="color:#8a9ab5"></span></label>
+      <label style="display:flex;align-items:center;gap:5px"><input type="checkbox" id="lq-res" checked onchange="atualizarListaEquipe()"> Só resultados · título contém <input id="lq-kw" value="RESULTADO" oninput="atualizarListaEquipe()" class="filter-select" style="width:120px"></label>
+      <label style="display:flex;align-items:center;gap:5px"><input type="checkbox" id="lq-venc" onchange="atualizarListaEquipe()"> Incluir vencidas</label>
+    </div>
+    <div id="lq-corpo"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;gap:10px;flex-wrap:wrap">
+      <div id="lq-total" style="font-size:12.5px;color:#41506b;font-weight:600"></div>
+      <div style="display:flex;gap:8px"><button class="btn-secondary" onclick="copiarListaEquipe()">📋 Copiar</button><button class="btn-secondary" onclick="baixarListaEquipeXLSX()">⬇️ Baixar Excel</button></div>
+    </div></div>`;
+  document.body.appendChild(ov); atualizarListaEquipe();
+}
+function copiarListaEquipe(){
+  const l=window._listaEquipeLinhas||[]; let txt='Responsável\tData\tDia\tTarefa\tConcurso\n'+l.map(x=>[x.pessoa,x.data,x.dia,x.tarefa,x.concurso].join('\t')).join('\n');
+  const ok=()=>alert(`Lista copiada (${l.length} tarefas). É só colar no Excel ou no Word.`);
+  if(navigator.clipboard?.writeText) navigator.clipboard.writeText(txt).then(ok,()=>{ prompt('Copie a lista (Ctrl+C):',txt); });
+  else { const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');ok();}catch(e){prompt('Copie a lista (Ctrl+C):',txt);} ta.remove(); }
+}
+function baixarListaEquipeXLSX(){
+  const gerar=()=>{
+    const l=window._listaEquipeLinhas||[]; const aoa=[['Responsável','Data','Dia','Tarefa','Concurso']].concat(l.map(x=>[x.pessoa,x.data,x.dia,x.tarefa,x.concurso]));
+    const ws=XLSX.utils.aoa_to_sheet(aoa); ws['!cols']=[{wch:14},{wch:12},{wch:6},{wch:90},{wch:38}]; ws['!autofilter']={ref:`A1:E${Math.max(2,aoa.length)}`};
+    const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Lista'); const op=_lerOpcoesLista(), fim=new Date(TODAY); fim.setDate(fim.getDate()+op.semanas*7-1);
+    const f=d=>String(d.getDate()).padStart(2,'0')+'-'+String(d.getMonth()+1).padStart(2,'0'); XLSX.writeFile(wb,`LISTA_TAREFAS_${f(TODAY)}_a_${f(fim)}.xlsx`);
+  };
+  if(typeof XLSX==='undefined'){ const sc=document.createElement('script'); sc.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'; sc.onload=gerar; document.head.appendChild(sc); } else gerar();
+}
+
 function applyFilters(){
   let tasks=[..._allTasks];
   const isG = typeof IS_GESTORA!=='undefined'&&IS_GESTORA;
