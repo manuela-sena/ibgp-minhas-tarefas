@@ -1254,6 +1254,9 @@ input[type=date]{border:1px solid #d7dde7;border-radius:6px;padding:4px 8px;font
             <input type="number" id="aloc-eq-valor-diaria" class="form-input" style="height:36px" value="130" step="0.01" oninput="atualizarPreviewDiaria()">
           </div>
         </div>
+        <label style="display:flex;align-items:center;gap:6px;margin-top:12px;font-size:13px;color:#41506b;cursor:pointer" title="Nas escolas com mais de um bloco, a aba EQUIPE ganha uma linha por bloco (salas, candidatos e fiscais de cada bloco), para cada bloco ter o seu coordenador">
+          <input type="checkbox" id="aloc-eq-por-bloco"> Equipe por bloco — uma linha para cada bloco da escola (um coordenador por bloco)
+        </label>
         <div id="aloc-eq-preview" style="margin-top:12px;font-size:12.5px;color:#41506b"></div>
       </div>
     </div>
@@ -11454,7 +11457,7 @@ async function gerarPlanilhaAlocacao(resultado, escolasEnviadas){
   wsGeral.autoFilter = {from: {row:1, column:1}, to: {row: Math.max(1, resultado.alocados.length+1), column:colGeral.length}};
 
   // ── EQUIPE (cálculo de equipe de aplicação por escola/turno) ────────
-  const linhasEquipe = calcularEquipe(resultado, enderecoPorEscolaGeral);
+  const linhasEquipe = calcularEquipe(resultado, enderecoPorEscolaGeral, !!document.getElementById('aloc-eq-por-bloco')?.checked);
   if(linhasEquipe.length){
     const wsEquipe = wb.addWorksheet('EQUIPE');
     const colLetraEq = (n)=>{ let s=''; while(n>0){ const m=(n-1)%26; s=String.fromCharCode(65+m)+s; n=Math.floor((n-1)/26); } return s; };
@@ -11634,7 +11637,7 @@ async function gerarPlanilhaAlocacao(resultado, escolasEnviadas){
     let corIdxEq=0, escolaAtualEq='';
     linhasEquipe.forEach((g,ri)=>{
       const r = linhaHeaderEq+1+ri;
-      if(g.escola !== escolaAtualEq){ escolaAtualEq = g.escola; corIdxEq=(corIdxEq+1)%2; }
+      if((g.escolaReal||g.escola) !== escolaAtualEq){ escolaAtualEq = (g.escolaReal||g.escola); corIdxEq=(corIdxEq+1)%2; }
       const cor = corIdxEq===0?'FFFFFFFF':'FFF0F4FF';
 
       wsEquipe.getCell(r, idxCol['CIDADE']).value = g.cidade || '';
@@ -11756,8 +11759,13 @@ function atualizarPreviewDiaria(){
 // Todas as outras contagens e todos os valores em R$ saem como FÓRMULA na
 // planilha (usando a tabela de tarifas e o nº de turnos, ambos editáveis),
 // para dar pra ajustar datas de diária e tarifas depois de gerar a planilha.
-function calcularEquipe(resultado, enderecoPorEscola){
+function calcularEquipe(resultado, enderecoPorEscola, porBloco){
   function salaBase(s){ return String(s||'').split(' - ')[0]; }
+  // Por bloco: uma linha para cada (escola, bloco, dia, turno). Só as escolas com mais de um bloco ganham o bloco no nome da linha.
+  const blocosPorEscola = {};
+  resultado.alocados.forEach(a=>{ const b=String(a.BLOCO||'').trim(); if(b) (blocosPorEscola[a.ESCOLA]=blocosPorEscola[a.ESCOLA]||new Set()).add(b); });
+  const blocoDe = a => porBloco ? String(a.BLOCO||'').trim() : '';
+  const rotuloEscola = (escola,bloco)=> (bloco && (blocosPorEscola[escola]?.size||0)>1) ? escola+' - '+bloco : escola;
 
   // Chaves incluem DATA PROVA — sem isso, a mesma escola usada em dois dias
   // diferentes (ex: sábado e domingo) com o mesmo texto de turno ("TARDE")
@@ -11777,8 +11785,8 @@ function calcularEquipe(resultado, enderecoPorEscola){
 
   const porEscolaTurno = {};
   resultado.alocados.forEach(a=>{
-    const chave = a.ESCOLA+'|'+a['DATA PROVA']+'|'+a.TURNO;
-    if(!porEscolaTurno[chave]) porEscolaTurno[chave] = {escola:a.ESCOLA, dataProvaStr:a['DATA PROVA'], turno:a.TURNO, candidatos:[], salas:new Set()};
+    const chave = a.ESCOLA+'|'+a['DATA PROVA']+'|'+a.TURNO+'|'+blocoDe(a);
+    if(!porEscolaTurno[chave]) porEscolaTurno[chave] = {escola:a.ESCOLA, bloco:blocoDe(a), dataProvaStr:a['DATA PROVA'], turno:a.TURNO, candidatos:[], salas:new Set()};
     porEscolaTurno[chave].candidatos.push(a);
     porEscolaTurno[chave].salas.add(salaBase(a.SALA));
   });
@@ -11805,14 +11813,14 @@ function calcularEquipe(resultado, enderecoPorEscola){
     const primeiraData = g.candidatos.find(c=>c['DATA HORA PROVA OBJ'] instanceof Date && !isNaN(c['DATA HORA PROVA OBJ'].getTime()));
 
     return {
-      turno: g.turno, escola: g.escola, cidade: end.cidade || '',
+      turno: g.turno, escola: rotuloEscola(g.escola,g.bloco), escolaReal: g.escola, bloco: g.bloco, cidade: end.cidade || '',
       dataProva: primeiraData ? primeiraData['DATA HORA PROVA OBJ'] : null,
       salas: g.salas.size, candidatos, fiscal,
       nTurnosEscola: turnosPorEscolaData[g.escola+'|'+g.dataProvaStr].size,
     };
   });
 
-  linhas.sort((a,b)=>a.escola.localeCompare(b.escola)||(a.dataProva?.getTime()||0)-(b.dataProva?.getTime()||0)||a.turno.localeCompare(b.turno));
+  linhas.sort((a,b)=>a.escolaReal.localeCompare(b.escolaReal)||(a.dataProva?.getTime()||0)-(b.dataProva?.getTime()||0)||a.turno.localeCompare(b.turno)||String(a.bloco).localeCompare(String(b.bloco)));
   return linhas;
 }
 
