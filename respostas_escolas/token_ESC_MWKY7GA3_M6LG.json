@@ -1,11 +1,132 @@
 {
   "token": "ESC_MWKY7GA3_M6LG",
-  "criadoEm": "2026-11-17T17:10:23.019Z",
+  "enviadoEm": "2026-11-18T19:05:33.895Z",
+  "protocolo": "ESC_MWKY7GA3_M6LG_1795028733895",
   "concurso": {
     "concurso": "BRAÚNAS/MG - EDITAL Nº 01/2026 - PSS",
     "municipio": "BRAÚNAS/MG",
     "dataProva": "29/11/2026",
     "escola": "EE. FAGUNDES VARELA",
     "idEscola": "ESC_MWKY7GA3_M6LG"
-  }
+  },
+  "instituicao": {
+    "nome": "EE. FAGUNDES VARELA",
+    "cnpj": "20.219.317/0001-20",
+    "razao": "CAIXA ESCOLAR PADRE JOSÉ AUGUSTO OLIVEIRA",
+    "endereco": "RUA PRACA GOVERNADOR MAGALHAES PINTO",
+    "numero": "382",
+    "complemento": "",
+    "bairro": "CENTRO",
+    "cidade": "BRAÚNAS",
+    "uf": "MG",
+    "cep": "35189-000",
+    "responsavel": {
+      "nome": "JACKELINE ANDRADE SAMORA ALVARENGA BRASIL",
+      "cargo": "DIRETOR",
+      "email": "jackeline.brasil@educacao.mg.gov.br",
+      "tel": "(33) 98703-1827"
+    },
+    "diretor": {
+      "nome": "JACKELINE ANDRADE SAMORA ALVARENGA BRASIL",
+      "email": "jacalvarenga@yahoo.com.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": true,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "1",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "1",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "A",
+      "andar": "1° ANDAR",
+      "sala": "SALA 1",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1º ANDAR",
+      "sala": "SALA 2",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "3° ANDAR",
+      "sala": "SALA 3",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "3° ANDAR",
+      "sala": "SALA 4",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "3° ANDAR",
+      "sala": "SALA 5",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "3° ANDAR",
+      "sala": "SALA 6",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "3° ANDAR",
+      "sala": "SALA 7",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    }
+  ]
 }
