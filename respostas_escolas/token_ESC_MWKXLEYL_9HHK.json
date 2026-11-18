@@ -1,11 +1,102 @@
 {
   "token": "ESC_MWKXLEYL_9HHK",
-  "criadoEm": "2026-11-17T16:53:14.877Z",
+  "enviadoEm": "2026-11-18T10:39:09.458Z",
+  "protocolo": "ESC_MWKXLEYL_9HHK_1794998349458",
   "concurso": {
     "concurso": "BALDIM/MG - EDITAL Nº 01/2026 - CONCURSO",
     "municipio": "BALDIM/MG",
     "dataProva": "06/12/2026",
     "escola": "EM SAO BERNARDO",
     "idEscola": "ESC_MWKXLEYL_9HHK"
-  }
+  },
+  "instituicao": {
+    "nome": "EM SAO BERNARDO",
+    "cnpj": "",
+    "razao": "",
+    "endereco": "RUA PADRE TEODORICO",
+    "numero": "126",
+    "complemento": "",
+    "bairro": "CENTRO",
+    "cidade": "BALDIM",
+    "uf": "MG",
+    "cep": "35732-000",
+    "responsavel": {
+      "nome": "OSLEY DE PAULA SILVA",
+      "cargo": "DIRETOR",
+      "email": "escolamunicipalsaobernardo@gmail.com",
+      "tel": "(31) 98352-5891"
+    },
+    "diretor": {
+      "nome": "",
+      "email": ""
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "01",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "01",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA 03",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA 04",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA 05",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "",
+      "andar": "",
+      "sala": "SALA 06",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    }
+  ]
 }
