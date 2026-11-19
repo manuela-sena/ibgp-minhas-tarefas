@@ -1,11 +1,162 @@
 {
   "token": "ESC_MWNG1X0M_QXDP",
-  "criadoEm": "2026-11-19T11:05:30.214Z",
+  "enviadoEm": "2026-11-19T11:34:45.305Z",
+  "protocolo": "ESC_MWNG1X0M_QXDP_1795088085305",
   "concurso": {
     "concurso": "LAGOA DA PRATA/MG - EDITAL Nº 01/2026 - CONCURSO",
     "municipio": "LAGOA DA PRATA/MG",
     "dataProva": "29/11/2026",
     "escola": "EE. DONA TILOSA",
     "idEscola": "ESC_MWNG1X0M_QXDP"
-  }
+  },
+  "instituicao": {
+    "nome": "EE. DONA TILOSA",
+    "cnpj": "05.120.052/0001-15",
+    "razao": "ESCOLA ESTADUAL DONA TILOSA",
+    "endereco": "RUA MANOEL PENA",
+    "numero": "600",
+    "complemento": "",
+    "bairro": "AMERICO SILVA",
+    "cidade": "LAGOA DA PRATA",
+    "uf": "MG",
+    "cep": "35590-108",
+    "responsavel": {
+      "nome": "INDIARA SULIENE HELEN CONCEIÇÃO",
+      "cargo": "",
+      "email": "hellen1105@gmail.com",
+      "tel": "(37) 98413-7992"
+    },
+    "diretor": {
+      "nome": "FERNANDA DE PAULA RODRIGUES SANTOS",
+      "email": "fernanda26lp@gmail.com"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "01",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "01",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "B",
+      "andar": "1° ANDAR",
+      "sala": "SALA 02",
+      "capacidade": 32,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "1° ANDAR",
+      "sala": "SALA 03",
+      "capacidade": 32,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "1° ANDAR",
+      "sala": "SALA 04",
+      "capacidade": 32,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "1° ANDAR",
+      "sala": "SALA 05",
+      "capacidade": 32,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "1° ANDAR",
+      "sala": "SALA 06",
+      "capacidade": 32,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "1° ANDAR",
+      "sala": "SALA 07",
+      "capacidade": 32,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1° ANDAR",
+      "sala": "SALA 09",
+      "capacidade": 32,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1° ANDAR",
+      "sala": "SALA 10",
+      "capacidade": 32,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1° ANDAR",
+      "sala": "SALA BIBLIOTECA",
+      "capacidade": 10,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "1° ANDAR",
+      "sala": "SALA MULTIMÍDIA",
+      "capacidade": 8,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    }
+  ]
 }
