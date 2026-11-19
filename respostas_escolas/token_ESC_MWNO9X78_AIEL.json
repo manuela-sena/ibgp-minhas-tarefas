@@ -1,11 +1,92 @@
 {
   "token": "ESC_MWNO9X78_AIEL",
-  "criadoEm": "2026-11-19T14:55:40.628Z",
+  "enviadoEm": "2026-11-19T15:22:17.232Z",
+  "protocolo": "ESC_MWNO9X78_AIEL_1795101737232",
   "concurso": {
     "concurso": "PORTO VELHO/RO - EDITAL Nº 24/2026 - CONCURSO",
     "municipio": "porto Velho/RO",
     "dataProva": "06/12/2026",
     "escola": "EEEM Major Guapindaia",
     "idEscola": "ESC_MWNO9X78_AIEL"
-  }
+  },
+  "instituicao": {
+    "nome": "EEEM Major Guapindaia",
+    "cnpj": "",
+    "razao": "",
+    "endereco": "FRANCISCO PUCCI",
+    "numero": "2375",
+    "complemento": "",
+    "bairro": "SÃO JOÃO BOSCO",
+    "cidade": "PORTO VELHO",
+    "uf": "RO",
+    "cep": "76801-490",
+    "responsavel": {
+      "nome": "ROSIMARA GOMES VITAL",
+      "cargo": "CHEFE DA SEÇÃO PEDAGÓGICA",
+      "email": "majorguapindaia@seduc.ro.gov.br",
+      "tel": "(69) 99231-6493"
+    },
+    "diretor": {
+      "nome": "CÉLIO LEANDRO DA SILVA",
+      "email": "majorguapindaia@seduc.ro.gov.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": true,
+      "canhoto": true,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": true,
+      "arcond": true,
+      "ventilador": false
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "6",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "6",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "A",
+      "andar": "",
+      "sala": "SALA 01 - 05",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "",
+      "sala": "SALA 06 - 10",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "",
+      "sala": "SALA 11 E 12",
+      "capacidade": 80,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    }
+  ]
 }
