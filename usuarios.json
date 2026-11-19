@@ -129,6 +129,15 @@
       ],
       "perfil": "gestora",
       "ativo": false
+    },
+    {
+      "nome_interno": "Luiza Rodrigues Tavares",
+      "aliases": [
+        "luiza",
+        "luiza rodrigues"
+      ],
+      "perfil": "operacional",
+      "ativo": true
     }
   ]
 }
