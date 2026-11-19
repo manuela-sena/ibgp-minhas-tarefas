@@ -1,11 +1,162 @@
 {
   "token": "ESC_MWNUO1Y3_GHPK",
-  "criadoEm": "2026-11-19T17:54:37.659Z",
+  "enviadoEm": "2026-11-19T20:33:01.902Z",
+  "protocolo": "ESC_MWNUO1Y3_GHPK_1795120381902",
   "concurso": {
     "concurso": "LAGOA DA PRATA/MG - EDITAL Nº 01/2026 - CONCURSO",
     "municipio": "LAGOA DA PRATA/MG",
     "dataProva": "29/11/2026",
     "escola": "EE. NOSSA SENHORA DE GUADALUPE",
     "idEscola": "ESC_MWNUO1Y3_GHPK"
-  }
+  },
+  "instituicao": {
+    "nome": "EE. NOSSA SENHORA DE GUADALUPE",
+    "cnpj": "20.664.215/0001-14",
+    "razao": "CAIXA ESCOLAR DA EE NOSSA SENHORA DE GUADALUPE",
+    "endereco": "RUA VINTE E SETE DE DEZEMBRO",
+    "numero": "300",
+    "complemento": "APTO 101",
+    "bairro": "CENTRO",
+    "cidade": "LAGOA DA PRATA",
+    "uf": "MG",
+    "cep": "35590-050",
+    "responsavel": {
+      "nome": "FRANCELIA OLIVEIRA VASCONCELOS SANTOS",
+      "cargo": "DIRETOR",
+      "email": "francelia.santos@educacao.mg.gov.br",
+      "tel": "(37) 99825-1903"
+    },
+    "diretor": {
+      "nome": "FRANCELIA",
+      "email": "francelia.santos@educacao.mg.gov.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": false,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "10",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "16",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "A",
+      "andar": "TERREO",
+      "sala": "SALA 3",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1 ANDAR",
+      "sala": "SALA VIDEO",
+      "capacidade": 35,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1 ANDAR",
+      "sala": "SALA 11",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1 ANDAR",
+      "sala": "SALA 12",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1 ANDAR",
+      "sala": "SALA 13",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1 ANDAR",
+      "sala": "SALA 14",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1 ANDAR",
+      "sala": "SALA 15",
+      "capacidade": 25,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1 ANDAR",
+      "sala": "SALA 16",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1 ANDAR",
+      "sala": "SALA 17",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "A",
+      "andar": "1 ANDAR",
+      "sala": "SALA 18",
+      "capacidade": 20,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    }
+  ]
 }
