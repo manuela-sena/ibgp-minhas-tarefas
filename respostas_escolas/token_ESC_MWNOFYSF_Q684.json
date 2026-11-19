@@ -1,11 +1,122 @@
 {
   "token": "ESC_MWNOFYSF_Q684",
-  "criadoEm": "2026-11-19T15:00:22.623Z",
+  "enviadoEm": "2026-11-19T20:07:42.955Z",
+  "protocolo": "ESC_MWNOFYSF_Q684_1795118862955",
   "concurso": {
     "concurso": "LAGOA DA PRATA/MG - EDITAL Nº 01/2026 - CONCURSO",
     "municipio": "LAGOA DA PRATA/MG",
     "dataProva": "29/11/2026",
     "escola": "EE. MONSENHOR ALFREDO",
     "idEscola": "ESC_MWNOFYSF_Q684"
-  }
+  },
+  "instituicao": {
+    "nome": "EE. MONSENHOR ALFREDO",
+    "cnpj": "",
+    "razao": "",
+    "endereco": "JOSÉ MARIA BOTELHO",
+    "numero": "127",
+    "complemento": "",
+    "bairro": "CHICO MIRANDA",
+    "cidade": "LAGOA DA PRATA",
+    "uf": "MG",
+    "cep": "35592-040",
+    "responsavel": {
+      "nome": "HALPH CARVALHO DE OLIVEIRA",
+      "cargo": "DIRETOR",
+      "email": "escola.34118@educacao.mg.gov.br",
+      "tel": "(37) 99865-3476"
+    },
+    "diretor": {
+      "nome": "HALPH CARVALHO DE OLIVEIRA",
+      "email": "halph.oliveira@educacao.mg.gov.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": false,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "1",
+        "adaptado": true
+      },
+      "fem": {
+        "qtd": "1",
+        "adaptado": true
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "1",
+      "andar": "1° ANDAR",
+      "sala": "SALA 2",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "1",
+      "andar": "2° ANDAR",
+      "sala": "SALA 5",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "2",
+      "andar": "2° ANDAR",
+      "sala": "SALA 5",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "3",
+      "andar": "1° ANDAR",
+      "sala": "SALA 3",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    },
+    {
+      "bloco": "3",
+      "andar": "2° ANDAR",
+      "sala": "SALA 2",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "4",
+      "andar": "1° ANDAR",
+      "sala": "SALA 4",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": true
+    }
+  ]
 }
