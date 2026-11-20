@@ -1,11 +1,357 @@
 {
   "token": "ESC_MWP2FAMN_OBW0",
   "criadoEm": "2026-11-20T14:19:32.111Z",
+  "enviadoEm": "2026-11-20T14:50:58.000Z",
+  "protocolo": "ESC_MWP2FAMN_OBW0_1795186258371",
+  "cadastradoPor": "IBGP, a partir do mapa de sala (Rede Física) enviado pela FUMEC",
   "concurso": {
     "concurso": "HOSPITAL METROPOLITANO ODILON BEHRENS - EDITAL Nº 01/2026",
     "municipio": "BELO HORIZONTE/MG",
     "dataProva": "29/11/2026",
     "escola": "UNIVERSIDADE FUMEC - FACE I",
     "idEscola": "ESC_MWP2FAMN_OBW0"
-  }
+  },
+  "instituicao": {
+    "nome": "UNIVERSIDADE FUMEC - FACE I",
+    "cnpj": "17.253.253/0004-12",
+    "razao": "FUNDAÇÃO MINEIRA DE EDUCAÇÃO E CULTURA",
+    "endereco": "RUA COBRE",
+    "numero": "200",
+    "complemento": "PRÉDIO A (FACE I)",
+    "bairro": "CRUZEIRO",
+    "cidade": "BELO HORIZONTE",
+    "uf": "MG",
+    "cep": "",
+    "responsavel": {
+      "nome": "",
+      "cargo": "",
+      "email": "",
+      "tel": ""
+    },
+    "diretor": {
+      "nome": "",
+      "email": ""
+    }
+  },
+  "salas": [
+    {
+      "sala": "SALA A304",
+      "bloco": "BLOCO A",
+      "andar": "3º ANDAR",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A305",
+      "bloco": "BLOCO A",
+      "andar": "3º ANDAR",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A306",
+      "bloco": "BLOCO A",
+      "andar": "3º ANDAR",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A307",
+      "bloco": "BLOCO A",
+      "andar": "3º ANDAR",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A308",
+      "bloco": "BLOCO A",
+      "andar": "3º ANDAR",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A309",
+      "bloco": "BLOCO A",
+      "andar": "3º ANDAR",
+      "capacidade": 45,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A310",
+      "bloco": "BLOCO A",
+      "andar": "3º ANDAR",
+      "capacidade": 40,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A314",
+      "bloco": "BLOCO A",
+      "andar": "3º ANDAR",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A315",
+      "bloco": "BLOCO A",
+      "andar": "3º ANDAR",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A316",
+      "bloco": "BLOCO A",
+      "andar": "3º ANDAR",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A317",
+      "bloco": "BLOCO A",
+      "andar": "3º ANDAR",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A318",
+      "bloco": "BLOCO A",
+      "andar": "3º ANDAR",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A319",
+      "bloco": "BLOCO A",
+      "andar": "3º ANDAR",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A401",
+      "bloco": "BLOCO A",
+      "andar": "4º ANDAR",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A402",
+      "bloco": "BLOCO A",
+      "andar": "4º ANDAR",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A403",
+      "bloco": "BLOCO A",
+      "andar": "4º ANDAR",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A404",
+      "bloco": "BLOCO A",
+      "andar": "4º ANDAR",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A405",
+      "bloco": "BLOCO A",
+      "andar": "4º ANDAR",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A406",
+      "bloco": "BLOCO A",
+      "andar": "4º ANDAR",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A407",
+      "bloco": "BLOCO A",
+      "andar": "4º ANDAR",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A408",
+      "bloco": "BLOCO A",
+      "andar": "4º ANDAR",
+      "capacidade": 45,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A410",
+      "bloco": "BLOCO A",
+      "andar": "4º ANDAR",
+      "capacidade": 45,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A411",
+      "bloco": "BLOCO A",
+      "andar": "4º ANDAR",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A412",
+      "bloco": "BLOCO A",
+      "andar": "4º ANDAR",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A413",
+      "bloco": "BLOCO A",
+      "andar": "4º ANDAR",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A414",
+      "bloco": "BLOCO A",
+      "andar": "4º ANDAR",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A415",
+      "bloco": "BLOCO A",
+      "andar": "4º ANDAR",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A416",
+      "bloco": "BLOCO A",
+      "andar": "4º ANDAR",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    },
+    {
+      "sala": "SALA A417",
+      "bloco": "BLOCO A",
+      "andar": "4º ANDAR",
+      "capacidade": 50,
+      "turno": "AMBOS",
+      "sexo": "AMBOS",
+      "atendimentoEspecial": false,
+      "arcond": true,
+      "ventilador": false
+    }
+  ]
 }
