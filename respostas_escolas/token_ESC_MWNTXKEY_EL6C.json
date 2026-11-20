@@ -1,11 +1,92 @@
 {
   "token": "ESC_MWNTXKEY_EL6C",
-  "criadoEm": "2026-11-19T17:34:01.882Z",
+  "enviadoEm": "2026-11-20T10:42:35.980Z",
+  "protocolo": "ESC_MWNTXKEY_EL6C_1795171355981",
   "concurso": {
     "concurso": "LAGOA DA PRATA/MG - EDITAL Nº 01/2026 - CONCURSO",
     "municipio": "LAGOA DA PRATA/MG",
     "dataProva": "29/11/2026",
     "escola": "EM. PROFESSOR AFONSO GOULART",
     "idEscola": "ESC_MWNTXKEY_EL6C"
-  }
+  },
+  "instituicao": {
+    "nome": "EM. PROFESSOR AFONSO GOULART",
+    "cnpj": "01.930.250/0001-93",
+    "razao": "EM. PROFESSOR AFONSO GOULART",
+    "endereco": "RUA DONA NANÁ,",
+    "numero": "446",
+    "complemento": "",
+    "bairro": "GOMES",
+    "cidade": "LAGOA DA PRATA",
+    "uf": "MG",
+    "cep": "35590-000",
+    "responsavel": {
+      "nome": "MARIA APARECIDA DE DE DEUS DIAS",
+      "cargo": "DIRETORA",
+      "email": "mariadedeus03@yahoo.com.br",
+      "tel": "(37) 99823-2098"
+    },
+    "diretor": {
+      "nome": "MARIA APARECIDA DE DEUS DIAS",
+      "email": "mariadedeus03@yahoo.com.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": false,
+      "arcond": false,
+      "ventilador": true
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "04",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "04",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "A",
+      "andar": "",
+      "sala": "SALA 2",
+      "capacidade": 54,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": true,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "B",
+      "andar": "",
+      "sala": "SALA 4",
+      "capacidade": 108,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "C",
+      "andar": "",
+      "sala": "SALA 3",
+      "capacidade": 81,
+      "turno": "AMBOS",
+      "arcond": false,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    }
+  ]
 }
