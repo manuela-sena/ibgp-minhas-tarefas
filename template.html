@@ -9284,6 +9284,14 @@ const AVAL_PROVAS = [
   {key:'barra',     titulo:'Barra Fixa (masc.) / Isometria (fem.)',tituloM:'Flexões na barra — masculino',     tituloF:'Tempo em sustentação — feminino'}
 ];
 
+// TAF só ELIMINATÓRIO (apto/inapto): desempenho mínimo por prova e sexo. Valores do Anexo V do Edital 01/2026 da GCM de Brumadinho — conferir com o edital de cada concurso.
+const AVAL_MINIMOS_DEFAULT = {
+  barra:     {m:3,    f:9,    unidadeM:'repetições', unidadeF:'segundos'},
+  abdominal: {m:25,   f:20,   unidadeM:'repetições', unidadeF:'repetições'},
+  corrida:   {m:2000, f:1800, unidadeM:'metros',     unidadeF:'metros'}
+};
+const AVAL_ORDEM_ELIM = ['barra','abdominal','corrida'];
+
 window._avalConfig = null; // config atual (existente ou em criação) do concurso selecionado
 
 function initAvaliacao(){
@@ -9365,6 +9373,7 @@ async function carregarAvaliacao(){
     tabelaPontos: JSON.parse(JSON.stringify(AVAL_TABELA_DEFAULT))
   };
   if(configExistente) window._avalConfig.concursoId = concursoId || configExistente.concursoId || '';
+  { const c = window._avalConfig; c.modo = c.modo || 'classificatorio'; if(!c.minimos) c.minimos = JSON.parse(JSON.stringify(AVAL_MINIMOS_DEFAULT)); if(c.sequencial===undefined) c.sequencial = true; if(!c.ordemProvas) c.ordemProvas = [...AVAL_ORDEM_ELIM]; }
   window._avalConfigPratica = configPraticaExistente || {
     token: null, _sha: null, criadoEm: null, concursoNome, concursoId,
     avaliadores: [], candidatos: [],
@@ -9409,9 +9418,17 @@ ${linkAtivo ? `
 </div>
 
 <div class="card card-pad" style="margin-bottom:14px">
-  <div style="font-size:13px;font-weight:700;color:#1f2a3d;margin-bottom:4px">3. Tabela de pontos do TAF</div>
-  <div style="font-size:12px;color:#8a9ab5;margin-bottom:14px">Pré-carregada com um modelo — ajuste os valores conforme o anexo do edital deste concurso. Quem ficar abaixo da primeira faixa é eliminado.</div>
-  <div id="aval-tabelas-pontos"></div>
+  <div style="font-size:13px;font-weight:700;color:#1f2a3d;margin-bottom:4px">3. Tipo do TAF e critérios de avaliação</div>
+  <div style="font-size:12px;color:#8a9ab5;margin-bottom:10px">Escolha como o TAF deste concurso é avaliado.</div>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+    <label style="display:flex;align-items:flex-start;gap:8px;border:1.5px solid #e2e7ef;border-radius:10px;padding:10px 12px;font-size:12.5px;cursor:pointer;flex:1;min-width:240px"><input type="radio" name="aval-modo" value="classificatorio" ${cfg.modo!=='eliminatorio'?'checked':''} onchange="avalSetModo('classificatorio')"><span><b>Classificatório</b><br>o desempenho vira pontos (tabela de pontos)</span></label>
+    <label style="display:flex;align-items:flex-start;gap:8px;border:1.5px solid #e2e7ef;border-radius:10px;padding:10px 12px;font-size:12.5px;cursor:pointer;flex:1;min-width:240px"><input type="radio" name="aval-modo" value="eliminatorio" ${cfg.modo==='eliminatorio'?'checked':''} onchange="avalSetModo('eliminatorio')"><span><b>Somente eliminatório</b><br>apto ou inapto, pelo desempenho mínimo (sem pontos)</span></label>
+  </div>
+  <div id="aval-bloco-pontos" style="display:${cfg.modo==='eliminatorio'?'none':'block'}">
+    <div style="font-size:12px;color:#8a9ab5;margin-bottom:14px">Pré-carregada com um modelo — ajuste os valores conforme o anexo do edital deste concurso. Quem ficar abaixo da primeira faixa é eliminado.</div>
+    <div id="aval-tabelas-pontos"></div>
+  </div>
+  <div id="aval-bloco-minimos" style="display:${cfg.modo==='eliminatorio'?'block':'none'}"></div>
 </div>
 
 <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:4px">
@@ -9432,6 +9449,7 @@ ${cfg.token ? `
 
   renderListaAvaliadores();
   AVAL_PROVAS.forEach(p=>renderTabelaPontos(p.key));
+  renderMinimos();
 }
 
 function renderListaAvaliadores(){
@@ -9461,6 +9479,30 @@ function avalAddAvaliador(){
 function avalRemoverAvaliador(i){
   window._avalConfig.avaliadores.splice(i,1);
   renderListaAvaliadores();
+}
+
+function avalSetModo(modo){
+  window._avalConfig.modo = modo;
+  const bp = document.getElementById('aval-bloco-pontos'), bm = document.getElementById('aval-bloco-minimos');
+  if(bp) bp.style.display = modo==='eliminatorio' ? 'none' : 'block';
+  if(bm) bm.style.display = modo==='eliminatorio' ? 'block' : 'none';
+  renderMinimos();
+}
+function avalSetMinimo(prova, campo, valor){
+  const n = parseFloat(String(valor).replace(',','.'));
+  window._avalConfig.minimos[prova][campo] = isFinite(n) ? n : 0;
+}
+function avalSetSequencial(v){ window._avalConfig.sequencial = !!v; }
+function renderMinimos(){
+  const el = document.getElementById('aval-bloco-minimos'); if(!el) return;
+  const cfg = window._avalConfig; if(!cfg.minimos) return;
+  const linha = k=>{ const p = AVAL_PROVAS.find(x=>x.key===k), m = cfg.minimos[k];
+    const inp = (campo,un)=>`<input type="number" step="${un==='segundos'?'0.01':'1'}" min="0" value="${m[campo]}" style="width:90px;padding:5px 7px;border:1px solid #e2e7ef;border-radius:6px" onchange="avalSetMinimo('${k}','${campo}',this.value)"> <span style="color:#8a9ab5">${un}</span>`;
+    return `<tr><td style="padding:6px 8px;font-weight:600;color:#1f2a3d">${p.titulo}</td><td style="padding:6px 8px">${inp('m',m.unidadeM)}</td><td style="padding:6px 8px">${inp('f',m.unidadeF)}</td></tr>`; };
+  el.innerHTML = `<div style="font-size:12px;color:#8a9ab5;margin-bottom:12px">Informe o <b>desempenho mínimo</b> de cada prova. Quem ficar abaixo é <b>eliminado</b> (inapto); quem atingir o mínimo em todas é <b>apto</b>. Não há pontos nem classificação. Já vem preenchido com os mínimos do Anexo V do Edital 01/2026 da GCM de Brumadinho — <b>confira com o edital deste concurso</b>.</div>
+    <table style="width:100%;border-collapse:collapse;font-size:12.5px"><thead><tr style="border-bottom:1.5px solid #e2e7ef"><th style="text-align:left;padding:6px 8px;color:#8a9ab5;font-weight:600">Prova</th><th style="text-align:left;padding:6px 8px;color:#8a9ab5;font-weight:600">Mínimo — masculino</th><th style="text-align:left;padding:6px 8px;color:#8a9ab5;font-weight:600">Mínimo — feminino</th></tr></thead>
+    <tbody>${AVAL_ORDEM_ELIM.map(linha).join('')}</tbody></table>
+    <label style="display:flex;align-items:flex-start;gap:8px;margin-top:12px;font-size:12.5px;color:#41506b;cursor:pointer"><input type="checkbox" ${cfg.sequencial!==false?'checked':''} onchange="avalSetSequencial(this.checked)"> <span>Eliminação em sequência (barra → abdominal → corrida): quem é eliminado numa prova não segue para a próxima — o formulário avisa o avaliador.</span></label>`;
 }
 
 function renderTabelaPontos(provaKey){
@@ -9681,7 +9723,8 @@ function gerarResultadoTaf(input){
           if(!atual || new Date(resp.enviadoEm||0) > new Date(atual.enviadoEm||0)) grupo[prova] = resp;
         }
 
-        const provasOrdem = ['corrida','abdominal','barra'];
+        const ehElimCfg = cfg.modo === 'eliminatorio';     // só eliminatório: mostra o desempenho (sem pontos) e em que prova foi eliminado
+        const provasOrdem = ehElimCfg ? (cfg.ordemProvas || AVAL_ORDEM_ELIM) : ['corrida','abdominal','barra'];
         const provasTitulos = {corrida:'CORRIDA', abdominal:'ABDOMINAL', barra:'BARRA'};
 
         // Formata um ISO string salvo pelo formulário (horaInicio/horaFim) como
@@ -9702,7 +9745,7 @@ function gerarResultadoTaf(input){
           if(idxHeader < 0){ avalCopiarAbaSimples(wbOut, nomeAba, aoa); continue; }
           const colInsc = headersNorm.findIndex(h=>h.includes('INSCRICAO'));
 
-          const cols = [...headerOriginal, ...provasOrdem.map(p=>`${provasTitulos[p]} (NOTA)`), 'RESULTADO', 'LINK FOTO'];
+          const cols = [...headerOriginal, ...provasOrdem.map(p=>`${provasTitulos[p]} (${ehElimCfg?'DESEMPENHO':'NOTA'})`), 'RESULTADO', ...(ehElimCfg?['ELIMINADO NA PROVA']:[]), 'LINK FOTO'];
           provasOrdem.forEach(p=>{ cols.push(`${provasTitulos[p]} - INÍCIO`, `${provasTitulos[p]} - FIM`); });
           const linhas = [];
           for(let r=idxHeader+1; r<aoa.length; r++){
@@ -9716,6 +9759,7 @@ function gerarResultadoTaf(input){
             const notas = provasOrdem.map(p=>{
               const resp = respsCandidato[p];
               if(!resp) return '';
+              if(ehElimCfg){ const v = `${resp.valor} ${resp.unidade||''}`.trim(); return resp.eliminado ? `ELIMINADO (${v})` : v; }
               return resp.eliminado ? 'ELIMINADO' : resp.pontos;
             });
             const horarios = provasOrdem.map(p=>{
@@ -9737,7 +9781,8 @@ function gerarResultadoTaf(input){
             }
 
             const valoresOriginais = headerOriginal.map((_,ci)=> row[ci]===undefined ? '' : row[ci]);
-            linhas.push([...valoresOriginais, ...notas, resultado, avalLinkFoto(fotoMaisRecente?.fotoPath), ...horarios]);
+            const provaElim = ehElimCfg ? provasOrdem.find(p=>respsCandidato[p] && respsCandidato[p].eliminado) : null;
+            linhas.push([...valoresOriginais, ...notas, resultado, ...(ehElimCfg?[provaElim?provasTitulos[provaElim]:'']:[]), avalLinkFoto(fotoMaisRecente?.fotoPath), ...horarios]);
           }
           avalCriarPlanilhaResultado(wbOut, nomeAba, cols, linhas);
         }
@@ -9903,7 +9948,11 @@ async function salvarConfigAvaliacao(){
     concursoId: cfg.concursoId || '',
     avaliadores: cfg.avaliadores,
     candidatos: cfg.candidatos,
-    tabelaPontos: cfg.tabelaPontos
+    tabelaPontos: cfg.tabelaPontos,
+    modo: cfg.modo || 'classificatorio',
+    minimos: cfg.minimos,
+    sequencial: cfg.sequencial !== false,
+    ordemProvas: cfg.ordemProvas || AVAL_ORDEM_ELIM
   };
 
   try{
@@ -10825,28 +10874,12 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
   // Ordenar por capacidade desc (maior primeiro)
   const capTotalPorEscola = {};
   salasPool.forEach(s=>{ capTotalPorEscola[s.escola] = (capTotalPorEscola[s.escola]||0) + s.capacidadeOriginal; });
-  // Ordem de uso: ESCOLA (maior capacidade) → BLOCO (maior capacidade) → ANDAR (maior capacidade) → SALA (maior).
-  // Assim o andar e o bloco são preenchidos por inteiro antes de abrir outro, em vez de pegar uma sala grande isolada em outro andar.
-  const capBloco = {}, capAndar = {};
-  salasPool.forEach(s=>{ if(s.atendimentoEspecial) return; const kb=s.escola+'|'+s.bloco, ka=kb+'|'+s.andar; capBloco[kb]=(capBloco[kb]||0)+s.capacidadeOriginal; capAndar[ka]=(capAndar[ka]||0)+s.capacidadeOriginal; });
-  const cmpTxt = (a,b)=> String(a).localeCompare(String(b),'pt-BR',{numeric:true});
-  salasPool.sort((a,b)=> (capTotalPorEscola[b.escola]-capTotalPorEscola[a.escola]) || cmpTxt(a.escola,b.escola)
-    || ((capBloco[b.escola+'|'+b.bloco]||0)-(capBloco[a.escola+'|'+a.bloco]||0)) || cmpTxt(a.bloco,b.bloco)
-    || ((capAndar[b.escola+'|'+b.bloco+'|'+b.andar]||0)-(capAndar[a.escola+'|'+a.bloco+'|'+a.andar]||0)) || cmpTxt(a.andar,b.andar)
-    || (b.capacidadeOriginal - a.capacidadeOriginal) || cmpTxt(a.salaBase,b.salaBase));
+  salasPool.sort((a,b)=> (capTotalPorEscola[b.escola]-capTotalPorEscola[a.escola]) || (b.capacidadeOriginal - a.capacidadeOriginal));
 
   // Salas reservadas para atendimento especial (biblioteca, laboratório, sala multimídia etc)
   // ficam separadas do pool de salas normais de prova.
   const salasEspeciais = salasPool.filter(s=>s.atendimentoEspecial);
   const salasNormais   = salasPool.filter(s=>!s.atendimentoEspecial);
-  // Salas de grupos/individuais escolhem a sala que serve DENTRO dos andares que já vão ser usados (os primeiros da ordem acima que cobrem
-  // todos os candidatos do turno) — assim um candidato individual não abre um andar novo só porque a sala dele é a menor.
-  const ordemSala = new Map(salasPool.map((s,i)=>[s,i]));
-  const chaveAndar = s => s.escola+'|'+s.bloco+'|'+s.andar;
-  const andaresAtivos = new Set();
-  { let acc=0; const demanda=candidatos.length; const visto=new Set();
-    for(const s of salasNormais){ const k=chaveAndar(s); if(visto.has(k)) continue; if(acc>=demanda) break; visto.add(k); andaresAtivos.add(k); acc+=capAndar[k]||0; } }
-  const rankSala = s => andaresAtivos.has(chaveAndar(s)) ? 0 : 1;
 
   // ── 2. Identificar atendimento especial de cada candidato ──
   function getAtendimentos(c){
@@ -11047,7 +11080,7 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
     if(s) return s;
     const cands = salasNormais
       .filter(x=>!excluidas.has(x) && x.ocupantes.length===0 && (!c._terreo || salaEhTerrea(x.andar)) && salaAceitaSexo(x,c))
-      .sort((a,b)=>(rankSala(a)-rankSala(b)) || (a.capacidadeOriginal-b.capacidadeOriginal) || (ordemSala.get(a)-ordemSala.get(b)));
+      .sort((a,b)=>(a.capacidadeOriginal-b.capacidadeOriginal) || (capTotalPorEscola[b.escola]-capTotalPorEscola[a.escola]));
     return cands[0] || null;
   }
   function nomeComAbrev(c, sala, tipoSala){
@@ -11084,7 +11117,7 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
     if(!salaJuntos){
       const candidatasSala = salasNormais
         .filter(s=>s.ocupantes.length===0 && (!precisaTerreoGrp || salaEhTerrea(s.andar)) && grupoAceitaSala(s))
-        .sort((a,b)=>(rankSala(a)-rankSala(b)) || (a.capacidadeOriginal - b.capacidadeOriginal) || (ordemSala.get(a)-ordemSala.get(b)));
+        .sort((a,b)=>(a.capacidadeOriginal - b.capacidadeOriginal) || (capTotalPorEscola[b.escola]-capTotalPorEscola[a.escola]));
       salaJuntos = candidatasSala.find(s=>s.capacidadeOriginal>=qtd) || null;
     }
     const custoJuntos = salaJuntos ? (salaJuntos.capacidadeOriginal - qtd) : Infinity;
@@ -11136,8 +11169,8 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
       const aptas=()=>[...salasEspeciais,...salasNormais].filter(x=>!usadas.has(x)&&x.ocupantes.length===0&&x.capacidadeDisponivel>=2&&(!precisaTerreoGrp||salaEhTerrea(x.andar))&&grupoAceitaSala(x));
       while(resto.length>1){
         const ap=aptas(); if(!ap.length) break;
-        const cabe=ap.filter(x=>x.capacidadeDisponivel>=resto.length).sort((a,b)=>(rankSala(a)-rankSala(b)) || (a.capacidadeDisponivel-b.capacidadeDisponivel) || (ordemSala.get(a)-ordemSala.get(b)))[0];
-        const sala=cabe||ap.sort((a,b)=>(rankSala(a)-rankSala(b)) || (b.capacidadeDisponivel-a.capacidadeDisponivel) || (ordemSala.get(a)-ordemSala.get(b)))[0];
+        const cabe=ap.filter(x=>x.capacidadeDisponivel>=resto.length).sort((a,b)=>a.capacidadeDisponivel-b.capacidadeDisponivel)[0];
+        const sala=cabe||ap.sort((a,b)=>b.capacidadeDisponivel-a.capacidadeDisponivel)[0];
         usadas.add(sala); const lote=resto.splice(0,Math.min(sala.capacidadeDisponivel,resto.length));
         lote.forEach(c=>{ sala.ocupantes.push(c); const nome=nomeComAbrev(c,sala,grp.tipoSala);
           alocados.push({...mapCandidato(c), SALA: nome, ANDAR: sala.andar, BLOCO: sala.bloco, ESCOLA: sala.escola, _tipoSala: grp.tipoSala, _salaEspecialUsada: true, _salaBase: sala.salaBase, _sufixoSala: nome.slice(sala.salaBase.length).trim()}); });
