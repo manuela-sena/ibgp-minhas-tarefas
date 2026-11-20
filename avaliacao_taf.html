@@ -90,6 +90,12 @@
   .preview-pontos.ok { background: #eaf6ef; color: var(--verde); }
   .preview-pontos.elim { background: #fbeaea; color: var(--vermelho); }
   .preview-pontos.neutro { background: var(--cinza); color: var(--muted); font-weight:600; }
+.valor-num { display:flex; flex-direction:column; gap:12px; width:100%; }
+.valor-num .dica-min { background:#eef3fb; border-radius:10px; padding:12px 14px; font-size:15px; color:#2b3a55; }
+.valor-num .num-wrap { display:flex; align-items:center; gap:10px; }
+.valor-num .num-btn { width:64px; height:64px; border-radius:14px; border:1.5px solid #cfd6e4; background:#fff; font-size:32px; font-weight:700; color:#1F3A5F; cursor:pointer; }
+.valor-num input { flex:1; min-width:0; height:64px; font-size:30px; font-weight:800; text-align:center; border:1.5px solid #cfd6e4; border-radius:14px; }
+.valor-num .unid { font-size:15px; color:#5b6b85; min-width:76px; }
   .crono-display { font-family: 'Sora', monospace; font-size: 40px; font-weight: 800; text-align: center;
     color: var(--azul); background: var(--cinza); border-radius: 10px; padding: 18px; margin-bottom: 14px; letter-spacing: 1px; }
   .crono-display.rodando { color: var(--azul-med); }
@@ -296,6 +302,7 @@
           <button onclick="limparCandidato()">trocar</button>
         </div>
         <div id="aviso-ja-avaliado" style="display:none;margin-top:10px" class="alert alert-warn"></div>
+<div id="aviso-eliminado-anterior" style="display:none;margin-top:10px" class="alert alert-error"></div>
       </div>
     </div>
 
@@ -560,6 +567,7 @@ async function verificarAvaliacaoExistente(){
   const banner = document.getElementById('aviso-ja-avaliado');
   const prova = document.getElementById('f-prova').value;
   if(!banner) return;
+  verificarEliminacaoAnterior();
   if(!prova || !CANDIDATO_SEL){ banner.style.display='none'; return; }
   banner.style.display='none';
   try{
@@ -573,7 +581,7 @@ async function verificarAvaliacaoExistente(){
     const dataEnvio = resp.enviadoEm ? new Date(resp.enviadoEm).toLocaleString('pt-BR') : '—';
     const horaIni = resp.horaInicio ? new Date(resp.horaInicio).toLocaleTimeString('pt-BR',{hour12:false}) : '—';
     const horaFim = resp.horaFim ? new Date(resp.horaFim).toLocaleTimeString('pt-BR',{hour12:false}) : '—';
-    const resultadoTxt = resp.eliminado ? 'ELIMINADO' : `${resp.pontos} pontos`;
+    const resultadoTxt = resp.eliminado ? 'ELIMINADO' : (resp.pontos==null ? 'APTO nesta prova' : `${resp.pontos} pontos`);
     banner.innerHTML = `⚠️ <strong>Este candidato já foi avaliado em ${nomesProva[prova]||prova}.</strong><br>
       Avaliador: ${resp.avaliador||'—'} · Valor obtido: ${resp.valor??'—'} · Resultado: ${resultadoTxt}<br>
       Início: ${horaIni} · Fim: ${horaFim} · Enviado em: ${dataEnvio}<br>
@@ -613,6 +621,7 @@ function atualizarOpcoesValor(){
   const grid = document.getElementById('f-valor-grid');
   const valorAnterior = document.getElementById('f-valor').value;
   document.getElementById('f-valor').value = '';
+  if(ehElim()){ montarEntradaElim(prova, grid); return; }
   const tab = (prova && CONFIG.tabelaPontos) ? CONFIG.tabelaPontos[prova] : null;
   if(!prova || !SEXO_SEL || !tab || !tab.linhas || !tab.linhas.length){
     grid.className = 'valor-grid vazio';
@@ -880,7 +889,72 @@ function selecionarSexo(sexo){
   atualizarBotaoEnviar();
 }
 
+// ── TAF SÓ ELIMINATÓRIO (apto/inapto) ─────────────────────────────────────────────────────────────
+// Não há pontos nem classificação: vale o desempenho MÍNIMO de cada prova (por sexo). Abaixo dele, o candidato é eliminado.
+const NOMES_PROVA = {corrida:'Corrida de Resistência', abdominal:'Flexão Abdominal', barra:'Barra Fixa / Isometria'};
+function ehElim(){ return !!CONFIG && CONFIG.modo==='eliminatorio'; }
+function minimoElim(provaKey, sexo){
+  const m = CONFIG && CONFIG.minimos && CONFIG.minimos[provaKey]; if(!m) return null;
+  const min = parseFloat(sexo==='M' ? m.m : m.f); if(!isFinite(min)) return null;
+  return {min, unidade:(sexo==='M' ? m.unidadeM : m.unidadeF)||''};
+}
+function montarEntradaElim(prova, grid){
+  const mm = (prova && SEXO_SEL) ? minimoElim(prova, SEXO_SEL) : null;
+  if(!mm){ grid.className='valor-grid vazio'; grid.innerHTML = (prova && SEXO_SEL) ? 'Mínimo desta prova não configurado — fale com a coordenação.' : 'Selecione a prova e o sexo primeiro...'; return; }
+  const seg = mm.unidade==='segundos';
+  grid.className = 'valor-num';
+  grid.innerHTML = `<div class="dica-min">Mínimo para <b>não ser eliminado</b>: <b>${mm.min} ${mm.unidade}</b></div>
+    <div class="num-wrap"><button type="button" class="num-btn" onclick="ajustarValorNum(-1)">−</button>
+      <input type="number" id="f-valor-num" min="0" step="${seg?'0.01':'1'}" inputmode="${seg?'decimal':'numeric'}" placeholder="0" oninput="onValorNumInput(this.value)">
+      <button type="button" class="num-btn" onclick="ajustarValorNum(1)">+</button><span class="unid">${mm.unidade}</span></div>`;
+}
+function onValorNumInput(v){
+  const n = parseFloat(String(v).replace(',','.'));
+  document.getElementById('f-valor').value = (isFinite(n) && n>=0) ? String(n) : '';
+  atualizarPreview(); atualizarBotaoEnviar();
+}
+function ajustarValorNum(d){
+  const inp = document.getElementById('f-valor-num'); if(!inp) return;
+  const novo = Math.max(0, (parseFloat(String(inp.value).replace(',','.'))||0) + d);
+  inp.value = String(Math.round(novo*100)/100); onValorNumInput(inp.value);
+}
+// Pelo regulamento (ex.: Anexo V da GCM de Brumadinho), quem é eliminado numa prova não prossegue para as seguintes: avisa o avaliador.
+async function buscarEliminacaoAnterior(inscricao, provaAtual){
+  if(!ehElim() || CONFIG.sequencial===false) return null;
+  const ordem = CONFIG.ordemProvas || ['barra','abdominal','corrida'];
+  const i = ordem.indexOf(provaAtual); if(i<=0) return null;
+  for(const pv of ordem.slice(0,i)){
+    try{
+      const r = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/respostas_avaliacao/taf_resp_${TOKEN}_${inscricao}_${pv}.json`,
+        {headers:{'Authorization':'Bearer '+GH_WRITE_TOKEN}});
+      if(!r.ok) continue;
+      const d = await r.json();
+      const resp = JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))));
+      if(resp.eliminado) return {prova:pv, valor:resp.valor, minimo:resp.minimo, unidade:resp.unidade||''};
+    }catch(e){ /* sem rede para checar: não bloqueia */ }
+  }
+  return null;
+}
+function textoEliminacaoAnterior(e){
+  return `⛔ Este candidato já foi ELIMINADO em ${NOMES_PROVA[e.prova]||e.prova} (${e.valor??'—'} ${e.unidade}${e.minimo!=null?'; mínimo '+e.minimo:''}). Pelo regulamento ele não prossegue para a próxima prova.`;
+}
+async function verificarEliminacaoAnterior(){
+  const box = document.getElementById('aviso-eliminado-anterior'); if(!box) return;
+  const prova = document.getElementById('f-prova').value;
+  box.style.display='none';
+  if(!prova || !CANDIDATO_SEL) return;
+  const e = await buscarEliminacaoAnterior(CANDIDATO_SEL.inscricao, prova);
+  if(!e) return;
+  box.innerHTML = `<strong>${textoEliminacaoAnterior(e)}</strong><br>Confira com a coordenação antes de avaliar.`;
+  box.style.display='block';
+}
+
 function calcularPontos(provaKey, sexo, valor){
+  if(ehElim()){
+    const mm = minimoElim(provaKey, sexo);
+    if(!mm) return {pontos:null, eliminado:false, semMinimo:true};
+    return {pontos:null, eliminado: !(valor >= mm.min), minimo:mm.min, unidade:mm.unidade};
+  }
   const tab = CONFIG.tabelaPontos && CONFIG.tabelaPontos[provaKey];
   if(!tab) return {pontos:0, eliminado:true};
   const campo = sexo==='M' ? 'm' : 'f';
@@ -902,6 +976,12 @@ function atualizarPreview(){
   box.style.display='block';
   const valor = parseFloat(valorStr);
   const r = calcularPontos(prova, SEXO_SEL, valor);
+  if(ehElim()){
+    if(r.semMinimo){ box.className='preview-pontos neutro'; box.textContent='Mínimo desta prova não configurado'; return; }
+    if(r.eliminado){ box.className='preview-pontos elim'; box.textContent=`⚠️ ELIMINADO — abaixo do mínimo (${r.minimo} ${r.unidade})`; }
+    else { box.className='preview-pontos ok'; box.textContent=`✅ APTO nesta prova — atingiu o mínimo (${r.minimo} ${r.unidade})`; }
+    return;
+  }
   if(r.eliminado){
     box.className='preview-pontos elim';
     box.textContent='⚠️ ELIMINADO — abaixo da faixa mínima';
@@ -952,6 +1032,7 @@ async function enviarAvaliacao(){
       valor,
       pontos: calc.pontos,
       eliminado: calc.eliminado,
+      ...(ehElim() ? {modo:'eliminatorio', minimo:calc.minimo, unidade:calc.unidade, apto:!calc.eliminado} : {}),
       horaInicio: CRONO_INICIO.toISOString(),
       horaFim: CRONO_FIM.toISOString(),
       fotoPath,
@@ -974,7 +1055,7 @@ async function enviarAvaliacao(){
 
     limparRascunho();
     document.getElementById('success-resumo').textContent =
-      `${CANDIDATO_SEL.nome} — ${prova.toUpperCase()} — ` + (calc.eliminado ? 'ELIMINADO' : calc.pontos+' pontos');
+      `${CANDIDATO_SEL.nome} — ${prova.toUpperCase()} — ` + (calc.eliminado ? 'ELIMINADO' : (ehElim() ? 'APTO nesta prova' : calc.pontos+' pontos'));
     document.getElementById('form-wrap').style.display='none';
     document.getElementById('page-success').style.display='block';
     window.scrollTo({top:0, behavior:'smooth'});
@@ -1324,7 +1405,7 @@ function cancelarAdicionarAoGrupo(){
   if(form) form.style.display='none';
 }
 
-function confirmarAdicionarAoGrupo(){
+async function confirmarAdicionarAoGrupo(){
   const numero = document.getElementById('add-grupo-numero').value.trim();
   if(!GRUPO_CANDIDATO_TEMP || !GRUPO_SEXO_TEMP || !numero){
     alert('Informe o número e confirme o sexo antes de adicionar.');
@@ -1334,6 +1415,9 @@ function confirmarAdicionarAoGrupo(){
     alert('Já tem um candidato com esse número no grupo.');
     return;
   }
+  const elimAnt = await buscarEliminacaoAnterior(GRUPO_CANDIDATO_TEMP.inscricao, 'corrida');
+  if(elimAnt && !confirm(textoEliminacaoAnterior(elimAnt)+'\n\nAdicionar à corrida mesmo assim?')) return;
+  if(!GRUPO_CANDIDATO_TEMP) return;
   GRUPO_CORRIDA.push({
     inscricao: GRUPO_CANDIDATO_TEMP.inscricao,
     nome: GRUPO_CANDIDATO_TEMP.nome,
@@ -1501,6 +1585,12 @@ function atualizarResultadoParcial(g){
   const distancia = g.voltas*METROS_POR_VOLTA + g.posicaoParcial;
   const calc = calcularPontos('corrida', g.sexo, distancia);
   el.style.display = 'block';
+  if(ehElim()){
+    if(calc.semMinimo){ el.className='preview-pontos neutro'; el.textContent=`${distancia}m — mínimo não configurado`; return; }
+    el.className = calc.eliminado ? 'preview-pontos elim' : 'preview-pontos ok';
+    el.textContent = calc.eliminado ? `${distancia}m — ⚠️ ELIMINADO (mínimo ${calc.minimo}m)` : `${distancia}m — ✅ APTO (mínimo ${calc.minimo}m)`;
+    return;
+  }
   if(calc.eliminado){
     el.className = 'preview-pontos elim';
     el.textContent = `${distancia}m — ⚠️ ELIMINADO`;
@@ -1568,6 +1658,7 @@ async function enviarAvaliacaoGrupo(){
         valor: distanciaTotal,
         pontos: calc.pontos,
         eliminado: calc.eliminado,
+        ...(ehElim() ? {modo:'eliminatorio', minimo:calc.minimo, unidade:calc.unidade, apto:!calc.eliminado} : {}),
         horaInicio: CRONO_GRUPO_INICIO.toISOString(),
         horaFim: CRONO_GRUPO_FIM.toISOString(),
         fotoPath,
