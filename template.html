@@ -10825,12 +10825,28 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
   // Ordenar por capacidade desc (maior primeiro)
   const capTotalPorEscola = {};
   salasPool.forEach(s=>{ capTotalPorEscola[s.escola] = (capTotalPorEscola[s.escola]||0) + s.capacidadeOriginal; });
-  salasPool.sort((a,b)=> (capTotalPorEscola[b.escola]-capTotalPorEscola[a.escola]) || (b.capacidadeOriginal - a.capacidadeOriginal));
+  // Ordem de uso: ESCOLA (maior capacidade) → BLOCO (maior capacidade) → ANDAR (maior capacidade) → SALA (maior).
+  // Assim o andar e o bloco são preenchidos por inteiro antes de abrir outro, em vez de pegar uma sala grande isolada em outro andar.
+  const capBloco = {}, capAndar = {};
+  salasPool.forEach(s=>{ if(s.atendimentoEspecial) return; const kb=s.escola+'|'+s.bloco, ka=kb+'|'+s.andar; capBloco[kb]=(capBloco[kb]||0)+s.capacidadeOriginal; capAndar[ka]=(capAndar[ka]||0)+s.capacidadeOriginal; });
+  const cmpTxt = (a,b)=> String(a).localeCompare(String(b),'pt-BR',{numeric:true});
+  salasPool.sort((a,b)=> (capTotalPorEscola[b.escola]-capTotalPorEscola[a.escola]) || cmpTxt(a.escola,b.escola)
+    || ((capBloco[b.escola+'|'+b.bloco]||0)-(capBloco[a.escola+'|'+a.bloco]||0)) || cmpTxt(a.bloco,b.bloco)
+    || ((capAndar[b.escola+'|'+b.bloco+'|'+b.andar]||0)-(capAndar[a.escola+'|'+a.bloco+'|'+a.andar]||0)) || cmpTxt(a.andar,b.andar)
+    || (b.capacidadeOriginal - a.capacidadeOriginal) || cmpTxt(a.salaBase,b.salaBase));
 
   // Salas reservadas para atendimento especial (biblioteca, laboratório, sala multimídia etc)
   // ficam separadas do pool de salas normais de prova.
   const salasEspeciais = salasPool.filter(s=>s.atendimentoEspecial);
   const salasNormais   = salasPool.filter(s=>!s.atendimentoEspecial);
+  // Salas de grupos/individuais escolhem a sala que serve DENTRO dos andares que já vão ser usados (os primeiros da ordem acima que cobrem
+  // todos os candidatos do turno) — assim um candidato individual não abre um andar novo só porque a sala dele é a menor.
+  const ordemSala = new Map(salasPool.map((s,i)=>[s,i]));
+  const chaveAndar = s => s.escola+'|'+s.bloco+'|'+s.andar;
+  const andaresAtivos = new Set();
+  { let acc=0; const demanda=candidatos.length; const visto=new Set();
+    for(const s of salasNormais){ const k=chaveAndar(s); if(visto.has(k)) continue; if(acc>=demanda) break; visto.add(k); andaresAtivos.add(k); acc+=capAndar[k]||0; } }
+  const rankSala = s => andaresAtivos.has(chaveAndar(s)) ? 0 : 1;
 
   // ── 2. Identificar atendimento especial de cada candidato ──
   function getAtendimentos(c){
@@ -11031,7 +11047,7 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
     if(s) return s;
     const cands = salasNormais
       .filter(x=>!excluidas.has(x) && x.ocupantes.length===0 && (!c._terreo || salaEhTerrea(x.andar)) && salaAceitaSexo(x,c))
-      .sort((a,b)=>(a.capacidadeOriginal-b.capacidadeOriginal) || (capTotalPorEscola[b.escola]-capTotalPorEscola[a.escola]));
+      .sort((a,b)=>(rankSala(a)-rankSala(b)) || (a.capacidadeOriginal-b.capacidadeOriginal) || (ordemSala.get(a)-ordemSala.get(b)));
     return cands[0] || null;
   }
   function nomeComAbrev(c, sala, tipoSala){
@@ -11068,7 +11084,7 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
     if(!salaJuntos){
       const candidatasSala = salasNormais
         .filter(s=>s.ocupantes.length===0 && (!precisaTerreoGrp || salaEhTerrea(s.andar)) && grupoAceitaSala(s))
-        .sort((a,b)=>(a.capacidadeOriginal - b.capacidadeOriginal) || (capTotalPorEscola[b.escola]-capTotalPorEscola[a.escola]));
+        .sort((a,b)=>(rankSala(a)-rankSala(b)) || (a.capacidadeOriginal - b.capacidadeOriginal) || (ordemSala.get(a)-ordemSala.get(b)));
       salaJuntos = candidatasSala.find(s=>s.capacidadeOriginal>=qtd) || null;
     }
     const custoJuntos = salaJuntos ? (salaJuntos.capacidadeOriginal - qtd) : Infinity;
@@ -11120,8 +11136,8 @@ function executarMotorAlocacaoUmTurno(candidatos, escolas, turnoPass){
       const aptas=()=>[...salasEspeciais,...salasNormais].filter(x=>!usadas.has(x)&&x.ocupantes.length===0&&x.capacidadeDisponivel>=2&&(!precisaTerreoGrp||salaEhTerrea(x.andar))&&grupoAceitaSala(x));
       while(resto.length>1){
         const ap=aptas(); if(!ap.length) break;
-        const cabe=ap.filter(x=>x.capacidadeDisponivel>=resto.length).sort((a,b)=>a.capacidadeDisponivel-b.capacidadeDisponivel)[0];
-        const sala=cabe||ap.sort((a,b)=>b.capacidadeDisponivel-a.capacidadeDisponivel)[0];
+        const cabe=ap.filter(x=>x.capacidadeDisponivel>=resto.length).sort((a,b)=>(rankSala(a)-rankSala(b)) || (a.capacidadeDisponivel-b.capacidadeDisponivel) || (ordemSala.get(a)-ordemSala.get(b)))[0];
+        const sala=cabe||ap.sort((a,b)=>(rankSala(a)-rankSala(b)) || (b.capacidadeDisponivel-a.capacidadeDisponivel) || (ordemSala.get(a)-ordemSala.get(b)))[0];
         usadas.add(sala); const lote=resto.splice(0,Math.min(sala.capacidadeDisponivel,resto.length));
         lote.forEach(c=>{ sala.ocupantes.push(c); const nome=nomeComAbrev(c,sala,grp.tipoSala);
           alocados.push({...mapCandidato(c), SALA: nome, ANDAR: sala.andar, BLOCO: sala.bloco, ESCOLA: sala.escola, _tipoSala: grp.tipoSala, _salaEspecialUsada: true, _salaBase: sala.salaBase, _sufixoSala: nome.slice(sala.salaBase.length).trim()}); });
