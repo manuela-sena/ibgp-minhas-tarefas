@@ -9759,7 +9759,7 @@ function gerarResultadoTaf(input){
             const notas = provasOrdem.map(p=>{
               const resp = respsCandidato[p];
               if(!resp) return '';
-              if(ehElimCfg){ const v = `${resp.valor} ${resp.unidade||''}`.trim(); return resp.eliminado ? `ELIMINADO (${v})` : v; }
+              if(ehElimCfg){ const un = resp.unidade||''; const v = (resp.faixa==='abaixo' ? `menos de ${resp.minimo} ${un}` : (resp.faixa==='atingiu' ? `${resp.minimo} ${un} ou mais` : `${resp.valor} ${un}`)).trim(); return resp.eliminado ? `ELIMINADO (${v})` : v; }
               return resp.eliminado ? 'ELIMINADO' : resp.pontos;
             });
             const horarios = provasOrdem.map(p=>{
