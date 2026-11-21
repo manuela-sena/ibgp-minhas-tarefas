@@ -1,11 +1,102 @@
 {
   "token": "ESC_MWNO4923_2DQX",
-  "criadoEm": "2026-11-19T14:51:16.059Z",
+  "enviadoEm": "2026-11-21T12:12:58.455Z",
+  "protocolo": "ESC_MWNO4923_2DQX_1795263178455",
   "concurso": {
     "concurso": "PORTO VELHO/RO - EDITAL Nº 24/2026 - CONCURSO",
     "municipio": "Porto Velho/RO",
     "dataProva": "06/12/2026",
     "escola": "EEEFM Governador Joaquim de Araújo Lima",
     "idEscola": "ESC_MWNO4923_2DQX"
-  }
+  },
+  "instituicao": {
+    "nome": "EEEFM Governador Joaquim de Araújo Lima",
+    "cnpj": "01.609.421/0001-87",
+    "razao": "E.E.E.F.M GOVERNADOR ARAÚJO LIMA",
+    "endereco": "RUA SETE DE SETEMBRO",
+    "numero": "3697",
+    "complemento": "ESCOLA",
+    "bairro": "NOVA PORTO VELHO",
+    "cidade": "PORTO VELHO",
+    "uf": "RO",
+    "cep": "76820-150",
+    "responsavel": {
+      "nome": "JESSIVAN NUNES LOPES",
+      "cargo": "CHEFE DE SEÇÃO PEDAGÓGICA",
+      "email": "jessik.nunes04@gmail.com",
+      "tel": "(69) 99267-8278"
+    },
+    "diretor": {
+      "nome": "IONIRA MELO",
+      "email": "escolaaraujolima@seduc.ro.gov.br"
+    }
+  },
+  "estrutura": {
+    "carteiras": {
+      "mesa": true,
+      "universitaria": false,
+      "canhoto": false,
+      "dupla": false
+    },
+    "infraestrutura": {
+      "rampa": true,
+      "elevador": false,
+      "gerador": false,
+      "auditorio": true,
+      "arcond": true,
+      "ventilador": false
+    },
+    "banheiros": {
+      "masc": {
+        "qtd": "4",
+        "adaptado": false
+      },
+      "fem": {
+        "qtd": "4",
+        "adaptado": false
+      }
+    }
+  },
+  "salas": [
+    {
+      "bloco": "1",
+      "andar": "",
+      "sala": "SALA 01",
+      "capacidade": 30,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "2",
+      "andar": "",
+      "sala": "SALA 02 A 04",
+      "capacidade": 90,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "3",
+      "andar": "",
+      "sala": "SALA 05 A 09",
+      "capacidade": 150,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    },
+    {
+      "bloco": "4",
+      "andar": "",
+      "sala": "SALA 10 A 13",
+      "capacidade": 120,
+      "turno": "AMBOS",
+      "arcond": true,
+      "ventilador": false,
+      "atendimentoEspecial": false
+    }
+  ]
 }
