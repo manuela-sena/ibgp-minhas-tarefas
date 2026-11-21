@@ -90,12 +90,6 @@
   .preview-pontos.ok { background: #eaf6ef; color: var(--verde); }
   .preview-pontos.elim { background: #fbeaea; color: var(--vermelho); }
   .preview-pontos.neutro { background: var(--cinza); color: var(--muted); font-weight:600; }
-.valor-num { display:flex; flex-direction:column; gap:12px; width:100%; }
-.valor-num .dica-min { background:#eef3fb; border-radius:10px; padding:12px 14px; font-size:15px; color:#2b3a55; }
-.valor-num .num-wrap { display:flex; align-items:center; gap:10px; }
-.valor-num .num-btn { width:64px; height:64px; border-radius:14px; border:1.5px solid #cfd6e4; background:#fff; font-size:32px; font-weight:700; color:#1F3A5F; cursor:pointer; }
-.valor-num input { flex:1; min-width:0; height:64px; font-size:30px; font-weight:800; text-align:center; border:1.5px solid #cfd6e4; border-radius:14px; }
-.valor-num .unid { font-size:15px; color:#5b6b85; min-width:76px; }
   .crono-display { font-family: 'Sora', monospace; font-size: 40px; font-weight: 800; text-align: center;
     color: var(--azul); background: var(--cinza); border-radius: 10px; padding: 18px; margin-bottom: 14px; letter-spacing: 1px; }
   .crono-display.rodando { color: var(--azul-med); }
@@ -583,7 +577,7 @@ async function verificarAvaliacaoExistente(){
     const horaFim = resp.horaFim ? new Date(resp.horaFim).toLocaleTimeString('pt-BR',{hour12:false}) : '—';
     const resultadoTxt = resp.eliminado ? 'ELIMINADO' : (resp.pontos==null ? 'APTO nesta prova' : `${resp.pontos} pontos`);
     banner.innerHTML = `⚠️ <strong>Este candidato já foi avaliado em ${nomesProva[prova]||prova}.</strong><br>
-      Avaliador: ${resp.avaliador||'—'} · Valor obtido: ${resp.valor??'—'} · Resultado: ${resultadoTxt}<br>
+      Avaliador: ${resp.avaliador||'—'} · ${resp.faixa ? 'Desempenho: '+(resp.faixa==='abaixo' ? 'menos de '+resp.minimo+' '+(resp.unidade||'') : resp.minimo+' '+(resp.unidade||'')+' ou mais') : 'Valor obtido: '+(resp.valor??'—')} · Resultado: ${resultadoTxt}<br>
       Início: ${horaIni} · Fim: ${horaFim} · Enviado em: ${dataEnvio}<br>
       <span style="font-weight:600">Se enviar de novo, essa avaliação anterior será substituída.</span>`;
     banner.style.display = 'block';
@@ -901,22 +895,13 @@ function minimoElim(provaKey, sexo){
 function montarEntradaElim(prova, grid){
   const mm = (prova && SEXO_SEL) ? minimoElim(prova, SEXO_SEL) : null;
   if(!mm){ grid.className='valor-grid vazio'; grid.innerHTML = (prova && SEXO_SEL) ? 'Mínimo desta prova não configurado — fale com a coordenação.' : 'Selecione a prova e o sexo primeiro...'; return; }
-  const seg = mm.unidade==='segundos';
-  grid.className = 'valor-num';
-  grid.innerHTML = `<div class="dica-min">Mínimo para <b>não ser eliminado</b>: <b>${mm.min} ${mm.unidade}</b></div>
-    <div class="num-wrap"><button type="button" class="num-btn" onclick="ajustarValorNum(-1)">−</button>
-      <input type="number" id="f-valor-num" min="0" step="${seg?'0.01':'1'}" inputmode="${seg?'decimal':'numeric'}" placeholder="0" oninput="onValorNumInput(this.value)">
-      <button type="button" class="num-btn" onclick="ajustarValorNum(1)">+</button><span class="unid">${mm.unidade}</span></div>`;
-}
-function onValorNumInput(v){
-  const n = parseFloat(String(v).replace(',','.'));
-  document.getElementById('f-valor').value = (isFinite(n) && n>=0) ? String(n) : '';
-  atualizarPreview(); atualizarBotaoEnviar();
-}
-function ajustarValorNum(d){
-  const inp = document.getElementById('f-valor-num'); if(!inp) return;
-  const novo = Math.max(0, (parseFloat(String(inp.value).replace(',','.'))||0) + d);
-  inp.value = String(Math.round(novo*100)/100); onValorNumInput(inp.value);
+  // duas opções: abaixo do mínimo (eliminado) ou atingiu o mínimo. O valor gravado é o limite da faixa (mín − 1 passo, ou o próprio mínimo).
+  const seg = mm.unidade==='segundos', un = mm.unidade;
+  const valorElim = String(seg || !Number.isInteger(mm.min) ? Math.round((mm.min-0.01)*100)/100 : mm.min-1);
+  grid.className = 'valor-grid'; grid.innerHTML = '';
+  [[valorElim,`Menos de ${mm.min} ${un} (eliminado)`,'valor-opt elim'],[String(mm.min),`${mm.min} ${un} ou mais`,'valor-opt']].forEach(([v,txt,cls])=>{
+    const chip = document.createElement('div'); chip.className = cls; chip.dataset.valor = v; chip.textContent = txt; chip.onclick = ()=>selecionarValor(v); grid.appendChild(chip);
+  });
 }
 // Pelo regulamento (ex.: Anexo V da GCM de Brumadinho), quem é eliminado numa prova não prossegue para as seguintes: avisa o avaliador.
 async function buscarEliminacaoAnterior(inscricao, provaAtual){
@@ -930,13 +915,13 @@ async function buscarEliminacaoAnterior(inscricao, provaAtual){
       if(!r.ok) continue;
       const d = await r.json();
       const resp = JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))));
-      if(resp.eliminado) return {prova:pv, valor:resp.valor, minimo:resp.minimo, unidade:resp.unidade||''};
+      if(resp.eliminado) return {prova:pv, valor:resp.valor, minimo:resp.minimo, unidade:resp.unidade||'', faixa:resp.faixa||''};
     }catch(e){ /* sem rede para checar: não bloqueia */ }
   }
   return null;
 }
 function textoEliminacaoAnterior(e){
-  return `⛔ Este candidato já foi ELIMINADO em ${NOMES_PROVA[e.prova]||e.prova} (${e.valor??'—'} ${e.unidade}${e.minimo!=null?'; mínimo '+e.minimo:''}). Pelo regulamento ele não prossegue para a próxima prova.`;
+  return `⛔ Este candidato já foi ELIMINADO em ${NOMES_PROVA[e.prova]||e.prova} (${e.faixa==='abaixo' ? 'menos de '+e.minimo+' '+e.unidade : (e.valor??'—')+' '+e.unidade+(e.minimo!=null?'; mínimo '+e.minimo:'')}). Pelo regulamento ele não prossegue para a próxima prova.`;
 }
 async function verificarEliminacaoAnterior(){
   const box = document.getElementById('aviso-eliminado-anterior'); if(!box) return;
@@ -1032,7 +1017,7 @@ async function enviarAvaliacao(){
       valor,
       pontos: calc.pontos,
       eliminado: calc.eliminado,
-      ...(ehElim() ? {modo:'eliminatorio', minimo:calc.minimo, unidade:calc.unidade, apto:!calc.eliminado} : {}),
+      ...(ehElim() ? {modo:'eliminatorio', minimo:calc.minimo, unidade:calc.unidade, apto:!calc.eliminado, faixa:(calc.eliminado?'abaixo':'atingiu')} : {}),
       horaInicio: CRONO_INICIO.toISOString(),
       horaFim: CRONO_FIM.toISOString(),
       fotoPath,
